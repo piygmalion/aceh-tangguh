@@ -604,7 +604,7 @@ export function AnggaranDashboard() {
             <select
               value={fase}
               onChange={(e) => setFase(e.target.value)}
-              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-muted)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--accent)]"
               aria-label={t("table.fase")}
             >
               <option value="">{t("table.allFase")}</option>
@@ -617,7 +617,7 @@ export function AnggaranDashboard() {
             <select
               value={kategori}
               onChange={(e) => setKategori(e.target.value)}
-              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-muted)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--accent)]"
               aria-label={t("table.kategori")}
             >
               <option value="">{t("table.allKategori")}</option>
@@ -630,7 +630,7 @@ export function AnggaranDashboard() {
             <select
               value={skpd}
               onChange={(e) => setSkpd(e.target.value)}
-              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-muted)] px-3 py-2 text-sm outline-none focus:border-[var(--accent)]"
+              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--accent)]"
               aria-label={t("table.skpd")}
             >
               <option value="">{t("table.allSkpd")}</option>

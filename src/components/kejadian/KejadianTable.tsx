@@ -167,7 +167,7 @@ ${placemarks}
 }
 
 const inputClass =
-  "w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-3 py-2 text-sm text-[var(--text)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
+  "w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none transition [color-scheme:inherit] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
 
 export function KejadianTable() {
   const t = useTranslations("dataBencana");
