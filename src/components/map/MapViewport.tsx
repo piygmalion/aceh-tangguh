@@ -25,6 +25,7 @@ import {
 } from "@/lib/types";
 import type { FeatureCollection, Point } from "geojson";
 import { FacHealthIcon } from "@/components/icons/FacHealthIcon";
+import { FacEducationIcon } from "@/components/icons/FacEducationIcon";
 
 export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
   disasterEvents: "#f59e0b",
@@ -326,11 +327,20 @@ export function MapViewport({
               {layer === "facHealth" ? (
                 <button
                   type="button"
-                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-white text-[#e11d48] shadow-md ring-1 ring-black/10"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-white shadow-md ring-1 ring-black/10"
                   style={{ color: LAYER_COLORS.facHealth }}
                   aria-label={title}
                 >
                   <FacHealthIcon className="h-4 w-4" />
+                </button>
+              ) : layer === "facEducation" ? (
+                <button
+                  type="button"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-white shadow-md ring-1 ring-black/10"
+                  style={{ color: LAYER_COLORS.facEducation }}
+                  aria-label={title}
+                >
+                  <FacEducationIcon className="h-4 w-4" />
                 </button>
               ) : (
                 <button

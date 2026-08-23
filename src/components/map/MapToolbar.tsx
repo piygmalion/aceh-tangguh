@@ -8,6 +8,7 @@ import { qk } from "@/lib/qk";
 import type { AreaLayerKey, LegendModel, MarkerLayerKey } from "@/lib/types";
 import { LAYER_COLORS } from "@/components/map/MapViewport";
 import { FacHealthIcon } from "@/components/icons/FacHealthIcon";
+import { FacEducationIcon } from "@/components/icons/FacEducationIcon";
 
 const AREA_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
@@ -232,11 +233,19 @@ export function MapToolbar({
                         />
                         {opt.key === "facHealth" ? (
                           <span
-                            className="map-layer-icon text-[var(--accent)]"
+                            className="map-layer-icon"
                             style={{ color: LAYER_COLORS.facHealth }}
                             aria-hidden
                           >
                             <FacHealthIcon className="h-3.5 w-3.5" />
+                          </span>
+                        ) : opt.key === "facEducation" ? (
+                          <span
+                            className="map-layer-icon"
+                            style={{ color: LAYER_COLORS.facEducation }}
+                            aria-hidden
+                          >
+                            <FacEducationIcon className="h-3.5 w-3.5" />
                           </span>
                         ) : (
                           <span
@@ -271,6 +280,14 @@ export function MapToolbar({
                             aria-hidden
                           >
                             <FacHealthIcon className="h-3.5 w-3.5" />
+                          </span>
+                        ) : key === "facEducation" ? (
+                          <span
+                            className="map-layer-icon"
+                            style={{ color: LAYER_COLORS.facEducation }}
+                            aria-hidden
+                          >
+                            <FacEducationIcon className="h-3.5 w-3.5" />
                           </span>
                         ) : (
                           <span
