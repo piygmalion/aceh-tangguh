@@ -19,6 +19,7 @@ export type AreaLayerKey =
   | "irbi2025";
 
 export type MarkerLayerKey =
+  | "disasterEvents"
   | "missingPersons"
   | "tendPoints"
   | "policeOffices"

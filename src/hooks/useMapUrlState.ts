@@ -11,7 +11,7 @@ import {
   type MarkerLayerKey,
 } from "@/lib/types";
 
-const DEFAULT_LAYERS: MarkerLayerKey[] = ["poskos", "tendPoints", "citizenReports"];
+const DEFAULT_LAYERS: MarkerLayerKey[] = ["disasterEvents", "facHealth", "citizenReports"];
 
 function parseLayers(raw: string | null): MarkerLayerKey[] {
   if (!raw) return DEFAULT_LAYERS;

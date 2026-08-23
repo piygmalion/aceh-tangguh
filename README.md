@@ -55,6 +55,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Supabase holds m
 | GET | `/api/irbi` | fixture + optional meta merge |
 | GET | `/api/layers/areas/[key]` | GeoJSON fixtures |
 | GET | `/api/layers/markers` | GeoJSON fixtures |
+| GET | `/api/layers/markers/summary` | Fixture layer counts (debug) |
 | GET | `/api/boundaries` | GeoJSON fixtures |
 
 ## Screens
@@ -94,6 +95,25 @@ python3 scripts/build-irbi-fixtures.py [/path/to/risiko_bencana_aceh_irbi_2025.j
 ```
 
 Homepage hero tabs: **Utama** · **Peta** · **Irbi 2025**. Map deep-link: `/id/peta?area=irbi2025&basemap=positron`. Analysis API: `GET /api/irbi`.
+
+
+## Data Utama (marker layers)
+
+Map toolbar **Data utama** (`groupMain`) defaults to:
+
+1. `disasterEvents` — Kejadian bencana (`kejadian_bencana_aceh_lengkap.json`)
+2. `facHealth` — Fasilitas kesehatan (Google Sheet `1npB5v7T…`)
+3. `facEducation` — Fasilitas pendidikan (Google Sheet `1fguZcbW…`; **coordinates approximated to kabupaten centroids** — schools have no precise lat/lng in the sheet)
+4. `policeOffices` — kept when present
+
+`missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. Default URL layers: `disasterEvents,facHealth,citizenReports`.
+
+Rebuild (does not run in CI; inputs under `/workspace/drive-aceh-data/`):
+
+```
+python3 scripts/build-main-markers.py          # dry-run counts
+python3 scripts/build-main-markers.py --write  # overwrite public/fixtures/markers.geojson
+```
 
 ## Planning docs
 

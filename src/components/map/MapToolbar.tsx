@@ -25,17 +25,15 @@ const LOCATION_GROUPS: LocationGroup[] = [
   {
     groupKey: "groupMain",
     options: [
-      { key: "missingPersons", labelKey: "missingPersons" },
-      { key: "tendPoints", labelKey: "tendPoints" },
+      { key: "disasterEvents", labelKey: "disasterEvents" },
+      { key: "facHealth", labelKey: "facHealth" },
+      { key: "facEducation", labelKey: "facEducation" },
       { key: "policeOffices", labelKey: "policeOffices" },
-      { key: "poskos", labelKey: "poskos" },
     ],
   },
   {
     groupKey: "groupFacilities",
     options: [
-      { key: "facHealth", labelKey: "facHealth" },
-      { key: "facEducation", labelKey: "facEducation" },
       { key: "facGov", labelKey: "facGov" },
       { key: "facReligious", labelKey: "facReligious" },
     ],

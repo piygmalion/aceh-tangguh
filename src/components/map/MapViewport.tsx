@@ -26,6 +26,7 @@ import {
 import type { FeatureCollection, Point } from "geojson";
 
 export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
+  disasterEvents: "#f59e0b",
   missingPersons: "#dc2626",
   tendPoints: "#0ea5e9",
   policeOffices: "#1d4ed8",
@@ -37,7 +38,7 @@ export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
   infraRoadBridge: "#a16207",
   helipad: "#0891b2",
   starlink: "#6366f1",
-  citizenReports: "#f59e0b",
+  citizenReports: "#ea580c",
 };
 
 const BUCKET_FILL: Record<string, string> = {
@@ -305,7 +306,7 @@ export function MapViewport({
         {data?.features.map((f) => {
           if (f.geometry.type !== "Point") return null;
           const [lng, lat] = (f.geometry as Point).coordinates;
-          const layer = (f.properties?.layer as MarkerLayerKey) || "poskos";
+          const layer = (f.properties?.layer as MarkerLayerKey) || "disasterEvents";
           const title = String(f.properties?.title ?? "Titik");
           const status = f.properties?.status
             ? String(f.properties.status)

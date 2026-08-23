@@ -14,6 +14,42 @@ export type DataSourceEntry = {
 
 export const DATA_SOURCES: DataSourceEntry[] = [
   {
+    id: "kejadian-bencana",
+    titleId: "Kejadian bencana",
+    titleEn: "Disaster events",
+    source:
+      "BPBA / BNPB / BMKG compiled — kejadian_bencana_aceh_lengkap.json (Drive Aceh data)",
+    license: "Operational compilation — attribute BPBA, BNPB, BMKG, Badan Geologi",
+    date: "2021–2026 (snapshot 2026-08-23)",
+    format: "JSON → GeoJSON markers (disasterEvents)",
+    usedFor: "Data Utama — map layer Kejadian bencana (~429 points with GPS)",
+  },
+  {
+    id: "fasyankes",
+    titleId: "Fasilitas kesehatan (fasyankes rusak)",
+    titleEn: "Health facilities (damaged fasyankes)",
+    source:
+      "Google Sheet 1npB5v7TfZaP-v3WP4KrkR8E8FenDEt-P — LIST KONDISI FASYANKES",
+    license: "Internal operational dataset — attribution to data providers",
+    date: "Update noted 2025-12-29 (sheet)",
+    format: "Google Sheet / XLSX → GeoJSON markers (facHealth)",
+    usedFor: "Data Utama — Fasilitas kesehatan (~191 points with sheet coordinates)",
+    href: "https://docs.google.com/spreadsheets/d/1npB5v7TfZaP-v3WP4KrkR8E8FenDEt-P",
+  },
+  {
+    id: "fasilitas-pendidikan",
+    titleId: "Fasilitas pendidikan (sekolah terdampak)",
+    titleEn: "Education facilities (affected schools)",
+    source:
+      "Google Sheet 1fguZcbWhIYznXePGb_OiLDh-v_LVk6Ue — rekap fasilitas pendidikan",
+    license: "Internal operational dataset — attribution to data providers",
+    date: "2025–2026 snapshot",
+    format: "Google Sheet / XLSX → GeoJSON markers (facEducation)",
+    usedFor:
+      "Data Utama — Fasilitas pendidikan (~3071 points). Coordinates are approximated to kabupaten centroids (schools lack precise lat/lng in the sheet).",
+    href: "https://docs.google.com/spreadsheets/d/1fguZcbWhIYznXePGb_OiLDh-v_LVk6Ue",
+  },
+  {
     id: "compiled-r3p",
     titleId: "Compiled R3P (kerusakan rumah RR+RS+RB)",
     titleEn: "Compiled R3P (housing damage RR+RS+RB)",
@@ -39,13 +75,24 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     id: "titik-pengungsian",
-    titleId: "Titik pengungsian",
-    titleEn: "Displacement / shelter points",
+    titleId: "Titik pengungsian (removed from Data Utama)",
+    titleEn: "Displacement / shelter points (removed from Core data)",
     source: "Aceh Tanggapi / Drive — Dataset_titik_pengungsian_25_Feb_2025.xlsx",
     license: "Internal operational dataset — attribution to data providers",
-    date: "2025-02-25",
-    format: "XLSX → GeoJSON (tendPoints / markers)",
-    usedFor: "Shelter and posko-related point layers on the map",
+    date: "2025-02-25 (deprecated in UI 2026-08-23)",
+    format: "XLSX → GeoJSON (tendPoints) — no longer in primary markers.geojson / toolbar",
+    usedFor:
+      "Formerly shelter points on the map; removed from Data Utama. Kept in type union for old URL ?layers= compatibility.",
+  },
+  {
+    id: "posko-orang-hilang",
+    titleId: "Posko & orang hilang (removed from Data Utama)",
+    titleEn: "Posts & missing persons (removed from Core data)",
+    source: "Legacy demo / operational stubs",
+    license: "n/a",
+    date: "Deprecated in UI 2026-08-23",
+    format: "Removed from markers.geojson; keys remain in MarkerLayerKey for URL compat",
+    usedFor: "Formerly in Data Utama toolbar; filtering still accepts old URL keys",
   },
   {
     id: "gadm-kab",
