@@ -66,6 +66,7 @@ export type KejadianQuery = {
   jenis?: string;
   kabupaten?: string;
   kecamatan?: string;
+  status?: string;
   from?: string;
   to?: string;
   page?: number;
@@ -77,6 +78,7 @@ export type KejadianFacets = {
   kabupaten: string[];
   kecamatan: string[];
   kecamatanByKabupaten: Record<string, string[]>;
+  status: string[];
 };
 
 export type KejadianListResult = {

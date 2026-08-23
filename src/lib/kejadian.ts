@@ -11,6 +11,10 @@ import type {
 } from "./kejadian-types";
 import { isRekapitulasiTahunan } from "./disaster-jenis";
 import {
+  normalizeStatus,
+  orderedPresentKeys,
+} from "./status-vocab";
+import {
   asRecord,
   fetchAllRows,
   readDocumentPayload,
@@ -283,6 +287,10 @@ export function buildFacets(rows: KejadianRow[]): KejadianFacets {
     ),
     kecamatan: uniqueSorted(rows.map((r) => r.lokasi?.kecamatan || "")),
     kecamatanByKabupaten,
+    status: orderedPresentKeys(
+      "disaster",
+      rows.map((r) => normalizeStatus(r.penanganan?.status_proses, "disasterEvents").key)
+    ),
   };
 }
 
@@ -313,6 +321,9 @@ export function filterAndPaginateKejadian(
   const jenis = norm(query.jenis);
   const kabupaten = norm(query.kabupaten);
   const kecamatan = norm(query.kecamatan);
+  const statusKey = query.status
+    ? normalizeStatus(query.status, "disasterEvents").key
+    : "";
 
   let filtered = data.kejadian.filter((row) => {
     if (isRekapitulasiTahunan(row.jenis_bencana)) return false;
@@ -320,6 +331,13 @@ export function filterAndPaginateKejadian(
     const kab = norm(row.lokasi?.kabupaten || row.lokasi?.kabupaten_kota);
     if (kabupaten && kab !== kabupaten) return false;
     if (kecamatan && norm(row.lokasi?.kecamatan) !== kecamatan) return false;
+    if (statusKey) {
+      const rowStatus = normalizeStatus(
+        row.penanganan?.status_proses,
+        "disasterEvents"
+      ).key;
+      if (rowStatus !== statusKey) return false;
+    }
     if (!rowMatchesDate(row, from, toEnd)) return false;
     if (q && !rowSearchBlob(row).includes(q)) return false;
     return true;

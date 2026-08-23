@@ -29,6 +29,7 @@ import { type VillageClickSelection } from "@/lib/profil-desa";
 import type { FilterSpecification, MapLayerMouseEvent } from "maplibre-gl";
 import { LAYER_COLORS } from "@/lib/layer-colors";
 import { Chip } from "@/components/ui/Chip";
+import { StatusChip } from "@/components/ui/StatusChip";
 import { useTranslations } from "next-intl";
 import {
   COORD_QUALITY_OFFSHORE,
@@ -215,6 +216,7 @@ export function MapViewport({
     lat: number;
     title: string;
     status?: string;
+    layer?: MarkerLayerKey;
     coordQuality?: CoordQuality | null;
   } | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
@@ -452,6 +454,7 @@ export function MapViewport({
                   lat,
                   title,
                   status,
+                  layer,
                   coordQuality: readCoordQuality(
                     f.properties as Record<string, unknown> | null
                   ),
@@ -476,9 +479,13 @@ export function MapViewport({
           >
             <div className="text-sm">
               <div className="font-semibold text-[var(--text)]">{popup.title}</div>
-              {popup.status && (
-                <div className="text-xs text-[var(--text-dim)]">{popup.status}</div>
-              )}
+              <div className="mt-1.5">
+                <StatusChip
+                  raw={popup.status}
+                  layer={popup.layer}
+                  className="px-2 py-0.5 text-[0.65rem]"
+                />
+              </div>
               {popup.coordQuality === COORD_QUALITY_TRUNCATED && (
                 <Chip
                   tone="warn"
