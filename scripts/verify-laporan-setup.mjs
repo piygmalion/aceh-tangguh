@@ -52,7 +52,7 @@ const tables = [
 ];
 
 for (const table of tables) {
-  const { error } = await client.from(table).select("id", { head: true, count: "exact" });
+  const { error } = await client.from(table).select("id").limit(0);
   if (error) fail(`table ${table}`, error.message);
   else ok(`table ${table}`);
 }
