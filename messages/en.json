@@ -207,11 +207,50 @@
     }
   },
   "r3pChart": {
-    "heading": "R3P housing damage by kab/kota",
-    "lead": "Top ten kab/kota by combined RR+RS+RB from the Compiled R3P snapshot.",
-    "unit": "homes",
-    "loading": "Loading chart…",
-    "error": "Failed to load chart data."
+    "heading": "R3P multi-sector — post-disaster damage",
+    "lead": "Aceh Post-Disaster Rehabilitation and Reconstruction Plan summary: housing, roads, drainage, farmland, and affected village coverage by kab/kota.",
+    "loading": "Loading R3P charts…",
+    "error": "Failed to load R3P data.",
+    "prev": "Previous",
+    "next": "Next",
+    "pause": "Pause",
+    "play": "Play",
+    "autoplay": "Autoplay",
+    "slidesAria": "R3P visualization slides",
+    "sourceNote": "Source: r3p_aceh.json · Tanggapi R3P Aceh sheet",
+    "unit": {
+      "rumah": "homes",
+      "km": "km",
+      "ha": "ha",
+      "desa": "villages",
+      "pct": "%"
+    },
+    "severity": {
+      "rr": "Light damage (RR)",
+      "rs": "Moderate damage (RS)",
+      "rb": "Heavy damage (RB)"
+    },
+    "slides": {
+      "rumah": "Damaged homes",
+      "komposisi": "Home damage mix",
+      "jalan": "Damaged roads",
+      "drainase": "Damaged drainage",
+      "lahan": "Farmland",
+      "desa": "Affected villages"
+    },
+    "kpi": {
+      "totalRumah": "Total homes",
+      "rr": "RR",
+      "rs": "RS",
+      "rb": "RB",
+      "jalanKm": "Damaged roads",
+      "drainaseKm": "Damaged drainage",
+      "lahanHa": "Affected farmland",
+      "desaRusak": "Affected villages",
+      "desaTotal": "Total villages",
+      "cakupan": "Coverage",
+      "kab": "Kab/kota"
+    }
   },
   "irbi": {
     "heading": "Aceh Disaster Risk Index 2025",

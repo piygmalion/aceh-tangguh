@@ -207,11 +207,50 @@
     }
   },
   "r3pChart": {
-    "heading": "Kerusakan rumah R3P per kab/kota",
-    "lead": "Sepuluh kab/kota dengan total RR+RS+RB tertinggi dari snapshot Compiled R3P.",
-    "unit": "rumah",
-    "loading": "Memuat grafik…",
-    "error": "Gagal memuat data grafik."
+    "heading": "R3P multi-sektor — kerusakan pascabencana",
+    "lead": "Ringkasan Rencana Rehabilitasi dan Rekonstruksi Pascabencana Aceh: rumah, jalan, drainase, lahan pertanian, dan cakupan desa terdampak per kab/kota.",
+    "loading": "Memuat grafik R3P…",
+    "error": "Gagal memuat data R3P.",
+    "prev": "Sebelumnya",
+    "next": "Berikutnya",
+    "pause": "Jeda",
+    "play": "Putar",
+    "autoplay": "Putar otomatis",
+    "slidesAria": "Slide visualisasi R3P",
+    "sourceNote": "Sumber: r3p_aceh.json · lembar Tanggapi R3P Aceh",
+    "unit": {
+      "rumah": "rumah",
+      "km": "km",
+      "ha": "ha",
+      "desa": "desa",
+      "pct": "%"
+    },
+    "severity": {
+      "rr": "Rusak ringan (RR)",
+      "rs": "Rusak sedang (RS)",
+      "rb": "Rusak berat (RB)"
+    },
+    "slides": {
+      "rumah": "Rumah rusak",
+      "komposisi": "Komposisi rumah",
+      "jalan": "Jalan rusak",
+      "drainase": "Drainase rusak",
+      "lahan": "Lahan pertanian",
+      "desa": "Desa terdampak"
+    },
+    "kpi": {
+      "totalRumah": "Total rumah",
+      "rr": "RR",
+      "rs": "RS",
+      "rb": "RB",
+      "jalanKm": "Jalan rusak",
+      "drainaseKm": "Drainase rusak",
+      "lahanHa": "Lahan terdampak",
+      "desaRusak": "Desa terdampak",
+      "desaTotal": "Total desa/kel.",
+      "cakupan": "Cakupan",
+      "kab": "Kab/kota"
+    }
   },
   "irbi": {
     "heading": "Indeks Risiko Bencana Aceh 2025",

@@ -16,4 +16,5 @@ export const qk = {
   anggaran: ["anggaran", "2026"] as const,
   publikasi: ["publikasi", "btt"] as const,
   publikasiDetail: (slug: string) => ["publikasi", "detail", slug] as const,
+  r3pSummary: ["r3p", "summary"] as const,
 };

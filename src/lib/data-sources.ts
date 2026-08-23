@@ -52,15 +52,16 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     id: "compiled-r3p",
-    titleId: "Compiled R3P (kerusakan rumah RR+RS+RB)",
-    titleEn: "Compiled R3P (housing damage RR+RS+RB)",
-    source: "Aceh Tanggapi / Drive — Compiled_R3P_Data.xlsx",
+    titleId: "R3P multi-sektor (rumah, jalan, drainase, lahan, desa)",
+    titleEn: "R3P multi-sector (housing, roads, drainage, farmland, villages)",
+    source:
+      "Aceh Tanggapi / Drive — r3p_aceh.json (Rencana Rehabilitasi dan Rekonstruksi Pascabencana Aceh); also Compiled_R3P_Data.xlsx for map choropleth",
     license: "Internal operational dataset — attribution to data providers",
-    date: "2025–2026 (snapshot used 2026-08-22)",
-    format: "XLSX → aggregated GeoJSON",
+    date: "2025–2026 (slideshow fixture 2026-08-23)",
+    format: "JSON (r3p-slideshow.json) + XLSX → aggregated GeoJSON / PMTiles",
     usedFor:
-      "Kabupaten and village choropleth values (rumah rusak ringan/sedang/berat totals)",
-    href: undefined,
+      "Homepage R3P slideshow (multi-sektor KPIs & charts); kabupaten/village choropleth (rumah RR+RS+RB)",
+    href: "https://docs.google.com/spreadsheets/d/1eG7jewwOeuv0GKLLlfJp8hrDAwvW1wtnYFK4mz_DwPA/edit?gid=0",
   },
   {
     id: "irbi-2025",
