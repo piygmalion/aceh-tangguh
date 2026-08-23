@@ -42,6 +42,8 @@ export async function GET() {
     const { data, error } = await supabase
       .from("reports")
       .select("*")
+      .eq("status", "published")
+      .eq("consent_map_display", true)
       .order("created_at", { ascending: false });
 
     if (!error && data) {

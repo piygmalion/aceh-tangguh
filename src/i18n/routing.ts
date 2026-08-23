@@ -33,6 +33,14 @@ export const routing = defineRouting({
       id: "/cuaca",
       en: "/weather",
     },
+    "/admin": "/admin",
+    "/admin/login": "/admin/login",
+    "/admin/denied": "/admin/denied",
+    "/admin/moderasi": "/admin/moderasi",
+    "/admin/cms": "/admin/cms",
+    "/admin/cms/publikasi": "/admin/cms/publikasi",
+    "/admin/cms/kejadian": "/admin/cms/kejadian",
+    "/admin/database": "/admin/database",
   },
 });
 

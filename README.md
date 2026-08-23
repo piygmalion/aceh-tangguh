@@ -36,7 +36,8 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    bun run build
    ```
 3. Schema documentation: `supabase/migrations/20260823_init_aceh_tangguh_backend.sql`
-4. Seed area feature metadata from fixtures (needs service role or SQL admin; anon is SELECT-only on `area_feature_meta`):
+4. Staff admin (`/id/admin`): apply `supabase/migrations/20260825_admin_auth.sql` then create the first `super_admin` manually — see `docs/admin-setup.md`. Do not put `SERVICE_ROLE` in `.env` for the app to run.
+5. Seed area feature metadata from fixtures (needs service role or SQL admin; anon is SELECT-only on `area_feature_meta`):
    ```
    bun run seed:area-meta
    ```
@@ -47,7 +48,11 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 
 | Method | Path | Source |
 |--------|------|--------|
-| GET/POST | `/api/reports` | Supabase `reports` |
+| GET/POST | `/api/reports` | Supabase `reports` (GET = published + consent) |
+| GET/PATCH | `/api/admin/reports` | Staff JWT — list / set status |
+| GET | `/api/admin/me` | Session + `admin_profiles` |
+| GET/POST/PATCH/DELETE | `/api/admin/cms/*` | Super-admin CMS |
+| GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
 | GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
 | GET | `/api/hazards` | `hazard_status` |
 | GET | `/api/layers/catalog` | enabled `map_layers` by `sort_order` |
@@ -70,6 +75,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 
 | Locale | Path |
 |--------|------|
+| id | `/id/admin` staff dashboard (login at `/id/admin/login`) |
 | id | `/id` homepage |
 | id | `/id/peta` map |
 | id | `/id/lapor` report form |

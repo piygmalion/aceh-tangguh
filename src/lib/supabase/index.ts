@@ -4,6 +4,7 @@ export {
   type TypedSupabaseClient,
 } from "./server";
 export { createBrowserClient } from "./client";
+export { createAuthServerClient } from "./ssr";
 export {
   trySupabaseThenFixture,
   fetchAllRows,
@@ -15,7 +16,9 @@ export {
 } from "./fallback";
 export type {
   Database,
+  AdminRole,
   ReportRow,
+  AdminProfileRow,
   LiveStatsRow,
   HazardStatusRow,
   MapLayerRow,
