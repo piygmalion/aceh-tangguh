@@ -115,6 +115,24 @@ try {
 
   const outDir = path.join(root, "out");
   writeFileSync(path.join(outDir, ".nojekyll"), "");
+
+  // next-intl localized pathnames are URL aliases; App Router folders keep
+  // the source segment. Copy EN aliases so Links like /en/disaster-data work.
+  const enAliases = [
+    ["data-bencana", "disaster-data"],
+    ["anggaran-bencana", "disaster-budget"],
+    ["publikasi", "publications"],
+    ["sumber-data", "data-sources"],
+    ["metodologi", "methodology"],
+  ];
+  for (const [from, to] of enAliases) {
+    const src = path.join(outDir, "en", from);
+    const dest = path.join(outDir, "en", to);
+    if (existsSync(src) && !existsSync(dest)) {
+      cpSync(src, dest, { recursive: true });
+    }
+  }
+
   writeFileSync(
     path.join(outDir, "index.html"),
     `<!DOCTYPE html>
@@ -141,3 +159,6 @@ try {
   restore();
   rmSync(parkRoot, { recursive: true, force: true });
 }
+
+// Drop export-only Next types (stub /admin/page) so `tsc` on the Node app still works.
+rmSync(path.join(root, ".next"), { recursive: true, force: true });
