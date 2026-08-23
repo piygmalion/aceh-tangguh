@@ -1,5 +1,13 @@
 import { readFile } from "fs/promises";
 import path from "path";
+import {
+  asRecord,
+  fetchAllRows,
+  trySupabaseThenFixture,
+  type DomainSource,
+} from "./supabase/fallback";
+import type { TypedSupabaseClient } from "./supabase/server";
+import type { PublikasiMetaRow, PublikasiRow } from "./supabase/types";
 
 export type PublikasiAuthor = {
   name: string;
@@ -48,19 +56,77 @@ export type PublikasiListItem = Omit<
 export type PublikasiListResponse = {
   metadata: PublikasiMetadata;
   publikasi: PublikasiListItem[];
-  source: "fixture";
+  source: "supabase" | "fixture";
   tags: string[];
 };
 
 export type PublikasiDetailResponse = {
   metadata: PublikasiMetadata;
   item: PublikasiItem;
-  source: "fixture";
+  source: "supabase" | "fixture";
 };
 
 const HEAVY_KEYS = ["html_content", "mdx_bundle", "json_ld"] as const;
 
+const FALLBACK_META: PublikasiMetadata = {
+  judul: "Publikasi Tanggapi",
+  deskripsi: "",
+  sumber: "Supabase",
+  total_publikasi: 0,
+};
+
 let cache: PublikasiFixture | null = null;
+
+function asMetadata(payload: unknown): PublikasiMetadata | null {
+  const rec = asRecord(payload);
+  if (typeof rec.judul !== "string" && typeof rec.total_publikasi !== "number") {
+    return null;
+  }
+  return rec as unknown as PublikasiMetadata;
+}
+
+function publikasiFromRow(row: PublikasiRow): PublikasiItem {
+  const payload = asRecord(row.payload) as Partial<PublikasiItem>;
+  const published = payload.published_at || row.published_at || "";
+  return {
+    ...(payload as PublikasiItem),
+    slug: row.slug,
+    title: payload.title || row.title,
+    description: payload.description ?? row.description ?? "",
+    published_at: typeof published === "string" ? published : String(published),
+    tags: payload.tags ?? row.tags ?? [],
+    url: payload.url || "",
+    author: payload.author ?? { name: "" },
+  };
+}
+
+async function loadPublikasiFromSupabase(
+  client: TypedSupabaseClient
+): Promise<PublikasiFixture | null> {
+  const { data: metaRow, error: metaError } = await client
+    .from("publikasi_meta")
+    .select("*")
+    .eq("id", 1)
+    .maybeSingle();
+
+  if (metaError) throw new Error(metaError.message);
+
+  const rows = await fetchAllRows<PublikasiRow>((from, to) =>
+    client.from("publikasi").select("*").range(from, to)
+  );
+  if (rows.length === 0) return null;
+
+  const metadata =
+    asMetadata((metaRow as PublikasiMetaRow | null)?.payload) ?? {
+      ...FALLBACK_META,
+      total_publikasi: rows.length,
+    };
+
+  return {
+    metadata: { ...metadata, total_publikasi: rows.length },
+    publikasi: rows.map(publikasiFromRow),
+  };
+}
 
 export async function loadPublikasiFixture(): Promise<PublikasiFixture> {
   if (cache) return cache;
@@ -75,6 +141,16 @@ export async function loadPublikasiFixture(): Promise<PublikasiFixture> {
     publikasi: Array.isArray(data.publikasi) ? data.publikasi : [],
   };
   return cache;
+}
+
+export async function loadPublikasi(): Promise<{
+  data: PublikasiFixture;
+  source: DomainSource;
+}> {
+  return trySupabaseThenFixture(loadPublikasiFromSupabase, loadPublikasiFixture, {
+    label: "publikasi",
+    isEmpty: (value) => value.publikasi.length === 0,
+  });
 }
 
 export function toListItem(item: PublikasiItem): PublikasiListItem {
@@ -96,14 +172,14 @@ export function collectTags(items: PublikasiItem[]): string[] {
 }
 
 export async function getPublikasiList(): Promise<PublikasiListResponse> {
-  const data = await loadPublikasiFixture();
+  const { data, source } = await loadPublikasi();
   const sorted = [...data.publikasi].sort((a, b) =>
     (b.published_at || "").localeCompare(a.published_at || ""),
   );
   return {
     metadata: data.metadata,
     publikasi: sorted.map(toListItem),
-    source: "fixture",
+    source,
     tags: collectTags(data.publikasi),
   };
 }
@@ -111,12 +187,12 @@ export async function getPublikasiList(): Promise<PublikasiListResponse> {
 export async function getPublikasiBySlug(
   slug: string,
 ): Promise<PublikasiDetailResponse | null> {
-  const data = await loadPublikasiFixture();
+  const { data, source } = await loadPublikasi();
   const item = data.publikasi.find((p) => p.slug === slug);
   if (!item) return null;
   return {
     metadata: data.metadata,
     item,
-    source: "fixture",
+    source,
   };
 }

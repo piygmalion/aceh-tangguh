@@ -27,22 +27,10 @@ import type { FeatureCollection, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
 import type { FilterSpecification, MapLayerMouseEvent } from "maplibre-gl";
+import { LAYER_COLORS } from "@/lib/layer-colors";
+import { MapMarkerPin } from "@/components/map/MapMarkerPin";
 
-export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
-  disasterEvents: "#f59e0b",
-  missingPersons: "#dc2626",
-  tendPoints: "#0ea5e9",
-  policeOffices: "#1d4ed8",
-  poskos: "#2e9e4e",
-  facHealth: "#e11d48",
-  facEducation: "#7c3aed",
-  facGov: "#475569",
-  facReligious: "#0d9488",
-  infraRoadBridge: "#a16207",
-  helipad: "#0891b2",
-  starlink: "#6366f1",
-  citizenReports: "#ea580c",
-};
+export { LAYER_COLORS };
 
 const BUCKET_FILL: Record<string, string> = {
   rendah: "#c7f0d2",
@@ -313,7 +301,7 @@ export function MapViewport({
   );
 
   return (
-    <div className="absolute inset-0 pt-[3.75rem] pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
+    <div className="absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
       <Map
         key={basemap}
         ref={mapRef}
@@ -437,11 +425,10 @@ export function MapViewport({
           const status = f.properties?.status
             ? String(f.properties.status)
             : undefined;
-          const jenisColor =
+          const jenisBencana =
             layer === "disasterEvents"
-              ? DISASTER_JENIS_COLORS[String(f.properties?.jenis_bencana ?? "")] ??
-                LAYER_COLORS.disasterEvents
-              : LAYER_COLORS[layer] ?? "#999";
+              ? String(f.properties?.jenis_bencana ?? "")
+              : null;
           return (
             <Marker
               key={String(f.id ?? `${lng}-${lat}-${title}`)}
@@ -453,11 +440,10 @@ export function MapViewport({
                 setPopup({ lng, lat, title, status });
               }}
             >
-              <button
-                type="button"
-                className="h-3.5 w-3.5 rounded-full border-2 border-white shadow-md ring-1 ring-black/10"
-                style={{ background: jenisColor }}
-                aria-label={title}
+              <MapMarkerPin
+                layer={layer}
+                jenisBencana={jenisBencana}
+                title={title}
               />
             </Marker>
           );

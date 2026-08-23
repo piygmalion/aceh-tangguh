@@ -189,7 +189,246 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
-      profil_desa: {
+      kejadian_bencana: {
+        Row: {
+          id: string;
+          jenis_bencana: string;
+          hari_tanggal: string | null;
+          kabupaten: string | null;
+          kecamatan: string | null;
+          desa: string | null;
+          longitude: number | null;
+          latitude: number | null;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          jenis_bencana: string;
+          hari_tanggal?: string | null;
+          kabupaten?: string | null;
+          kecamatan?: string | null;
+          desa?: string | null;
+          longitude?: number | null;
+          latitude?: number | null;
+          payload: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          jenis_bencana?: string;
+          hari_tanggal?: string | null;
+          kabupaten?: string | null;
+          kecamatan?: string | null;
+          desa?: string | null;
+          longitude?: number | null;
+          latitude?: number | null;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      marker_features: {
+        Row: {
+          id: string;
+          layer: string;
+          title: string | null;
+          status: string | null;
+          kabupaten: string | null;
+          longitude: number;
+          latitude: number;
+          properties: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          layer: string;
+          title?: string | null;
+          status?: string | null;
+          kabupaten?: string | null;
+          longitude: number;
+          latitude: number;
+          properties?: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          layer?: string;
+          title?: string | null;
+          status?: string | null;
+          kabupaten?: string | null;
+          longitude?: number;
+          latitude?: number;
+          properties?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      anggaran_analisis: {
+        Row: {
+          tahun: number;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          tahun: number;
+          payload: Json;
+          updated_at?: string;
+        };
+        Update: {
+          tahun?: number;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      anggaran_kegiatan: {
+        Row: {
+          id: string;
+          tahun: number;
+          nama: string | null;
+          skpd: string | null;
+          fase: string | null;
+          kategori: string | null;
+          total_rp: number | null;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          tahun: number;
+          nama?: string | null;
+          skpd?: string | null;
+          fase?: string | null;
+          kategori?: string | null;
+          total_rp?: number | null;
+          payload: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          tahun?: number;
+          nama?: string | null;
+          skpd?: string | null;
+          fase?: string | null;
+          kategori?: string | null;
+          total_rp?: number | null;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "anggaran_kegiatan_tahun_fkey";
+            columns: ["tahun"];
+            isOneToOne: false;
+            referencedRelation: "anggaran_analisis";
+            referencedColumns: ["tahun"];
+          },
+        ];
+      };
+      publikasi_meta: {
+        Row: {
+          id: number;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          payload: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      publikasi: {
+        Row: {
+          slug: string;
+          title: string;
+          description: string | null;
+          published_at: string | null;
+          tags: string[];
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          slug: string;
+          title: string;
+          description?: string | null;
+          published_at?: string | null;
+          tags?: string[];
+          payload: Json;
+          updated_at?: string;
+        };
+        Update: {
+          slug?: string;
+          title?: string;
+          description?: string | null;
+          published_at?: string | null;
+          tags?: string[];
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      r3p_summary: {
+        Row: {
+          id: number;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          payload: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      irbi_documents: {
+        Row: {
+          key: string;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          key: string;
+          payload: Json;
+          updated_at?: string;
+        };
+        Update: {
+          key?: string;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      data_documents: {
+        Row: {
+          key: string;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          key: string;
+          payload: Json;
+          updated_at?: string;
+        };
+        Update: {
+          key?: string;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+profil_desa: {
         Row: {
           id: string;
           kode_desa_kelurahan: string | null;
@@ -258,6 +497,36 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
+      weather_forecasts: {
+        Row: {
+          kabupaten_kota: string;
+          adm4_code: string | null;
+          payload: Json;
+          source: string;
+          fetched_at: string;
+          expires_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          kabupaten_kota: string;
+          adm4_code?: string | null;
+          payload: Json;
+          source: string;
+          fetched_at: string;
+          expires_at: string;
+          updated_at?: string;
+        };
+        Update: {
+          kabupaten_kota?: string;
+          adm4_code?: string | null;
+          payload?: Json;
+          source?: string;
+          fetched_at?: string;
+          expires_at?: string;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -271,4 +540,14 @@ export type LiveStatsRow = Database["public"]["Tables"]["live_stats"]["Row"];
 export type HazardStatusRow = Database["public"]["Tables"]["hazard_status"]["Row"];
 export type MapLayerRow = Database["public"]["Tables"]["map_layers"]["Row"];
 export type AreaFeatureMetaRow = Database["public"]["Tables"]["area_feature_meta"]["Row"];
+export type KejadianBencanaRow = Database["public"]["Tables"]["kejadian_bencana"]["Row"];
+export type MarkerFeatureRow = Database["public"]["Tables"]["marker_features"]["Row"];
+export type AnggaranAnalisisRow = Database["public"]["Tables"]["anggaran_analisis"]["Row"];
+export type AnggaranKegiatanRow = Database["public"]["Tables"]["anggaran_kegiatan"]["Row"];
+export type PublikasiMetaRow = Database["public"]["Tables"]["publikasi_meta"]["Row"];
+export type PublikasiRow = Database["public"]["Tables"]["publikasi"]["Row"];
+export type R3PSummaryRow = Database["public"]["Tables"]["r3p_summary"]["Row"];
+export type IrbiDocumentRow = Database["public"]["Tables"]["irbi_documents"]["Row"];
+export type DataDocumentRow = Database["public"]["Tables"]["data_documents"]["Row"];
+export type WeatherForecastRow = Database["public"]["Tables"]["weather_forecasts"]["Row"];
 export type ProfilDesaRow = Database["public"]["Tables"]["profil_desa"]["Row"];

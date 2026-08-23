@@ -72,7 +72,7 @@ export type R3PSlideshow = {
 };
 
 export type R3PSummaryResponse = R3PSlideshow & {
-  source: "fixture";
+  source: "supabase" | "fixture";
 };
 
 export function sumRecord(rec: Record<string, number>): number {

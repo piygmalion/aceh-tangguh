@@ -1,13 +1,24 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import type {
+  KejadianArahPeta,
   KejadianFacets,
   KejadianFixture,
   KejadianListResult,
+  KejadianLokasi,
   KejadianQuery,
   KejadianRow,
 } from "./kejadian-types";
 import { isRekapitulasiTahunan } from "./disaster-jenis";
+import {
+  asRecord,
+  fetchAllRows,
+  readDocumentPayload,
+  trySupabaseThenFixture,
+  type DomainSource,
+} from "./supabase/fallback";
+import type { TypedSupabaseClient } from "./supabase/server";
+import type { KejadianBencanaRow } from "./supabase/types";
 
 export type {
   KejadianFacets,
@@ -34,15 +45,11 @@ const MONTHS_ID: Record<string, number> = {
 
 let cache: KejadianFixture | null = null;
 
-export async function loadKejadianFixture(): Promise<KejadianFixture> {
-  if (cache) return cache;
-  const file = path.join(process.cwd(), "public/fixtures/kejadian-bencana.json");
-  const raw = await readFile(file, "utf8");
-  const parsed = JSON.parse(raw) as KejadianFixture;
+function normalizeKejadianFixture(parsed: KejadianFixture): KejadianFixture {
   const kejadian = (parsed.kejadian ?? []).filter(
     (r) => !isRekapitulasiTahunan(r.jenis_bencana)
   );
-  cache = {
+  return {
     ...parsed,
     kejadian,
     metadata: {
@@ -50,7 +57,94 @@ export async function loadKejadianFixture(): Promise<KejadianFixture> {
       total_kejadian_tercatat: kejadian.length,
     },
   };
+}
+
+function kejadianFromRow(row: KejadianBencanaRow): KejadianRow {
+  const payload = asRecord(row.payload);
+  const lokasi = { ...asRecord(payload.lokasi) } as KejadianLokasi;
+  if (row.kabupaten) {
+    lokasi.kabupaten = lokasi.kabupaten || row.kabupaten;
+    lokasi.kabupaten_kota = lokasi.kabupaten_kota || row.kabupaten;
+  }
+  if (row.kecamatan) lokasi.kecamatan = lokasi.kecamatan || row.kecamatan;
+  if (row.desa) lokasi.desa = lokasi.desa || row.desa;
+
+  const arah = { ...asRecord(payload.arah_di_peta) } as KejadianArahPeta;
+  if (row.latitude != null && arah.latitude == null) arah.latitude = row.latitude;
+  if (row.longitude != null && arah.longitude == null) {
+    arah.longitude = row.longitude;
+  }
+
+  const fromPayload = payload as Partial<KejadianRow>;
+  return {
+    ...fromPayload,
+    id: row.id,
+    jenis_bencana:
+      (typeof fromPayload.jenis_bencana === "string" && fromPayload.jenis_bencana) ||
+      row.jenis_bencana,
+    hari_tanggal:
+      (typeof fromPayload.hari_tanggal === "string" && fromPayload.hari_tanggal) ||
+      row.hari_tanggal ||
+      "",
+    lokasi,
+    arah_di_peta: Object.keys(arah).length ? arah : fromPayload.arah_di_peta,
+  };
+}
+
+function fixtureFromDocument(payload: unknown): KejadianFixture | null {
+  const rec = asRecord(payload);
+  if (!Array.isArray(rec.kejadian) || rec.kejadian.length === 0) return null;
+  return normalizeKejadianFixture({
+    metadata: asRecord(rec.metadata),
+    kejadian: rec.kejadian as KejadianRow[],
+  });
+}
+
+async function loadKejadianFromSupabase(
+  client: TypedSupabaseClient
+): Promise<KejadianFixture | null> {
+  const rows = await fetchAllRows<KejadianBencanaRow>((from, to) =>
+    client.from("kejadian_bencana").select("*").range(from, to)
+  );
+
+  if (rows.length > 0) {
+    const snapshot = await readDocumentPayload(client, "data_documents", [
+      "kejadian-bencana",
+      "kejadian_bencana",
+    ]);
+    const snapshotMeta = asRecord(asRecord(snapshot).metadata);
+    return normalizeKejadianFixture({
+      metadata: {
+        ...snapshotMeta,
+        total_kejadian_tercatat: rows.length,
+      },
+      kejadian: rows.map(kejadianFromRow),
+    });
+  }
+
+  const snapshot = await readDocumentPayload(client, "data_documents", [
+    "kejadian-bencana",
+    "kejadian_bencana",
+  ]);
+  return fixtureFromDocument(snapshot);
+}
+
+export async function loadKejadianFixture(): Promise<KejadianFixture> {
+  if (cache) return cache;
+  const file = path.join(process.cwd(), "public/fixtures/kejadian-bencana.json");
+  const raw = await readFile(file, "utf8");
+  cache = normalizeKejadianFixture(JSON.parse(raw) as KejadianFixture);
   return cache;
+}
+
+export async function loadKejadian(): Promise<{
+  data: KejadianFixture;
+  source: DomainSource;
+}> {
+  return trySupabaseThenFixture(loadKejadianFromSupabase, loadKejadianFixture, {
+    label: "kejadian",
+    isEmpty: (value) => value.kejadian.length === 0,
+  });
 }
 
 export function parseHariTanggal(raw: string | undefined | null): {
@@ -203,7 +297,8 @@ function sortKey(row: KejadianRow): number {
 
 export function filterAndPaginateKejadian(
   data: KejadianFixture,
-  query: KejadianQuery
+  query: KejadianQuery,
+  source?: DomainSource
 ): KejadianListResult {
   const pageSize = Math.min(100, Math.max(1, query.pageSize ?? 10));
   const page = Math.max(1, query.page ?? 1);
@@ -247,6 +342,7 @@ export function filterAndPaginateKejadian(
     pageSize,
     facets: buildFacets(data.kejadian),
     meta: data.metadata ?? {},
+    ...(source ? { source } : {}),
   };
 }
 

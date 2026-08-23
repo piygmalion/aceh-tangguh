@@ -12,8 +12,8 @@ coverage
 
 # logs
 logs
-_.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+*.log
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # dotenv environment variable files
 .env
@@ -43,10 +43,10 @@ screenshots/
 _refs/
 *.tgz
 
-# local logs / scratch
-*.log
+# local logs / scratch (Windows helpers)
 page.html
 build-start.bat
 run-start.bat
+run-only-start.bat
 start-dev.bat
-
+patch_flat_icons.py

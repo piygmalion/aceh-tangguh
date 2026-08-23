@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { loadAnggaranFixtures } from "@/lib/anggaran";
+import { loadAnggaran } from "@/lib/anggaran";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const data = await loadAnggaranFixtures();
+  const data = await loadAnggaran();
   return NextResponse.json(data);
 }

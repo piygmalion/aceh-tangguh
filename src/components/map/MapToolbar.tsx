@@ -6,11 +6,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { qk } from "@/lib/qk";
 import type { AreaLayerKey, LegendModel, MarkerLayerKey } from "@/lib/types";
-import { LAYER_COLORS } from "@/components/map/MapViewport";
+import { LAYER_COLORS } from "@/lib/layer-colors";
+import { MapLayerIcon } from "@/components/map/MapLayerIcon";
 import {
   DISASTER_JENIS,
   DISASTER_JENIS_COLORS,
 } from "@/lib/disaster-jenis";
+import {
+  getAreaLayerIconPath,
+  getDisasterJenisIconPath,
+  getLayerIconPath,
+} from "@/lib/layer-icons";
 
 const AREA_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
@@ -89,6 +95,7 @@ export function MapToolbar({
   const [tab, setTab] = useState<TabKey>("lokasi");
   /** Mobile bottom-sheet open state. Desktop panel is always shown via md: classes. */
   const [expanded, setExpanded] = useState(false);
+  const [jenisExpanded, setJenisExpanded] = useState(false);
 
   const { data: areaLegend } = useQuery({
     queryKey: [...qk.area(areaLayer ?? "villageDistribution"), "legend"],
@@ -107,7 +114,7 @@ export function MapToolbar({
 
   return (
     <aside
-      className={`map-chrome-elevated absolute z-30 flex flex-col overflow-hidden transition-[max-height] duration-300 ease-out max-md:inset-x-2 max-md:bottom-2 max-md:rounded-2xl md:bottom-3 md:right-3 md:top-[4.25rem] md:w-[19.5rem] md:max-h-none md:rounded-2xl ${
+      className={`map-chrome-elevated absolute z-30 flex flex-col overflow-hidden transition-[max-height] duration-300 ease-out max-md:inset-x-2 max-md:bottom-2 max-md:rounded-2xl md:bottom-3 md:right-3 md:top-24 md:w-[19.5rem] md:max-h-none md:rounded-2xl ${
         expanded
           ? "max-md:max-h-[min(52vh,28rem)]"
           : "max-md:max-h-[3.35rem]"
@@ -213,6 +220,10 @@ export function MapToolbar({
                     checked={areaLayer === opt.key}
                     onChange={() => onAreaLayerChange(opt.key)}
                   />
+                  <MapLayerIcon
+                    iconSrc={getAreaLayerIconPath(opt.key)}
+                    fallbackColor="#2e9e4e"
+                  />
                   <span>{t(opt.labelKey)}</span>
                 </label>
               ))}
@@ -231,26 +242,66 @@ export function MapToolbar({
                   </legend>
                   {group.options.map((opt) => {
                     const active = markerLayers.includes(opt.key);
+                    const isDisasterEvents = opt.key === "disasterEvents";
                     return (
                       <div key={opt.key}>
-                        <label
-                          className="map-option"
-                          data-active={active ? "true" : "false"}
-                        >
-                          <input
-                            className="map-check"
-                            type="checkbox"
-                            checked={active}
-                            onChange={() => onToggleMarker(opt.key)}
-                          />
-                          <span
-                            className="map-swatch"
-                            style={{ background: LAYER_COLORS[opt.key] }}
-                            aria-hidden
-                          />
-                          <span className="leading-snug">{t(opt.labelKey)}</span>
-                        </label>
-                        {opt.key === "disasterEvents" && (
+                        {isDisasterEvents ? (
+                          <div
+                            className="map-option"
+                            data-active={active ? "true" : "false"}
+                            role="button"
+                            tabIndex={0}
+                            aria-expanded={jenisExpanded}
+                            onClick={() => setJenisExpanded((v) => !v)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setJenisExpanded((v) => !v);
+                              }
+                            }}
+                          >
+                            <input
+                              className="map-check"
+                              type="checkbox"
+                              checked={active}
+                              onChange={() => onToggleMarker(opt.key)}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => e.stopPropagation()}
+                            />
+                            <MapLayerIcon
+                              iconSrc={getLayerIconPath(opt.key)}
+                              fallbackColor={LAYER_COLORS[opt.key]}
+                            />
+                            <span className="min-w-0 flex-1 leading-snug">
+                              {t(opt.labelKey)}
+                            </span>
+                            <ChevronDown
+                              size={16}
+                              className={`shrink-0 text-[var(--text-dim)] transition duration-200 ${
+                                jenisExpanded ? "rotate-180" : ""
+                              }`}
+                              aria-hidden
+                            />
+                          </div>
+                        ) : (
+                          <label
+                            className="map-option"
+                            data-active={active ? "true" : "false"}
+                          >
+                            <input
+                              className="map-check"
+                              type="checkbox"
+                              checked={active}
+                              onChange={() => onToggleMarker(opt.key)}
+                            />
+                            <MapLayerIcon
+                              iconSrc={getLayerIconPath(opt.key)}
+                              fallbackColor={LAYER_COLORS[opt.key]}
+                            />
+                            <span className="leading-snug">{t(opt.labelKey)}</span>
+                          </label>
+                        )}
+                        {isDisasterEvents && jenisExpanded && (
                           <div className="mt-0.5 space-y-0.5 pl-6">
                             {DISASTER_JENIS.map((jenis) => {
                               const childChecked =
@@ -277,10 +328,10 @@ export function MapToolbar({
                                     disabled={!parentDisasterOn}
                                     onChange={() => onToggleDisasterJenis(jenis)}
                                   />
-                                  <span
-                                    className="map-swatch"
-                                    style={{ background: color }}
-                                    aria-hidden
+                                  <MapLayerIcon
+                                    iconSrc={getDisasterJenisIconPath(jenis)}
+                                    fallbackColor={color}
+                                    size="sm"
                                   />
                                   <span className="leading-snug text-[0.8rem]">
                                     {jenis}
@@ -311,13 +362,13 @@ export function MapToolbar({
                         const activeJenis = activeDisasterJenisList(disasterJenis);
                         return activeJenis.map((jenis) => (
                           <li key={`de-${jenis}`} className="flex items-center gap-2.5">
-                            <span
-                              className="map-swatch"
-                              style={{
-                                background:
-                                  DISASTER_JENIS_COLORS[jenis] ??
-                                  LAYER_COLORS.disasterEvents,
-                              }}
+                            <MapLayerIcon
+                              iconSrc={getDisasterJenisIconPath(jenis)}
+                              fallbackColor={
+                                DISASTER_JENIS_COLORS[jenis] ??
+                                LAYER_COLORS.disasterEvents
+                              }
+                              size="sm"
                             />
                             <span>{jenis}</span>
                           </li>
@@ -325,9 +376,10 @@ export function MapToolbar({
                       }
                       return (
                         <li key={key} className="flex items-center gap-2.5">
-                          <span
-                            className="map-swatch"
-                            style={{ background: LAYER_COLORS[key] }}
+                          <MapLayerIcon
+                            iconSrc={getLayerIconPath(key)}
+                            fallbackColor={LAYER_COLORS[key]}
+                            size="sm"
                           />
                           <span>{t(key)}</span>
                         </li>
@@ -338,8 +390,13 @@ export function MapToolbar({
               )}
               {areaLayer && areaLegend && (
                 <div className="map-chrome-inset rounded-xl p-3">
-                  <div className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
-                    {areaLegend.title}
+                  <div className="mb-2 flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+                    <MapLayerIcon
+                      iconSrc={getAreaLayerIconPath(areaLayer)}
+                      fallbackColor="#2e9e4e"
+                      size="sm"
+                    />
+                    <span>{areaLegend.title}</span>
                   </div>
                   <ul className="space-y-2">
                     {areaLegend.items.map((item) => (

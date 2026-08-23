@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useMapUrlState } from "@/hooks/useMapUrlState";
-import { MapTopBar } from "@/components/map/MapTopBar";
+import { SiteNav } from "@/components/SiteNav";
 import { MapToolbar } from "@/components/map/MapToolbar";
 import { MapSettings } from "@/components/map/MapSettings";
 import { MapViewport } from "@/components/map/MapViewport";
@@ -39,7 +39,7 @@ function MapWorkspaceInner() {
           onClose={() => setVillageSelection(null)}
         />
       ) : null}
-      <MapTopBar />
+      <SiteNav />
       <MapToolbar
         areaLayer={state.areaLayer}
         onAreaLayerChange={setAreaLayer}

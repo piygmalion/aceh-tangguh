@@ -1,0 +1,53 @@
+name: Weather refresh
+
+on:
+  schedule:
+    # Every 3 hours (UTC) — aligns with BMKG 2x daily + Open-Meteo updates
+    - cron: "0 */3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build weather snapshot
+        run: node scripts/build-weather-snapshot.mjs
+
+      - name: Commit snapshot if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/fixtures/weather-snapshot.json
+          if git diff --staged --quiet; then
+            echo "No weather changes to commit"
+          else
+            git commit -m "chore(weather): refresh snapshot [automated]"
+            git push
+          fi
+
+  refresh-supabase:
+    runs-on: ubuntu-latest
+    needs: refresh-snapshot
+    if: ${{ vars.WEATHER_REFRESH_URL != '' }}
+    steps:
+      - name: Trigger deployed weather cache refresh
+        env:
+          WEATHER_CRON_SECRET: ${{ secrets.WEATHER_CRON_SECRET }}
+          WEATHER_REFRESH_URL: ${{ vars.WEATHER_REFRESH_URL }}
+        run: |
+          if [ -z "$WEATHER_CRON_SECRET" ]; then
+            echo "WEATHER_CRON_SECRET not set — skip Supabase cache refresh"
+            exit 0
+          fi
+          curl -fsS -X POST "$WEATHER_REFRESH_URL" \
+            -H "Authorization: Bearer $WEATHER_CRON_SECRET" \
+            -H "Content-Type: application/json"
