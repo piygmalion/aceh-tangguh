@@ -77,7 +77,7 @@ export type KegiatanFixture = {
 export type AnggaranApiResponse = {
   analisis: AnalisisAnggaran;
   kegiatan: KegiatanAnggaran[];
-  source: string;
+  source: "supabase" | "fixture";
 };
 
 export type BreakdownView = "fase" | "skpd" | "kategori";

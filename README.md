@@ -41,7 +41,7 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    bun run seed:area-meta
    ```
 
-Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Supabase holds metadata, reports, and live stats. API routes fall back to fixtures/static values if env is missing or a query fails.
+Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kejadian, markers, anggaran, publikasi, R3P, IRBI analysis) is read from Supabase first; loaders fall back to fixtures if env is missing, a query fails, or the table is empty.
 
 ### API endpoints
 
@@ -52,13 +52,16 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Supabase holds m
 | GET | `/api/hazards` | `hazard_status` |
 | GET | `/api/layers/catalog` | enabled `map_layers` by `sort_order` |
 | GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
-| GET | `/api/irbi` | fixture + optional meta merge |
-| GET | `/api/layers/areas/[key]` | GeoJSON fixtures |
-| GET | `/api/layers/markers` | GeoJSON fixtures |
-| GET | `/api/layers/markers/summary` | Fixture layer counts (debug) |
+| GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
+| GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
+| GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture |
+| GET | `/api/layers/markers/summary` | Same as markers (debug counts) |
 | GET | `/api/boundaries` | GeoJSON fixtures |
-| GET | `/api/kejadian` | Fixture `kejadian-bencana.json` (filter/paginate) |
+| GET | `/api/kejadian` | `kejadian_bencana` (filter/paginate), else fixture |
 | GET | `/api/kejadian/[id]` | Single event detail |
+| GET | `/api/anggaran` | `anggaran_analisis` + `anggaran_kegiatan`, else fixture |
+| GET | `/api/publikasi` | `publikasi` + `publikasi_meta`, else fixture |
+| GET | `/api/r3p/summary` | `r3p_summary`, else fixture |
 
 ## Screens
 

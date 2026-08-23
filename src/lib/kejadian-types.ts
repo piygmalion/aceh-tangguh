@@ -86,4 +86,5 @@ export type KejadianListResult = {
   pageSize: number;
   facets: KejadianFacets;
   meta: Record<string, unknown>;
+  source?: "supabase" | "fixture";
 };

@@ -1,15 +1,11 @@
-import { readFile } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
-import type { FeatureCollection } from "geojson";
+import { loadMarkers } from "@/lib/markers";
 
 export const dynamic = "force-dynamic";
 
-/** Lightweight GET: feature counts by `properties.layer` from markers.geojson (debug). */
+/** Lightweight GET: feature counts by `properties.layer`. */
 export async function GET() {
-  const file = path.join(process.cwd(), "public/fixtures/markers.geojson");
-  const raw = await readFile(file, "utf8");
-  const fc = JSON.parse(raw) as FeatureCollection;
+  const fc = await loadMarkers();
   const byLayer: Record<string, number> = {};
   for (const f of fc.features) {
     const key = String(f.properties?.layer ?? "unknown");
@@ -18,6 +14,6 @@ export async function GET() {
   return NextResponse.json({
     total: fc.features.length,
     byLayer,
-    source: "fixtures/markers.geojson",
+    source: fc.source,
   });
 }
