@@ -10,6 +10,11 @@ import {
   type MapViewState,
   type MarkerLayerKey,
 } from "@/lib/types";
+import {
+  DISASTER_JENIS,
+  encodeDisasterJenis,
+  parseDisasterJenis,
+} from "@/lib/disaster-jenis";
 
 const DEFAULT_LAYERS: MarkerLayerKey[] = ["disasterEvents", "facHealth", "citizenReports"];
 
@@ -43,6 +48,7 @@ export function useMapUrlState() {
         : "positron",
       areaLayer: area,
       markerLayers: parseLayers(searchParams.get("layers")),
+      disasterJenis: parseDisasterJenis(searchParams.get("disasterJenis")),
       hazard: (searchParams.get("hazard") as MapUrlState["hazard"]) || undefined,
       cluster: (searchParams.get("cluster") as MapUrlState["cluster"]) || undefined,
       selectedId: searchParams.get("selected") || undefined,
@@ -82,6 +88,23 @@ export function useMapUrlState() {
   const toggleMarkerLayer = useCallback(
     (k: MarkerLayerKey) => {
       const set = new Set(state.markerLayers);
+      if (k === "disasterEvents") {
+        if (set.has(k)) {
+          set.delete(k);
+          push({
+            layers: Array.from(set).join(",") || null,
+            disasterJenis: null,
+          });
+        } else {
+          set.add(k);
+          // Parent ON → all jenis (empty disasterJenis)
+          push({
+            layers: Array.from(set).join(",") || null,
+            disasterJenis: null,
+          });
+        }
+        return;
+      }
       if (set.has(k)) set.delete(k);
       else set.add(k);
       push({ layers: Array.from(set).join(",") || null });
@@ -89,5 +112,47 @@ export function useMapUrlState() {
     [push, state.markerLayers]
   );
 
-  return { state, setView, setBasemap, setAreaLayer, toggleMarkerLayer };
+  const toggleDisasterJenis = useCallback(
+    (jenis: string) => {
+      const parentOn = state.markerLayers.includes("disasterEvents");
+      if (!parentOn) return;
+
+      const all = DISASTER_JENIS as readonly string[];
+      const current = state.disasterJenis;
+      // empty = all active
+      const active = current.length === 0 ? new Set(all) : new Set(current);
+
+      if (active.has(jenis)) {
+        active.delete(jenis);
+        if (active.size === 0) {
+          // Last child off → turn parent off
+          const layers = state.markerLayers.filter((l) => l !== "disasterEvents");
+          push({
+            layers: layers.join(",") || null,
+            disasterJenis: null,
+          });
+          return;
+        }
+      } else {
+        active.add(jenis);
+      }
+
+      // If resulting set equals all jenis, clear param (empty = all)
+      if (active.size === all.length && all.every((j) => active.has(j))) {
+        push({ disasterJenis: null });
+        return;
+      }
+      push({ disasterJenis: encodeDisasterJenis(Array.from(active)) });
+    },
+    [push, state.disasterJenis, state.markerLayers]
+  );
+
+  return {
+    state,
+    setView,
+    setBasemap,
+    setAreaLayer,
+    toggleMarkerLayer,
+    toggleDisasterJenis,
+  };
 }

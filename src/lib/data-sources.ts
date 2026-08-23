@@ -22,7 +22,7 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     license: "Operational compilation — attribute BPBA, BNPB, BMKG, Badan Geologi",
     date: "2021–2026 (snapshot 2026-08-23)",
     format: "JSON → GeoJSON markers (disasterEvents)",
-    usedFor: "Data Utama — map layer Kejadian bencana (~429 points with GPS)",
+    usedFor: "Data Utama — map layer Kejadian bencana (~426 points with GPS; Rekapitulasi Tahunan excluded)",
   },
   {
     id: "fasyankes",

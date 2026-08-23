@@ -24,6 +24,7 @@ import {
   type MarkerLayerKey,
 } from "@/lib/types";
 import type { FeatureCollection, Point } from "geojson";
+import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 
 export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
   disasterEvents: "#f59e0b",
@@ -121,12 +122,14 @@ export function MapViewport({
   basemap,
   markerLayers,
   areaLayer,
+  disasterJenis = [],
 }: {
   view: MapViewState;
   onViewChange: (v: Partial<MapViewState>) => void;
   basemap: BasemapId;
   markerLayers: MarkerLayerKey[];
   areaLayer: AreaLayerKey | null;
+  disasterJenis?: string[];
 }) {
   const mapRef = useRef<MapRef>(null);
   const [popup, setPopup] = useState<{
@@ -145,6 +148,11 @@ export function MapViewport({
     () => [...markerLayers].sort(),
     [markerLayers]
   );
+
+  const disasterJenisSet = useMemo(() => {
+    if (disasterJenis.length === 0) return null; // null = all jenis
+    return new Set(disasterJenis);
+  }, [disasterJenis]);
 
   const pmtilesMeta = areaLayer ? PMTILES_AREA[areaLayer] : undefined;
 
@@ -307,10 +315,19 @@ export function MapViewport({
           if (f.geometry.type !== "Point") return null;
           const [lng, lat] = (f.geometry as Point).coordinates;
           const layer = (f.properties?.layer as MarkerLayerKey) || "disasterEvents";
+          if (layer === "disasterEvents" && disasterJenisSet) {
+            const jenis = String(f.properties?.jenis_bencana ?? "");
+            if (!disasterJenisSet.has(jenis)) return null;
+          }
           const title = String(f.properties?.title ?? "Titik");
           const status = f.properties?.status
             ? String(f.properties.status)
             : undefined;
+          const jenisColor =
+            layer === "disasterEvents"
+              ? DISASTER_JENIS_COLORS[String(f.properties?.jenis_bencana ?? "")] ??
+                LAYER_COLORS.disasterEvents
+              : LAYER_COLORS[layer] ?? "#999";
           return (
             <Marker
               key={String(f.id ?? `${lng}-${lat}-${title}`)}
@@ -325,7 +342,7 @@ export function MapViewport({
               <button
                 type="button"
                 className="h-3.5 w-3.5 rounded-full border-2 border-white shadow-md ring-1 ring-black/10"
-                style={{ background: LAYER_COLORS[layer] ?? "#999" }}
+                style={{ background: jenisColor }}
                 aria-label={title}
               />
             </Marker>

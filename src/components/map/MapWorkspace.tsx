@@ -9,7 +9,7 @@ import { MapViewport } from "@/components/map/MapViewport";
 import { ReportFAB } from "@/components/map/ReportFAB";
 
 function MapWorkspaceInner() {
-  const { state, setView, setBasemap, setAreaLayer, toggleMarkerLayer } = useMapUrlState();
+  const { state, setView, setBasemap, setAreaLayer, toggleMarkerLayer, toggleDisasterJenis } = useMapUrlState();
 
   return (
     <div className="relative h-[100svh] w-full overflow-hidden bg-[var(--bg)] text-[var(--text)]">
@@ -19,6 +19,7 @@ function MapWorkspaceInner() {
         basemap={state.basemap}
         markerLayers={state.markerLayers}
         areaLayer={state.areaLayer}
+        disasterJenis={state.disasterJenis}
       />
       <MapTopBar />
       <MapToolbar
@@ -26,6 +27,8 @@ function MapWorkspaceInner() {
         onAreaLayerChange={setAreaLayer}
         markerLayers={state.markerLayers}
         onToggleMarker={toggleMarkerLayer}
+        disasterJenis={state.disasterJenis}
+        onToggleDisasterJenis={toggleDisasterJenis}
       />
       <MapSettings basemap={state.basemap} onBasemapChange={setBasemap} />
       <ReportFAB />

@@ -79,6 +79,8 @@ export interface MapUrlState {
   basemap: BasemapId;
   areaLayer: AreaLayerKey | null;
   markerLayers: MarkerLayerKey[];
+  /** Active jenis_bencana filters; empty = all jenis when disasterEvents is on. */
+  disasterJenis: string[];
   hazard?: HazardKind;
   cluster?: ClusterId;
   selectedId?: FeatureId;

@@ -7,6 +7,7 @@ import type {
   KejadianQuery,
   KejadianRow,
 } from "./kejadian-types";
+import { isRekapitulasiTahunan } from "./disaster-jenis";
 
 export type {
   KejadianFacets,
@@ -37,7 +38,18 @@ export async function loadKejadianFixture(): Promise<KejadianFixture> {
   if (cache) return cache;
   const file = path.join(process.cwd(), "public/fixtures/kejadian-bencana.json");
   const raw = await readFile(file, "utf8");
-  cache = JSON.parse(raw) as KejadianFixture;
+  const parsed = JSON.parse(raw) as KejadianFixture;
+  const kejadian = (parsed.kejadian ?? []).filter(
+    (r) => !isRekapitulasiTahunan(r.jenis_bencana)
+  );
+  cache = {
+    ...parsed,
+    kejadian,
+    metadata: {
+      ...(parsed.metadata ?? {}),
+      total_kejadian_tercatat: kejadian.length,
+    },
+  };
   return cache;
 }
 
@@ -208,6 +220,7 @@ export function filterAndPaginateKejadian(
   const kecamatan = norm(query.kecamatan);
 
   let filtered = data.kejadian.filter((row) => {
+    if (isRekapitulasiTahunan(row.jenis_bencana)) return false;
     if (jenis && norm(row.jenis_bencana) !== jenis) return false;
     const kab = norm(row.lokasi?.kabupaten || row.lokasi?.kabupaten_kota);
     if (kabupaten && kab !== kabupaten) return false;

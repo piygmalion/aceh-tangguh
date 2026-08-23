@@ -186,6 +186,11 @@ def build_disaster_events():
     features = []
     skipped = 0
     for ev in data.get("kejadian", []):
+        jenis_raw = ev.get("jenis_bencana") or ""
+        # Skip annual recapitulation rows (not point events)
+        if str(jenis_raw).strip() == "Rekapitulasi Tahunan" or "rekapitulasi tahunan" in str(jenis_raw).lower():
+            skipped += 1
+            continue
         arah = ev.get("arah_di_peta") or {}
         lat = to_float(arah.get("latitude"))
         lng = to_float(arah.get("longitude"))
@@ -196,7 +201,7 @@ def build_disaster_events():
         kab = lokasi.get("kabupaten") or lokasi.get("kabupaten_kota")
         pen = ev.get("penanganan") or {}
         status = pen.get("status_proses") or None
-        jenis = ev.get("jenis_bencana") or "Bencana"
+        jenis = jenis_raw or "Bencana"
         title = f"{jenis} — {kab}" if kab else str(jenis)
         kron = ev.get("kronologi") or ""
         if isinstance(kron, str) and len(kron) > 280:

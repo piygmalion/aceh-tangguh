@@ -7,6 +7,10 @@ import { useTranslations } from "next-intl";
 import { qk } from "@/lib/qk";
 import type { AreaLayerKey, LegendModel, MarkerLayerKey } from "@/lib/types";
 import { LAYER_COLORS } from "@/components/map/MapViewport";
+import {
+  DISASTER_JENIS,
+  DISASTER_JENIS_COLORS,
+} from "@/lib/disaster-jenis";
 
 const AREA_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
@@ -61,16 +65,25 @@ async function fetchAreaLegend(key: AreaLayerKey): Promise<LegendModel | null> {
 
 type TabKey = "distribusi" | "lokasi" | "legenda";
 
+function activeDisasterJenisList(disasterJenis: string[]): string[] {
+  if (disasterJenis.length === 0) return [...DISASTER_JENIS];
+  return DISASTER_JENIS.filter((j) => disasterJenis.includes(j));
+}
+
 export function MapToolbar({
   areaLayer,
   onAreaLayerChange,
   markerLayers,
   onToggleMarker,
+  disasterJenis,
+  onToggleDisasterJenis,
 }: {
   areaLayer: AreaLayerKey | null;
   onAreaLayerChange: (k: AreaLayerKey | null) => void;
   markerLayers: MarkerLayerKey[];
   onToggleMarker: (k: MarkerLayerKey) => void;
+  disasterJenis: string[];
+  onToggleDisasterJenis: (jenis: string) => void;
 }) {
   const t = useTranslations("map");
   const [tab, setTab] = useState<TabKey>("lokasi");
@@ -83,6 +96,7 @@ export function MapToolbar({
     enabled: areaLayer != null && tab === "legenda",
   });
 
+  const parentDisasterOn = markerLayers.includes("disasterEvents");
   const activeCount = markerLayers.length + (areaLayer ? 1 : 0);
 
   const tabs: { key: TabKey; label: string }[] = [
@@ -218,24 +232,65 @@ export function MapToolbar({
                   {group.options.map((opt) => {
                     const active = markerLayers.includes(opt.key);
                     return (
-                      <label
-                        key={opt.key}
-                        className="map-option"
-                        data-active={active ? "true" : "false"}
-                      >
-                        <input
-                          className="map-check"
-                          type="checkbox"
-                          checked={active}
-                          onChange={() => onToggleMarker(opt.key)}
-                        />
-                        <span
-                          className="map-swatch"
-                          style={{ background: LAYER_COLORS[opt.key] }}
-                          aria-hidden
-                        />
-                        <span className="leading-snug">{t(opt.labelKey)}</span>
-                      </label>
+                      <div key={opt.key}>
+                        <label
+                          className="map-option"
+                          data-active={active ? "true" : "false"}
+                        >
+                          <input
+                            className="map-check"
+                            type="checkbox"
+                            checked={active}
+                            onChange={() => onToggleMarker(opt.key)}
+                          />
+                          <span
+                            className="map-swatch"
+                            style={{ background: LAYER_COLORS[opt.key] }}
+                            aria-hidden
+                          />
+                          <span className="leading-snug">{t(opt.labelKey)}</span>
+                        </label>
+                        {opt.key === "disasterEvents" && (
+                          <div className="mt-0.5 space-y-0.5 pl-6">
+                            {DISASTER_JENIS.map((jenis) => {
+                              const childChecked =
+                                parentDisasterOn &&
+                                (disasterJenis.length === 0 ||
+                                  disasterJenis.includes(jenis));
+                              const color =
+                                DISASTER_JENIS_COLORS[jenis] ??
+                                LAYER_COLORS.disasterEvents;
+                              return (
+                                <label
+                                  key={jenis}
+                                  className={`map-option ${
+                                    parentDisasterOn
+                                      ? ""
+                                      : "opacity-50"
+                                  }`}
+                                  data-active={childChecked ? "true" : "false"}
+                                >
+                                  <input
+                                    className="map-check"
+                                    type="checkbox"
+                                    checked={childChecked}
+                                    disabled={!parentDisasterOn}
+                                    onChange={() => onToggleDisasterJenis(jenis)}
+                                  />
+                                  <span
+                                    className="map-swatch"
+                                    style={{ background: color }}
+                                    aria-hidden
+                                  />
+                                  <span className="leading-snug text-[0.8rem]">
+                                    {jenis}
+                                  </span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </fieldset>
@@ -251,15 +306,33 @@ export function MapToolbar({
                     {t("lokasi")}
                   </div>
                   <ul className="space-y-2">
-                    {markerLayers.map((key) => (
-                      <li key={key} className="flex items-center gap-2.5">
-                        <span
-                          className="map-swatch"
-                          style={{ background: LAYER_COLORS[key] }}
-                        />
-                        <span>{t(key)}</span>
-                      </li>
-                    ))}
+                    {markerLayers.map((key) => {
+                      if (key === "disasterEvents") {
+                        const activeJenis = activeDisasterJenisList(disasterJenis);
+                        return activeJenis.map((jenis) => (
+                          <li key={`de-${jenis}`} className="flex items-center gap-2.5">
+                            <span
+                              className="map-swatch"
+                              style={{
+                                background:
+                                  DISASTER_JENIS_COLORS[jenis] ??
+                                  LAYER_COLORS.disasterEvents,
+                              }}
+                            />
+                            <span>{jenis}</span>
+                          </li>
+                        ));
+                      }
+                      return (
+                        <li key={key} className="flex items-center gap-2.5">
+                          <span
+                            className="map-swatch"
+                            style={{ background: LAYER_COLORS[key] }}
+                          />
+                          <span>{t(key)}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}
