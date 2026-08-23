@@ -58,35 +58,39 @@ function scrollToCard(scroller: HTMLElement, index: number, smooth: boolean) {
   scroller.scrollTo({ left, behavior: smooth ? "smooth" : "auto" });
 }
 
+const TRACK_COLS =
+  "grid-flow-col gap-2 auto-cols-[calc((100%-0.5rem)_/_2)] sm:auto-cols-[calc((100%-1rem)_/_3)] md:auto-cols-[calc((100%-1.5rem)_/_4)] lg:auto-cols-[calc((100%-2rem)_/_5)]";
+
 function WeatherThumb({ kab }: { kab: WeatherForecastKab }) {
   const precip = kab.current.precipitation_mm;
 
   return (
-    <Link
-      data-weather-card
-      href={{ pathname: "/cuaca", hash: kab.slug }}
-      className="flex min-w-0 snap-start flex-col gap-1 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg)]/80 px-3 py-2.5 transition hover:ring-1 hover:ring-[var(--accent)]"
-    >
-      <div className="flex items-center gap-1.5">
-        <WeatherIcon
-          code={kab.current.weather_code}
-          className="h-4 w-4 shrink-0 text-[var(--accent)]"
-        />
-        <span className="text-lg font-semibold tabular-nums leading-none tracking-tight">
-          {Math.round(kab.current.temperature_c)}°C
+    <div data-weather-card className="min-w-0 snap-start">
+      <Link
+        href={{ pathname: "/cuaca", hash: kab.slug }}
+        className="flex h-full flex-col gap-1 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg)]/80 px-3 py-2.5 transition hover:ring-1 hover:ring-[var(--accent)]"
+      >
+        <div className="flex items-center gap-1.5">
+          <WeatherIcon
+            code={kab.current.weather_code}
+            className="h-4 w-4 shrink-0 text-[var(--accent)]"
+          />
+          <span className="text-lg font-semibold tabular-nums leading-none tracking-tight">
+            {Math.round(kab.current.temperature_c)}°C
+          </span>
+        </div>
+        <span className="truncate text-xs font-medium text-[var(--text)]">
+          {kab.kabupaten_kota}
         </span>
-      </div>
-      <span className="truncate text-xs font-medium text-[var(--text)]">
-        {kab.kabupaten_kota}
-      </span>
-      {precip > 0 ? (
-        <span className="truncate text-[0.65rem] tabular-nums text-[var(--text-dim)]">
-          {precip.toFixed(1)} mm
-        </span>
-      ) : (
-        <span className="h-3" aria-hidden />
-      )}
-    </Link>
+        {precip > 0 ? (
+          <span className="truncate text-[0.65rem] tabular-nums text-[var(--text-dim)]">
+            {precip.toFixed(1)} mm
+          </span>
+        ) : (
+          <span className="h-3" aria-hidden />
+        )}
+      </Link>
+    </div>
   );
 }
 
@@ -249,7 +253,7 @@ export function WeatherStrip() {
         >
           {isLoading ? (
             <div
-              className="grid grid-flow-col gap-2 overflow-hidden auto-cols-[calc((100%-0.5rem)/2)] sm:auto-cols-[calc((100%-1rem)/3)] md:auto-cols-[calc((100%-1.5rem)/4)] lg:auto-cols-[calc((100%-2rem)/5)]"
+              className={`grid overflow-hidden ${TRACK_COLS}`}
               aria-hidden
             >
               {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
@@ -270,7 +274,7 @@ export function WeatherStrip() {
                 aria-roledescription="carousel"
                 aria-label={t("carouselAria")}
                 onScroll={syncIndexFromScroll}
-                className="grid grid-flow-col gap-2 overflow-x-auto scroll-smooth snap-x snap-mandatory overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] auto-cols-[calc((100%-0.5rem)/2)] sm:auto-cols-[calc((100%-1rem)/3)] md:auto-cols-[calc((100%-1.5rem)/4)] lg:auto-cols-[calc((100%-2rem)/5)] [&::-webkit-scrollbar]:hidden"
+                className={`grid overflow-x-auto scroll-smooth snap-x snap-mandatory overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${TRACK_COLS}`}
               >
                 {items.map((kab) => (
                   <WeatherThumb key={kab.slug} kab={kab} />
