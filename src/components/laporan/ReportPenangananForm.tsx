@@ -7,6 +7,7 @@ import { FormFieldRenderer } from "@/components/laporan/FormFieldRenderer";
 import { GpsCapture, type LokasiValue } from "@/components/laporan/GpsCapture";
 import { ReporterFields, type ReporterValue } from "@/components/laporan/ReporterFields";
 import { getPenangananFields } from "@/lib/laporan/definitions";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 
 export function ReportPenangananForm() {
   const t = useTranslations("laporPenanganan");
@@ -47,7 +48,7 @@ export function ReportPenangananForm() {
     }
     setBusy(true);
     try {
-      const res = await fetch("/api/laporan/penanganan", {
+      const res = await fetchPublicApi("/api/laporan/penanganan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

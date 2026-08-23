@@ -13,6 +13,7 @@ import { NumberTicker } from "@/components/ui/number-ticker";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { IrbiHeroPanel } from "@/components/IrbiHeroPanel";
 import { SITE_MEDIA } from "@/lib/media";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { LiveStats } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -20,7 +21,7 @@ import { cn } from "@/lib/utils";
 type HeroTab = "utama" | "peta" | "irbi";
 
 async function fetchLiveStats(): Promise<LiveStats> {
-  const res = await fetch("/api/stats/live");
+  const res = await fetchPublicApi("/api/stats/live");
   if (!res.ok) throw new Error("Failed to load stats");
   return res.json();
 }

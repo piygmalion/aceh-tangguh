@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Chip } from "@/components/ui/Chip";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type {
   PublikasiListItem,
@@ -20,7 +21,7 @@ import type {
 } from "@/lib/publikasi";
 
 async function fetchPublikasiList(): Promise<PublikasiListResponse> {
-  const res = await fetch("/api/publikasi");
+  const res = await fetchPublicApi("/api/publikasi");
   if (!res.ok) throw new Error("publikasi fetch failed");
   return res.json();
 }

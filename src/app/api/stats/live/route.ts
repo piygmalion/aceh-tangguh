@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import type { LiveStats } from "@/lib/types";
 import { createServerClient } from "@/lib/supabase/server";
+import { LIVE_STATS_FALLBACK } from "@/lib/preview/fallbacks";
 
 export const dynamic = "force-dynamic";
 
 const FALLBACK: LiveStats = {
-  activeIncidents: 3,
-  poskoCount: 656,
-  reportsLast24h: 0,
+  ...LIVE_STATS_FALLBACK,
   updatedAt: new Date().toISOString(),
 };
 

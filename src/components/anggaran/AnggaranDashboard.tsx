@@ -16,6 +16,7 @@ import {
 import { ChevronDown, ChevronUp, Search, X } from "lucide-react";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Chip } from "@/components/ui/Chip";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import {
   formatRpCompact,
@@ -56,7 +57,7 @@ type ChartRow = {
 };
 
 async function fetchAnggaran(): Promise<AnggaranApiResponse> {
-  const res = await fetch("/api/anggaran");
+  const res = await fetchPublicApi("/api/anggaran");
   if (!res.ok) throw new Error("anggaran fetch failed");
   return res.json();
 }

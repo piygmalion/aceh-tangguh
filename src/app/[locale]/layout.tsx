@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { StaticPreviewBanner } from "@/components/preview/StaticPreviewBanner";
+import { isStaticExport } from "@/lib/preview/env";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -27,7 +29,10 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
-            <ThemeProvider>{children}</ThemeProvider>
+            <ThemeProvider>
+              {isStaticExport() ? <StaticPreviewBanner /> : null}
+              {children}
+            </ThemeProvider>
           </QueryProvider>
         </NextIntlClientProvider>
       </body>

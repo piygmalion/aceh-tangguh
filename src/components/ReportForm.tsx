@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { Button } from "@/components/ui/Button";
 import type { ReportTopic } from "@/lib/types";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 
 const schema = z.object({
   topic: z.enum([
@@ -57,7 +58,7 @@ export function ReportForm() {
     }
     setBusy(true);
     try {
-      const res = await fetch("/api/reports", {
+      const res = await fetchPublicApi("/api/reports", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),
