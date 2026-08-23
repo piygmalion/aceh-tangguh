@@ -6,11 +6,17 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { qk } from "@/lib/qk";
 import type { AreaLayerKey, LegendModel, MarkerLayerKey } from "@/lib/types";
-import { LAYER_COLORS } from "@/components/map/MapViewport";
+import { LAYER_COLORS } from "@/lib/layer-colors";
+import { MapLayerIcon } from "@/components/map/MapLayerIcon";
 import {
   DISASTER_JENIS,
   DISASTER_JENIS_COLORS,
 } from "@/lib/disaster-jenis";
+import {
+  getAreaLayerIconPath,
+  getDisasterJenisIconPath,
+  getLayerIconPath,
+} from "@/lib/layer-icons";
 
 const AREA_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
@@ -214,6 +220,10 @@ export function MapToolbar({
                     checked={areaLayer === opt.key}
                     onChange={() => onAreaLayerChange(opt.key)}
                   />
+                  <MapLayerIcon
+                    iconSrc={getAreaLayerIconPath(opt.key)}
+                    fallbackColor="#2e9e4e"
+                  />
                   <span>{t(opt.labelKey)}</span>
                 </label>
               ))}
@@ -258,10 +268,9 @@ export function MapToolbar({
                               onClick={(e) => e.stopPropagation()}
                               onKeyDown={(e) => e.stopPropagation()}
                             />
-                            <span
-                              className="map-swatch"
-                              style={{ background: LAYER_COLORS[opt.key] }}
-                              aria-hidden
+                            <MapLayerIcon
+                              iconSrc={getLayerIconPath(opt.key)}
+                              fallbackColor={LAYER_COLORS[opt.key]}
                             />
                             <span className="min-w-0 flex-1 leading-snug">
                               {t(opt.labelKey)}
@@ -285,10 +294,9 @@ export function MapToolbar({
                               checked={active}
                               onChange={() => onToggleMarker(opt.key)}
                             />
-                            <span
-                              className="map-swatch"
-                              style={{ background: LAYER_COLORS[opt.key] }}
-                              aria-hidden
+                            <MapLayerIcon
+                              iconSrc={getLayerIconPath(opt.key)}
+                              fallbackColor={LAYER_COLORS[opt.key]}
                             />
                             <span className="leading-snug">{t(opt.labelKey)}</span>
                           </label>
@@ -320,10 +328,10 @@ export function MapToolbar({
                                     disabled={!parentDisasterOn}
                                     onChange={() => onToggleDisasterJenis(jenis)}
                                   />
-                                  <span
-                                    className="map-swatch"
-                                    style={{ background: color }}
-                                    aria-hidden
+                                  <MapLayerIcon
+                                    iconSrc={getDisasterJenisIconPath(jenis)}
+                                    fallbackColor={color}
+                                    size="sm"
                                   />
                                   <span className="leading-snug text-[0.8rem]">
                                     {jenis}
@@ -354,13 +362,13 @@ export function MapToolbar({
                         const activeJenis = activeDisasterJenisList(disasterJenis);
                         return activeJenis.map((jenis) => (
                           <li key={`de-${jenis}`} className="flex items-center gap-2.5">
-                            <span
-                              className="map-swatch"
-                              style={{
-                                background:
-                                  DISASTER_JENIS_COLORS[jenis] ??
-                                  LAYER_COLORS.disasterEvents,
-                              }}
+                            <MapLayerIcon
+                              iconSrc={getDisasterJenisIconPath(jenis)}
+                              fallbackColor={
+                                DISASTER_JENIS_COLORS[jenis] ??
+                                LAYER_COLORS.disasterEvents
+                              }
+                              size="sm"
                             />
                             <span>{jenis}</span>
                           </li>
@@ -368,9 +376,10 @@ export function MapToolbar({
                       }
                       return (
                         <li key={key} className="flex items-center gap-2.5">
-                          <span
-                            className="map-swatch"
-                            style={{ background: LAYER_COLORS[key] }}
+                          <MapLayerIcon
+                            iconSrc={getLayerIconPath(key)}
+                            fallbackColor={LAYER_COLORS[key]}
+                            size="sm"
                           />
                           <span>{t(key)}</span>
                         </li>
@@ -381,8 +390,13 @@ export function MapToolbar({
               )}
               {areaLayer && areaLegend && (
                 <div className="map-chrome-inset rounded-xl p-3">
-                  <div className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
-                    {areaLegend.title}
+                  <div className="mb-2 flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+                    <MapLayerIcon
+                      iconSrc={getAreaLayerIconPath(areaLayer)}
+                      fallbackColor="#2e9e4e"
+                      size="sm"
+                    />
+                    <span>{areaLegend.title}</span>
                   </div>
                   <ul className="space-y-2">
                     {areaLegend.items.map((item) => (
