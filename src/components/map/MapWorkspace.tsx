@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { useMapUrlState } from "@/hooks/useMapUrlState";
-import { MapTopBar } from "@/components/map/MapTopBar";
+import { SiteNav } from "@/components/SiteNav";
 import { MapToolbar } from "@/components/map/MapToolbar";
 import { MapSettings } from "@/components/map/MapSettings";
 import { MapViewport } from "@/components/map/MapViewport";
@@ -21,7 +21,7 @@ function MapWorkspaceInner() {
         areaLayer={state.areaLayer}
         disasterJenis={state.disasterJenis}
       />
-      <MapTopBar />
+      <SiteNav />
       <MapToolbar
         areaLayer={state.areaLayer}
         onAreaLayerChange={setAreaLayer}

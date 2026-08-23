@@ -217,7 +217,7 @@ export function MapViewport({
   );
 
   return (
-    <div className="absolute inset-0 pt-[3.75rem] pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
+    <div className="absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
       <Map
         key={basemap}
         ref={mapRef}
