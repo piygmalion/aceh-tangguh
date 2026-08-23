@@ -321,9 +321,9 @@ export function orderedPresentKeys(
   const ordered = BY_DOMAIN[domain]
     .map((e) => e.key)
     .filter((key) => set.has(key));
-  for (const key of set) {
+  Array.from(set).forEach((key) => {
     if (!ordered.includes(key)) ordered.push(key);
-  }
+  });
   return ordered;
 }
 
