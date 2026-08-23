@@ -22,19 +22,28 @@ type PanelView = "kecamatan" | "desa-list" | "desa";
 
 async function fetchKecamatan(sel: VillageClickSelection): Promise<KecamatanProfilResponse | null> {
   const params = new URLSearchParams();
-  if (sel.kodeKecamatan) params.set("kode_kecamatan", sel.kodeKecamatan);
   if (sel.kabupaten) params.set("kabupaten", sel.kabupaten);
   if (sel.kecamatan) params.set("kecamatan", sel.kecamatan);
+  if (sel.kodeKecamatan) params.set("kode_kecamatan", sel.kodeKecamatan);
   const res = await fetch(`/api/profil-desa/kecamatan?${params.toString()}`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("kecamatan fetch failed");
   return res.json();
 }
 
-async function fetchDesa(opts: { kode?: string; id?: string }): Promise<DesaProfilResponse | null> {
+async function fetchDesa(opts: {
+  id?: string;
+  kode?: string;
+  nama?: string;
+  kabupaten?: string;
+  kecamatan?: string;
+}): Promise<DesaProfilResponse | null> {
   const params = new URLSearchParams();
-  if (opts.kode) params.set("kode", opts.kode);
   if (opts.id) params.set("id", opts.id);
+  if (opts.kode) params.set("kode", opts.kode);
+  if (opts.nama) params.set("nama", opts.nama);
+  if (opts.kabupaten) params.set("kabupaten", opts.kabupaten);
+  if (opts.kecamatan) params.set("kecamatan", opts.kecamatan);
   const res = await fetch(`/api/profil-desa/desa?${params.toString()}`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("desa fetch failed");
@@ -219,13 +228,17 @@ export function AreaProfilPanel({
 
   const desaQuery = useQuery({
     queryKey: qk.profilDesa({
+      id: activeDesa?.id,
       kode: activeDesa?.kode ?? undefined,
-      id: activeDesa && !activeDesa.kode ? activeDesa.id : undefined,
+      nama: activeDesa?.nama,
     }),
     queryFn: () =>
       fetchDesa({
+        id: activeDesa?.id,
         kode: activeDesa?.kode ?? undefined,
-        id: activeDesa && !activeDesa.kode ? activeDesa.id : undefined,
+        nama: activeDesa?.nama,
+        kabupaten: activeDesa?.kabupaten ?? selection.kabupaten,
+        kecamatan: activeDesa?.kecamatan ?? selection.kecamatan,
       }),
     enabled: view === "desa" && !!activeDesa,
   });

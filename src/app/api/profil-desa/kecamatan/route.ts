@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import { fetchProfilDesaRows } from "@/lib/profil-desa-server";
+import { resolveKecamatanRows } from "@/lib/profil-desa-server";
 import {
   sortDesaItems,
   summarizeRows,
@@ -16,9 +16,9 @@ export async function GET(req: NextRequest) {
   const kabupaten = sp.get("kabupaten")?.trim() || "";
   const kecamatan = sp.get("kecamatan")?.trim() || "";
 
-  if (!kodeKecamatan && !(kabupaten && kecamatan) && !kecamatan) {
+  if (!kodeKecamatan && !kecamatan) {
     return NextResponse.json(
-      { error: "Provide kode_kecamatan or kabupaten+kecamatan" },
+      { error: "Provide kabupaten+kecamatan or kode_kecamatan" },
       { status: 400 }
     );
   }
@@ -28,26 +28,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  let { rows, error } = kodeKecamatan
-    ? await fetchProfilDesaRows(supabase, {
-        kind: "kode_kecamatan",
-        value: kodeKecamatan,
-      })
-    : await fetchProfilDesaRows(supabase, {
-        kind: "kecamatan",
-        kabupaten: kabupaten || undefined,
-        kecamatan,
-      });
-
-  if (!error && rows.length === 0 && kodeKecamatan && (kabupaten || kecamatan)) {
-    const fallback = await fetchProfilDesaRows(supabase, {
-      kind: "kecamatan",
-      kabupaten: kabupaten || undefined,
-      kecamatan,
-    });
-    rows = fallback.rows;
-    error = fallback.error;
-  }
+  const { rows, error } = await resolveKecamatanRows(supabase, {
+    kabupaten,
+    kecamatan,
+    kodeKecamatan,
+  });
 
   if (error) {
     return NextResponse.json({ error }, { status: 502 });

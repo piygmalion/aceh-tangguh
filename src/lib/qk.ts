@@ -22,6 +22,6 @@ export const qk = {
     kecamatan?: string;
     kodeKecamatan?: string;
   }) => ["profil-desa", "kecamatan", params] as const,
-  profilDesa: (params: { kode?: string; id?: string }) =>
+  profilDesa: (params: { kode?: string; id?: string; nama?: string }) =>
     ["profil-desa", "desa", params] as const,
 };

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
-import { fetchProfilDesaRows } from "@/lib/profil-desa-server";
+import { resolveDesaRow } from "@/lib/profil-desa-server";
 import { summarizeRows, type DesaProfilResponse } from "@/lib/profil-desa";
 
 export const dynamic = "force-dynamic";
@@ -9,10 +9,13 @@ export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const kode = sp.get("kode")?.trim() || "";
   const id = sp.get("id")?.trim() || "";
+  const nama = sp.get("nama")?.trim() || "";
+  const kabupaten = sp.get("kabupaten")?.trim() || "";
+  const kecamatan = sp.get("kecamatan")?.trim() || "";
 
-  if (!kode && !id) {
+  if (!kode && !id && !nama) {
     return NextResponse.json(
-      { error: "Provide kode or id" },
+      { error: "Provide id, kode, or nama (+ kabupaten/kecamatan)" },
       { status: 400 }
     );
   }
@@ -22,15 +25,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const { rows, error } = id
-    ? await fetchProfilDesaRows(supabase, { kind: "id", value: id })
-    : await fetchProfilDesaRows(supabase, { kind: "kode_desa", value: kode });
+  const { row, error } = await resolveDesaRow(supabase, {
+    id,
+    kode,
+    nama,
+    kabupaten,
+    kecamatan,
+  });
 
   if (error) {
     return NextResponse.json({ error }, { status: 502 });
   }
-
-  const row = rows[0];
   if (!row) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }

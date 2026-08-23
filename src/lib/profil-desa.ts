@@ -83,6 +83,14 @@ const UNKNOWN_KONDISI = new Set([
   "belum diketahui",
 ]);
 
+/** Live seed values that mean the village is affected even when counts are 0. */
+const IMPACT_KONDISI = new Set([
+  "sebagian_terdampak",
+  "seluruh_terdampak",
+  "terdampak",
+  "terisolir",
+]);
+
 export function asNumber(value: unknown): NullableCount {
   if (typeof value === "number" && Number.isFinite(value)) return value;
   if (typeof value === "string") {
@@ -170,6 +178,11 @@ function isUnknownKondisi(value: string | null | undefined): boolean {
   return UNKNOWN_KONDISI.has(value.trim().toLowerCase());
 }
 
+function isImpactKondisi(value: string | null | undefined): boolean {
+  if (value == null) return false;
+  return IMPACT_KONDISI.has(value.trim().toLowerCase());
+}
+
 export function impactBadge(input: {
   totalRumahRusak: NullableCount;
   korbanMeninggal: NullableCount;
@@ -183,7 +196,8 @@ export function impactBadge(input: {
     (input.korbanMeninggal ?? 0) > 0 ||
     (input.korbanHilang ?? 0) > 0 ||
     (input.kkTerdampak ?? 0) > 0 ||
-    (input.populasiTerdampak ?? 0) > 0;
+    (input.populasiTerdampak ?? 0) > 0 ||
+    input.kondisiKodes.some((k) => isImpactKondisi(k));
   if (hit) return "terdampak";
   const known = input.kondisiKodes.some((k) => !isUnknownKondisi(k ?? null));
   return known ? "tidak_terdampak" : "tidak_diketahui";
@@ -224,15 +238,6 @@ export function badgeFromMetrics(
     populasiTerdampak: metrics.populasi_terdampak,
     kondisiKodes,
   });
-}
-
-export function deriveKodeKecamatan(
-  kodeDesa?: string | null,
-  kodeKecamatan?: string | null
-): string | null {
-  if (kodeKecamatan && kodeKecamatan.trim()) return kodeKecamatan.trim();
-  if (kodeDesa && kodeDesa.trim().length >= 6) return kodeDesa.trim().slice(0, 6);
-  return null;
 }
 
 export function sortDesaItems(items: DesaListItem[]): DesaListItem[] {

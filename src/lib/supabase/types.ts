@@ -210,6 +210,7 @@ export interface Database {
           rumah_rb: number | null;
           total_rumah_rusak: number | null;
           payload: Json | null;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -231,6 +232,7 @@ export interface Database {
           rumah_rb?: number | null;
           total_rumah_rusak?: number | null;
           payload?: Json | null;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -252,6 +254,7 @@ export interface Database {
           rumah_rb?: number | null;
           total_rumah_rusak?: number | null;
           payload?: Json | null;
+          updated_at?: string;
         };
         Relationships: EmptyRelationships;
       };

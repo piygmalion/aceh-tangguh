@@ -25,10 +25,7 @@ import {
 } from "@/lib/types";
 import type { FeatureCollection, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
-import {
-  deriveKodeKecamatan,
-  type VillageClickSelection,
-} from "@/lib/profil-desa";
+import { type VillageClickSelection } from "@/lib/profil-desa";
 import type { FilterSpecification, MapLayerMouseEvent } from "maplibre-gl";
 
 export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
@@ -183,11 +180,9 @@ function readVillageSelection(
   const kodeDesa = props.kode_desa_kelurahan
     ? String(props.kode_desa_kelurahan)
     : undefined;
-  const kodeKecamatan =
-    deriveKodeKecamatan(
-      kodeDesa,
-      props.kode_kecamatan ? String(props.kode_kecamatan) : null
-    ) ?? undefined;
+  const kodeKecamatan = props.kode_kecamatan
+    ? String(props.kode_kecamatan)
+    : undefined;
   return {
     name,
     kabupaten,
