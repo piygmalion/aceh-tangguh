@@ -13,8 +13,10 @@ import { useTranslations } from "next-intl";
 import { Download, MapPin, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { StatusChip } from "@/components/ui/StatusChip";
 import { Link } from "@/i18n/routing";
 import { qk } from "@/lib/qk";
+import { formatStatusLabel, normalizeStatus } from "@/lib/status-vocab";
 import type { KejadianListResult, KejadianRow } from "@/lib/kejadian-types";
 
 type Filters = {
@@ -22,6 +24,7 @@ type Filters = {
   jenis: string;
   kabupaten: string;
   kecamatan: string;
+  status: string;
   from: string;
   to: string;
   page: number;
@@ -33,6 +36,7 @@ const DEFAULT_FILTERS: Filters = {
   jenis: "",
   kabupaten: "",
   kecamatan: "",
+  status: "",
   from: "",
   to: "",
   page: 1,
@@ -46,6 +50,7 @@ function buildQuery(f: Filters, overrides?: Partial<Filters>): string {
   if (merged.jenis) sp.set("jenis", merged.jenis);
   if (merged.kabupaten) sp.set("kabupaten", merged.kabupaten);
   if (merged.kecamatan) sp.set("kecamatan", merged.kecamatan);
+  if (merged.status) sp.set("status", merged.status);
   if (merged.from) sp.set("from", merged.from);
   if (merged.to) sp.set("to", merged.to);
   sp.set("page", String(merged.page));
@@ -104,6 +109,7 @@ function rowsToCsv(rows: KejadianRow[]): string {
     "lokasi",
     "penyebab",
     "kronologi",
+    "status_proses",
     "pengungsi",
     "jiwa_terdampak",
     "kk_terdampak",
@@ -126,6 +132,7 @@ function rowsToCsv(rows: KejadianRow[]): string {
         r.lokasi?.teks_lengkap ?? "",
         r.penyebab ?? "",
         r.kronologi ?? "",
+        normalizeStatus(r.penanganan?.status_proses, "disasterEvents").key,
         r.pengungsi ?? "",
         r.jiwa_terdampak ?? "",
         r.kk_terdampak ?? "",
@@ -171,6 +178,7 @@ const inputClass =
 
 export function KejadianTable() {
   const t = useTranslations("dataBencana");
+  const tStatus = useTranslations("statusVocab");
   const titleId = useId();
   const [draft, setDraft] = useState<Filters>(DEFAULT_FILTERS);
   const [applied, setApplied] = useState<Filters>(DEFAULT_FILTERS);
@@ -186,6 +194,7 @@ export function KejadianTable() {
       jenis: applied.jenis,
       kabupaten: applied.kabupaten,
       kecamatan: applied.kecamatan,
+      status: applied.status,
       from: applied.from,
       to: applied.to,
       page: applied.page,
@@ -352,6 +361,23 @@ export function KejadianTable() {
               ))}
             </select>
           </label>
+          <label className="block text-sm">
+            <span className="mb-1 block text-[var(--text-dim)]">{t("status")}</span>
+            <select
+              className={inputClass}
+              value={draft.status}
+              onChange={(e) => setDraft((f) => ({ ...f, status: e.target.value }))}
+            >
+              <option value="">{t("all")}</option>
+              {(facets?.status ?? []).map((k) => (
+                <option key={k} value={k}>
+                  {formatStatusLabel(normalizeStatus(k, "disasterEvents"), (slug) =>
+                    tStatus(slug)
+                  )}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="block text-sm sm:col-span-2 lg:col-span-1 xl:col-span-1">
             <span className="mb-1 block text-[var(--text-dim)]">{t("search")}</span>
             <input
@@ -482,7 +508,16 @@ export function KejadianTable() {
                       <td className="px-3 py-3 tabular-nums text-[var(--text-dim)]">
                         {no}
                       </td>
-                      <td className="px-3 py-3 font-medium">{row.jenis_bencana}</td>
+                      <td className="px-3 py-3 font-medium">
+                        <div>{row.jenis_bencana}</div>
+                        <div className="mt-1.5">
+                          <StatusChip
+                            raw={row.penanganan?.status_proses}
+                            layer="disasterEvents"
+                            className="px-2 py-0.5 text-[0.65rem]"
+                          />
+                        </div>
+                      </td>
                       <td className="px-3 py-3 whitespace-nowrap">
                         <div>{row.hari_tanggal}</div>
                         {row.jam && row.jam !== "-" ? (
@@ -647,11 +682,16 @@ export function KejadianTable() {
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.penanganan")}</dt>
               <dd className="leading-relaxed">
                 {detail.penanganan?.langkah || "—"}
-                {detail.penanganan?.status_proses ? (
-                  <div className="mt-1 text-xs text-[var(--text-dim)]">
-                    {t("detail.status")}: {detail.penanganan.status_proses}
-                  </div>
-                ) : null}
+                <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-[var(--text-dim)]">
+                    {t("detail.status")}:
+                  </span>
+                  <StatusChip
+                    raw={detail.penanganan?.status_proses}
+                    layer="disasterEvents"
+                    className="px-2 py-0.5 text-[0.65rem]"
+                  />
+                </div>
               </dd>
 
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.foto")}</dt>

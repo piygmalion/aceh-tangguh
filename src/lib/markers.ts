@@ -10,6 +10,7 @@ import {
 } from "./supabase/fallback";
 import type { TypedSupabaseClient } from "./supabase/server";
 import type { MarkerFeatureRow } from "./supabase/types";
+import { applyStatusVocabToProperties } from "./status-vocab";
 
 export type MarkersResponse = FeatureCollection & {
   source: DomainSource;
@@ -34,7 +35,7 @@ function featureFromRow(row: MarkerFeatureRow): Feature<Point> {
       type: "Point",
       coordinates: [row.longitude, row.latitude],
     },
-    properties,
+    properties: applyStatusVocabToProperties(properties),
   };
 }
 
@@ -44,7 +45,17 @@ function asFeatureCollection(payload: unknown): FeatureCollection | null {
     return null;
   }
   if (rec.features.length === 0) return null;
-  return rec as unknown as FeatureCollection;
+  return normalizeMarkerCollection(rec as unknown as FeatureCollection);
+}
+
+function normalizeMarkerCollection(fc: FeatureCollection): FeatureCollection {
+  return {
+    ...fc,
+    features: fc.features.map((f) => ({
+      ...f,
+      properties: applyStatusVocabToProperties(asRecord(f.properties)),
+    })),
+  };
 }
 
 async function loadMarkersFromSupabase(
@@ -85,9 +96,13 @@ export async function loadMarkers(): Promise<MarkersResponse> {
       isEmpty: (value) => !value.features?.length,
     }
   );
-  return {
+  const normalized = normalizeMarkerCollection({
     type: "FeatureCollection",
     features: loaded.data.features ?? [],
+  });
+  return {
+    type: "FeatureCollection",
+    features: normalized.features,
     source: loaded.source,
   };
 }

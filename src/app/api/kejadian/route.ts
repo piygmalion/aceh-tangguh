@@ -19,6 +19,7 @@ export async function GET(req: NextRequest) {
       jenis: sp.get("jenis") ?? undefined,
       kabupaten: sp.get("kabupaten") ?? undefined,
       kecamatan: sp.get("kecamatan") ?? undefined,
+      status: sp.get("status") ?? undefined,
       from: sp.get("from") ?? undefined,
       to: sp.get("to") ?? undefined,
       page: Number.isFinite(page) ? page : 1,
