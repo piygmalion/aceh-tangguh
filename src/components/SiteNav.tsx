@@ -17,7 +17,6 @@ export function SiteNav() {
   const [scrolled, setScrolled] = useState(false);
 
   const items = [
-    { key: "cuaca", href: "/cuaca" as const, label: t("cuaca") },
     { key: "peta", href: "/peta" as const, label: t("peta") },
     { key: "dataBencana", href: "/data-bencana" as const, label: t("dataBencana") },
     { key: "anggaranBencana", href: "/anggaran-bencana" as const, label: t("anggaranBencana") },

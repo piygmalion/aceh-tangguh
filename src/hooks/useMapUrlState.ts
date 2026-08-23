@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   DEFAULT_VIEW,
@@ -10,33 +10,38 @@ import {
   type MapViewState,
   type MarkerLayerKey,
 } from "@/lib/types";
+import { DISASTER_JENIS, encodeDisasterJenis } from "@/lib/disaster-jenis";
 import {
-  DISASTER_JENIS,
-  encodeDisasterJenis,
-  parseDisasterJenis,
-} from "@/lib/disaster-jenis";
+  canonicalMapUrlPatch,
+  parseClusterId,
+  parseHazardKind,
+  resolveMapUrlAliases,
+} from "@/lib/map-url-aliases";
 
-const DEFAULT_LAYERS: MarkerLayerKey[] = ["disasterEvents", "facHealth", "citizenReports"];
-
-function parseLayers(raw: string | null): MarkerLayerKey[] {
-  if (!raw) return DEFAULT_LAYERS;
-  return raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean) as MarkerLayerKey[];
-}
+export { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 
 export function useMapUrlState() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const resolved = useMemo(
+    () =>
+      resolveMapUrlAliases({
+        cluster: searchParams.get("cluster"),
+        hazard: searchParams.get("hazard"),
+        layersRaw: searchParams.get("layers"),
+        disasterJenisRaw: searchParams.get("disasterJenis"),
+        areaRaw: searchParams.get("area"),
+      }),
+    [searchParams]
+  );
+
   const state: MapUrlState = useMemo(() => {
     const lat = Number(searchParams.get("lat") ?? DEFAULT_VIEW.latitude);
     const lng = Number(searchParams.get("lng") ?? DEFAULT_VIEW.longitude);
     const z = Number(searchParams.get("z") ?? DEFAULT_VIEW.zoom);
     const basemap = (searchParams.get("basemap") as BasemapId) || "positron";
-    const area = searchParams.get("area") as AreaLayerKey | null;
     return {
       view: {
         latitude: Number.isFinite(lat) ? lat : DEFAULT_VIEW.latitude,
@@ -46,14 +51,14 @@ export function useMapUrlState() {
       basemap: ["positron", "dark", "satellite", "streets"].includes(basemap)
         ? basemap
         : "positron",
-      areaLayer: area,
-      markerLayers: parseLayers(searchParams.get("layers")),
-      disasterJenis: parseDisasterJenis(searchParams.get("disasterJenis")),
-      hazard: (searchParams.get("hazard") as MapUrlState["hazard"]) || undefined,
-      cluster: (searchParams.get("cluster") as MapUrlState["cluster"]) || undefined,
+      areaLayer: resolved.areaLayer,
+      markerLayers: resolved.markerLayers,
+      disasterJenis: resolved.disasterJenis,
+      hazard: parseHazardKind(searchParams.get("hazard")),
+      cluster: parseClusterId(searchParams.get("cluster")),
       selectedId: searchParams.get("selected") || undefined,
     };
-  }, [searchParams]);
+  }, [resolved, searchParams]);
 
   const push = useCallback(
     (patch: Record<string, string | null>) => {
@@ -111,6 +116,11 @@ export function useMapUrlState() {
     },
     [push, state.markerLayers]
   );
+
+  useEffect(() => {
+    if (!resolved.needsCanonicalSync) return;
+    push(canonicalMapUrlPatch(resolved));
+  }, [push, resolved]);
 
   const toggleDisasterJenis = useCallback(
     (jenis: string) => {

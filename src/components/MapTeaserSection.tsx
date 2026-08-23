@@ -8,9 +8,17 @@ import { BorderBeam } from "@/components/ui/border-beam";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { SITE_MEDIA } from "@/lib/media";
+import { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
+
+const TEASER_CHIP_CLASS: Record<(typeof DEFAULT_LAYERS)[number], string> = {
+  disasterEvents: "bg-amber-500/25 text-amber-100",
+  facHealth: "bg-rose-500/25 text-rose-100",
+  citizenReports: "bg-orange-500/25 text-orange-100",
+};
 
 export function MapTeaserSection() {
   const t = useTranslations("mapTeaser");
+  const tm = useTranslations("map");
   return (
     <section className="section-shell reveal mt-16 md:mt-24">
       <BlurFade inView>
@@ -45,20 +53,19 @@ export function MapTeaserSection() {
                   </span>
                 </div>
                 <p className="mt-8 max-w-sm text-sm leading-relaxed text-white/75">
-                  Lapisan posko, pengungsian, dan laporan warga di atas basemap operasional.
+                  {t("overlay")}
                 </p>
               </div>
 
               <div className="relative z-[1] mt-10 inline-flex flex-wrap gap-2">
-                <span className="rounded-full bg-emerald-500/25 px-3 py-1 text-xs text-emerald-100 backdrop-blur">
-                  Posko
-                </span>
-                <span className="rounded-full bg-sky-500/25 px-3 py-1 text-xs text-sky-100 backdrop-blur">
-                  Pengungsian
-                </span>
-                <span className="rounded-full bg-amber-500/25 px-3 py-1 text-xs text-amber-100 backdrop-blur">
-                  Laporan
-                </span>
+                {DEFAULT_LAYERS.map((key) => (
+                  <span
+                    key={key}
+                    className={`rounded-full px-3 py-1 text-xs backdrop-blur ${TEASER_CHIP_CLASS[key]}`}
+                  >
+                    {tm(key)}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -67,11 +74,11 @@ export function MapTeaserSection() {
                 Toolbar
               </div>
               <div className="space-y-2">
-                <div className="rounded-lg bg-white/10 px-3 py-2.5">Distribusi</div>
+                <div className="rounded-lg bg-white/10 px-3 py-2.5">{tm("distribusi")}</div>
                 <div className="rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-3 py-2.5 text-emerald-100">
-                  Lokasi
+                  {tm("lokasi")}
                 </div>
-                <div className="rounded-lg bg-white/10 px-3 py-2.5">Legenda</div>
+                <div className="rounded-lg bg-white/10 px-3 py-2.5">{tm("legenda")}</div>
               </div>
             </div>
           </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
 import { Chip } from "@/components/ui/Chip";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { WeatherForecastKab } from "@/lib/weather-types";
@@ -88,8 +87,8 @@ export function WeatherKabCardLink({
   forecast: WeatherForecastKab;
 }) {
   return (
-    <Link href={{ pathname: "/cuaca", hash: forecast.slug }} className="block">
+    <a href="#cuaca" className="block">
       <WeatherKabCard forecast={forecast} />
-    </Link>
+    </a>
   );
 }
