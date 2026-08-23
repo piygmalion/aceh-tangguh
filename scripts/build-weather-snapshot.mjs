@@ -1,5 +1,5 @@
 /**
- * Build weather snapshot fixture from Open-Meteo for all 23 kab/kota.
+ * Build weather snapshot for all 23 kab/kota (BMKG when adm4 mapped, else Open-Meteo).
  * Usage: node scripts/build-weather-snapshot.mjs
  */
 import { readFile, writeFile } from "fs/promises";
@@ -30,6 +30,89 @@ const WMO_MAP = {
 
 function wmo(code) {
   return WMO_MAP[code] ?? { id: "Tidak diketahui", en: "Unknown" };
+}
+
+async function fetchBmkg(entry) {
+  if (!entry.adm4) return null;
+  const res = await fetch(
+    `https://api.bmkg.go.id/publik/prakiraan-cuaca?adm4=${entry.adm4}`,
+    { signal: AbortSignal.timeout(20000) },
+  );
+  if (!res.ok) return null;
+  const data = await res.json();
+  const days = data?.data?.[0]?.cuaca;
+  if (!days?.length) return null;
+
+  const slots = [];
+  for (const day of days) {
+    if (Array.isArray(day)) slots.push(...day);
+  }
+  if (!slots.length) return null;
+
+  const now = Date.now();
+  let current = slots[0];
+  let closest = Infinity;
+  for (const slot of slots) {
+    if (!slot.local_datetime) continue;
+    const t = new Date(slot.local_datetime.replace(" ", "T")).getTime();
+    const d = Math.abs(t - now);
+    if (d < closest) {
+      closest = d;
+      current = slot;
+    }
+  }
+
+  const fetchedAt = new Date().toISOString();
+  return {
+    slug: entry.slug,
+    kabupaten_kota: entry.kabupaten_kota,
+    kabupaten_kota_kode: entry.kabupaten_kota_kode,
+    latitude: data.lokasi?.lat ?? entry.latitude,
+    longitude: data.lokasi?.lon ?? entry.longitude,
+    adm2: entry.adm2,
+    adm4: entry.adm4,
+    is_kota: entry.is_kota,
+    current: {
+      temperature_c: current.t ?? 0,
+      humidity_pct: current.hu ?? 0,
+      weather_code: current.weather ?? 0,
+      weather_desc_id: current.weather_desc ?? "Tidak diketahui",
+      weather_desc_en: current.weather_desc_en ?? "Unknown",
+      wind_speed_kmh: current.ws ?? 0,
+      wind_direction_deg: current.wd_deg ?? 0,
+      precipitation_mm: current.tp ?? 0,
+      image_url: current.image,
+    },
+    hourly: slots.slice(0, 24).map((slot) => ({
+      datetime_local: slot.local_datetime ?? "",
+      temperature_c: slot.t ?? 0,
+      precipitation_mm: slot.tp ?? 0,
+      weather_code: slot.weather ?? 0,
+      weather_desc_id: slot.weather_desc ?? "Tidak diketahui",
+      weather_desc_en: slot.weather_desc_en ?? "Unknown",
+    })),
+    daily: days.slice(0, 3).map((daySlots, dayIndex) => {
+      const slotsDay = Array.isArray(daySlots) ? daySlots : [];
+      const temps = slotsDay.map((s) => s.t ?? 0).filter((t) => t > 0);
+      const precip = slotsDay.reduce((sum, s) => sum + (s.tp ?? 0), 0);
+      const mid = slotsDay[Math.floor(slotsDay.length / 2)] ?? slotsDay[0];
+      const date =
+        slotsDay[0]?.local_datetime?.split(" ")[0] ??
+        new Date(Date.now() + dayIndex * 86400000).toISOString().slice(0, 10);
+      return {
+        date,
+        temp_min_c: temps.length ? Math.min(...temps) : 0,
+        temp_max_c: temps.length ? Math.max(...temps) : 0,
+        precipitation_mm: precip,
+        weather_code: mid?.weather ?? 0,
+        weather_desc_id: mid?.weather_desc ?? "Tidak diketahui",
+        weather_desc_en: mid?.weather_desc_en ?? "Unknown",
+      };
+    }),
+    source: "bmkg",
+    fetched_at: fetchedAt,
+    analysis_date: current.analysis_date,
+  };
 }
 
 async function fetchOpenMeteo(entry) {
@@ -115,17 +198,31 @@ async function main() {
   }
 
   const results = [];
+  const providers = new Set();
   for (const entry of registry.kabupaten_kota) {
     process.stdout.write(`Fetching ${entry.slug}...`);
-    const forecast = await fetchOpenMeteo(entry);
+    let forecast = null;
+    if (entry.adm4) {
+      try {
+        forecast = await fetchBmkg(entry);
+        if (forecast) providers.add("bmkg");
+      } catch {
+        /* fallback */
+      }
+      await new Promise((r) => setTimeout(r, 1200));
+    }
+    if (!forecast) {
+      forecast = await fetchOpenMeteo(entry);
+      providers.add("open-meteo");
+      await new Promise((r) => setTimeout(r, 300));
+    }
     const ir = irbiMap.get(entry.kabupaten_kota_kode);
     if (ir) {
       forecast.ir_cuaca_ekstrem = ir.ir_cuaca_ekstrem;
       forecast.kelas_cuaca_ekstrem = ir.kelas_cuaca_ekstrem;
     }
     results.push(forecast);
-    console.log(" OK");
-    await new Promise((r) => setTimeout(r, 300));
+    console.log(` ${forecast.source}`);
   }
 
   const snapshot = {
@@ -133,7 +230,7 @@ async function main() {
       total_kabupaten_kota: results.length,
       fetched_at: new Date().toISOString(),
       source: "fixture",
-      providers: ["open-meteo"],
+      providers: Array.from(providers),
     },
     kabupaten_kota: results,
   };
