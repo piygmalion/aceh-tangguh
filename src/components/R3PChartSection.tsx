@@ -25,7 +25,7 @@ import {
   sumRecord,
   type R3PKabRow,
   type R3PSummaryResponse,
-} from "@/lib/r3p-summary";
+} from "@/lib/r3p-types";
 
 const SLIDE_IDS = [
   "rumah",
