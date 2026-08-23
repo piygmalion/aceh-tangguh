@@ -428,6 +428,36 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
+      weather_forecasts: {
+        Row: {
+          kabupaten_kota: string;
+          adm4_code: string | null;
+          payload: Json;
+          source: string;
+          fetched_at: string;
+          expires_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          kabupaten_kota: string;
+          adm4_code?: string | null;
+          payload: Json;
+          source: string;
+          fetched_at: string;
+          expires_at: string;
+          updated_at?: string;
+        };
+        Update: {
+          kabupaten_kota?: string;
+          adm4_code?: string | null;
+          payload?: Json;
+          source?: string;
+          fetched_at?: string;
+          expires_at?: string;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -450,3 +480,4 @@ export type PublikasiRow = Database["public"]["Tables"]["publikasi"]["Row"];
 export type R3PSummaryRow = Database["public"]["Tables"]["r3p_summary"]["Row"];
 export type IrbiDocumentRow = Database["public"]["Tables"]["irbi_documents"]["Row"];
 export type DataDocumentRow = Database["public"]["Tables"]["data_documents"]["Row"];
+export type WeatherForecastRow = Database["public"]["Tables"]["weather_forecasts"]["Row"];

@@ -177,6 +177,20 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9",
   },
   {
+    id: "weather-forecast",
+    titleId: "Perkiraan cuaca 23 kab/kota",
+    titleEn: "Weather forecast — 23 districts/cities",
+    source:
+      "Open-Meteo API (lat/lng) + BMKG Prakiraan Cuaca Terbuka (adm4 when mapped)",
+    license:
+      "Open-Meteo CC BY 4.0; BMKG open data — attribution required",
+    date: "Live + snapshot fixture",
+    format: "JSON API + weather-snapshot.json",
+    usedFor:
+      "Perkiraan Cuaca page and homepage strip — 23 kabupaten/kota in Aceh",
+    href: "https://open-meteo.com/",
+  },
+  {
     id: "unsplash-media",
     titleId: "Media visual (Unsplash / stock)",
     titleEn: "Visual media (Unsplash / stock)",
