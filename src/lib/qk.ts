@@ -10,4 +10,7 @@ export const qk = {
   feature: (id: FeatureId) => ["features", id] as const,
   reportTopics: ["reports", "topics"] as const,
   irbi: ["irbi", "2025"] as const,
+  kejadian: (params: Record<string, string | number | undefined>) =>
+    ["kejadian", params] as const,
+  kejadianDetail: (id: string) => ["kejadian", "detail", id] as const,
 };

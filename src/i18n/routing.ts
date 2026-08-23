@@ -9,6 +9,10 @@ export const routing = defineRouting({
     "/": "/",
     "/peta": "/peta",
     "/lapor": "/lapor",
+    "/data-bencana": {
+      id: "/data-bencana",
+      en: "/disaster-data",
+    },
     "/sumber-data": {
       id: "/sumber-data",
       en: "/data-sources",

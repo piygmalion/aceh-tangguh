@@ -57,6 +57,8 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Supabase holds m
 | GET | `/api/layers/markers` | GeoJSON fixtures |
 | GET | `/api/layers/markers/summary` | Fixture layer counts (debug) |
 | GET | `/api/boundaries` | GeoJSON fixtures |
+| GET | `/api/kejadian` | Fixture `kejadian-bencana.json` (filter/paginate) |
+| GET | `/api/kejadian/[id]` | Single event detail |
 
 ## Screens
 
@@ -65,9 +67,10 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Supabase holds m
 | id | `/id` homepage |
 | id | `/id/peta` map |
 | id | `/id/lapor` report form |
+| id | `/id/data-bencana` disaster events table |
 | id | `/id/sumber-data` data sources |
 | id | `/id/metodologi` methodology |
-| en | `/en/data-sources`, `/en/methodology` (localized pathnames) |
+| en | `/en/disaster-data`, `/en/data-sources`, `/en/methodology` (localized pathnames) |
 
 ## Rebuild PMTiles
 
