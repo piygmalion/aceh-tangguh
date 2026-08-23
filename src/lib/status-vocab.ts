@@ -1,12 +1,20 @@
 /**
- * Canonical marker / kejadian status vocabulary.
+ * Canonical marker / kejadian `properties.status` vocabulary.
  *
  * Per-domain sets (not one mega-enum). Clear aliases fold at read;
  * semantically different values stay distinct.
  *
+ * Scope: map popup display + optional fixture alias rewrite. There is no
+ * marker-status filter enum in the map UI — the map only shows status.
+ *
+ * Leave these other status enums alone (different domains):
+ * - Admin reports: all | queued | published | rejected
+ * - Penanganan form: terpenuhi | parsial | belum_terpenuhi
+ * - Desa impact badge: terdampak | tidak_terdampak | tidak_diketahui
+ *
  * Health `operasional` / `tidak_operasional` is a binary scale and is NOT
- * merged with the 5-level ops family (`operasional_penuh`, …). Map popup and
- * filters currently display raw strings — they do not treat the two as the same.
+ * merged with the 5-level ops family (`operasional_penuh`, …). Verified:
+ * map/UI never treated those as the same.
  */
 
 import type { MarkerLayerKey } from "@/lib/types";
