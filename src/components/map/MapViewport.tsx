@@ -25,6 +25,11 @@ import {
 } from "@/lib/types";
 import type { FeatureCollection, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
+import {
+  deriveKodeKecamatan,
+  type VillageClickSelection,
+} from "@/lib/profil-desa";
+import type { FilterSpecification, MapLayerMouseEvent } from "maplibre-gl";
 
 export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
   disasterEvents: "#f59e0b",
@@ -116,6 +121,83 @@ async function pmtilesExists(path: string): Promise<boolean> {
   }
 }
 
+function highlightFilter(sel: VillageClickSelection | null): FilterSpecification {
+  if (!sel) return ["==", ["get", "name"], "__none__"];
+  const byName: FilterSpecification = [
+    "all",
+    ["==", ["get", "name"], sel.name],
+    ["==", ["get", "kecamatan"], sel.kecamatan],
+  ];
+  if (!sel.kodeDesa) return byName;
+  return [
+    "any",
+    ["==", ["get", "kode_desa_kelurahan"], sel.kodeDesa],
+    byName,
+  ];
+}
+
+function AreaHighlightLayers({
+  sourceLayer,
+  selection,
+}: {
+  sourceLayer?: string;
+  selection: VillageClickSelection | null;
+}) {
+  const filter = highlightFilter(selection);
+  const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
+  return (
+    <>
+      <Layer
+        id="area-highlight-fill"
+        type="fill"
+        {...layerProps}
+        filter={filter}
+        paint={{
+          "fill-color": "#f59e0b",
+          "fill-opacity": 0.22,
+        }}
+      />
+      <Layer
+        id="area-highlight-line"
+        type="line"
+        {...layerProps}
+        filter={filter}
+        paint={{
+          "line-color": "#ea580c",
+          "line-width": 2.25,
+          "line-opacity": 0.95,
+        }}
+      />
+    </>
+  );
+}
+
+function readVillageSelection(
+  props: Record<string, unknown> | null | undefined
+): VillageClickSelection | null {
+  if (!props) return null;
+  const name = String(props.name ?? "").trim();
+  const kabupaten = String(props.kabupaten ?? "").trim();
+  const kecamatan = String(props.kecamatan ?? "").trim();
+  if (!name && !kecamatan && !kabupaten) return null;
+  const kodeDesa = props.kode_desa_kelurahan
+    ? String(props.kode_desa_kelurahan)
+    : undefined;
+  const kodeKecamatan =
+    deriveKodeKecamatan(
+      kodeDesa,
+      props.kode_kecamatan ? String(props.kode_kecamatan) : null
+    ) ?? undefined;
+  return {
+    name,
+    kabupaten,
+    kecamatan,
+    kodeDesa,
+    kodeKecamatan,
+    level: props.level ? String(props.level) : "desa",
+  };
+}
+
 export function MapViewport({
   view,
   onViewChange,
@@ -123,6 +205,8 @@ export function MapViewport({
   markerLayers,
   areaLayer,
   disasterJenis = [],
+  villageSelection = null,
+  onVillageClick,
 }: {
   view: MapViewState;
   onViewChange: (v: Partial<MapViewState>) => void;
@@ -130,6 +214,8 @@ export function MapViewport({
   markerLayers: MarkerLayerKey[];
   areaLayer: AreaLayerKey | null;
   disasterJenis?: string[];
+  villageSelection?: VillageClickSelection | null;
+  onVillageClick?: (sel: VillageClickSelection) => void;
 }) {
   const mapRef = useRef<MapRef>(null);
   const [popup, setPopup] = useState<{
@@ -138,7 +224,9 @@ export function MapViewport({
     title: string;
     status?: string;
   } | null>(null);
+  const [cursor, setCursor] = useState<string>("auto");
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const villageClickEnabled = areaLayer === "villageDistribution";
 
   useEffect(() => {
     ensurePmtilesProtocol();
@@ -202,6 +290,19 @@ export function MapViewport({
     return `pmtiles://${abs}`;
   }, [usePmtiles, pmtilesMeta]);
 
+  const onAreaClick = useCallback(
+    (e: MapLayerMouseEvent) => {
+      if (!villageClickEnabled || !onVillageClick) return;
+      const feature = e.features?.find((f) => f.layer?.id === "area-fill");
+      if (!feature) return;
+      const sel = readVillageSelection(
+        feature.properties as Record<string, unknown> | null
+      );
+      if (sel) onVillageClick(sel);
+    },
+    [villageClickEnabled, onVillageClick]
+  );
+
   const onMoveEnd = useCallback(
     (e: ViewStateChangeEvent) => {
       if (moveTimer.current) clearTimeout(moveTimer.current);
@@ -224,6 +325,15 @@ export function MapViewport({
         initialViewState={view}
         mapStyle={BASEMAP_STYLES[basemap] as never}
         style={{ width: "100%", height: "100%", background: "#d4dce4" }}
+        cursor={cursor as never}
+        interactiveLayerIds={villageClickEnabled ? ["area-fill"] : []}
+        onClick={onAreaClick}
+        onMouseEnter={
+          villageClickEnabled ? () => setCursor("pointer") : undefined
+        }
+        onMouseLeave={
+          villageClickEnabled ? () => setCursor("auto") : undefined
+        }
         onMoveEnd={onMoveEnd}
         attributionControl
         reuseMaps={false}
@@ -271,6 +381,12 @@ export function MapViewport({
                 "line-opacity": 0.75,
               }}
             />
+            {villageClickEnabled && (
+              <AreaHighlightLayers
+                sourceLayer={pmtilesMeta.sourceLayer}
+                selection={villageSelection}
+              />
+            )}
           </Source>
         )}
         {!usePmtiles && areaGeojson && (
@@ -309,6 +425,9 @@ export function MapViewport({
                 "line-opacity": 0.75,
               }}
             />
+            {villageClickEnabled && (
+              <AreaHighlightLayers selection={villageSelection} />
+            )}
           </Source>
         )}
         {data?.features.map((f) => {

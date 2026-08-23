@@ -59,6 +59,9 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Supabase holds m
 | GET | `/api/boundaries` | GeoJSON fixtures |
 | GET | `/api/kejadian` | Fixture `kejadian-bencana.json` (filter/paginate) |
 | GET | `/api/kejadian/[id]` | Single event detail |
+| GET | `/api/profil-desa/kecamatan` | Supabase `profil_desa` kecamatan aggregate (`?kabupaten=&kecamatan=` or `?kode_kecamatan=`) |
+| GET | `/api/profil-desa/desa` | Single desa (`?kode=` or `?id=`) |
+| GET | `/api/profil-desa/kabupaten` | Optional kabupaten rollup (`?kabupaten=` or `?kode_kabupaten=`) |
 
 ## Screens
 

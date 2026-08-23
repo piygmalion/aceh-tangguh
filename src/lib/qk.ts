@@ -17,4 +17,11 @@ export const qk = {
   publikasi: ["publikasi", "btt"] as const,
   publikasiDetail: (slug: string) => ["publikasi", "detail", slug] as const,
   r3pSummary: ["r3p", "summary"] as const,
+  profilKecamatan: (params: {
+    kabupaten?: string;
+    kecamatan?: string;
+    kodeKecamatan?: string;
+  }) => ["profil-desa", "kecamatan", params] as const,
+  profilDesa: (params: { kode?: string; id?: string }) =>
+    ["profil-desa", "desa", params] as const,
 };

@@ -11,4 +11,5 @@ export type {
   HazardStatusRow,
   MapLayerRow,
   AreaFeatureMetaRow,
+  ProfilDesaRow,
 } from "./types";
