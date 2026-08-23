@@ -1,0 +1,100 @@
+# Aceh Tangguh
+
+MVP scaffold: Mandum-inspired homepage × Tanggapi-inspired map.
+
+Inspired-by only. Does **not** copy AGPL Mandum source — patterns only, own implementation.
+
+## Stack
+
+- Next.js 14 + React 18 + TypeScript
+- Tailwind CSS 3
+- next-intl (id, en) with localized pathnames
+- MapLibre + react-map-gl + PMTiles
+- TanStack Query + Zod + lucide-react + Recharts
+
+## Run
+
+```
+cd /workspace/aceh-tangguh
+bun install
+bun run dev
+```
+
+Build: `bun run build`
+
+
+## Supabase backend
+
+Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
+
+1. Copy `.env.example` → `.env.local` and set:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (legacy anon JWT for `@supabase/supabase-js`)
+2. Install & build:
+   ```
+   bun install
+   bun run build
+   ```
+3. Schema documentation: `supabase/migrations/20260823_init_aceh_tangguh_backend.sql`
+4. Seed area feature metadata from fixtures (needs service role or SQL admin; anon is SELECT-only on `area_feature_meta`):
+   ```
+   bun run seed:area-meta
+   ```
+
+Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Supabase holds metadata, reports, and live stats. API routes fall back to fixtures/static values if env is missing or a query fails.
+
+### API endpoints
+
+| Method | Path | Source |
+|--------|------|--------|
+| GET/POST | `/api/reports` | Supabase `reports` |
+| GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
+| GET | `/api/hazards` | `hazard_status` |
+| GET | `/api/layers/catalog` | enabled `map_layers` by `sort_order` |
+| GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
+| GET | `/api/irbi` | fixture + optional meta merge |
+| GET | `/api/layers/areas/[key]` | GeoJSON fixtures |
+| GET | `/api/layers/markers` | GeoJSON fixtures |
+| GET | `/api/boundaries` | GeoJSON fixtures |
+
+## Screens
+
+| Locale | Path |
+|--------|------|
+| id | `/id` homepage |
+| id | `/id/peta` map |
+| id | `/id/lapor` report form |
+| id | `/id/sumber-data` data sources |
+| id | `/id/metodologi` methodology |
+| en | `/en/data-sources`, `/en/methodology` (localized pathnames) |
+
+## Rebuild PMTiles
+
+Requires [tippecanoe](https://github.com/felt/tippecanoe) (`sudo apt install tippecanoe`).
+
+```
+bun run build:tiles
+# or: bash scripts/build-pmtiles.sh
+```
+
+Outputs:
+
+- `public/tiles/r3p-kab.pmtiles` — from `fixtures/areas/r3pDistribution.geojson`
+- `public/tiles/village-r3p.pmtiles` — from `fixtures/areas/villageDistribution.geojson` (simplified)
+- `public/tiles/irbi-2025.pmtiles` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
+
+`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON.
+
+## IRBI 2025
+
+Rebuild kab GeoJSON + legend + raw fixture (exact name join 23/23 onto `r3pDistribution`):
+
+```
+python3 scripts/build-irbi-fixtures.py [/path/to/risiko_bencana_aceh_irbi_2025.json]
+```
+
+Homepage hero tabs: **Utama** · **Peta** · **Irbi 2025**. Map deep-link: `/id/peta?area=irbi2025&basemap=positron`. Analysis API: `GET /api/irbi`.
+
+## Planning docs
+
+`/workspace/aceh-kebencanaan-*.md`

@@ -1,0 +1,241 @@
+{
+  "meta": {
+    "title": "Aceh Tangguh",
+    "description": "Aceh disaster observatory & response"
+  },
+  "nav": {
+    "peta": "Map",
+    "data": "Data",
+    "publikasi": "Publications",
+    "lapor": "Report",
+    "home": "Home",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "sumberData": "Data sources",
+    "metodologi": "Methodology"
+  },
+  "hero": {
+    "title": "Aceh resilience starts with visible data",
+    "subtitle": "An open disaster observatory and response surface for the public and operators in Aceh.",
+    "ctaPeta": "Open map",
+    "ctaLapor": "Report an incident",
+    "chipIncidents": "active incidents",
+    "chipPosko": "posts",
+    "chipReports": "reports / 24h",
+    "tabs": {
+      "utama": "Home",
+      "peta": "Map",
+      "irbi": "Irbi 2025",
+      "aria": "Hero tabs"
+    },
+    "petaTab": {
+      "heading": "One operational map for Aceh",
+      "lead": "Kab/village choropleths, shelter & posko points, plus the IRBI 2025 layer — from the observatory.",
+      "cta": "Open map",
+      "ctaIrbi": "Open IRBI map"
+    }
+  },
+  "clusters": {
+    "heading": "Six response clusters",
+    "lead": "Jump into the map with a relevant cluster filter.",
+    "sar": {
+      "title": "SAR",
+      "desc": "Search and rescue"
+    },
+    "logistik": {
+      "title": "Logistics",
+      "desc": "Aid & stock distribution"
+    },
+    "pengungsian": {
+      "title": "Displacement",
+      "desc": "Posts and shelter points"
+    },
+    "kesehatan": {
+      "title": "Health",
+      "desc": "Health facilities & services"
+    },
+    "pendidikan": {
+      "title": "Education",
+      "desc": "Schools & emergency learning"
+    },
+    "pemulihan": {
+      "title": "Recovery",
+      "desc": "Rehab-recon & economic recovery"
+    }
+  },
+  "mapTeaser": {
+    "heading": "All data, one map",
+    "lead": "Posts, shelters, citizen reports, and Aceh admin boundaries.",
+    "cta": "Open full map"
+  },
+  "participation": {
+    "heading": "Public participation",
+    "sla": "Reports are moderated before appearing on the public map (target SLA < 24h).",
+    "step1": {
+      "title": "Report",
+      "body": "Submit topic, location, and description."
+    },
+    "step2": {
+      "title": "Moderation",
+      "body": "Officers verify and follow up."
+    },
+    "step3": {
+      "title": "On the map",
+      "body": "Approved reports appear as points on /peta."
+    },
+    "cta": "Report an incident"
+  },
+  "transparency": {
+    "heading": "Data transparency",
+    "c1": {
+      "title": "Open data",
+      "body": "Public layers are available without login.",
+      "cta": "View data sources"
+    },
+    "c2": {
+      "title": "Clickable claims",
+      "body": "Every stat links to a related map layer.",
+      "cta": "Open map"
+    },
+    "c3": {
+      "title": "Clear sources",
+      "body": "Methodology and disclaimers support audit.",
+      "cta": "Read methodology"
+    }
+  },
+  "footer": {
+    "credit": "Placeholder BPBD / Kominsa Aceh — final brand TBD",
+    "jelajah": "Explore",
+    "legal": "Legal"
+  },
+  "map": {
+    "title": "Aceh Tangguh · Map",
+    "distribusi": "Distribution",
+    "lokasi": "Locations",
+    "legenda": "Legend",
+    "settings": "Settings",
+    "basemap": "Basemap",
+    "theme": "Theme",
+    "reportFab": "Report",
+    "poskos": "Posts",
+    "tendPoints": "Shelter points",
+    "citizenReports": "Citizen reports",
+    "missingPersons": "Missing persons",
+    "policeOffices": "Police offices",
+    "facHealth": "Health facilities",
+    "facEducation": "Education facilities",
+    "facGov": "Government facilities",
+    "facReligious": "Religious facilities",
+    "infraRoadBridge": "Roads & bridges",
+    "helipad": "Helipads",
+    "starlink": "Starlink",
+    "groupMain": "Core data",
+    "groupFacilities": "Facilities",
+    "groupInfra": "Infrastructure",
+    "groupParticipation": "Participation",
+    "villageDistribution": "Village distribution",
+    "r3pDistribution": "R3P distribution",
+    "ngoDistribution": "NGO distribution",
+    "regencyFundAllocation": "Regency fund allocation",
+    "legendEmpty": "Enable location or distribution layers to see the legend.",
+    "areaOff": "Off",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "toolbarOpen": "Open layers panel",
+    "toolbarClose": "Close layers panel",
+    "toolbarHandle": "Layers panel",
+    "more": "More",
+    "activeLayers": "{count} active layers",
+    "closeSettings": "Close settings",
+    "subtitle": "Operational observatory",
+    "irbi2025": "IRBI 2025 (kab risk)"
+  },
+  "lapor": {
+    "title": "Report an incident",
+    "subtitle": "Submit a citizen report for moderation.",
+    "topic": "Topic",
+    "description": "Description",
+    "placeName": "Place name (optional)",
+    "consent": "I agree this report may appear on the public map after approval",
+    "submit": "Submit report",
+    "success": "Report queued for moderation."
+  },
+  "hazards": {
+    "label": "Hazard status",
+    "error": "Failed to load status"
+  },
+  "sumberData": {
+    "title": "Data sources",
+    "lead": "Datasets, boundaries, basemaps, and media used by Aceh Tangguh. Catalogued from the Drive → app fixture pipeline.",
+    "source": "Source",
+    "license": "License",
+    "date": "Date / version",
+    "format": "Format",
+    "usedFor": "Used for",
+    "link": "Link",
+    "disclaimer": "Internal operational spreadsheets are not republished as raw downloads here. Public map layers are available through the app APIs. Join methodology is documented on the Methodology page.",
+    "backHome": "Home",
+    "seeMetodologi": "Methodology"
+  },
+  "metodologi": {
+    "title": "Methodology",
+    "lead": "How we join R3P damage figures to kab/kota and village geometries — rewritten from the Aceh Tangguh inventory pipeline, not copied from other projects.",
+    "backHome": "Home",
+    "seeSumber": "Data sources",
+    "s1": {
+      "title": "R3P damage aggregation",
+      "body": "Choropleth values come from Compiled R3P: light, moderate, and heavy housing damage (RR+RS+RB) rolled up by kab/kota and by village. At kab level, village rows aggregate to all 23 Aceh kab/kota; every Drive kab matched a GADM polygon."
+    },
+    "s2": {
+      "title": "Name normalization",
+      "body": "Before matching, desa and kecamatan names are cleaned: prefixes such as Gp, Gampong, Desa, Kel, Meunasah, Mns, and Dusun are stripped; local abbreviations (MT, GLP, KR) expanded; Acehnese spellings unified (e.g. glumpang/glmpang, lhok→lok, oe→ue, baroh→baro, kuta/kute→kota); Roman and Arabic numerals aligned; parenthetical notes dropped. When two R3P rows collide on the same key, the higher-damage row wins."
+    },
+    "s3": {
+      "title": "Village geometry join",
+      "body": "Primary geometry comes from Indonesian village borders for Aceh, with GADM admin4 fill-ins where needed. Matching is staged: kab+kec+desa, then kab+desa, then fuzzy within kab+kec and kab (score ≥86, near-ties rejected), plus a small manual alias map. R3P village codes are not crosswalked to GADM/Kemendagri codes because kab numbering schemes differ. After tuning, about 98.5% of R3P village rows link to geometry, with 100% damage-value coverage."
+    },
+    "s4": {
+      "title": "Terciles / color buckets",
+      "body": "Positive values are split into three buckets (low / medium / high) using tercile thresholds. For kab: roughly 1,362 and 10,795. For villages: roughly 106 and 1,184. Those buckets drive polygon fill colors on the map."
+    },
+    "s5": {
+      "title": "Limits & updates",
+      "body": "A small set of village names remains unmatched (ambiguous names or no reliable geometry). The Drive inventory is rebuilt via local scripts; map layers ship as GeoJSON APIs, with optional PMTiles vector tiles for performance. Homepage and map figures follow the deployed fixture snapshot."
+    }
+  },
+  "r3pChart": {
+    "heading": "R3P housing damage by kab/kota",
+    "lead": "Top ten kab/kota by combined RR+RS+RB from the Compiled R3P snapshot.",
+    "unit": "homes",
+    "loading": "Loading chart…",
+    "error": "Failed to load chart data."
+  },
+  "irbi": {
+    "heading": "Aceh Disaster Risk Index 2025",
+    "lead": "IRBI analysis with kabupaten/kota as the category variable. Source: BNPB IRBI 2025.",
+    "chipIrb": "Province IRB",
+    "chipKelas": "Risk class",
+    "chipPenduduk": "Population",
+    "chipKab": "kab/kota",
+    "chartTitle": "IRB 2025 score by kab/kota",
+    "chartUnit": "IRB",
+    "hazardsTitle": "Key threat scores by kab/kota",
+    "topTitle": "Top five highest-risk kab/kota",
+    "topThreat": "Highest threat",
+    "seeMap": "View on map",
+    "loading": "Loading IRBI…",
+    "error": "Failed to load IRBI data.",
+    "sourceNote": "BNPB IRBI 2025 · Aceh Tangguh fixture",
+    "hazard_banjir": "Flood",
+    "hazard_gempabumi": "Earthquake",
+    "hazard_tsunami": "Tsunami",
+    "hazard_likuefaksi": "Liquefaction",
+    "hazard_tanah_longsor": "Landslide",
+    "hazard_kebakaran_hutan_lahan": "Wildfire",
+    "hazard_cuaca_ekstrem": "Extreme weather",
+    "hazard_kekeringan": "Drought",
+    "hazard_banjir_bandang": "Flash flood",
+    "hazard_gelombang_ekstrim_abrasi": "Abrasion",
+    "hazard_letusan_gunung_api": "Volcano"
+  }
+}

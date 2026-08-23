@@ -1,0 +1,97 @@
+"use client";
+
+import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { BlurFade } from "@/components/ui/blur-fade";
+import { BorderBeam } from "@/components/ui/border-beam";
+import { GlassPanel } from "@/components/ui/GlassPanel";
+import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { SITE_MEDIA } from "@/lib/media";
+
+export function MapTeaserSection() {
+  const t = useTranslations("mapTeaser");
+  return (
+    <section className="section-shell reveal mt-16 md:mt-24">
+      <BlurFade inView>
+        <div className="max-w-2xl">
+          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            {t("heading")}
+          </h2>
+          <p className="mt-3 text-[var(--text-dim)]">{t("lead")}</p>
+        </div>
+      </BlurFade>
+
+      <BlurFade delay={0.1} inView>
+        <GlassPanel className="relative mt-10 overflow-hidden rounded-3xl border border-[var(--glass-border)] p-0 shadow-[var(--shadow-elevated)]">
+          <div className="relative flex min-h-[300px] sm:min-h-[340px]">
+            <Image
+              src={SITE_MEDIA.teaser.src}
+              alt={SITE_MEDIA.teaser.alt}
+              fill
+              sizes="(max-width:768px) 100vw, 1080px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/35" />
+
+            <div className="relative z-[1] flex flex-1 flex-col justify-between p-5 text-white/90 sm:p-7">
+              <div>
+                <div className="mb-1 flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
+                  <span className="ml-3 rounded-md bg-white/10 px-2.5 py-1 text-[0.7rem] tracking-wide text-white/70 backdrop-blur">
+                    Aceh · z7
+                  </span>
+                </div>
+                <p className="mt-8 max-w-sm text-sm leading-relaxed text-white/75">
+                  Lapisan posko, pengungsian, dan laporan warga di atas basemap operasional.
+                </p>
+              </div>
+
+              <div className="relative z-[1] mt-10 inline-flex flex-wrap gap-2">
+                <span className="rounded-full bg-emerald-500/25 px-3 py-1 text-xs text-emerald-100 backdrop-blur">
+                  Posko
+                </span>
+                <span className="rounded-full bg-sky-500/25 px-3 py-1 text-xs text-sky-100 backdrop-blur">
+                  Pengungsian
+                </span>
+                <span className="rounded-full bg-amber-500/25 px-3 py-1 text-xs text-amber-100 backdrop-blur">
+                  Laporan
+                </span>
+              </div>
+            </div>
+
+            <div className="relative z-[1] hidden w-56 shrink-0 border-l border-white/10 bg-black/35 p-4 text-xs text-white/70 backdrop-blur-md md:block">
+              <div className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white/80">
+                Toolbar
+              </div>
+              <div className="space-y-2">
+                <div className="rounded-lg bg-white/10 px-3 py-2.5">Distribusi</div>
+                <div className="rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-3 py-2.5 text-emerald-100">
+                  Lokasi
+                </div>
+                <div className="rounded-lg bg-white/10 px-3 py-2.5">Legenda</div>
+              </div>
+            </div>
+          </div>
+          <BorderBeam
+            size={120}
+            duration={10}
+            colorFrom="#2e9e4e"
+            colorTo="#81c784"
+            borderWidth={1.5}
+          />
+        </GlassPanel>
+      </BlurFade>
+
+      <div className="mt-7">
+        <Link href="/peta">
+          <ShimmerButton background="rgba(46, 158, 78, 1)" shimmerColor="#e8ffe8">
+            <span className="text-sm font-semibold">{t("cta")}</span>
+          </ShimmerButton>
+        </Link>
+      </div>
+    </section>
+  );
+}
