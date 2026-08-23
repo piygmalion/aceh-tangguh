@@ -14,4 +14,6 @@ export const qk = {
     ["kejadian", params] as const,
   kejadianDetail: (id: string) => ["kejadian", "detail", id] as const,
   anggaran: ["anggaran", "2026"] as const,
+  publikasi: ["publikasi", "btt"] as const,
+  publikasiDetail: (slug: string) => ["publikasi", "detail", slug] as const,
 };

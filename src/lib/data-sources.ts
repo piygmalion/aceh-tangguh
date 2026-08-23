@@ -97,6 +97,18 @@ export const DATA_SOURCES: DataSourceEntry[] = [
       "Halaman Anggaran Bencana — tabel kegiatan filterable dengan uraian anggaran & program",
   },
   {
+    id: "publikasi-btt",
+    titleId: "Publikasi Tanggapi — Dataset BTT",
+    titleEn: "Tanggapi publications — BTT dataset",
+    source: "Tanggapi Aceh — https://tanggapi.acehprov.go.id (dataset BTT analytic)",
+    license: "Public analytic publications — attribute Tanggapi Aceh / Pemerintah Aceh",
+    date: "2026 (fixture 2026-08-23; 9 publikasi)",
+    format: "JSON (publikasi-btt.json)",
+    usedFor:
+      "Halaman Publikasi — katalog artikel analitik BTT dengan pencarian & filter tag",
+    href: "https://tanggapi.acehprov.go.id",
+  },
+  {
     id: "titik-pengungsian",
     titleId: "Titik pengungsian (removed from Data Utama)",
     titleEn: "Displacement / shelter points (removed from Core data)",
