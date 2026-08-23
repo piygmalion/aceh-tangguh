@@ -3,6 +3,10 @@ import type { Database } from "./types";
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
 
+/** Next.js App Router caches fetch by default; Supabase must always be fresh. */
+const noStoreFetch: typeof fetch = (input, init) =>
+  fetch(input, { ...init, cache: "no-store" });
+
 /**
  * Server-side Supabase client using the anon key (MVP).
  * Returns null when env is missing so callers can fall back to fixtures.
@@ -19,6 +23,9 @@ export function createServerClient(): TypedSupabaseClient | null {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
+    },
+    global: {
+      fetch: noStoreFetch,
     },
   });
 }
