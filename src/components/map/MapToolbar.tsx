@@ -17,50 +17,10 @@ import {
   getDisasterJenisIconPath,
   getLayerIconPath,
 } from "@/lib/layer-icons";
-
-const AREA_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
-  { key: "villageDistribution", labelKey: "villageDistribution" },
-  { key: "r3pDistribution", labelKey: "r3pDistribution" },
-  { key: "irbi2025", labelKey: "irbi2025" },
-  { key: "ngoDistribution", labelKey: "ngoDistribution" },
-  { key: "regencyFundAllocation", labelKey: "regencyFundAllocation" },
-];
-
-type LocationGroup = {
-  groupKey: "groupMain" | "groupFacilities" | "groupInfra" | "groupParticipation";
-  options: { key: MarkerLayerKey; labelKey: MarkerLayerKey }[];
-};
-
-const LOCATION_GROUPS: LocationGroup[] = [
-  {
-    groupKey: "groupMain",
-    options: [
-      { key: "disasterEvents", labelKey: "disasterEvents" },
-      { key: "facHealth", labelKey: "facHealth" },
-      { key: "facEducation", labelKey: "facEducation" },
-      { key: "policeOffices", labelKey: "policeOffices" },
-    ],
-  },
-  {
-    groupKey: "groupFacilities",
-    options: [
-      { key: "facGov", labelKey: "facGov" },
-      { key: "facReligious", labelKey: "facReligious" },
-    ],
-  },
-  {
-    groupKey: "groupInfra",
-    options: [
-      { key: "infraRoadBridge", labelKey: "infraRoadBridge" },
-      { key: "helipad", labelKey: "helipad" },
-      { key: "starlink", labelKey: "starlink" },
-    ],
-  },
-  {
-    groupKey: "groupParticipation",
-    options: [{ key: "citizenReports", labelKey: "citizenReports" }],
-  },
-];
+import {
+  AREA_TOOLBAR_OPTIONS,
+  MARKER_TOOLBAR_GROUPS,
+} from "@/lib/map-layers-catalog";
 
 async function fetchAreaLegend(key: AreaLayerKey): Promise<LegendModel | null> {
   const res = await fetch(`/api/layers/areas/${key}`);
@@ -207,7 +167,7 @@ export function MapToolbar({
                 />
                 <span className="font-medium">{t("areaOff")}</span>
               </label>
-              {AREA_OPTIONS.map((opt) => (
+              {AREA_TOOLBAR_OPTIONS.map((opt) => (
                 <label
                   key={opt.key}
                   className="map-option"
@@ -232,7 +192,7 @@ export function MapToolbar({
 
           {tab === "lokasi" && (
             <div className="space-y-3">
-              {LOCATION_GROUPS.map((group) => (
+              {MARKER_TOOLBAR_GROUPS.map((group) => (
                 <fieldset
                   key={group.groupKey}
                   className="map-chrome-inset space-y-0.5 rounded-xl p-2"
@@ -386,6 +346,9 @@ export function MapToolbar({
                       );
                     })}
                   </ul>
+                  <p className="mt-3 text-[0.7rem] leading-snug text-[var(--text-dim)]">
+                    {t("coordApproxLegend")}
+                  </p>
                 </div>
               )}
               {areaLayer && areaLegend && (

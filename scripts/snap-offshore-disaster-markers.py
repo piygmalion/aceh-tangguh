@@ -189,6 +189,9 @@ def main():
         p = f.get("properties") or {}
         if p.get("layer") != "disasterEvents":
             continue
+        if p.get("coord_quality") == "offshore_or_out_of_bbox":
+            stats["skip_flagged_offshore"] += 1
+            continue
         lon, lat = f["geometry"]["coordinates"]
         if any_land(lon, lat, kab_polys):
             stats["ok_land"] += 1

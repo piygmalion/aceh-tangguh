@@ -22,7 +22,8 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     license: "Operational compilation — attribute BPBA, BNPB, BMKG, Badan Geologi",
     date: "2021–2026 (snapshot 2026-08-23)",
     format: "JSON → GeoJSON markers (disasterEvents)",
-    usedFor: "Data Utama — map layer Kejadian bencana (~426 points with GPS; Rekapitulasi Tahunan excluded)",
+    usedFor:
+      "Data Utama — map layer Kejadian bencana (427 points). ACEH-2023-0005 (Gempa Bumi, Aceh Singkil, lat 1.91 / lon 97.83) is included with coord_quality=offshore_or_out_of_bbox and approx=true — the map does not clamp an Aceh bbox, so the epicentre stays visible if you pan south. Rekapitulasi Tahunan excluded. Integer lon/lat (if any) are flagged truncated_integer; decimals are not invented.",
   },
   {
     id: "fasyankes",
@@ -49,6 +50,76 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     usedFor:
       "Data Utama — Fasilitas pendidikan (3072 points). Real GPS when present; else kab centroid (approx=true).",
     href: "https://docs.google.com/spreadsheets/d/1thAoB7jLBRuq9BWLFbuZ6u0mB6szRMF-SFCRtPwgVGM",
+  },
+  {
+    id: "kantor-polisi",
+    titleId: "Kantor polisi terdampak",
+    titleEn: "Affected police offices",
+    source:
+      "kantor_polisi_aceh.json / Google Sheet inventarisasi kantor polisi Aceh",
+    license: "Internal operational dataset — attribution to data providers",
+    date: "2026-08-23 (254 kantor / 23 kab-kota)",
+    format: "JSON → GeoJSON markers (policeOffices)",
+    usedFor:
+      "Data Utama — Kantor polisi (254 points, all 23 kab/kota). Many source coordinates are integer degrees (truncated GPS). Flagged coord_quality=truncated_integer + approx=true; decimals are not invented. Re-run: node scripts/flag-truncated-coords.js",
+    href: "https://docs.google.com/spreadsheets/d/1uH3blx6EobzAyUzVC1UC4PcnMlRecq2EZrGYV0RVuq0",
+  },
+  {
+    id: "fasilitas-pemerintahan",
+    titleId: "Fasilitas pemerintahan terdampak",
+    titleEn: "Affected government facilities",
+    source:
+      "fasilitas_pemerintahan_aceh.json — inventarisasi fasilitas pemerintahan Aceh",
+    license: "Internal operational dataset — attribution to data providers",
+    date: "2026-08-23 (273 titik; 7 kab saja)",
+    format: "JSON → GeoJSON markers (facGov)",
+    usedFor:
+      "Data Utama — Fasilitas pemerintahan. Coverage is incomplete: only Aceh Jaya, Aceh Tengah, Bener Meriah, Bireuen, Gayo Lues, Pidie, Pidie Jaya. Missing 16 kab/kota. Do not invent points to fill gaps — needs more source data. Integer lon/lat flagged truncated_integer (not shifted).",
+  },
+  {
+    id: "fasilitas-keagamaan",
+    titleId: "Fasilitas keagamaan terdampak",
+    titleEn: "Affected religious facilities",
+    source:
+      "fasilitas_ibadah_aceh.json — inventarisasi tempat ibadah terdampak",
+    license: "Internal operational dataset — attribution to data providers",
+    date: "2026-08-23 (313 titik; 7 kab saja)",
+    format: "JSON → GeoJSON markers (facReligious)",
+    usedFor:
+      "Data Utama — Fasilitas keagamaan. Coverage is incomplete: only Aceh Tengah, Aceh Tenggara, Bener Meriah, Bireuen, Gayo Lues, Pidie, Pidie Jaya. Missing 16 kab/kota. Do not invent points to fill gaps — needs more source data. Integer lon/lat flagged truncated_integer (not shifted).",
+  },
+  {
+    id: "infra-jalan-jembatan",
+    titleId: "Jalan & jembatan",
+    titleEn: "Roads & bridges",
+    source: "Operational inventory — infraRoadBridge markers in markers.geojson",
+    license: "Internal operational dataset — attribution to data providers",
+    date: "2026-08-23 (5 titik)",
+    format: "GeoJSON markers (infraRoadBridge)",
+    usedFor:
+      "Toolbar Infrastruktur — live layer registered in map_layers. Sparse inventory; do not invent additional points.",
+  },
+  {
+    id: "helipad",
+    titleId: "Helipad",
+    titleEn: "Helipads",
+    source: "Operational inventory — helipad markers in markers.geojson",
+    license: "Internal operational dataset — attribution to data providers",
+    date: "2026-08-23 (4 titik)",
+    format: "GeoJSON markers (helipad)",
+    usedFor:
+      "Toolbar Infrastruktur — live layer registered in map_layers. Sparse inventory; do not invent additional points.",
+  },
+  {
+    id: "starlink",
+    titleId: "Starlink",
+    titleEn: "Starlink",
+    source: "Operational inventory — starlink markers in markers.geojson",
+    license: "Internal operational dataset — attribution to data providers",
+    date: "2026-08-23 (4 titik)",
+    format: "GeoJSON markers (starlink)",
+    usedFor:
+      "Toolbar Infrastruktur — live layer registered in map_layers. Sparse inventory; do not invent additional points.",
   },
   {
     id: "compiled-r3p",

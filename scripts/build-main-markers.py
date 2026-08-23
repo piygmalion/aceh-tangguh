@@ -3,7 +3,8 @@
 
 Inputs (expected under /workspace/drive-aceh-data/):
   - kejadian_bencana_aceh_lengkap.json
-      → layer disasterEvents (GPS from arah_di_peta; skip lat < 2.0 offshore)
+      → layer disasterEvents (GPS from arah_di_peta; out-of-bbox kept with
+        coord_quality=offshore_or_out_of_bbox, e.g. ACEH-2023-0005)
   - fasilitas_kesehatan_aceh.json (preferred) or health.xlsx fallback
       → layer facHealth (lat/lng from lokasi; centroid approx if missing)
   - edu-sheet-1thAoB7.xlsx Minggu 2 (preferred; sheet 1thAoB7... with Latitude/Longitude)
@@ -21,9 +22,10 @@ Usage:
 
 Without --write, prints layer counts only (dry-run merge in memory).
 
-After rebuilding disasterEvents, run scripts/snap-offshore-disaster-markers.py
-to pull any points that fall outside kabupaten polygons back onto land
-(keeps original coords in properties.coord_original).
+After rebuilding disasterEvents:
+  1. Run scripts/snap-offshore-disaster-markers.py to pull onshore-but-outside-polygon
+     points back onto land (skips coord_quality=offshore_or_out_of_bbox).
+  2. Run `node scripts/flag-truncated-coords.js` to (re)flag integer lon/lat.
 """
 from __future__ import annotations
 
@@ -54,7 +56,9 @@ EDU_SHEET_XLSX = DRIVE / "edu-sheet-1thAoB7.xlsx"
 EDU_JSON = DRIVE / "sarana_pendidikan_aceh.json"
 EDU_XLSX = DRIVE / "edu.xlsx"
 
-# Match prior fixture: exclude offshore Singkil epicentre ~1.91°N
+# Preferred onshore window. Points with GPS outside this box (e.g. ACEH-2023-0005
+# Singkil epicentre ~1.91°N) are kept with coord_quality=offshore_or_out_of_bbox
+# — the map does not clamp an Aceh bbox, so they remain visible.
 ACEH_LAT = (2.0, 6.5)
 ACEH_LNG = (94.5, 99.5)
 
@@ -198,9 +202,10 @@ def build_disaster_events():
         arah = ev.get("arah_di_peta") or {}
         lat = to_float(arah.get("latitude"))
         lng = to_float(arah.get("longitude"))
-        if not valid_coord(lat, lng):
+        if lat is None or lng is None:
             skipped += 1
             continue
+        offshore = not valid_coord(lat, lng)
         lokasi = ev.get("lokasi") or {}
         kab = lokasi.get("kabupaten") or lokasi.get("kabupaten_kota")
         pen = ev.get("penanganan") or {}
@@ -226,6 +231,9 @@ def build_disaster_events():
             "kronologi": kron or None,
             "source": "kejadian_bencana_aceh_lengkap.json",
         }
+        if offshore:
+            props["approx"] = True
+            props["coord_quality"] = "offshore_or_out_of_bbox"
         features.append(make_feature(ev.get("id") or f"de-{len(features)+1}", lat, lng, props))
     return features, skipped
 
