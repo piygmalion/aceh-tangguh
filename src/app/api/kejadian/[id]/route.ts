@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { findKejadianById, loadKejadianFixture } from "@/lib/kejadian";
+import { findKejadianById, loadKejadian } from "@/lib/kejadian";
 
 export const dynamic = "force-dynamic";
 
@@ -12,11 +12,11 @@ export async function GET(
     return NextResponse.json({ error: "Missing id" }, { status: 400 });
   }
 
-  const data = await loadKejadianFixture();
+  const { data, source } = await loadKejadian();
   const item = findKejadianById(data, id);
   if (!item) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ item, meta: data.metadata ?? {} });
+  return NextResponse.json({ item, meta: data.metadata ?? {}, source });
 }
