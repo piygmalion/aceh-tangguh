@@ -29,6 +29,10 @@ export const routing = defineRouting({
       id: "/metodologi",
       en: "/methodology",
     },
+    "/cuaca": {
+      id: "/cuaca",
+      en: "/weather",
+    },
   },
 });
 

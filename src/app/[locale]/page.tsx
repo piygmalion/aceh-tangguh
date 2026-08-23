@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { ClusterGrid } from "@/components/ClusterGrid";
 import { R3PChartSection } from "@/components/R3PChartSection";
 import { HazardStatusStrip } from "@/components/HazardStatusStrip";
+import { WeatherStrip } from "@/components/weather/WeatherStrip";
 import { HeroSection } from "@/components/HeroSection";
 import { MapTeaserSection } from "@/components/MapTeaserSection";
 import { ParticipationSection } from "@/components/ParticipationSection";
@@ -22,6 +23,7 @@ export default async function HomePage({
       <main className="overflow-x-hidden">
         <HeroSection />
         <HazardStatusStrip />
+        <WeatherStrip />
         <ClusterGrid />
         <R3PChartSection />
         <MapTeaserSection />

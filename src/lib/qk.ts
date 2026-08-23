@@ -11,4 +11,5 @@ export const qk = {
   anggaran: ["anggaran", "2026"] as const,
   publikasi: ["publikasi", "btt"] as const,
   r3pSummary: ["r3p", "summary"] as const,
+  weather: ["weather"] as const,
 };
