@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     byKec.set(key, list);
   }
 
-  const kecamatan_list = [...byKec.entries()]
+  const kecamatan_list = Array.from(byKec.entries())
     .map(([name, kecRows]) => {
       const metrics = metricsFromRows(kecRows);
       return {
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
         desa_count: kecRows.length,
         badge: badgeFromMetrics(
           metrics,
-          kecRows.map((r) => r.kondisi_kode)
+          kecRows.map((r: ProfilDesaRow) => r.kondisi_kode)
         ),
         total_rumah_rusak: metrics.total_rumah_rusak,
       };
