@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AuthMenu } from "@/components/admin/AuthMenu";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
 export function SiteNav() {
@@ -90,6 +91,7 @@ export function SiteNav() {
               <LocaleSwitch />
               <ThemeToggle />
             </div>
+            <AuthMenu />
             <button
               type="button"
               className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] lg:hidden"

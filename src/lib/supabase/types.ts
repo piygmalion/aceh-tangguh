@@ -11,6 +11,8 @@ export type ReportTopic =
 
 export type ReportStatus = "queued" | "published" | "rejected";
 
+export type AdminRole = "super_admin" | "admin";
+
 export type HazardKind = "banjir" | "longsor" | "gempa" | "kebakaran" | "lainnya";
 export type HazardSeverity = "low" | "med" | "high";
 
@@ -62,6 +64,27 @@ export interface Database {
           place_name?: string | null;
           consent_map_display?: boolean;
           status?: ReportStatus;
+          created_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      admin_profiles: {
+        Row: {
+          user_id: string;
+          role: AdminRole;
+          display_name: string | null;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          role: AdminRole;
+          display_name?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          role?: AdminRole;
+          display_name?: string | null;
           created_at?: string;
         };
         Relationships: EmptyRelationships;
@@ -428,7 +451,7 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
-profil_desa: {
+      profil_desa: {
         Row: {
           id: string;
           kode_desa_kelurahan: string | null;
@@ -536,6 +559,7 @@ profil_desa: {
 }
 
 export type ReportRow = Database["public"]["Tables"]["reports"]["Row"];
+export type AdminProfileRow = Database["public"]["Tables"]["admin_profiles"]["Row"];
 export type LiveStatsRow = Database["public"]["Tables"]["live_stats"]["Row"];
 export type HazardStatusRow = Database["public"]["Tables"]["hazard_status"]["Row"];
 export type MapLayerRow = Database["public"]["Tables"]["map_layers"]["Row"];
