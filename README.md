@@ -62,6 +62,9 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/anggaran` | `anggaran_analisis` + `anggaran_kegiatan`, else fixture |
 | GET | `/api/publikasi` | `publikasi` + `publikasi_meta`, else fixture |
 | GET | `/api/r3p/summary` | `r3p_summary`, else fixture |
+| GET | `/api/profil-desa/kecamatan` | Supabase `profil_desa` kecamatan aggregate (`?kabupaten=&kecamatan=` or `?kode_kecamatan=`) |
+| GET | `/api/profil-desa/desa` | Single desa (`?kode=` or `?id=`) |
+| GET | `/api/profil-desa/kabupaten` | Optional kabupaten rollup (`?kabupaten=` or `?kode_kabupaten=`) |
 
 ## Screens
 

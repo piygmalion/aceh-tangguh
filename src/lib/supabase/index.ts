@@ -29,4 +29,6 @@ export type {
   R3PSummaryRow,
   IrbiDocumentRow,
   DataDocumentRow,
+  ProfilDesaRow,
+  WeatherForecastRow,
 } from "./types";

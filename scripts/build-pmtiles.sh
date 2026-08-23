@@ -34,7 +34,8 @@ tippecanoe \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \
   --coalesce-densest-as-needed \
-  -y name -y value -y bucket -y kabupaten -y kecamatan -y rumah_rr -y rumah_rs -y rumah_rb \
+  -y name -y value -y bucket -y kabupaten -y kecamatan -y kode_desa_kelurahan \
+  -y rumah_rr -y rumah_rs -y rumah_rb \
   "$AREAS/villageDistribution.geojson"
 
 echo "==> Building irbi-2025.pmtiles"

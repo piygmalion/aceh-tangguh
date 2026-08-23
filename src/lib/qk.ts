@@ -11,5 +11,12 @@ export const qk = {
   anggaran: ["anggaran", "2026"] as const,
   publikasi: ["publikasi", "btt"] as const,
   r3pSummary: ["r3p", "summary"] as const,
+  profilKecamatan: (params: {
+    kabupaten?: string;
+    kecamatan?: string;
+    kodeKecamatan?: string;
+  }) => ["profil-desa", "kecamatan", params] as const,
+  profilDesa: (params: { kode?: string; id?: string; nama?: string }) =>
+    ["profil-desa", "desa", params] as const,
   weather: ["weather"] as const,
 };
