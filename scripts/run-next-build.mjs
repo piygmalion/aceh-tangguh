@@ -5,9 +5,9 @@
  */
 import { spawnSync } from "node:child_process";
 import {
+  cpSync,
   existsSync,
   mkdirSync,
-  renameSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -66,17 +66,18 @@ function park(srcRel, destName) {
   const src = path.join(root, srcRel);
   if (!existsSync(src)) return;
   const dest = path.join(parkRoot, destName);
-  renameSync(src, dest);
+  cpSync(src, dest, { recursive: true });
+  rmSync(src, { recursive: true, force: true });
   parked.push({ src, dest });
 }
 
 function restore() {
-  for (const { src, dest } of parked.reverse()) {
+  for (const { src, dest } of [...parked].reverse()) {
     if (existsSync(src)) {
       rmSync(src, { recursive: true, force: true });
     }
     if (existsSync(dest)) {
-      renameSync(dest, src);
+      cpSync(dest, src, { recursive: true });
     }
   }
   parked.length = 0;
