@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import {
+  enabledMapLayersCatalog,
+  mergeMapLayersCatalog,
+} from "@/lib/map-layers-catalog";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const supabase = createServerClient();
   if (!supabase) {
-    return NextResponse.json(
-      { items: [], source: "fallback", error: "Supabase not configured" },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      items: enabledMapLayersCatalog(),
+      source: "catalog",
+    });
   }
 
   const { data, error } = await supabase
@@ -19,11 +23,15 @@ export async function GET() {
     .order("sort_order", { ascending: true });
 
   if (error) {
-    return NextResponse.json(
-      { items: [], source: "fallback", error: error.message },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      items: enabledMapLayersCatalog(),
+      source: "catalog",
+      error: error.message,
+    });
   }
 
-  return NextResponse.json({ items: data ?? [], source: "supabase" });
+  return NextResponse.json({
+    items: mergeMapLayersCatalog(data ?? []),
+    source: data && data.length > 0 ? "supabase+catalog" : "catalog",
+  });
 }

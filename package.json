@@ -13,6 +13,7 @@
     "resolve:adm4": "node scripts/resolve-adm4-codes.mjs",
     "refresh:weather": "node scripts/refresh-weather-cache.mjs",
     "verify:weather": "node scripts/verify-weather-setup.mjs",
+    "flag:coords": "node scripts/flag-truncated-coords.js",
     "verify:laporan": "node --env-file=.env.local scripts/verify-laporan-setup.mjs",
     "laporan:wa": "node scripts/process-laporan-wa.mjs",
     "laporan:pii-key": "node scripts/generate-laporan-pii-key.mjs"

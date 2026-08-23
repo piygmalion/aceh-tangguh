@@ -55,7 +55,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
 | GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
 | GET | `/api/hazards` | `hazard_status` |
-| GET | `/api/layers/catalog` | enabled `map_layers` by `sort_order` |
+| GET | `/api/layers/catalog` | enabled `map_layers` merged with local toolbar catalog (`src/lib/map-layers-catalog.ts`) |
 | GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
 | GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
 | GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
@@ -121,13 +121,27 @@ Map toolbar **Data utama** (`groupMain`) defaults to:
 3. `facEducation` — Fasilitas pendidikan (Google Sheet `1fguZcbW…`; **coordinates approximated to kabupaten centroids** — schools have no precise lat/lng in the sheet)
 4. `policeOffices` — kept when present
 
-`missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. Default URL layers: `disasterEvents,facHealth,citizenReports`.
+`missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. They are seeded in `map_layers` with `enabled=false` (see `supabase/migrations/20260827_map_layers_live_registry.sql`). Default URL layers: `disasterEvents,facHealth,citizenReports`.
+
+Live toolbar layers that must exist in `map_layers`: `facGov`, `facReligious`, `infraRoadBridge`, `helipad`, `starlink` (plus the Data Utama + citizenReports keys). The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
+
+Integer lon/lat (truncated GPS) are flagged `properties.coord_quality = "truncated_integer"` and `approx=true`. Do not invent decimals. Re-flag:
+
+```
+bun run flag:coords
+# or: node scripts/flag-truncated-coords.js --dry-run
+```
+
+`ACEH-2023-0005` (offshore Singkil epicentre ~1.91°N) is included on `disasterEvents` with `coord_quality=offshore_or_out_of_bbox` so the map count matches kejadian (427). The map does not clamp an Aceh bbox.
+
+After fixture changes, re-seed Supabase `marker_features` via the existing `upsert_marker_features` RPC (coordinator; this PR does not require `service_role`).
 
 Rebuild (does not run in CI; inputs under `/workspace/drive-aceh-data/`):
 
 ```
 python3 scripts/build-main-markers.py          # dry-run counts
 python3 scripts/build-main-markers.py --write  # overwrite public/fixtures/markers.geojson
+node scripts/flag-truncated-coords.js          # re-flag integer coords
 ```
 
 ## Planning docs

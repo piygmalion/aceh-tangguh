@@ -28,6 +28,14 @@ import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
 import type { FilterSpecification, MapLayerMouseEvent } from "maplibre-gl";
 import { LAYER_COLORS } from "@/lib/layer-colors";
+import { Chip } from "@/components/ui/Chip";
+import { useTranslations } from "next-intl";
+import {
+  COORD_QUALITY_OFFSHORE,
+  COORD_QUALITY_TRUNCATED,
+  readCoordQuality,
+  type CoordQuality,
+} from "@/lib/coord-quality";
 import { MapMarkerPin } from "@/components/map/MapMarkerPin";
 
 export { LAYER_COLORS };
@@ -200,12 +208,14 @@ export function MapViewport({
   villageSelection?: VillageClickSelection | null;
   onVillageClick?: (sel: VillageClickSelection) => void;
 }) {
+  const t = useTranslations("map");
   const mapRef = useRef<MapRef>(null);
   const [popup, setPopup] = useState<{
     lng: number;
     lat: number;
     title: string;
     status?: string;
+    coordQuality?: CoordQuality | null;
   } | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -437,7 +447,15 @@ export function MapViewport({
               anchor="bottom"
               onClick={(e) => {
                 e.originalEvent.stopPropagation();
-                setPopup({ lng, lat, title, status });
+                setPopup({
+                  lng,
+                  lat,
+                  title,
+                  status,
+                  coordQuality: readCoordQuality(
+                    f.properties as Record<string, unknown> | null
+                  ),
+                });
               }}
             >
               <MapMarkerPin
@@ -460,6 +478,22 @@ export function MapViewport({
               <div className="font-semibold text-[var(--text)]">{popup.title}</div>
               {popup.status && (
                 <div className="text-xs text-[var(--text-dim)]">{popup.status}</div>
+              )}
+              {popup.coordQuality === COORD_QUALITY_TRUNCATED && (
+                <Chip
+                  tone="warn"
+                  className="mt-1.5 px-2 py-0.5 text-[0.65rem]"
+                >
+                  {t("coordApprox")}
+                </Chip>
+              )}
+              {popup.coordQuality === COORD_QUALITY_OFFSHORE && (
+                <Chip
+                  tone="info"
+                  className="mt-1.5 px-2 py-0.5 text-[0.65rem]"
+                >
+                  {t("coordOffshore")}
+                </Chip>
               )}
             </div>
           </Popup>
