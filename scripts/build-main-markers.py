@@ -6,10 +6,9 @@ Inputs (expected under /workspace/drive-aceh-data/):
       → layer disasterEvents (GPS from arah_di_peta; skip lat < 2.0 offshore)
   - health.xlsx (export of Google Sheet 1npB5v7TfZaP-v3WP4KrkR8E8FenDEt-P)
       sheet "191 Faskes Rusak" → layer facHealth (Titik Koordinat column)
-  - edu.xlsx (export of Google Sheet 1fguZcbWhIYznXePGb_OiLDh-v_LVk6Ue)
-      sheet "rekap_all" → layer facEducation
-      NOTE: no school coordinates in the sheet — points are jittered around
-      kabupaten centroids from public/fixtures/boundaries-aceh-kab.geojson
+  - sarana_pendidikan_aceh.json (preferred) or edu.xlsx fallback
+      → layer facEducation
+      NOTE: no school GPS — points jittered around kabupaten centroids
       (approx=true on each feature).
 
 Preserves non-main layers already present in markers.geojson
@@ -47,6 +46,7 @@ BOUNDARIES_PATH = FIXTURES / "boundaries-aceh-kab.geojson"
 
 KEJADIAN_JSON = DRIVE / "kejadian_bencana_aceh_lengkap.json"
 HEALTH_XLSX = DRIVE / "health.xlsx"
+EDU_JSON = DRIVE / "sarana_pendidikan_aceh.json"
 EDU_XLSX = DRIVE / "edu.xlsx"
 
 # Match prior fixture: exclude offshore Singkil epicentre ~1.91°N
@@ -258,13 +258,74 @@ def build_fac_health():
 
 
 def build_fac_education(centroids: dict):
-    wb = openpyxl.load_workbook(EDU_XLSX, read_only=True, data_only=True)
-    ws = wb["rekap_all"]
+    """Prefer sarana_pendidikan_aceh.json; fall back to edu.xlsx rekap_all."""
     features = []
     skipped = 0
+
+    def resolve_centroid(kab_raw):
+        kab_canon = normalize_kab(str(kab_raw) if kab_raw else None, centroids)
+        c = None
+        if kab_canon:
+            c = centroids.get(kab_canon) or centroids.get(kab_canon.lower())
+        if c is None and kab_raw:
+            key = re.sub(r"^(kab\.?|kabupaten|kota)\s+", "", str(kab_raw).strip(), flags=re.I)
+            c = centroids.get(key) or centroids.get(key.lower())
+        return kab_canon, c
+
+    if EDU_JSON.exists():
+        data = json.loads(EDU_JSON.read_text(encoding="utf-8"))
+        for s in data.get("sekolah") or []:
+            nama = s.get("nama")
+            if not nama:
+                skipped += 1
+                continue
+            kab_obj = s.get("kabupaten_kota") or {}
+            kab_raw = kab_obj.get("nama") or kab_obj.get("nama_normalisasi")
+            kab_canon, c = resolve_centroid(kab_raw)
+            if c is None:
+                skipped += 1
+                continue
+            lon0, lat0 = c
+            npsn = s.get("npsn")
+            seed = hashlib.md5(f"{npsn}|{nama}".encode()).hexdigest()
+            rng = random.Random(seed)
+            lat = lat0 + (rng.random() - 0.5) * 0.08
+            lng = lon0 + (rng.random() - 0.5) * 0.08
+            jenjang_obj = s.get("jenjang") or {}
+            jenjang = jenjang_obj.get("nama") or jenjang_obj.get("kode")
+            ops = s.get("operasional") or {}
+            ruang = ((s.get("kondisi_sarana") or {}).get("ruang_kelas")) or {}
+            rusak = (
+                (ruang.get("rusak_berat") or 0)
+                + (ruang.get("rusak_sedang") or 0)
+                + (ruang.get("rusak_ringan") or 0)
+                + (ruang.get("rusak_total") or 0)
+            )
+            fid = s.get("id") or (f"fe-{npsn}" if npsn else f"fe-{len(features)+1}")
+            props = {
+                "layer": "facEducation",
+                "title": str(nama).strip(),
+                "status": ops.get("kondisi_pbm_normalisasi")
+                or ops.get("kondisi_proses_belajar_mengajar"),
+                "kabupaten": str(kab_raw).strip() if kab_raw else kab_canon,
+                "kabupaten_normalisasi": kab_obj.get("nama_normalisasi"),
+                "npsn": str(npsn).strip() if npsn not in (None, "", " ") else None,
+                "jenjang": str(jenjang).strip() if jenjang else None,
+                "ruang_kelas_rusak": rusak,
+                "siswa_meninggal": (s.get("korban") or {}).get("siswa_meninggal"),
+                "guru_meninggal": (s.get("korban") or {}).get("guru_meninggal"),
+                "approx": True,
+                "source": "sarana_pendidikan_aceh.json",
+            }
+            features.append(make_feature(fid, lat, lng, props))
+        return features, skipped
+
+    # Fallback: XLSX rekap_all
+    wb = openpyxl.load_workbook(EDU_XLSX, read_only=True, data_only=True)
+    ws = wb["rekap_all"]
     rows = ws.iter_rows(values_only=True)
-    next(rows)  # header row 1
-    next(rows)  # subheader row 2
+    next(rows)
+    next(rows)
     for row in rows:
         npsn = row[1] if len(row) > 1 else None
         nama = row[2] if len(row) > 2 else None
@@ -272,22 +333,13 @@ def build_fac_education(centroids: dict):
         jenjang = row[4] if len(row) > 4 else None
         if not nama or str(nama).strip() in ("", "Nama Sekolah"):
             continue
-        kab_canon = normalize_kab(str(kab_raw) if kab_raw else None, centroids)
-        # look up centroid
-        c = None
-        if kab_canon:
-            c = centroids.get(kab_canon) or centroids.get(kab_canon.lower())
-        if c is None and kab_raw:
-            key = re.sub(r"^(kab\.?|kabupaten|kota)\s+", "", str(kab_raw).strip(), flags=re.I)
-            c = centroids.get(key) or centroids.get(key.lower())
+        kab_canon, c = resolve_centroid(kab_raw)
         if c is None:
             skipped += 1
             continue
         lon0, lat0 = c
-        # deterministic jitter from npsn/name so rebuilds are stable
         seed = hashlib.md5(f"{npsn}|{nama}".encode()).hexdigest()
         rng = random.Random(seed)
-        # ~±0.04° around kab centroid (matches prior fixture spread)
         lat = lat0 + (rng.random() - 0.5) * 0.08
         lng = lon0 + (rng.random() - 0.5) * 0.08
         fid = f"fe-{npsn}" if npsn not in (None, "", " ") else f"fe-{len(features)+1}"
@@ -299,7 +351,7 @@ def build_fac_education(centroids: dict):
             "npsn": str(npsn).strip() if npsn not in (None, "", " ") else None,
             "jenjang": str(jenjang).strip() if jenjang else None,
             "approx": True,
-            "source": "rekap fasilitas pendidikan 1fguZcbW...",
+            "source": "rekap fasilitas pendidikan xlsx fallback",
         }
         features.append(make_feature(fid, lat, lng, props))
     wb.close()
@@ -324,7 +376,10 @@ def main():
     ap.add_argument("--write", action="store_true", help="Overwrite markers.geojson")
     args = ap.parse_args()
 
-    for path in (KEJADIAN_JSON, HEALTH_XLSX, EDU_XLSX, BOUNDARIES_PATH, MARKERS_PATH):
+    required = [KEJADIAN_JSON, HEALTH_XLSX, BOUNDARIES_PATH, MARKERS_PATH]
+    if not EDU_JSON.exists() and not EDU_XLSX.exists():
+        raise SystemExit(f"Missing education input: {EDU_JSON} or {EDU_XLSX}")
+    for path in required:
         if not path.exists():
             raise SystemExit(f"Missing input: {path}")
 

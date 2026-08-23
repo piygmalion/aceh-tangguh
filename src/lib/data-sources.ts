@@ -41,12 +41,12 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleId: "Fasilitas pendidikan (sekolah terdampak)",
     titleEn: "Education facilities (affected schools)",
     source:
-      "Google Sheet 1fguZcbWhIYznXePGb_OiLDh-v_LVk6Ue — rekap fasilitas pendidikan",
-    license: "Internal operational dataset — attribution to data providers",
-    date: "2025–2026 snapshot",
-    format: "Google Sheet / XLSX → GeoJSON markers (facEducation)",
+      "sarana_pendidikan_aceh.json — Inventarisasi Dinas Pendidikan Aceh (compiled from Drive sheet)",
+    license: "Internal operational dataset — attribution to Dinas Pendidikan Aceh / data providers",
+    date: "2026-08-23 (3073 sekolah / 18 kab-kota)",
+    format: "JSON → GeoJSON markers (facEducation)",
     usedFor:
-      "Data Utama — Fasilitas pendidikan (~3071 points). Coordinates are approximated to kabupaten centroids (schools lack precise lat/lng in the sheet).",
+      "Data Utama — Fasilitas pendidikan (3073 points). No GPS in source; points approximated to kabupaten centroids (approx=true).",
     href: "https://docs.google.com/spreadsheets/d/1fguZcbWhIYznXePGb_OiLDh-v_LVk6Ue",
   },
   {
