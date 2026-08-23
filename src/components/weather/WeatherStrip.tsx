@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import { Link } from "@/i18n/routing";
 import { qk } from "@/lib/qk";
 import type { WeatherApiResponse, WeatherForecastKab } from "@/lib/weather-types";
 import { WeatherIcon } from "./WeatherIcon";
@@ -66,10 +65,7 @@ function WeatherThumb({ kab }: { kab: WeatherForecastKab }) {
 
   return (
     <div data-weather-card className="min-w-0 snap-start">
-      <Link
-        href={{ pathname: "/cuaca", hash: kab.slug }}
-        className="flex h-full flex-col gap-1 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg)]/80 px-3 py-2.5 transition hover:ring-1 hover:ring-[var(--accent)]"
-      >
+      <div className="flex h-full flex-col gap-1 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg)]/80 px-3 py-2.5">
         <div className="flex items-center gap-1.5">
           <WeatherIcon
             code={kab.current.weather_code}
@@ -89,7 +85,7 @@ function WeatherThumb({ kab }: { kab: WeatherForecastKab }) {
         ) : (
           <span className="h-3" aria-hidden />
         )}
-      </Link>
+      </div>
     </div>
   );
 }
@@ -188,7 +184,10 @@ export function WeatherStrip() {
     total === 0 ? 100 : Math.max((visibleCount / total) * 100, 100 / Math.max(total, 1));
 
   return (
-    <section className="border-y border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-4 py-5 backdrop-blur-sm">
+    <section
+      id="cuaca"
+      className="border-y border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-4 py-5 backdrop-blur-sm"
+    >
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -237,12 +236,6 @@ export function WeatherStrip() {
                 </button>
               </div>
             ) : null}
-            <Link
-              href="/cuaca"
-              className="text-sm font-medium text-[var(--accent)] hover:underline"
-            >
-              {t("seeAll")}
-            </Link>
           </div>
         </div>
 

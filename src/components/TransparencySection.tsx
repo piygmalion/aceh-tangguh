@@ -34,7 +34,7 @@ export function TransparencySection() {
     },
   ];
   return (
-    <section className="section-shell reveal relative mt-16 overflow-hidden md:mt-24" id="publikasi">
+    <section className="section-shell reveal relative mt-16 overflow-hidden md:mt-24" id="transparansi">
       <div className="pointer-events-none absolute inset-y-0 right-0 w-full max-w-xl opacity-25 md:opacity-40" aria-hidden>
         <Image
           src={SITE_MEDIA.forest.src}

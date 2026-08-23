@@ -31,10 +31,6 @@ export const routing = defineRouting({
       id: "/metodologi",
       en: "/methodology",
     },
-    "/cuaca": {
-      id: "/cuaca",
-      en: "/weather",
-    },
     "/admin": "/admin",
     "/admin/login": "/admin/login",
     "/admin/denied": "/admin/denied",

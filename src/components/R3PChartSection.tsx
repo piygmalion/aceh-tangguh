@@ -505,7 +505,7 @@ export function R3PChartSection() {
     "https://docs.google.com/spreadsheets/d/1eG7jewwOeuv0GKLLlfJp8hrDAwvW1wtnYFK4mz_DwPA/edit?gid=0";
 
   return (
-    <section className="section-shell reveal mt-16 md:mt-24" id="data">
+    <section className="section-shell reveal mt-16 md:mt-24" id="r3p">
       <BlurFade inView>
         <div className="max-w-2xl">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">

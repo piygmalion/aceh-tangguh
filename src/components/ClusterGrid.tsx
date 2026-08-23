@@ -36,7 +36,7 @@ const IDS: ClusterId[] = [
 export function ClusterGrid() {
   const t = useTranslations("clusters");
   return (
-    <section className="section-shell reveal mt-16 md:mt-24" id="data">
+    <section className="section-shell reveal mt-16 md:mt-24" id="clusters">
       <BlurFade inView>
         <div className="max-w-2xl">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
