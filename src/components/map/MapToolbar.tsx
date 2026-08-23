@@ -108,7 +108,7 @@ export function MapToolbar({
 
   return (
     <aside
-      className={`map-chrome-elevated absolute z-30 flex flex-col overflow-hidden transition-[max-height] duration-300 ease-out max-md:inset-x-2 max-md:bottom-2 max-md:rounded-2xl md:bottom-3 md:right-3 md:top-[4.25rem] md:w-[19.5rem] md:max-h-none md:rounded-2xl ${
+      className={`map-chrome-elevated absolute z-30 flex flex-col overflow-hidden transition-[max-height] duration-300 ease-out max-md:inset-x-2 max-md:bottom-2 max-md:rounded-2xl md:bottom-3 md:right-3 md:top-24 md:w-[19.5rem] md:max-h-none md:rounded-2xl ${
         expanded
           ? "max-md:max-h-[min(52vh,28rem)]"
           : "max-md:max-h-[3.35rem]"
