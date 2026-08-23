@@ -26,28 +26,29 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     id: "fasyankes",
-    titleId: "Fasilitas kesehatan (fasyankes rusak)",
-    titleEn: "Health facilities (damaged fasyankes)",
+    titleId: "Fasilitas kesehatan (fasyankes terdampak)",
+    titleEn: "Health facilities (affected fasyankes)",
     source:
-      "Google Sheet 1npB5v7TfZaP-v3WP4KrkR8E8FenDEt-P — LIST KONDISI FASYANKES",
+      "fasilitas_kesehatan_aceh.json — Inventarisasi fasilitas kesehatan Aceh (compiled from Drive sheet)",
     license: "Internal operational dataset — attribution to data providers",
-    date: "Update noted 2025-12-29 (sheet)",
-    format: "Google Sheet / XLSX → GeoJSON markers (facHealth)",
-    usedFor: "Data Utama — Fasilitas kesehatan (~191 points with sheet coordinates)",
-    href: "https://docs.google.com/spreadsheets/d/1npB5v7TfZaP-v3WP4KrkR8E8FenDEt-P",
+    date: "2026-08-23 (255 fasilitas / 15 kab-kota; 198 GPS + 57 approx)",
+    format: "JSON → GeoJSON markers (facHealth)",
+    usedFor:
+      "Data Utama — Fasilitas kesehatan (255 points). GPS from lokasi when present; else kab centroid (approx=true).",
+    href: "https://docs.google.com/spreadsheets/d/1aKKoxhsrSil2K9dq2ioIfzD5o44f8nFGBLJjJsFX3w8",
   },
   {
     id: "fasilitas-pendidikan",
     titleId: "Fasilitas pendidikan (sekolah terdampak)",
     titleEn: "Education facilities (affected schools)",
     source:
-      "sarana_pendidikan_aceh.json — Inventarisasi Dinas Pendidikan Aceh (compiled from Drive sheet)",
+      "Google Sheet 1thAoB7jLBRuq9BWLFbuZ6u0mB6szRMF-SFCRtPwgVGM — tab Minggu 2 (Latitude/Longitude)",
     license: "Internal operational dataset — attribution to Dinas Pendidikan Aceh / data providers",
-    date: "2026-08-23 (3073 sekolah / 18 kab-kota)",
-    format: "JSON → GeoJSON markers (facEducation)",
+    date: "2026-08-23 (3072 sekolah; 2470 GPS + 602 approx)",
+    format: "Google Sheet / XLSX → GeoJSON markers (facEducation)",
     usedFor:
-      "Data Utama — Fasilitas pendidikan (3073 points). No GPS in source; points approximated to kabupaten centroids (approx=true).",
-    href: "https://docs.google.com/spreadsheets/d/1fguZcbWhIYznXePGb_OiLDh-v_LVk6Ue",
+      "Data Utama — Fasilitas pendidikan (3072 points). Real GPS when present; else kab centroid (approx=true).",
+    href: "https://docs.google.com/spreadsheets/d/1thAoB7jLBRuq9BWLFbuZ6u0mB6szRMF-SFCRtPwgVGM",
   },
   {
     id: "compiled-r3p",
