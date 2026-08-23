@@ -7,12 +7,10 @@ import { spawnSync } from "node:child_process";
 import {
   existsSync,
   mkdirSync,
-  mkdtempSync,
   renameSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -58,7 +56,10 @@ const env = {
   NEXT_PUBLIC_BASE_PATH: pagesBase,
 };
 
-const parkRoot = mkdtempSync(path.join(tmpdir(), "aceh-static-export-"));
+// Same filesystem as the repo — rename() cannot cross mount points (/tmp).
+const parkRoot = path.join(root, ".static-export-park");
+rmSync(parkRoot, { recursive: true, force: true });
+mkdirSync(parkRoot, { recursive: true });
 const parked = [];
 
 function park(srcRel, destName) {
@@ -137,4 +138,5 @@ try {
     });
   }
   restore();
+  rmSync(parkRoot, { recursive: true, force: true });
 }
