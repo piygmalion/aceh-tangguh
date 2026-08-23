@@ -1,11 +1,30 @@
-/** Local free media (Unsplash License / Coverr-style stock). */
+/** Local free media (Unsplash License / Coverr-style stock) plus DJI hero slides. */
+const HERO_SLIDE_CREDIT = "Foto aerial DJI — dokumentasi Aceh Tangguh";
+
 export const SITE_MEDIA = {
   heroPoster: {
-    src: "/media/hero-coast.jpg",
-    alt: "Pantai tropis berbukit hijau",
-    credit: "Foto: Andreas Felske / Unsplash",
-    href: "https://unsplash.com/photos/ibHOwD3I9-s",
+    src: "/media/hero-slides/01.jpg",
+    alt: "Foto aerial DJI — tenda tanggap darurat di pemukiman tepi sungai",
+    credit: HERO_SLIDE_CREDIT,
   },
+  heroSlides: [
+    {
+      src: "/media/hero-slides/01.jpg",
+      alt: "Foto aerial DJI — tenda tanggap darurat di pemukiman tepi sungai",
+    },
+    {
+      src: "/media/hero-slides/02.jpg",
+      alt: "Foto aerial DJI — desa di tepi sungai setelah banjir",
+    },
+    {
+      src: "/media/hero-slides/03.jpg",
+      alt: "Foto aerial DJI — permukiman, sungai, dan perbukitan Aceh",
+    },
+    {
+      src: "/media/hero-slides/04.jpg",
+      alt: "Foto aerial DJI — jembatan rusak dan sungai keruh pasca banjir",
+    },
+  ],
   heroVideo: {
     src: "/media/hero-loop.mp4",
     credit: "Video: Coverr / Pexels (free stock)",

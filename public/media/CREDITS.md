@@ -1,13 +1,17 @@
 # Media & UI credits
 
+## Hero slides (DJI documentation)
+- hero-slides/01.jpg … 04.jpg — Foto aerial DJI — dokumentasi Aceh Tangguh
+- Used as the homepage hero slideshow (no Unsplash credit)
+
 ## Photos (Unsplash License)
-- hero-coast.jpg — Andreas Felske — https://unsplash.com/photos/ibHOwD3I9-s
+- hero-coast.jpg — Andreas Felske — https://unsplash.com/photos/ibHOwD3I9-s (legacy still; no longer the hero poster)
 - teaser-aerial.jpg — Unsplash Raja Ampat — https://unsplash.com/photos/TMsAA2N1lMc
 - forest-mist.jpg / hills-indo.jpg — Unsplash Indonesia nature
 - community.jpg — Unsplash community/volunteers
 
 ## Video
-- hero-loop.mp4 — free stock (Coverr/Pexels), compressed locally
+- hero-loop.mp4 — free stock (Coverr/Pexels), compressed locally (kept on disk; not used behind the homepage hero)
 
 ## UI components (21st.dev / Magic UI community)
 Adapted into `src/components/ui/`:

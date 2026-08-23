@@ -32,6 +32,7 @@ function StatSkeleton() {
 export function HeroSection() {
   const t = useTranslations("hero");
   const [tab, setTab] = useState<HeroTab>("utama");
+  const [hovering, setHovering] = useState(false);
   const { data, isLoading, isError } = useQuery({
     queryKey: qk.liveStats,
     queryFn: fetchLiveStats,
@@ -57,16 +58,21 @@ export function HeroSection() {
           ? "min-h-[100svh] justify-start pb-16"
           : "min-h-[100svh] justify-end pb-20 sm:pb-24"
       )}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
     >
       <MediaBackdrop
         imageSrc={SITE_MEDIA.heroPoster.src}
         imageAlt={SITE_MEDIA.heroPoster.alt}
-        videoSrc={tab === "irbi" ? undefined : SITE_MEDIA.heroVideo.src}
+        imageSrcs={SITE_MEDIA.heroSlides.map((slide) => slide.src)}
+        imageAlts={SITE_MEDIA.heroSlides.map((slide) => slide.alt)}
         priority
+        paused={hovering}
+        showDots
         overlayClassName={
           tab === "irbi"
             ? "from-black/85 via-black/75 to-[var(--bg)]"
-            : "from-black/70 via-black/55 to-[var(--bg)]"
+            : "from-black/78 via-black/62 to-[var(--bg)]"
         }
       />
 
@@ -185,7 +191,7 @@ export function HeroSection() {
             </BlurFade>
 
             <p className="mt-6 text-[10px] text-white/40">
-              {SITE_MEDIA.heroPoster.credit} · {SITE_MEDIA.heroVideo.credit}
+              {SITE_MEDIA.heroPoster.credit}
             </p>
           </div>
         )}
