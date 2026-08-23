@@ -11,7 +11,8 @@
     "seed:area-meta": "bun scripts/seed-area-meta-from-fixtures.mjs",
     "build:weather": "node scripts/build-weather-snapshot.mjs",
     "resolve:adm4": "node scripts/resolve-adm4-codes.mjs",
-    "refresh:weather": "node scripts/refresh-weather-cache.mjs"
+    "refresh:weather": "node scripts/refresh-weather-cache.mjs",
+    "verify:weather": "node scripts/verify-weather-setup.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.3",
