@@ -2,13 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { WeatherApiResponse } from "@/lib/weather-types";
 import { WeatherKabCard } from "./WeatherKabCard";
 import { WeatherAttribution } from "./WeatherAttribution";
 
 async function fetchWeather(): Promise<WeatherApiResponse> {
-  const res = await fetch("/api/weather");
+  const res = await fetchPublicApi("/api/weather");
   if (!res.ok) throw new Error("Failed to load weather");
   return res.json();
 }

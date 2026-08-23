@@ -1,4 +1,5 @@
 import type { AreaLayerKey, MarkerLayerKey } from "@/lib/types";
+import { withBasePath } from "@/lib/preview/env";
 
 export const FLAT_ICON_BASE = "/icons/flat";
 
@@ -44,7 +45,7 @@ export const DISASTER_JENIS_ICON_FILES: Record<string, string> = {
 };
 
 export function flatIconPath(file: string): string {
-  return `${FLAT_ICON_BASE}/${file}`;
+  return withBasePath(`${FLAT_ICON_BASE}/${file}`);
 }
 
 export function getLayerIconPath(key: MarkerLayerKey): string {

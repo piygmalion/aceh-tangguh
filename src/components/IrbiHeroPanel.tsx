@@ -17,6 +17,7 @@ import {
 import { Map } from "lucide-react";
 import { Chip } from "@/components/ui/Chip";
 import { Link } from "@/i18n/routing";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 
 export type IrbiKab = {
@@ -69,7 +70,7 @@ const HAZARD_COLORS: Record<(typeof HAZARD_KEYS)[number], string> = {
 };
 
 async function fetchIrbi(): Promise<IrbiPayload> {
-  const res = await fetch("/api/irbi");
+  const res = await fetchPublicApi("/api/irbi");
   if (!res.ok) throw new Error("irbi fetch failed");
   return res.json();
 }

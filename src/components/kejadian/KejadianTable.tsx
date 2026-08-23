@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Link } from "@/i18n/routing";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import { formatStatusLabel, normalizeStatus } from "@/lib/status-vocab";
 import type { KejadianListResult, KejadianRow } from "@/lib/kejadian-types";
@@ -59,7 +60,7 @@ function buildQuery(f: Filters, overrides?: Partial<Filters>): string {
 }
 
 async function fetchKejadian(qs: string): Promise<KejadianListResult> {
-  const res = await fetch(`/api/kejadian?${qs}`);
+  const res = await fetchPublicApi(`/api/kejadian?${qs}`);
   if (!res.ok) throw new Error("kejadian fetch failed");
   return res.json();
 }

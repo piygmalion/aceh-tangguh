@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronDown, Layers } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { AreaLayerKey, LegendModel, MarkerLayerKey } from "@/lib/types";
 import { LAYER_COLORS } from "@/lib/layer-colors";
@@ -23,7 +24,7 @@ import {
 } from "@/lib/map-layers-catalog";
 
 async function fetchAreaLegend(key: AreaLayerKey): Promise<LegendModel | null> {
-  const res = await fetch(`/api/layers/areas/${key}`);
+  const res = await fetchPublicApi(`/api/layers/areas/${key}`);
   if (!res.ok) return null;
   const json = await res.json();
   return (json.legend as LegendModel) ?? null;

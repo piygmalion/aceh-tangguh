@@ -22,6 +22,47 @@ bun run dev
 
 Build: `bun run build`
 
+Static GitHub Pages preview (homepage + map from fixtures, no API routes):
+
+```
+STATIC_EXPORT=1 bun run build
+# or: STATIC_EXPORT=1 npm run build
+```
+
+Writes `out/`. Serve locally with any static server, e.g. `npx serve out`.
+The production Node app is unchanged: omit `STATIC_EXPORT` and use `bun run build` + `bun run start`.
+
+## GitHub Pages
+
+Expected URL: `https://piygmalion.github.io/aceh-tangguh/`
+
+1. Repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. Push to `main` (or run **Actions → Deploy GitHub Pages preview → Run workflow**).
+3. Optional repository **Variables / Secrets** (preview works from fixtures without them):
+
+| Name | Type | Required | Purpose |
+|------|------|----------|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Variable | No | Exposed to the static bundle if you want the anon client available |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Secret | No | Same; never commit `.env.local` |
+
+Do **not** set `SUPABASE_SERVICE_ROLE_KEY` or laporan/weather cron secrets on the Pages job.
+
+### What works on the static preview
+
+- `/` → `/id/` (and `/en/`) homepage: hero stats (fallback numbers), hazards fallback, weather snapshot, R3P + IRBI charts, map teaser
+- `/id/peta` (and `/en/peta`): marker + area layers from `public/fixtures`, PMTiles from `public/tiles`
+- Read-only catalogs: data bencana, anggaran, publikasi, sumber data, metodologi
+
+### What does not work
+
+- All `src/app/api/**` routes (GitHub Pages is static files only)
+- Staff admin (`/id/admin`) — shows a short “not available” page
+- Submitting laporan / reports / uploads
+- Village profile panel (needs `profil_desa` via API; the public fixture is a summary only)
+- Live Supabase-backed stats unless you later point clients at anon queries; this preview prefers fixtures
+
+`scripts/run-next-build.mjs` parks `src/app/api`, `src/middleware.ts`, and admin SSR only for the export build, then restores them. Normal `bun run build` is still `next build` for Node hosting.
+
 
 ## Supabase backend
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { LayoutDashboard, LogIn, LogOut, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
+import { isStaticExport } from "@/lib/preview/env";
 import { createAuthBrowserClient } from "@/lib/supabase/ssr-browser";
 import type { AdminProfile } from "@/lib/auth/types";
 
@@ -20,6 +21,7 @@ export function AuthMenu() {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const staticPreview = isStaticExport();
 
   async function refreshMe() {
     try {
@@ -35,6 +37,7 @@ export function AuthMenu() {
   }
 
   useEffect(() => {
+    if (staticPreview) return;
     void refreshMe();
     const supabase = createAuthBrowserClient();
     if (!supabase) return;
@@ -42,7 +45,7 @@ export function AuthMenu() {
       void refreshMe();
     });
     return () => data.subscription.unsubscribe();
-  }, []);
+  }, [staticPreview]);
 
   useEffect(() => {
     if (!open) return;
@@ -63,6 +66,8 @@ export function AuthMenu() {
     router.push("/");
     setBusy(false);
   }
+
+  if (staticPreview) return null;
 
   if (me === null) {
     return (

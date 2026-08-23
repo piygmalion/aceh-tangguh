@@ -11,6 +11,7 @@ import {
   getKejadianJenisList,
   type JenisBencana,
 } from "@/lib/laporan/definitions";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 
 export function ReportKejadianForm() {
   const t = useTranslations("laporKejadian");
@@ -47,7 +48,7 @@ export function ReportKejadianForm() {
     }
     setBusy(true);
     try {
-      const res = await fetch("/api/laporan/kejadian", {
+      const res = await fetchPublicApi("/api/laporan/kejadian", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

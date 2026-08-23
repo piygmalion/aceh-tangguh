@@ -14,6 +14,8 @@ import Map, {
   type ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { fetchPublicApi } from "@/lib/preview/public-api";
+import { withBasePath } from "@/lib/preview/env";
 import { qk } from "@/lib/qk";
 import {
   BASEMAP_STYLES,
@@ -95,20 +97,20 @@ type AreaResponse = FeatureCollection & { legend?: LegendModel };
 
 async function fetchMarkers(keys: MarkerLayerKey[]): Promise<FeatureCollection> {
   const qs = keys.length ? `?keys=${keys.join(",")}` : "";
-  const res = await fetch(`/api/layers/markers${qs}`);
+  const res = await fetchPublicApi(`/api/layers/markers${qs}`);
   if (!res.ok) throw new Error("Failed to load markers");
   return res.json();
 }
 
 async function fetchArea(key: AreaLayerKey): Promise<AreaResponse> {
-  const res = await fetch(`/api/layers/areas/${key}`);
+  const res = await fetchPublicApi(`/api/layers/areas/${key}`);
   if (!res.ok) throw new Error("Failed to load area layer");
   return res.json();
 }
 
 async function pmtilesExists(path: string): Promise<boolean> {
   try {
-    const res = await fetch(path, { method: "HEAD", cache: "force-cache" });
+    const res = await fetch(withBasePath(path), { method: "HEAD", cache: "force-cache" });
     return res.ok;
   } catch {
     return false;
@@ -281,7 +283,7 @@ export function MapViewport({
 
   const pmtilesUrl = useMemo(() => {
     if (!usePmtiles || !pmtilesMeta || typeof window === "undefined") return null;
-    const abs = new URL(pmtilesMeta.url, window.location.origin).href;
+    const abs = new URL(withBasePath(pmtilesMeta.url), window.location.origin).href;
     return `pmtiles://${abs}`;
   }, [usePmtiles, pmtilesMeta]);
 

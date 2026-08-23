@@ -1,6 +1,7 @@
 "use client";
 
 import type { FormFieldDef } from "@/lib/laporan/definitions";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 
 type Props = {
   fields: FormFieldDef[];
@@ -144,7 +145,7 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
               body.set("file", file);
               body.set("laporan_tipe", laporanTipe);
               body.set("field_key", field.field_key);
-              const res = await fetch("/api/laporan/upload", { method: "POST", body });
+              const res = await fetchPublicApi("/api/laporan/upload", { method: "POST", body });
               const json = await res.json();
               if (!res.ok) throw new Error(json.error ?? "Upload failed");
               uploaded.push(json.path as string);

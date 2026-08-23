@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { WeatherApiResponse, WeatherForecastKab } from "@/lib/weather-types";
 import { WeatherIcon } from "./WeatherIcon";
@@ -12,7 +13,7 @@ const AUTOPLAY_MS = 4500;
 const SKELETON_COUNT = 5;
 
 async function fetchWeather(): Promise<WeatherApiResponse> {
-  const res = await fetch("/api/weather");
+  const res = await fetchPublicApi("/api/weather");
   if (!res.ok) throw new Error("Failed to load weather");
   return res.json();
 }

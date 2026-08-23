@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
 import type { HazardStatus } from "@/lib/types";
 import { createServerClient } from "@/lib/supabase/server";
+import { HAZARD_STATUS_FALLBACK } from "@/lib/preview/fallbacks";
 
 export const dynamic = "force-dynamic";
 
-const FALLBACK: HazardStatus[] = [
-  { kind: "banjir", label: "Banjir", count: 2, severity: "med" },
-  { kind: "longsor", label: "Longsor", count: 1, severity: "high" },
-  { kind: "gempa", label: "Gempa", count: 0, severity: "low" },
-  { kind: "kebakaran", label: "Kebakaran", count: 0, severity: "low" },
-];
+const FALLBACK: HazardStatus[] = HAZARD_STATUS_FALLBACK;
 
 const SEVERITY_ORDER: Record<string, number> = {
   high: 0,

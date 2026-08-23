@@ -19,6 +19,7 @@ import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Link } from "@/i18n/routing";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import {
   metersToKm,
@@ -58,7 +59,7 @@ type BarTipRow = {
 };
 
 async function fetchR3PSummary(): Promise<R3PSummaryResponse> {
-  const res = await fetch("/api/r3p/summary");
+  const res = await fetchPublicApi("/api/r3p/summary");
   if (!res.ok) throw new Error("r3p summary fetch failed");
   return res.json();
 }

@@ -4,11 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Chip } from "@/components/ui/Chip";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { HazardStatus } from "@/lib/types";
 
 async function fetchHazards(): Promise<HazardStatus[]> {
-  const res = await fetch("/api/hazards");
+  const res = await fetchPublicApi("/api/hazards");
   if (!res.ok) throw new Error("Failed to load hazards");
   return res.json();
 }

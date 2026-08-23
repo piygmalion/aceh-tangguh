@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Home, X } from "lucide-react";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import {
   formatMetricId,
@@ -25,7 +26,7 @@ async function fetchKecamatan(sel: VillageClickSelection): Promise<KecamatanProf
   if (sel.kabupaten) params.set("kabupaten", sel.kabupaten);
   if (sel.kecamatan) params.set("kecamatan", sel.kecamatan);
   if (sel.kodeKecamatan) params.set("kode_kecamatan", sel.kodeKecamatan);
-  const res = await fetch(`/api/profil-desa/kecamatan?${params.toString()}`);
+  const res = await fetchPublicApi(`/api/profil-desa/kecamatan?${params.toString()}`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("kecamatan fetch failed");
   return res.json();
@@ -44,7 +45,7 @@ async function fetchDesa(opts: {
   if (opts.nama) params.set("nama", opts.nama);
   if (opts.kabupaten) params.set("kabupaten", opts.kabupaten);
   if (opts.kecamatan) params.set("kecamatan", opts.kecamatan);
-  const res = await fetch(`/api/profil-desa/desa?${params.toString()}`);
+  const res = await fetchPublicApi(`/api/profil-desa/desa?${params.toString()}`);
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("desa fetch failed");
   return res.json();
