@@ -63,12 +63,7 @@ export function SiteFooter() {
             Kredit visual
           </div>
           <ul className="mt-3 space-y-2 text-xs leading-relaxed text-[var(--text-dim)]">
-            <li>
-              <a className="hover:text-[var(--accent)]" href={SITE_MEDIA.heroPoster.href} target="_blank" rel="noreferrer">
-                {SITE_MEDIA.heroPoster.credit}
-              </a>
-            </li>
-            <li>{SITE_MEDIA.heroVideo.credit}</li>
+            <li>{SITE_MEDIA.heroPoster.credit}</li>
             {UI_CREDITS.map((c) => (
               <li key={c.name}>
                 <a className="hover:text-[var(--accent)]" href={c.href} target="_blank" rel="noreferrer">
