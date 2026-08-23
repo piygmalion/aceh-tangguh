@@ -20,6 +20,10 @@ Usage:
   python3 scripts/build-main-markers.py --write   # overwrite fixtures/markers.geojson
 
 Without --write, prints layer counts only (dry-run merge in memory).
+
+After rebuilding disasterEvents, run scripts/snap-offshore-disaster-markers.py
+to pull any points that fall outside kabupaten polygons back onto land
+(keeps original coords in properties.coord_original).
 """
 from __future__ import annotations
 
