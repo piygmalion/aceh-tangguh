@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-const DEFAULT_INTERVAL_MS = 7000;
+const DEFAULT_INTERVAL_MS = 5000;
 
 type Props = {
   imageSrc: string;
