@@ -7,8 +7,6 @@ import { useTranslations } from "next-intl";
 import { qk } from "@/lib/qk";
 import type { AreaLayerKey, LegendModel, MarkerLayerKey } from "@/lib/types";
 import { LAYER_COLORS } from "@/components/map/MapViewport";
-import { FacHealthIcon } from "@/components/icons/FacHealthIcon";
-import { FacEducationIcon } from "@/components/icons/FacEducationIcon";
 
 const AREA_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
@@ -231,29 +229,11 @@ export function MapToolbar({
                           checked={active}
                           onChange={() => onToggleMarker(opt.key)}
                         />
-                        {opt.key === "facHealth" ? (
-                          <span
-                            className="map-layer-icon"
-                            style={{ color: LAYER_COLORS.facHealth }}
-                            aria-hidden
-                          >
-                            <FacHealthIcon className="h-3.5 w-3.5" />
-                          </span>
-                        ) : opt.key === "facEducation" ? (
-                          <span
-                            className="map-layer-icon"
-                            style={{ color: LAYER_COLORS.facEducation }}
-                            aria-hidden
-                          >
-                            <FacEducationIcon className="h-3.5 w-3.5" />
-                          </span>
-                        ) : (
-                          <span
-                            className="map-swatch"
-                            style={{ background: LAYER_COLORS[opt.key] }}
-                            aria-hidden
-                          />
-                        )}
+                        <span
+                          className="map-swatch"
+                          style={{ background: LAYER_COLORS[opt.key] }}
+                          aria-hidden
+                        />
                         <span className="leading-snug">{t(opt.labelKey)}</span>
                       </label>
                     );
@@ -273,28 +253,10 @@ export function MapToolbar({
                   <ul className="space-y-2">
                     {markerLayers.map((key) => (
                       <li key={key} className="flex items-center gap-2.5">
-                        {key === "facHealth" ? (
-                          <span
-                            className="map-layer-icon"
-                            style={{ color: LAYER_COLORS.facHealth }}
-                            aria-hidden
-                          >
-                            <FacHealthIcon className="h-3.5 w-3.5" />
-                          </span>
-                        ) : key === "facEducation" ? (
-                          <span
-                            className="map-layer-icon"
-                            style={{ color: LAYER_COLORS.facEducation }}
-                            aria-hidden
-                          >
-                            <FacEducationIcon className="h-3.5 w-3.5" />
-                          </span>
-                        ) : (
-                          <span
-                            className="map-swatch"
-                            style={{ background: LAYER_COLORS[key] }}
-                          />
-                        )}
+                        <span
+                          className="map-swatch"
+                          style={{ background: LAYER_COLORS[key] }}
+                        />
                         <span>{t(key)}</span>
                       </li>
                     ))}

@@ -24,8 +24,6 @@ import {
   type MarkerLayerKey,
 } from "@/lib/types";
 import type { FeatureCollection, Point } from "geojson";
-import { FacHealthIcon } from "@/components/icons/FacHealthIcon";
-import { FacEducationIcon } from "@/components/icons/FacEducationIcon";
 
 export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
   disasterEvents: "#f59e0b",
@@ -324,32 +322,12 @@ export function MapViewport({
                 setPopup({ lng, lat, title, status });
               }}
             >
-              {layer === "facHealth" ? (
-                <button
-                  type="button"
-                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-white shadow-md ring-1 ring-black/10"
-                  style={{ color: LAYER_COLORS.facHealth }}
-                  aria-label={title}
-                >
-                  <FacHealthIcon className="h-4 w-4" />
-                </button>
-              ) : layer === "facEducation" ? (
-                <button
-                  type="button"
-                  className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-white shadow-md ring-1 ring-black/10"
-                  style={{ color: LAYER_COLORS.facEducation }}
-                  aria-label={title}
-                >
-                  <FacEducationIcon className="h-4 w-4" />
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="h-3.5 w-3.5 rounded-full border-2 border-white shadow-md ring-1 ring-black/10"
-                  style={{ background: LAYER_COLORS[layer] ?? "#999" }}
-                  aria-label={title}
-                />
-              )}
+              <button
+                type="button"
+                className="h-3.5 w-3.5 rounded-full border-2 border-white shadow-md ring-1 ring-black/10"
+                style={{ background: LAYER_COLORS[layer] ?? "#999" }}
+                aria-label={title}
+              />
             </Marker>
           );
         })}
