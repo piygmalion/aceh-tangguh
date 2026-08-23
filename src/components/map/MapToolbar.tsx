@@ -89,6 +89,7 @@ export function MapToolbar({
   const [tab, setTab] = useState<TabKey>("lokasi");
   /** Mobile bottom-sheet open state. Desktop panel is always shown via md: classes. */
   const [expanded, setExpanded] = useState(false);
+  const [jenisExpanded, setJenisExpanded] = useState(false);
 
   const { data: areaLegend } = useQuery({
     queryKey: [...qk.area(areaLayer ?? "villageDistribution"), "legend"],
@@ -231,26 +232,68 @@ export function MapToolbar({
                   </legend>
                   {group.options.map((opt) => {
                     const active = markerLayers.includes(opt.key);
+                    const isDisasterEvents = opt.key === "disasterEvents";
                     return (
                       <div key={opt.key}>
-                        <label
-                          className="map-option"
-                          data-active={active ? "true" : "false"}
-                        >
-                          <input
-                            className="map-check"
-                            type="checkbox"
-                            checked={active}
-                            onChange={() => onToggleMarker(opt.key)}
-                          />
-                          <span
-                            className="map-swatch"
-                            style={{ background: LAYER_COLORS[opt.key] }}
-                            aria-hidden
-                          />
-                          <span className="leading-snug">{t(opt.labelKey)}</span>
-                        </label>
-                        {opt.key === "disasterEvents" && (
+                        {isDisasterEvents ? (
+                          <div
+                            className="map-option"
+                            data-active={active ? "true" : "false"}
+                            role="button"
+                            tabIndex={0}
+                            aria-expanded={jenisExpanded}
+                            onClick={() => setJenisExpanded((v) => !v)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setJenisExpanded((v) => !v);
+                              }
+                            }}
+                          >
+                            <input
+                              className="map-check"
+                              type="checkbox"
+                              checked={active}
+                              onChange={() => onToggleMarker(opt.key)}
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => e.stopPropagation()}
+                            />
+                            <span
+                              className="map-swatch"
+                              style={{ background: LAYER_COLORS[opt.key] }}
+                              aria-hidden
+                            />
+                            <span className="min-w-0 flex-1 leading-snug">
+                              {t(opt.labelKey)}
+                            </span>
+                            <ChevronDown
+                              size={16}
+                              className={`shrink-0 text-[var(--text-dim)] transition duration-200 ${
+                                jenisExpanded ? "rotate-180" : ""
+                              }`}
+                              aria-hidden
+                            />
+                          </div>
+                        ) : (
+                          <label
+                            className="map-option"
+                            data-active={active ? "true" : "false"}
+                          >
+                            <input
+                              className="map-check"
+                              type="checkbox"
+                              checked={active}
+                              onChange={() => onToggleMarker(opt.key)}
+                            />
+                            <span
+                              className="map-swatch"
+                              style={{ background: LAYER_COLORS[opt.key] }}
+                              aria-hidden
+                            />
+                            <span className="leading-snug">{t(opt.labelKey)}</span>
+                          </label>
+                        )}
+                        {isDisasterEvents && jenisExpanded && (
                           <div className="mt-0.5 space-y-0.5 pl-6">
                             {DISASTER_JENIS.map((jenis) => {
                               const childChecked =
