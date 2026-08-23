@@ -13,6 +13,10 @@ export const routing = defineRouting({
       id: "/data-bencana",
       en: "/disaster-data",
     },
+    "/anggaran-bencana": {
+      id: "/anggaran-bencana",
+      en: "/disaster-budget",
+    },
     "/sumber-data": {
       id: "/sumber-data",
       en: "/data-sources",

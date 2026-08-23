@@ -75,6 +75,28 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: undefined,
   },
   {
+    id: "analisis-anggaran-2026",
+    titleId: "Analisis anggaran penanganan bencana APBA 2026",
+    titleEn: "APBA 2026 disaster handling budget analysis",
+    source: "PERGUB Penjabaran APBA Nomor 4 Tahun 2026 — agregasi kegiatan penanganan bencana",
+    license: "Dokumen publik Pemerintah Aceh — attribute PERGUB / APBA",
+    date: "2026 (fixture 2026-08-23)",
+    format: "JSON (analisis-anggaran-2026.json)",
+    usedFor:
+      "Halaman Anggaran Bencana — KPI, breakdown per fase/SKPD/kategori, perbandingan YoY 2025–2026",
+  },
+  {
+    id: "kegiatan-penanganan-2026",
+    titleId: "Kegiatan penanganan bencana APBA 2026",
+    titleEn: "APBA 2026 disaster handling activities",
+    source: "PERGUB Penjabaran APBA Nomor 4 Tahun 2026 — 24 kegiatan / 91 item anggaran",
+    license: "Dokumen publik Pemerintah Aceh — attribute PERGUB / APBA",
+    date: "2026 (fixture 2026-08-23; total ~Rp 176.206.915.272)",
+    format: "JSON (kegiatan-penanganan-2026.json)",
+    usedFor:
+      "Halaman Anggaran Bencana — tabel kegiatan filterable dengan uraian anggaran & program",
+  },
+  {
     id: "titik-pengungsian",
     titleId: "Titik pengungsian (removed from Data Utama)",
     titleEn: "Displacement / shelter points (removed from Core data)",

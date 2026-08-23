@@ -13,4 +13,5 @@ export const qk = {
   kejadian: (params: Record<string, string | number | undefined>) =>
     ["kejadian", params] as const,
   kejadianDetail: (id: string) => ["kejadian", "detail", id] as const,
+  anggaran: ["anggaran", "2026"] as const,
 };

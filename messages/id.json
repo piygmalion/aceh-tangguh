@@ -13,7 +13,8 @@
     "closeMenu": "Tutup menu",
     "sumberData": "Sumber data",
     "metodologi": "Metodologi",
-    "dataBencana": "Data bencana"
+    "dataBencana": "Data bencana",
+    "anggaranBencana": "Anggaran Bencana"
   },
   "hero": {
     "title": "Ketangguhan Aceh dimulai dari data yang bisa dilihat",
@@ -306,6 +307,90 @@
       "lihatPeta": "Lihat di peta",
       "googleMaps": "Google Maps",
       "noFoto": "Tidak ada foto"
+    }
+  },
+  "anggaranBencana": {
+    "title": "Anggaran Bencana",
+    "lead": "Ringkasan dan penelusuran anggaran penanganan bencana dalam Penjabaran APBA 2026 — 24 kegiatan lintas SKPD dengan total sekitar Rp 176,2 miliar, dalam konteks risiko IRB Provinsi 192,75 (TINGGI).",
+    "source": "Sumber: PERGUB Penjabaran APBA Nomor 4 Tahun 2026 · fixture Aceh Tangguh",
+    "backHome": "Beranda",
+    "seeData": "Data bencana",
+    "seeSumber": "Sumber data",
+    "loading": "Memuat anggaran…",
+    "error": "Gagal memuat data anggaran.",
+    "kpi": {
+      "total": "Total anggaran",
+      "kegiatan": "Kegiatan",
+      "kegiatanSub": "kegiatan",
+      "item": "Item anggaran",
+      "itemSub": "baris belanja",
+      "yoy": "Perubahan YoY",
+      "risiko": "Kelas risiko"
+    },
+    "insight": {
+      "faseTitle": "Dominasi tanggap darurat",
+      "faseBody": "Fase {label} menyerap {pct}% anggaran ({amount}) — fokus utama APBA 2026 masih pada respons cepat.",
+      "skpdTitle": "SKPD terbesar",
+      "skpdBody": "{label} mengelola {pct}% dari total ({amount}), mencerminkan peran perlindungan sosial dan logistik.",
+      "kategoriTitle": "Kategori teratas",
+      "kategoriBody": "Kategori {label} terbesar dengan {pct}% ({amount}) dari belanja penanganan bencana."
+    },
+    "chart": {
+      "breakdownTitle": "Distribusi anggaran",
+      "viewAria": "Tampilan breakdown",
+      "perFase": "Per fase",
+      "perSkpd": "Per SKPD",
+      "perKategori": "Per kategori",
+      "clickHint": "Klik batang untuk memfilter tabel kegiatan di bawah.",
+      "filteredBy": "Filter: {label}",
+      "clearSelection": "Hapus filter grafik",
+      "yoyTitle": "Perbandingan 2025 vs 2026",
+      "yoyLead": "Naik {pct} (selisih {selisih}) dibanding tahun sebelumnya.",
+      "anggaran": "Anggaran"
+    },
+    "table": {
+      "title": "Daftar kegiatan",
+      "showing": "{count} kegiatan ditampilkan",
+      "reset": "Reset filter",
+      "searchPlaceholder": "Cari nama, program, uraian…",
+      "fase": "Fase",
+      "kategori": "Kategori",
+      "skpd": "SKPD",
+      "allFase": "Semua fase",
+      "allKategori": "Semua kategori",
+      "allSkpd": "Semua SKPD",
+      "empty": "Tidak ada kegiatan yang cocok.",
+      "cols": {
+        "nama": "Nama kegiatan",
+        "fase": "Fase",
+        "kategori": "Kategori",
+        "skpd": "SKPD",
+        "anggaran": "Anggaran"
+      },
+      "detail": {
+        "program": "Program / kegiatan APBA",
+        "anggaranFull": "Nilai anggaran",
+        "items": "{count} item anggaran",
+        "uraian": "Uraian anggaran"
+      }
+    },
+    "fase": {
+      "tanggap_darurat": "Tanggap darurat",
+      "mitigasi": "Mitigasi",
+      "penanganan": "Penanganan",
+      "kesiapsiagaan": "Kesiapsiagaan",
+      "rehabilitasi": "Rehabilitasi"
+    },
+    "kategori": {
+      "logistik_dan_bantuan": "Logistik & bantuan",
+      "rescue_evakuasi": "Rescue & evakuasi",
+      "infrastruktur_pengaman": "Infrastruktur pengaman",
+      "perlindungan_sosial": "Perlindungan sosial",
+      "penanganan_umum": "Penanganan umum",
+      "ketahanan_pangan": "Ketahanan pangan",
+      "tenaga_penanganan": "Tenaga penanganan",
+      "edukasi_dan_sosialisasi": "Edukasi & sosialisasi",
+      "layanan_kesehatan": "Layanan kesehatan"
     }
   }
 }

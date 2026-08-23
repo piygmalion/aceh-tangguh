@@ -13,7 +13,8 @@
     "closeMenu": "Close menu",
     "sumberData": "Data sources",
     "metodologi": "Methodology",
-    "dataBencana": "Disaster data"
+    "dataBencana": "Disaster data",
+    "anggaranBencana": "Disaster budget"
   },
   "hero": {
     "title": "Aceh resilience starts with visible data",
@@ -306,6 +307,90 @@
       "lihatPeta": "View on map",
       "googleMaps": "Google Maps",
       "noFoto": "No photo"
+    }
+  },
+  "anggaranBencana": {
+    "title": "Disaster budget",
+    "lead": "Summary and exploration of Aceh’s APBA 2026 disaster-handling budget — 24 activities across agencies totaling about Rp 176.2 billion, against a provincial IRB of 192.75 (HIGH).",
+    "source": "Source: PERGUB APBA elaboration No. 4 / 2026 · Aceh Tangguh fixture",
+    "backHome": "Home",
+    "seeData": "Disaster data",
+    "seeSumber": "Data sources",
+    "loading": "Loading budget…",
+    "error": "Failed to load budget data.",
+    "kpi": {
+      "total": "Total budget",
+      "kegiatan": "Activities",
+      "kegiatanSub": "activities",
+      "item": "Budget items",
+      "itemSub": "line items",
+      "yoy": "YoY change",
+      "risiko": "Risk class"
+    },
+    "insight": {
+      "faseTitle": "Emergency response dominates",
+      "faseBody": "The {label} phase absorbs {pct}% of the budget ({amount}) — APBA 2026 still prioritizes rapid response.",
+      "skpdTitle": "Largest agency",
+      "skpdBody": "{label} manages {pct}% of the total ({amount}), reflecting social protection and logistics roles.",
+      "kategoriTitle": "Top category",
+      "kategoriBody": "{label} is the largest category at {pct}% ({amount}) of disaster-handling spend."
+    },
+    "chart": {
+      "breakdownTitle": "Budget breakdown",
+      "viewAria": "Breakdown view",
+      "perFase": "By phase",
+      "perSkpd": "By agency",
+      "perKategori": "By category",
+      "clickHint": "Click a bar to filter the activity table below.",
+      "filteredBy": "Filter: {label}",
+      "clearSelection": "Clear chart filter",
+      "yoyTitle": "2025 vs 2026 comparison",
+      "yoyLead": "Up {pct} (difference {selisih}) versus the previous year.",
+      "anggaran": "Budget"
+    },
+    "table": {
+      "title": "Activities",
+      "showing": "{count} activities shown",
+      "reset": "Reset filters",
+      "searchPlaceholder": "Search name, program, line items…",
+      "fase": "Phase",
+      "kategori": "Category",
+      "skpd": "Agency",
+      "allFase": "All phases",
+      "allKategori": "All categories",
+      "allSkpd": "All agencies",
+      "empty": "No activities match the filters.",
+      "cols": {
+        "nama": "Activity",
+        "fase": "Phase",
+        "kategori": "Category",
+        "skpd": "Agency",
+        "anggaran": "Budget"
+      },
+      "detail": {
+        "program": "APBA program / activity",
+        "anggaranFull": "Budget amount",
+        "items": "{count} budget items",
+        "uraian": "Budget line descriptions"
+      }
+    },
+    "fase": {
+      "tanggap_darurat": "Emergency response",
+      "mitigasi": "Mitigation",
+      "penanganan": "Handling",
+      "kesiapsiagaan": "Preparedness",
+      "rehabilitasi": "Rehabilitation"
+    },
+    "kategori": {
+      "logistik_dan_bantuan": "Logistics & aid",
+      "rescue_evakuasi": "Rescue & evacuation",
+      "infrastruktur_pengaman": "Protective infrastructure",
+      "perlindungan_sosial": "Social protection",
+      "penanganan_umum": "General handling",
+      "ketahanan_pangan": "Food security",
+      "tenaga_penanganan": "Response workforce",
+      "edukasi_dan_sosialisasi": "Education & outreach",
+      "layanan_kesehatan": "Health services"
     }
   }
 }
