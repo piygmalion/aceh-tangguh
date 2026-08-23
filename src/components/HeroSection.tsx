@@ -137,7 +137,7 @@ export function HeroSection() {
                     </span>
                   </ShimmerButton>
                 </Link>
-                <Link href="/lapor">
+                <Link href="/lapor/kejadian">
                   <button
                     type="button"
                     className={cn(
@@ -145,7 +145,17 @@ export function HeroSection() {
                     )}
                   >
                     <Megaphone size={18} />
-                    {t("ctaLapor")}
+                    {t("ctaLaporKejadian")}
+                  </button>
+                </Link>
+                <Link href="/lapor/penanganan">
+                  <button
+                    type="button"
+                    className={cn(
+                      "inline-flex h-12 items-center gap-2 rounded-full border border-white/25 bg-transparent px-6 text-sm font-semibold text-white/90 backdrop-blur-md transition hover:border-white/40 hover:bg-white/10"
+                    )}
+                  >
+                    {t("ctaLaporPenanganan")}
                   </button>
                 </Link>
               </div>

@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
-import { ReportForm } from "@/components/ReportForm";
+import { ReportChoiceHub } from "@/components/laporan/ReportChoiceHub";
 
 export default async function LaporPage({
   params,
@@ -12,8 +12,8 @@ export default async function LaporPage({
   return (
     <>
       <SiteNav />
-      <main className="mx-auto max-w-xl px-4 pb-16 pt-28">
-        <ReportForm />
+      <main className="mx-auto max-w-3xl px-4 pb-16 pt-28">
+        <ReportChoiceHub />
       </main>
       <SiteFooter />
     </>

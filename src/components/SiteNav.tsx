@@ -7,6 +7,7 @@ import { Link, usePathname } from "@/i18n/routing";
 import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthMenu } from "@/components/admin/AuthMenu";
+import { ReportLaporDropdown } from "@/components/laporan/ReportLaporDropdown";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
 export function SiteNav() {
@@ -23,8 +24,11 @@ export function SiteNav() {
     { key: "publikasi", href: "/publikasi" as const, label: t("publikasi") },
     { key: "sumberData", href: "/sumber-data" as const, label: t("sumberData") },
     { key: "metodologi", href: "/metodologi" as const, label: t("metodologi") },
-    { key: "lapor", href: "/lapor" as const, label: t("lapor") },
   ];
+
+  const laporActive =
+    pathname === "/lapor" ||
+    pathname.startsWith("/lapor/");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -84,6 +88,7 @@ export function SiteNav() {
                 </Link>
               );
             })}
+            <ReportLaporDropdown className={laporActive ? "ring-2 ring-[var(--accent)]/30 rounded-full" : ""} />
           </nav>
 
           <div className="flex items-center gap-2">
@@ -128,6 +133,9 @@ export function SiteNav() {
                   </Link>
                 );
               })}
+              <div className="px-1 py-2">
+                <ReportLaporDropdown />
+              </div>
             </nav>
             <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--glass-border)] pt-3 sm:hidden">
               <LocaleSwitch />

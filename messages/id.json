@@ -8,6 +8,8 @@
     "data": "Data",
     "publikasi": "Publikasi",
     "lapor": "Laporkan",
+    "laporKejadian": "Laporkan Kejadian",
+    "laporPenanganan": "Laporkan Penanganan",
     "home": "Beranda",
     "openMenu": "Buka menu",
     "closeMenu": "Tutup menu",
@@ -26,6 +28,8 @@
     "subtitle": "Observatorium & respons kebencanaan terbuka untuk publik dan operator di Aceh.",
     "ctaPeta": "Buka peta",
     "ctaLapor": "Laporkan kejadian",
+    "ctaLaporKejadian": "Laporkan Kejadian",
+    "ctaLaporPenanganan": "Laporkan Penanganan",
     "chipIncidents": "kejadian aktif",
     "chipPosko": "posko",
     "chipReports": "laporan / 24 jam",
@@ -80,7 +84,7 @@
     "sla": "Laporan dimoderasi sebelum tampil di peta publik (SLA target < 24 jam).",
     "step1": {
       "title": "Laporkan",
-      "body": "Isi topik, lokasi, dan deskripsi kejadian."
+      "body": "Pilih jenis laporan, isi lokasi, dan kirim."
     },
     "step2": {
       "title": "Moderasi",
@@ -90,7 +94,9 @@
       "title": "Tampil di peta",
       "body": "Laporan disetujui muncul sebagai titik di /peta."
     },
-    "cta": "Laporkan kejadian"
+    "cta": "Laporkan kejadian",
+    "ctaKejadian": "Laporkan Kejadian",
+    "ctaPenanganan": "Laporkan Penanganan"
   },
   "transparency": {
     "heading": "Transparansi data",
@@ -124,6 +130,8 @@
     "basemap": "Peta dasar",
     "theme": "Tema",
     "reportFab": "Laporkan",
+    "reportKejadian": "Laporkan Kejadian",
+    "reportPenanganan": "Laporkan Penanganan",
     "disasterEvents": "Kejadian bencana",
     "poskos": "Posko",
     "tendPoints": "Titik pengungsian",
@@ -200,6 +208,56 @@
     "consent": "Saya setuju laporan ditampilkan di peta publik setelah disetujui",
     "submit": "Kirim laporan",
     "success": "Laporan masuk antrian moderasi."
+  },
+  "laporHub": {
+    "title": "Laporkan ke masyarakat Aceh Tangguh",
+    "subtitle": "Pilih jenis laporan yang ingin Anda kirim. Laporan kejadian dapat tampil di peta setelah moderasi BPBA Pusdalops.",
+    "kejadianTitle": "Laporkan Kejadian",
+    "kejadianBody": "Laporkan bencana yang sedang atau baru terjadi di lokasi Anda.",
+    "kejadianCta": "Buka formulir kejadian",
+    "penangananTitle": "Laporkan Penanganan",
+    "penangananBody": "Laporkan bantuan yang diterima, belum diterima, atau aktivitas penanganan di lapangan.",
+    "penangananCta": "Buka formulir penanganan"
+  },
+  "laporKejadian": {
+    "title": "Laporkan Kejadian",
+    "subtitle": "Formulir laporan bencana untuk moderasi BPBA Pusdalops. Notifikasi status dikirim via WhatsApp.",
+    "chooseJenis": "Pilih jenis bencana",
+    "next": "Lanjut",
+    "back": "Kembali",
+    "consent": "Saya setuju laporan diproses BPBA dan dapat ditampilkan di peta publik setelah disetujui (identitas tidak ditampilkan).",
+    "submit": "Kirim laporan kejadian",
+    "success": "Laporan terkirim. Nomor:",
+    "needContact": "Telepon atau email wajib diisi untuk notifikasi WhatsApp."
+  },
+  "laporPenanganan": {
+    "title": "Laporkan Penanganan",
+    "subtitle": "Laporkan bantuan atau aktivitas penanganan secara mandiri.",
+    "notOnMap": "Laporan penanganan tidak ditampilkan di peta publik.",
+    "next": "Lanjut",
+    "back": "Kembali",
+    "submit": "Kirim laporan penanganan",
+    "success": "Laporan terkirim. Nomor:",
+    "needContact": "Telepon atau email wajib diisi untuk notifikasi WhatsApp.",
+    "deskripsiMin": "Deskripsi penanganan minimal 50 karakter."
+  },
+  "laporForm": {
+    "identityTitle": "Identitas pelapor",
+    "identityNote": "Data identitas anonim ke publik dan hanya digunakan untuk moderasi serta notifikasi WhatsApp.",
+    "nama": "Nama lengkap",
+    "nik": "NIK (16 digit)",
+    "telepon": "Telepon / WhatsApp",
+    "email": "Email",
+    "kontakDarurat": "Kontak darurat",
+    "gpsTitle": "Lokasi (GPS)",
+    "gpsCapture": "Rekam koordinat",
+    "gpsCapturing": "Merekam…",
+    "gpsFailed": "Gagal mengambil GPS. Isi koordinat manual.",
+    "gpsUnsupported": "GPS tidak didukung di perangkat ini.",
+    "gpsOutsideAceh": "Koordinat harus berada di wilayah Aceh.",
+    "kabupaten": "Kabupaten / Kota",
+    "kecamatan": "Kecamatan",
+    "desa": "Desa / Gampong"
   },
   "hazards": {
     "label": "Status hazard",

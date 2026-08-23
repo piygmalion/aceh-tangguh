@@ -54,11 +54,16 @@ export function ParticipationSection() {
           ))}
         </ol>
         <p className="relative mt-7 max-w-2xl text-sm text-[var(--text-dim)]">{t("sla")}</p>
-        <div className="relative mt-6">
-          <Link href="/lapor">
+        <div className="relative mt-6 flex flex-wrap gap-3">
+          <Link href="/lapor/kejadian">
             <ShimmerButton background="rgba(46, 158, 78, 1)" shimmerColor="#e8ffe8">
-              <span className="text-sm font-semibold">{t("cta")}</span>
+              <span className="text-sm font-semibold">{t("ctaKejadian")}</span>
             </ShimmerButton>
+          </Link>
+          <Link href="/lapor/penanganan">
+            <span className="inline-flex h-11 items-center rounded-full border border-white/30 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-md transition hover:border-white/50 hover:bg-white/15">
+              {t("ctaPenanganan")}
+            </span>
           </Link>
         </div>
       </div>

@@ -1,0 +1,539 @@
+{
+  "metadata": {
+    "sumber": "https://docs.google.com/spreadsheets/d/1h5uwnySzs5q-7si42m1tIH6pqWuFwXhzXwCOhyw16Uo",
+    "sheet_gid_kejadian": "2061631816",
+    "versi": "1.0.0",
+    "catatan": "Laporan penanganan mandiri. Hanya laporan kejadian disetujui tampil di peta publik."
+  },
+  "shared_demografi": {
+    "section_key": "demografi",
+    "fields": [
+      {
+        "field_key": "rekam_koordinat",
+        "label": "Rekam koordinat",
+        "tipe_input": "gps",
+        "wajib": true,
+        "urutan": 1,
+        "validasi": { "bounds": "aceh", "offline_cache": true }
+      },
+      {
+        "field_key": "nama_pelapor",
+        "label": "Nama lengkap (anonim ke publik)",
+        "tipe_input": "text",
+        "wajib": true,
+        "urutan": 2
+      },
+      {
+        "field_key": "nik",
+        "label": "NIK 16 digit (anonim ke publik)",
+        "tipe_input": "nik",
+        "wajib": true,
+        "urutan": 3
+      },
+      {
+        "field_key": "telepon",
+        "label": "Nomor telepon / WhatsApp (anonim ke publik)",
+        "tipe_input": "phone",
+        "wajib": false,
+        "urutan": 4,
+        "catatan": "Wajib telepon ATAU email"
+      },
+      {
+        "field_key": "email",
+        "label": "Alamat e-mail",
+        "tipe_input": "email",
+        "wajib": false,
+        "urutan": 5
+      },
+      {
+        "field_key": "kontak_darurat",
+        "label": "Nomor kontak darurat",
+        "tipe_input": "phone",
+        "wajib": false,
+        "urutan": 6
+      }
+    ]
+  },
+  "shared_penutup": {
+    "section_key": "penutup",
+    "fields": [
+      {
+        "field_key": "addendum",
+        "label": "Apabila ada tambahan pada laporan Anda, mohon isi di sini",
+        "tipe_input": "textarea",
+        "wajib": false,
+        "urutan": 90,
+        "validasi": { "max_length": 500, "show_counter": true }
+      },
+      {
+        "field_key": "akses_kendaraan_roda_empat",
+        "label": "Apakah kendaraan roda empat bisa masuk ke lokasi Anda?",
+        "tipe_input": "select",
+        "wajib": true,
+        "urutan": 91,
+        "opsi": [
+          { "value": "tidak_bisa", "label": "Tidak bisa dilalui sama sekali", "bobot": 4 },
+          { "value": "motor_saja", "label": "Hanya bisa dilalui kendaraan roda dua (motor)", "bobot": 2 },
+          { "value": "aman", "label": "Bisa, jalanan aman", "bobot": 0 }
+        ]
+      },
+      {
+        "field_key": "kebutuhan_mendesak",
+        "label": "Tolong sebutkan tiga kebutuhan PALING MENDESAK",
+        "tipe_input": "multiselect",
+        "wajib": true,
+        "urutan": 92,
+        "validasi": { "max_select": 3 },
+        "opsi": [
+          { "value": "tim_sar", "label": "Tim SAR (pencarian korban)" },
+          { "value": "alat_berat", "label": "Alat berat untuk evakuasi dan merapihkan puing" },
+          { "value": "tenda", "label": "Tenda darurat / terpal / tempat tidur" },
+          { "value": "air", "label": "Air minum / air bersih" },
+          { "value": "makanan", "label": "Makanan siap saji / makanan kaleng / dapur umum" },
+          { "value": "pakaian", "label": "Pakaian bersih / pakaian hangat / selimut" },
+          { "value": "bayi_ibu", "label": "Kebutuhan bayi & ibu hamil" },
+          { "value": "medis", "label": "Tenaga kesehatan" }
+        ]
+      },
+      {
+        "field_key": "foto",
+        "label": "Bukti foto",
+        "tipe_input": "file",
+        "wajib": true,
+        "urutan": 93,
+        "validasi": { "accept": "image/*", "min_files": 1, "max_files": 10 }
+      },
+      {
+        "field_key": "video",
+        "label": "Bukti video (apabila ada)",
+        "tipe_input": "file",
+        "wajib": false,
+        "urutan": 94,
+        "validasi": { "accept": "video/*", "max_files": 3 }
+      }
+    ]
+  },
+  "shared_infrastruktur": {
+    "section_key": "infrastruktur",
+    "fields": [
+      {
+        "field_key": "kondisi_listrik",
+        "label": "Bagaimana kondisi listrik?",
+        "tipe_input": "select",
+        "wajib": true,
+        "urutan": 80,
+        "opsi": [
+          { "value": "mati_total", "label": "Mati total", "bobot": 3 },
+          { "value": "sering_mati", "label": "Sering mati", "bobot": 2 },
+          { "value": "normal", "label": "Tidak masalah", "bobot": 0 }
+        ]
+      },
+      {
+        "field_key": "kondisi_sinyal",
+        "label": "Bagaimana kondisi sinyal telepon/handphone?",
+        "tipe_input": "select",
+        "wajib": true,
+        "urutan": 81,
+        "opsi": [
+          { "value": "mati_total", "label": "Mati total", "bobot": 3 },
+          { "value": "lemot", "label": "Lambat/lemot", "bobot": 2 },
+          { "value": "normal", "label": "Tidak masalah", "bobot": 0 }
+        ]
+      },
+      {
+        "field_key": "kondisi_air_bersih",
+        "label": "Bagaimana kondisi akses air bersih? (PAM, Sumur, dll)",
+        "tipe_input": "select",
+        "wajib": true,
+        "urutan": 82,
+        "opsi": [
+          { "value": "rusak_total", "label": "Rusak total", "bobot": 3 },
+          { "value": "rusak_kotor", "label": "Rusak, kotor, tercemar, namun masih ada", "bobot": 2 },
+          { "value": "normal", "label": "Tidak masalah", "bobot": 0 },
+          { "value": "tidak_tahu", "label": "Tidak tahu", "bobot": 1 }
+        ]
+      }
+    ]
+  },
+  "shared_korban": {
+    "section_key": "korban",
+    "fields": [
+      {
+        "field_key": "ada_korban",
+        "label": "Apakah ada korban jiwa?",
+        "tipe_input": "multiselect",
+        "wajib": true,
+        "urutan": 10,
+        "opsi": [
+          { "value": "terjebak", "label": "Ada korban terjebak/tertimbun (kondisi tidak diketahui)" },
+          { "value": "meninggal", "label": "Ada korban meninggal" },
+          { "value": "hilang", "label": "Ada korban hilang" },
+          { "value": "luka_berat", "label": "Ada korban luka berat" },
+          { "value": "luka_ringan", "label": "Ada korban luka ringan" },
+          { "value": "tidak_ada", "label": "Tidak ada korban" }
+        ]
+      },
+      {
+        "field_key": "jumlah_korban",
+        "label": "Perkiraan jumlah korban",
+        "tipe_input": "number",
+        "wajib": false,
+        "urutan": 11
+      }
+    ]
+  },
+  "kejadian": {
+    "jenis": [
+      {
+        "kode": "banjir",
+        "nama": "Banjir",
+        "deskripsi": "Gunakan formulir ini untuk melaporkan kejadian banjir, mencatat kondisi banjir di daerah pelapor, korban jiwa, dan kondisi pelapor saat ini."
+      },
+      {
+        "kode": "longsor",
+        "nama": "Tanah Longsor",
+        "deskripsi": "Laporkan longsor terutama jika ada korban tertimbun atau akses jalan utama terputus. Jenis material longsor membantu menentukan alat berat yang tepat."
+      },
+      {
+        "kode": "gunung_meletus",
+        "nama": "Gunung Meletus",
+        "deskripsi": "Laporkan aktivitas gunung meletus, warga terjebak zona bahaya, dan kondisi asap/lahar di lokasi Anda."
+      },
+      {
+        "kode": "gempa",
+        "nama": "Gempa Bumi",
+        "deskripsi": "Laporkan gempa bumi apabila ada korban, akses jalan terputus, atau infrastruktur rusak."
+      },
+      {
+        "kode": "tsunami",
+        "nama": "Tsunami",
+        "deskripsi": "Laporkan dampak tsunami termasuk korban tersapu arus dan kondisi genangan di lokasi Anda."
+      }
+    ],
+    "fields_by_jenis": {
+      "banjir": [
+        {
+          "field_key": "posisi_pelapor",
+          "label": "Bagaimana posisi Anda saat ini?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 20,
+          "opsi": [
+            { "value": "terjebak_naik", "label": "Terjebak di rumah, terkepung air, air terus naik deras", "bobot": 4 },
+            { "value": "terjebak_stabil", "label": "Terjebak di rumah, air tidak tambah tinggi", "bobot": 3 },
+            { "value": "evakuasi", "label": "Sudah berkumpul di area evakuasi", "bobot": 1 },
+            { "value": "aman", "label": "Rumah aman, air tidak akan naik", "bobot": 0 }
+          ]
+        },
+        {
+          "field_key": "kondisi_arus",
+          "label": "Bagaimana kondisi arus air saat ini?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 21,
+          "opsi": [
+            { "value": "deras_naik", "label": "Air deras dan ketinggiannya terus meningkat", "bobot": 4 },
+            { "value": "tenang_naik", "label": "Air tenang namun ketinggian air terus meningkat", "bobot": 3 },
+            { "value": "menggenang", "label": "Air menggenang dan diam", "bobot": 2 },
+            { "value": "surut", "label": "Air perlahan mulai surut", "bobot": 0 }
+          ]
+        },
+        {
+          "field_key": "tinggi_genangan",
+          "label": "Seberapa tinggi genangan air di jalan utama lokasi Anda?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 22,
+          "opsi": [
+            { "value": "lebih_kepala", "label": "Lebih tinggi dari kepala", "bobot": 5 },
+            { "value": "sedada", "label": "Sedada", "bobot": 4 },
+            { "value": "sepinggang", "label": "Sepinggang", "bobot": 3 },
+            { "value": "selutut", "label": "Selutut", "bobot": 2 },
+            { "value": "semata_kaki", "label": "Semata kaki", "bobot": 1 },
+            { "value": "surut", "label": "Surut, tidak ada air (aman)", "bobot": 0 }
+          ]
+        },
+        {
+          "field_key": "stok_air_bersih",
+          "label": "Bagaimana stok air bersih Anda?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 23,
+          "opsi": [
+            { "value": "kritis", "label": "Kritis, tidak ada stok air bersih sama sekali", "bobot": 4 },
+            { "value": "sedikit", "label": "Sedikit, hanya tersisa sedikit air bersih", "bobot": 3 },
+            { "value": "cukup", "label": "Cukup, stok air bersih cukup sampai beberapa hari", "bobot": 1 },
+            { "value": "aman", "label": "Aman, sumber air bersih masih bisa didapat", "bobot": 0 }
+          ]
+        },
+        {
+          "field_key": "stok_pangan",
+          "label": "Bagaimana stok pangan & makanan Anda?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 24,
+          "opsi": [
+            { "value": "kritis", "label": "Kritis, tidak ada stok pangan sama sekali", "bobot": 4 },
+            { "value": "sedikit", "label": "Sedikit, hanya tersisa sedikit stok pangan", "bobot": 3 },
+            { "value": "cukup", "label": "Cukup, stok pangan cukup sampai beberapa hari", "bobot": 1 },
+            { "value": "aman", "label": "Aman, stok pangan masih sangat banyak", "bobot": 0 }
+          ]
+        }
+      ],
+      "longsor": [
+        {
+          "field_key": "pergerakan_tanah",
+          "label": "Apakah masih ada tanda-tanda pergerakan tanah?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 20,
+          "opsi": [
+            { "value": "banyak_runtuh", "label": "Banyak bangunan yang runtuh dan hancur", "bobot": 4 },
+            { "value": "rusak_berat", "label": "Tidak ada bangunan runtuh, namun banyak rusak berat", "bobot": 3 },
+            { "value": "rusak_ringan", "label": "Banyak bangunan rusak ringan sampai sedang", "bobot": 2 },
+            { "value": "tidak_rusak", "label": "Tidak ada bangunan yang rusak", "bobot": 0 }
+          ]
+        },
+        {
+          "field_key": "bangunan_terdampak",
+          "label": "Berapa banyak bangunan yang terdampak longsor?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 21,
+          "opsi": [
+            { "value": "tertimbun_hilang", "label": "Banyak bangunan tertimbun dan hilang sama sekali", "bobot": 5 },
+            { "value": "tertimbun_rusak_berat", "label": "Sejumlah bangunan tertimbun dan rusak berat", "bobot": 4 },
+            { "value": "tertabrak_ringan", "label": "Sejumlah bangunan tertabrak longsoran dan rusak ringan", "bobot": 2 },
+            { "value": "tidak_terdampak", "label": "Tidak ada bangunan terdampak", "bobot": 0 }
+          ]
+        },
+        {
+          "field_key": "material_longsor",
+          "label": "Jenis material longsor yang dominan",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 22,
+          "opsi": [
+            { "value": "lumpur", "label": "Lumpur cair, tanah basah dan lumpur dalam" },
+            { "value": "batu_pohon", "label": "Batu besar, pepohonan tumbang" },
+            { "value": "tanah_padat", "label": "Tanah padat" },
+            { "value": "tanah_kering", "label": "Tanah kering, tanah halus, pasir" }
+          ]
+        }
+      ],
+      "gunung_meletus": [
+        {
+          "field_key": "warga_terjebak",
+          "label": "Apakah masih ada warga terjebak di zona bahaya?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 20,
+          "opsi": [
+            { "value": "banyak", "label": "Ya, banyak warga terjebak", "bobot": 4 },
+            { "value": "beberapa", "label": "Ya, ada beberapa warga terjebak", "bobot": 3 },
+            { "value": "tidak", "label": "Tidak ada warga terjebak", "bobot": 0 }
+          ]
+        },
+        {
+          "field_key": "kondisi_lokasi",
+          "label": "Bagaimana kondisi lokasi Anda saat ini?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 21,
+          "opsi": [
+            { "value": "lahar_api", "label": "Terdapat lahar panas dan api", "bobot": 5 },
+            { "value": "awan_panas", "label": "Terdapat awan panas", "bobot": 4 },
+            { "value": "asap_tebal", "label": "Terdapat asap yang tebal", "bobot": 3 },
+            { "value": "ruang_tertutup", "label": "Berada di ruangan tertutup yang aman dari abu", "bobot": 1 },
+            { "value": "aman", "label": "Aman, tidak berada di area bencana", "bobot": 0 }
+          ]
+        }
+      ],
+      "gempa": [
+        {
+          "field_key": "bangunan_terdampak",
+          "label": "Berapa banyak bangunan yang terdampak gempa bumi?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 20,
+          "opsi": [
+            { "value": "runtuh", "label": "Banyak bangunan yang runtuh dan hancur", "bobot": 5 },
+            { "value": "rusak_berat", "label": "Tidak ada runtuh, namun banyak rusak berat", "bobot": 4 },
+            { "value": "rusak_ringan", "label": "Banyak bangunan rusak ringan sampai sedang", "bobot": 2 },
+            { "value": "tidak_rusak", "label": "Tidak ada bangunan yang rusak", "bobot": 0 }
+          ]
+        }
+      ],
+      "tsunami": [
+        {
+          "field_key": "ada_korban",
+          "label": "Apakah ada korban jiwa?",
+          "tipe_input": "multiselect",
+          "wajib": true,
+          "urutan": 10,
+          "opsi": [
+            { "value": "tersapu", "label": "Ada korban tersapu arus (kondisi tidak diketahui)" },
+            { "value": "meninggal", "label": "Ada korban meninggal" },
+            { "value": "hilang", "label": "Ada korban hilang" },
+            { "value": "luka_berat", "label": "Ada korban luka berat" },
+            { "value": "luka_ringan", "label": "Ada korban luka ringan" },
+            { "value": "tidak_ada", "label": "Tidak ada korban" }
+          ]
+        },
+        {
+          "field_key": "kondisi_arus",
+          "label": "Bagaimana kondisi arus air saat ini?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 20,
+          "opsi": [
+            { "value": "deras_naik", "label": "Air deras dan ketinggiannya terus meningkat", "bobot": 4 },
+            { "value": "tenang_naik", "label": "Air tenang namun ketinggian air terus meningkat", "bobot": 3 },
+            { "value": "menggenang", "label": "Air menggenang dan diam", "bobot": 2 },
+            { "value": "surut", "label": "Air perlahan mulai surut", "bobot": 0 }
+          ]
+        },
+        {
+          "field_key": "tinggi_genangan",
+          "label": "Seberapa tinggi genangan air di jalan utama lokasi Anda?",
+          "tipe_input": "select",
+          "wajib": true,
+          "urutan": 21,
+          "opsi": [
+            { "value": "lebih_kepala", "label": "Lebih tinggi dari kepala", "bobot": 5 },
+            { "value": "sedada", "label": "Sedada", "bobot": 4 },
+            { "value": "sepinggang", "label": "Sepinggang", "bobot": 3 },
+            { "value": "selutut", "label": "Selutut", "bobot": 2 },
+            { "value": "semata_kaki", "label": "Semata kaki", "bobot": 1 },
+            { "value": "surut", "label": "Surut, tidak ada air (aman)", "bobot": 0 }
+          ]
+        }
+      ]
+    }
+  },
+  "penanganan": {
+    "fields": [
+      {
+        "field_key": "tipe_laporan",
+        "label": "Jenis laporan penanganan",
+        "tipe_input": "select",
+        "wajib": true,
+        "urutan": 1,
+        "opsi": [
+          { "value": "bantuan_diterima", "label": "Bantuan sudah diterima" },
+          { "value": "bantuan_belum_diterima", "label": "Bantuan belum diterima" },
+          { "value": "aktivitas_penanganan", "label": "Aktivitas penanganan di lapangan" },
+          { "value": "umpan_balik", "label": "Umpan balik kualitas bantuan" }
+        ]
+      },
+      {
+        "field_key": "jenis_bencana",
+        "label": "Jenis bencana terkait",
+        "tipe_input": "select",
+        "wajib": true,
+        "urutan": 2,
+        "opsi": [
+          { "value": "banjir", "label": "Banjir" },
+          { "value": "longsor", "label": "Tanah Longsor" },
+          { "value": "gunung_meletus", "label": "Gunung Meletus" },
+          { "value": "gempa", "label": "Gempa Bumi" },
+          { "value": "tsunami", "label": "Tsunami" }
+        ]
+      },
+      {
+        "field_key": "tanggal_penanganan",
+        "label": "Tanggal penanganan / penerimaan bantuan",
+        "tipe_input": "date",
+        "wajib": true,
+        "urutan": 3
+      },
+      {
+        "field_key": "jam_penanganan",
+        "label": "Jam (jika diketahui)",
+        "tipe_input": "time",
+        "wajib": false,
+        "urutan": 4
+      },
+      {
+        "field_key": "fase_penanganan",
+        "label": "Fase penanganan",
+        "tipe_input": "select",
+        "wajib": true,
+        "urutan": 5,
+        "opsi": [
+          { "value": "tanggap_darurat", "label": "Tanggap darurat" },
+          { "value": "penanganan", "label": "Penanganan" },
+          { "value": "rehabilitasi", "label": "Rehabilitasi" }
+        ]
+      },
+      {
+        "field_key": "pelaku_penanganan",
+        "label": "Siapa yang melakukan penanganan?",
+        "tipe_input": "multiselect",
+        "wajib": true,
+        "urutan": 6,
+        "opsi": [
+          { "value": "bpba", "label": "BPBA" },
+          { "value": "bpbd", "label": "BPBD Kab/Kota" },
+          { "value": "tni_polri", "label": "TNI / Polri" },
+          { "value": "pmi", "label": "PMI / Relawan" },
+          { "value": "masyarakat", "label": "Masyarakat / Gotong royong" },
+          { "value": "ngo", "label": "NGO / LSM" },
+          { "value": "lainnya", "label": "Lainnya" }
+        ]
+      },
+      {
+        "field_key": "jenis_bantuan",
+        "label": "Jenis bantuan / aktivitas",
+        "tipe_input": "multiselect",
+        "wajib": true,
+        "urutan": 7,
+        "opsi": [
+          { "value": "tim_sar", "label": "Tim SAR" },
+          { "value": "alat_berat", "label": "Alat berat" },
+          { "value": "tenda", "label": "Tenda / pengungsian" },
+          { "value": "air", "label": "Air bersih" },
+          { "value": "makanan", "label": "Makanan / dapur umum" },
+          { "value": "pakaian", "label": "Pakaian / selimut" },
+          { "value": "medis", "label": "Tenaga kesehatan / obat" },
+          { "value": "evakuasi", "label": "Evakuasi warga" }
+        ]
+      },
+      {
+        "field_key": "deskripsi_penanganan",
+        "label": "Deskripsi penanganan / bantuan yang diterima atau dibutuhkan",
+        "tipe_input": "textarea",
+        "wajib": true,
+        "urutan": 8,
+        "validasi": { "min_length": 50 }
+      },
+      {
+        "field_key": "status_kebutuhan_sisa",
+        "label": "Status kebutuhan saat ini",
+        "tipe_input": "select",
+        "wajib": true,
+        "urutan": 9,
+        "opsi": [
+          { "value": "terpenuhi", "label": "Kebutuhan sudah terpenuhi" },
+          { "value": "parsial", "label": "Kebutuhan terpenuhi sebagian" },
+          { "value": "belum_terpenuhi", "label": "Kebutuhan belum terpenuhi" }
+        ]
+      },
+      {
+        "field_key": "jumlah_penerima_estimasi",
+        "label": "Estimasi jumlah penerima (jiwa atau KK)",
+        "tipe_input": "number",
+        "wajib": false,
+        "urutan": 10
+      },
+      {
+        "field_key": "rating_kepuasan",
+        "label": "Tingkat kepuasan terhadap bantuan (1-5)",
+        "tipe_input": "rating",
+        "wajib": false,
+        "urutan": 11,
+        "validasi": { "min": 1, "max": 5 }
+      }
+    ]
+  }
+}

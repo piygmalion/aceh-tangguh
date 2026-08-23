@@ -42,8 +42,13 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/lapor">
-                {tn("lapor")}
+              <Link className="transition hover:text-[var(--accent)]" href="/lapor/kejadian">
+                {tn("laporKejadian")}
+              </Link>
+            </li>
+            <li>
+              <Link className="transition hover:text-[var(--accent)]" href="/lapor/penanganan">
+                {tn("laporPenanganan")}
               </Link>
             </li>
             <li>

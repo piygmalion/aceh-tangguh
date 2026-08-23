@@ -40,3 +40,15 @@ export function createServerClientOrThrow(): TypedSupabaseClient {
   }
   return client;
 }
+
+/** Service role — cron jobs, storage upload, WA worker only (never expose to browser). */
+export function createServiceClient(): TypedSupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!url || !serviceKey) return null;
+
+  return createClient<Database>(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+    global: { fetch: noStoreFetch },
+  });
+}

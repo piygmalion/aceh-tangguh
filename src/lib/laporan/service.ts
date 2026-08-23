@@ -1,0 +1,240 @@
+import { randomUUID } from "crypto";
+import { createServerClient } from "@/lib/supabase/server";
+import {
+  computeUrgency,
+  encryptPii,
+  generateNomor,
+  hashPii,
+  validateAcehLocation,
+} from "./crypto";
+import type { JenisBencana } from "./definitions";
+import {
+  fileStoreGetPetaKejadian,
+  fileStoreInsertKejadian,
+  fileStoreInsertPelapor,
+  fileStoreInsertPenanganan,
+  fileStoreQueueWa,
+} from "./file-store";
+import type { KejadianSubmit, PenangananSubmit } from "./schemas";
+import type { Json } from "@/lib/supabase/types";
+
+async function insertPelapor(data: KejadianSubmit["pelapor"]) {
+  const id = randomUUID();
+  const row = {
+    id,
+    nama_enc: encryptPii(data.nama),
+    nik_hash: hashPii(data.nik),
+    nik_enc: encryptPii(data.nik),
+    telepon_enc: data.telepon ? encryptPii(data.telepon) : null,
+    email_enc: data.email ? encryptPii(data.email) : null,
+    kontak_darurat_enc: data.kontak_darurat ? encryptPii(data.kontak_darurat) : null,
+    telepon_hash: data.telepon ? hashPii(data.telepon) : null,
+  };
+
+  const supabase = createServerClient();
+  if (supabase) {
+    const { error } = await supabase.from("laporan_pelapor").insert(row);
+    if (error) throw new Error(error.message);
+  } else {
+    await fileStoreInsertPelapor({
+      ...row,
+      telepon_enc: row.telepon_enc ?? undefined,
+      email_enc: row.email_enc ?? undefined,
+      kontak_darurat_enc: row.kontak_darurat_enc ?? undefined,
+      telepon_hash: row.telepon_hash ?? undefined,
+      created_at: new Date().toISOString(),
+    });
+  }
+  return id;
+}
+
+async function queueWa(
+  laporanTipe: "kejadian" | "penanganan",
+  laporanId: string,
+  telepon: string,
+  template: string,
+  payload: Record<string, unknown>
+) {
+  const row = {
+    id: randomUUID(),
+    laporan_tipe: laporanTipe,
+    laporan_id: laporanId,
+    nomor_tujuan_enc: encryptPii(telepon),
+    template_kode: template,
+    payload_json: payload as Json,
+    status: "pending",
+  };
+  const supabase = createServerClient();
+  if (supabase) {
+    await supabase.from("notifikasi_wa").insert(row);
+  } else {
+    await fileStoreQueueWa({
+      ...row,
+      payload_json: payload,
+      created_at: new Date().toISOString(),
+    });
+  }
+}
+
+export async function submitKejadian(body: KejadianSubmit) {
+  validateAcehLocation(body.lokasi.latitude, body.lokasi.longitude);
+  const pelaporId = await insertPelapor(body.pelapor);
+  const id = randomUUID();
+  const skor = computeUrgency(body.jenis_bencana as JenisBencana, body.jawaban);
+  const now = new Date().toISOString();
+
+  const supabase = createServerClient();
+  let nomor: string;
+
+  if (supabase) {
+    const { count } = await supabase
+      .from("laporan_kejadian")
+      .select("*", { count: "exact", head: true });
+    nomor = generateNomor("KJD", (count ?? 0) + 1);
+    const { error } = await supabase.from("laporan_kejadian").insert({
+      id,
+      nomor_laporan: nomor,
+      pelapor_id: pelaporId,
+      jenis_bencana: body.jenis_bencana,
+      status: "submitted",
+      latitude: body.lokasi.latitude,
+      longitude: body.lokasi.longitude,
+      kabupaten_kota: body.lokasi.kabupaten_kota,
+      kecamatan: body.lokasi.kecamatan ?? null,
+      desa: body.lokasi.desa ?? null,
+      skor_urgensi: skor,
+      tampil_di_peta: false,
+      jawaban_json: body.jawaban as Json,
+      addendum: body.addendum ?? null,
+      submitted_at: now,
+    });
+    if (error) throw new Error(error.message);
+  } else {
+    const inserted = await fileStoreInsertKejadian({
+      id,
+      nomor_laporan: "",
+      pelapor_id: pelaporId,
+      jenis_bencana: body.jenis_bencana,
+      status: "submitted",
+      latitude: body.lokasi.latitude,
+      longitude: body.lokasi.longitude,
+      kabupaten_kota: body.lokasi.kabupaten_kota,
+      kecamatan: body.lokasi.kecamatan,
+      desa: body.lokasi.desa,
+      provinsi: "Aceh",
+      skor_urgensi: skor,
+      tampil_di_peta: false,
+      jawaban_json: body.jawaban,
+      addendum: body.addendum,
+      submitted_at: now,
+    });
+    nomor = inserted.nomor_laporan;
+  }
+
+  if (body.pelapor.telepon) {
+    await queueWa("kejadian", id, body.pelapor.telepon, "laporan_submitted", {
+      nomor_laporan: nomor,
+      jenis: body.jenis_bencana,
+    });
+  }
+
+  return { id, nomor_laporan: nomor, skor_urgensi: skor, status: "submitted" as const };
+}
+
+export async function submitPenanganan(body: PenangananSubmit) {
+  validateAcehLocation(body.lokasi.latitude, body.lokasi.longitude);
+  const pelaporId = await insertPelapor(body.pelapor);
+  const id = randomUUID();
+  const now = new Date().toISOString();
+
+  const supabase = createServerClient();
+  let nomor: string;
+
+  if (supabase) {
+    const { count } = await supabase
+      .from("laporan_penanganan")
+      .select("*", { count: "exact", head: true });
+    nomor = generateNomor("PNG", (count ?? 0) + 1);
+    const { error } = await supabase.from("laporan_penanganan").insert({
+      id,
+      nomor_laporan: nomor,
+      pelapor_id: pelaporId,
+      jenis_bencana: body.jenis_bencana,
+      tipe_laporan: body.tipe_laporan,
+      fase_penanganan: body.fase_penanganan ?? null,
+      status_kebutuhan_sisa: body.status_kebutuhan_sisa ?? null,
+      tanggal_penanganan: body.tanggal_penanganan,
+      jam_penanganan: body.jam_penanganan ?? null,
+      latitude: body.lokasi.latitude,
+      longitude: body.lokasi.longitude,
+      kabupaten_kota: body.lokasi.kabupaten_kota,
+      kecamatan: body.lokasi.kecamatan ?? null,
+      desa: body.lokasi.desa ?? null,
+      deskripsi_penanganan: body.deskripsi_penanganan,
+      jumlah_penerima_estimasi: body.jumlah_penerima_estimasi ?? null,
+      rating_kepuasan: body.rating_kepuasan ?? null,
+      tampil_di_peta: false,
+      jawaban_json: body.jawaban as Json,
+      addendum: body.addendum ?? null,
+      submitted_at: now,
+    });
+    if (error) throw new Error(error.message);
+  } else {
+    const inserted = await fileStoreInsertPenanganan({
+      id,
+      nomor_laporan: "",
+      pelapor_id: pelaporId,
+      jenis_bencana: body.jenis_bencana,
+      tipe_laporan: body.tipe_laporan,
+      fase_penanganan: body.fase_penanganan,
+      status: "submitted",
+      status_kebutuhan_sisa: body.status_kebutuhan_sisa,
+      tanggal_penanganan: body.tanggal_penanganan,
+      jam_penanganan: body.jam_penanganan,
+      latitude: body.lokasi.latitude,
+      longitude: body.lokasi.longitude,
+      kabupaten_kota: body.lokasi.kabupaten_kota,
+      kecamatan: body.lokasi.kecamatan,
+      desa: body.lokasi.desa,
+      provinsi: "Aceh",
+      deskripsi_penanganan: body.deskripsi_penanganan,
+      jumlah_penerima_estimasi: body.jumlah_penerima_estimasi,
+      rating_kepuasan: body.rating_kepuasan,
+      tampil_di_peta: false,
+      jawaban_json: body.jawaban,
+      addendum: body.addendum,
+      pelaku_penanganan: body.pelaku_penanganan,
+      jenis_bantuan: body.jenis_bantuan,
+      submitted_at: now,
+    });
+    nomor = inserted.nomor_laporan;
+  }
+
+  if (body.pelapor.telepon) {
+    await queueWa("penanganan", id, body.pelapor.telepon, "laporan_submitted", {
+      nomor_laporan: nomor,
+      tipe: body.tipe_laporan,
+    });
+  }
+
+  return { id, nomor_laporan: nomor, status: "submitted" as const, tampil_di_peta: false };
+}
+
+export async function getPetaKejadianPublik() {
+  const supabase = createServerClient();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("laporan_kejadian")
+      .select(
+        "id, nomor_laporan, jenis_bencana, latitude, longitude, kabupaten_kota, kecamatan, desa, skor_urgensi, submitted_at, jawaban_json"
+      )
+      .eq("status", "approved")
+      .eq("tampil_di_peta", true)
+      .order("skor_urgensi", { ascending: false });
+    if (!error && data) {
+      return data.map((r) => ({ ...r, laporan_tipe: "kejadian" as const }));
+    }
+  }
+  const rows = await fileStoreGetPetaKejadian();
+  return rows.map((r) => ({ ...r, laporan_tipe: "kejadian" as const }));
+}

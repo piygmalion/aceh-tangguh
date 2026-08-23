@@ -12,7 +12,10 @@
     "build:weather": "node scripts/build-weather-snapshot.mjs",
     "resolve:adm4": "node scripts/resolve-adm4-codes.mjs",
     "refresh:weather": "node scripts/refresh-weather-cache.mjs",
-    "verify:weather": "node scripts/verify-weather-setup.mjs"
+    "verify:weather": "node scripts/verify-weather-setup.mjs",
+    "verify:laporan": "node scripts/verify-laporan-setup.mjs",
+    "laporan:wa": "node scripts/process-laporan-wa.mjs",
+    "laporan:pii-key": "node scripts/generate-laporan-pii-key.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

@@ -8,6 +8,8 @@
     "data": "Data",
     "publikasi": "Publications",
     "lapor": "Report",
+    "laporKejadian": "Report incident",
+    "laporPenanganan": "Report response",
     "home": "Home",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
@@ -26,6 +28,8 @@
     "subtitle": "An open disaster observatory and response surface for the public and operators in Aceh.",
     "ctaPeta": "Open map",
     "ctaLapor": "Report an incident",
+    "ctaLaporKejadian": "Report incident",
+    "ctaLaporPenanganan": "Report response",
     "chipIncidents": "active incidents",
     "chipPosko": "posts",
     "chipReports": "reports / 24h",
@@ -80,7 +84,7 @@
     "sla": "Reports are moderated before appearing on the public map (target SLA < 24h).",
     "step1": {
       "title": "Report",
-      "body": "Submit topic, location, and description."
+      "body": "Choose report type, location, and submit."
     },
     "step2": {
       "title": "Moderation",
@@ -90,7 +94,9 @@
       "title": "On the map",
       "body": "Approved reports appear as points on /peta."
     },
-    "cta": "Report an incident"
+    "cta": "Report an incident",
+    "ctaKejadian": "Report incident",
+    "ctaPenanganan": "Report response"
   },
   "transparency": {
     "heading": "Data transparency",
@@ -124,6 +130,8 @@
     "basemap": "Basemap",
     "theme": "Theme",
     "reportFab": "Report",
+    "reportKejadian": "Report incident",
+    "reportPenanganan": "Report response",
     "disasterEvents": "Disaster events",
     "poskos": "Posts",
     "tendPoints": "Shelter points",
@@ -200,6 +208,56 @@
     "consent": "I agree this report may appear on the public map after approval",
     "submit": "Submit report",
     "success": "Report queued for moderation."
+  },
+  "laporHub": {
+    "title": "Report to Aceh Tangguh",
+    "subtitle": "Choose the type of report. Incident reports may appear on the map after BPBA Pusdalops moderation.",
+    "kejadianTitle": "Report incident",
+    "kejadianBody": "Report a disaster that is ongoing or recently occurred at your location.",
+    "kejadianCta": "Open incident form",
+    "penangananTitle": "Report response",
+    "penangananBody": "Report aid received, not yet received, or field response activities.",
+    "penangananCta": "Open response form"
+  },
+  "laporKejadian": {
+    "title": "Report incident",
+    "subtitle": "Disaster report form for BPBA Pusdalops moderation. Status updates via WhatsApp.",
+    "chooseJenis": "Choose disaster type",
+    "next": "Next",
+    "back": "Back",
+    "consent": "I agree the report is processed by BPBA and may appear on the public map after approval (identity not shown).",
+    "submit": "Submit incident report",
+    "success": "Report sent. Number:",
+    "needContact": "Phone or email required for WhatsApp notifications."
+  },
+  "laporPenanganan": {
+    "title": "Report response",
+    "subtitle": "Report aid or response activities independently.",
+    "notOnMap": "Response reports are not shown on the public map.",
+    "next": "Next",
+    "back": "Back",
+    "submit": "Submit response report",
+    "success": "Report sent. Number:",
+    "needContact": "Phone or email required for WhatsApp notifications.",
+    "deskripsiMin": "Response description must be at least 50 characters."
+  },
+  "laporForm": {
+    "identityTitle": "Reporter identity",
+    "identityNote": "Identity is anonymous to the public and used only for moderation and WhatsApp notifications.",
+    "nama": "Full name",
+    "nik": "NIK (16 digits)",
+    "telepon": "Phone / WhatsApp",
+    "email": "Email",
+    "kontakDarurat": "Emergency contact",
+    "gpsTitle": "Location (GPS)",
+    "gpsCapture": "Capture coordinates",
+    "gpsCapturing": "Capturing…",
+    "gpsFailed": "Failed to get GPS. Enter coordinates manually.",
+    "gpsUnsupported": "GPS not supported on this device.",
+    "gpsOutsideAceh": "Coordinates must be within Aceh.",
+    "kabupaten": "District / City",
+    "kecamatan": "Sub-district",
+    "desa": "Village"
   },
   "hazards": {
     "label": "Hazard status",
