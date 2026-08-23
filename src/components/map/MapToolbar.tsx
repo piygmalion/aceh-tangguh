@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { qk } from "@/lib/qk";
 import type { AreaLayerKey, LegendModel, MarkerLayerKey } from "@/lib/types";
 import { LAYER_COLORS } from "@/components/map/MapViewport";
+import { FacHealthIcon } from "@/components/icons/FacHealthIcon";
 
 const AREA_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
@@ -229,11 +230,21 @@ export function MapToolbar({
                           checked={active}
                           onChange={() => onToggleMarker(opt.key)}
                         />
-                        <span
-                          className="map-swatch"
-                          style={{ background: LAYER_COLORS[opt.key] }}
-                          aria-hidden
-                        />
+                        {opt.key === "facHealth" ? (
+                          <span
+                            className="map-layer-icon text-[var(--accent)]"
+                            style={{ color: LAYER_COLORS.facHealth }}
+                            aria-hidden
+                          >
+                            <FacHealthIcon className="h-3.5 w-3.5" />
+                          </span>
+                        ) : (
+                          <span
+                            className="map-swatch"
+                            style={{ background: LAYER_COLORS[opt.key] }}
+                            aria-hidden
+                          />
+                        )}
                         <span className="leading-snug">{t(opt.labelKey)}</span>
                       </label>
                     );
@@ -253,10 +264,20 @@ export function MapToolbar({
                   <ul className="space-y-2">
                     {markerLayers.map((key) => (
                       <li key={key} className="flex items-center gap-2.5">
-                        <span
-                          className="map-swatch"
-                          style={{ background: LAYER_COLORS[key] }}
-                        />
+                        {key === "facHealth" ? (
+                          <span
+                            className="map-layer-icon"
+                            style={{ color: LAYER_COLORS.facHealth }}
+                            aria-hidden
+                          >
+                            <FacHealthIcon className="h-3.5 w-3.5" />
+                          </span>
+                        ) : (
+                          <span
+                            className="map-swatch"
+                            style={{ background: LAYER_COLORS[key] }}
+                          />
+                        )}
                         <span>{t(key)}</span>
                       </li>
                     ))}
