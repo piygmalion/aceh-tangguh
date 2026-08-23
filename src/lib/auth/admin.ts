@@ -73,10 +73,12 @@ export async function requireStaffPage(): Promise<{
 
   if (!ctx.supabase || !ctx.userId) {
     redirect({ href: "/admin/login", locale });
+    throw new Error("redirect");
   }
 
-  if (!ctx.profile || !ctx.supabase) {
+  if (!ctx.profile) {
     redirect({ href: "/admin/denied", locale });
+    throw new Error("redirect");
   }
 
   return { supabase: ctx.supabase, profile: ctx.profile };
