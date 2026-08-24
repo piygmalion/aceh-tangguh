@@ -2,15 +2,26 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { fetchPublicApi } from "@/lib/preview/public-api";
+import {
+  buildIrbiByKabMap,
+  fetchIrbiSummary,
+  lookupIrbiKab,
+  type IrbiKabSummary,
+} from "@/lib/irbi-by-kab";
 import { qk } from "@/lib/qk";
-import type { WeatherApiResponse, WeatherForecastKab } from "@/lib/weather-types";
+import type {
+  WeatherApiResponse,
+  WeatherForecastKab,
+  WeatherSource,
+} from "@/lib/weather-types";
 import { WeatherIcon } from "./WeatherIcon";
 
 const AUTOPLAY_MS = 4500;
 const SKELETON_COUNT = 5;
+const COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
 
 async function fetchWeather(): Promise<WeatherApiResponse> {
   const res = await fetchPublicApi("/api/weather");
@@ -61,31 +72,172 @@ function scrollToCard(scroller: HTMLElement, index: number, smooth: boolean) {
 const TRACK_COLS =
   "grid-flow-col gap-2 auto-cols-[calc((100%-0.5rem)_/_2)] sm:auto-cols-[calc((100%-1rem)_/_3)] md:auto-cols-[calc((100%-1.5rem)_/_4)] lg:auto-cols-[calc((100%-2rem)_/_5)]";
 
-function WeatherThumb({ kab }: { kab: WeatherForecastKab }) {
-  const precip = kab.current.precipitation_mm;
+function compassFromDeg(deg: number): string | null {
+  if (!Number.isFinite(deg)) return null;
+  const idx = Math.round((((deg % 360) + 360) % 360) / 45) % 8;
+  return COMPASS[idx];
+}
+
+function kelasTone(kelas?: string): string {
+  const k = (kelas ?? "").toUpperCase();
+  if (k === "TINGGI" || k === "SANGAT TINGGI") {
+    return "bg-[var(--danger-dim)] text-[var(--danger)]";
+  }
+  if (k === "SEDANG" || k === "MEDIUM") {
+    return "bg-[var(--warn-dim)] text-[var(--warn)]";
+  }
+  if (k === "RENDAH" || k === "LOW") {
+    return "bg-[var(--accent-dim)] text-[var(--accent)]";
+  }
+  return "bg-[var(--bg-muted)] text-[var(--text-dim)]";
+}
+
+/**
+ * Label the provider honestly.
+ * `bmkg` / live BMKG pipeline → BMKG.
+ * `open-meteo` → Open-Meteo.
+ * cached/fixture only claim BMKG when metadata.providers is BMKG-only.
+ */
+function resolveWeatherProvider(
+  source: WeatherSource,
+  providers: string[] | undefined,
+): "bmkg" | "open-meteo" | null {
+  if (source === "open-meteo") return "open-meteo";
+  if (source === "bmkg") return "bmkg";
+  const set = new Set((providers ?? []).map((p) => p.toLowerCase()));
+  const hasBmkg = set.has("bmkg");
+  const hasOm = set.has("open-meteo");
+  if (hasBmkg && !hasOm) return "bmkg";
+  if (hasOm && !hasBmkg) return "open-meteo";
+  return null;
+}
+
+function WeatherThumb({
+  kab,
+  irbi,
+  providers,
+}: {
+  kab: WeatherForecastKab;
+  irbi?: IrbiKabSummary;
+  providers?: string[];
+}) {
+  const t = useTranslations("weather");
+  const tIrbi = useTranslations("irbi");
+  const locale = useLocale();
+  const today = kab.daily[0];
+  const desc =
+    locale === "en" ? kab.current.weather_desc_en : kab.current.weather_desc_id;
+  const provider = resolveWeatherProvider(kab.source, providers);
+  const windDir = compassFromDeg(kab.current.wind_direction_deg);
+  const kelas = irbi?.kelas_risiko;
+  const score =
+    typeof irbi?.irb_2025 === "number" ? irbi.irb_2025.toFixed(1) : null;
+  const cuacaKelas = kab.kelas_cuaca_ekstrem ?? irbi?.kelas_cuaca_ekstrem;
+  const threatKey = irbi?.ancaman_tertinggi;
+  const threatLabel = threatKey
+    ? tIrbi.has(`hazard_${threatKey}`)
+      ? tIrbi(`hazard_${threatKey}`)
+      : threatKey.replace(/_/g, " ")
+    : null;
 
   return (
     <div data-weather-card className="min-w-0 snap-start">
-      <div className="flex h-full flex-col gap-1 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg)]/80 px-3 py-2.5">
-        <div className="flex items-center gap-1.5">
-          <WeatherIcon
-            code={kab.current.weather_code}
-            className="h-4 w-4 shrink-0 text-[var(--accent)]"
-          />
-          <span className="text-lg font-semibold tabular-nums leading-none tracking-tight">
-            {Math.round(kab.current.temperature_c)}°C
-          </span>
+      <div
+        className="glass flex h-full max-h-[33dvh] min-h-[8.5rem] flex-col gap-1 overflow-hidden rounded-2xl px-2.5 py-2"
+        aria-label={t("thumbAria", {
+          name: kab.kabupaten_kota,
+          desc,
+          temp: Math.round(kab.current.temperature_c),
+          kelas: kelas ?? t("irbiMissing"),
+          score: score ?? t("irbiMissing"),
+        })}
+      >
+        <div className="flex items-start justify-between gap-1">
+          <div className="flex min-w-0 items-center gap-1">
+            <WeatherIcon
+              code={kab.current.weather_code}
+              className="h-4 w-4 shrink-0 text-[var(--accent)]"
+            />
+            <span className="text-base font-semibold tabular-nums leading-none tracking-tight">
+              {Math.round(kab.current.temperature_c)}°
+            </span>
+            {today ? (
+              <span className="truncate text-[0.62rem] tabular-nums text-[var(--text-dim)]">
+                {t("tempMinMax", {
+                  min: Math.round(today.temp_min_c),
+                  max: Math.round(today.temp_max_c),
+                })}
+              </span>
+            ) : null}
+          </div>
+          {provider ? (
+            <span className="shrink-0 text-[0.58rem] font-semibold uppercase tracking-wide text-[var(--text-dim)]">
+              {provider === "bmkg" ? t("sourceBmkg") : t("sourceOpenMeteo")}
+            </span>
+          ) : null}
         </div>
-        <span className="truncate text-xs font-medium text-[var(--text)]">
+
+        <span className="truncate text-[0.65rem] leading-tight text-[var(--text-dim)]">
+          {desc}
+        </span>
+        <span className="truncate text-xs font-medium leading-tight text-[var(--text)]">
           {kab.kabupaten_kota}
         </span>
-        {precip > 0 ? (
-          <span className="truncate text-[0.65rem] tabular-nums text-[var(--text-dim)]">
-            {precip.toFixed(1)} mm
+
+        <p className="truncate text-[0.62rem] tabular-nums leading-tight text-[var(--text-dim)]">
+          <span>{t("humidityValue", { value: Math.round(kab.current.humidity_pct) })}</span>
+          <span aria-hidden> · </span>
+          <span>
+            {windDir
+              ? t("windValueDir", {
+                  speed: Math.round(kab.current.wind_speed_kmh),
+                  dir: windDir,
+                })
+              : t("windValue", { speed: Math.round(kab.current.wind_speed_kmh) })}
           </span>
-        ) : (
-          <span className="h-3" aria-hidden />
-        )}
+          <span aria-hidden> · </span>
+          <span>
+            {t("rainValue", { value: kab.current.precipitation_mm.toFixed(1) })}
+          </span>
+        </p>
+
+        <div className="mt-auto flex min-w-0 flex-wrap items-center gap-1">
+          {kelas ? (
+            <span
+              className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[0.58rem] font-semibold uppercase leading-none ${kelasTone(kelas)}`}
+              aria-label={t("irbiKelasAria", { kelas })}
+            >
+              {kelas}
+            </span>
+          ) : (
+            <span className="text-[0.62rem] text-[var(--text-dim)]">
+              {t("irbiMissing")}
+            </span>
+          )}
+          <span
+            className="text-[0.68rem] font-semibold tabular-nums leading-none"
+            aria-label={t("irbiScoreAria", { score: score ?? t("irbiMissing") })}
+          >
+            {score ?? t("irbiMissing")}
+          </span>
+          {cuacaKelas ? (
+            <span
+              className={`inline-flex max-w-full items-center truncate rounded-full px-1.5 py-0.5 text-[0.55rem] font-medium leading-none ${kelasTone(cuacaKelas)}`}
+            >
+              {t("cuacaEkstremChip", { kelas: cuacaKelas })}
+            </span>
+          ) : null}
+        </div>
+
+        {threatLabel ? (
+          <span className="truncate text-[0.58rem] capitalize leading-tight text-[var(--text-dim)]">
+            {threatLabel}
+          </span>
+        ) : null}
+
+        <span className="truncate text-[0.52rem] uppercase tracking-[0.08em] text-[var(--text-dim)]">
+          {t("irbiAttr")}
+        </span>
       </div>
     </div>
   );
@@ -102,11 +254,21 @@ export function WeatherStrip() {
     staleTime: 15 * 60_000,
     refetchInterval: 15 * 60_000,
   });
+  const { data: irbiPayload } = useQuery({
+    queryKey: qk.irbi,
+    queryFn: fetchIrbiSummary,
+    staleTime: 60 * 60_000,
+  });
+
+  const irbiMap = useMemo(
+    () => buildIrbiByKabMap(irbiPayload?.kabupaten_kota ?? []),
+    [irbiPayload],
+  );
 
   const items = useMemo(() => {
     if (!data?.kabupaten_kota) return [];
     return [...data.kabupaten_kota].sort((a, b) =>
-      a.kabupaten_kota.localeCompare(b.kabupaten_kota, "id")
+      a.kabupaten_kota.localeCompare(b.kabupaten_kota, "id"),
     );
   }, [data]);
 
@@ -149,14 +311,14 @@ export function WeatherStrip() {
         }, 480);
       }
     },
-    [maxIndex, total]
+    [maxIndex, total],
   );
 
   const go = useCallback(
     (dir: -1 | 1) => {
       goTo(indexRef.current + dir);
     },
-    [goTo]
+    [goTo],
   );
 
   useEffect(() => {
@@ -195,13 +357,17 @@ export function WeatherStrip() {
             <h2 className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
               {t("stripTitle")}
             </h2>
-            {data?.metadata.fetched_at && (
-              <p className="mt-1 text-xs text-[var(--text-dim)]">
-                {t("updated", {
-                  time: new Date(data.metadata.fetched_at).toLocaleString(),
-                })}
-              </p>
-            )}
+            <p className="mt-1 text-xs text-[var(--text-dim)]">
+              {data?.metadata.fetched_at ? (
+                <>
+                  {t("updated", {
+                    time: new Date(data.metadata.fetched_at).toLocaleString(),
+                  })}
+                  <span aria-hidden> · </span>
+                </>
+              ) : null}
+              {t("stripSources")}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             {canCarousel ? (
@@ -251,7 +417,7 @@ export function WeatherStrip() {
               aria-hidden
             >
               {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-                <span key={i} className="skeleton h-[4.5rem] rounded-2xl" />
+                <span key={i} className="skeleton h-[8.5rem] rounded-2xl" />
               ))}
             </div>
           ) : null}
@@ -271,7 +437,12 @@ export function WeatherStrip() {
                 className={`grid overflow-x-auto scroll-smooth snap-x snap-mandatory overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${TRACK_COLS}`}
               >
                 {items.map((kab) => (
-                  <WeatherThumb key={kab.slug} kab={kab} />
+                  <WeatherThumb
+                    key={kab.slug}
+                    kab={kab}
+                    irbi={lookupIrbiKab(irbiMap, kab)}
+                    providers={data?.metadata.providers}
+                  />
                 ))}
               </div>
 
