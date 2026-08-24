@@ -11,7 +11,15 @@ import { ReportFAB } from "@/components/map/ReportFAB";
 import type { VillageClickSelection } from "@/lib/profil-desa";
 
 function MapWorkspaceInner() {
-  const { state, setView, setBasemap, setAreaLayer, toggleMarkerLayer, toggleDisasterJenis } = useMapUrlState();
+  const {
+    state,
+    setView,
+    setBasemap,
+    setAreaLayer,
+    toggleMarkerLayer,
+    toggleDisasterJenis,
+    toggleFasilitasUmum,
+  } = useMapUrlState();
   const [villageSelection, setVillageSelection] =
     useState<VillageClickSelection | null>(null);
 
@@ -47,6 +55,7 @@ function MapWorkspaceInner() {
         onToggleMarker={toggleMarkerLayer}
         disasterJenis={state.disasterJenis}
         onToggleDisasterJenis={toggleDisasterJenis}
+        onToggleFasilitasUmum={toggleFasilitasUmum}
       />
       <MapSettings basemap={state.basemap} onBasemapChange={setBasemap} />
       <ReportFAB />

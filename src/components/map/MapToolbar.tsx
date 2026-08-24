@@ -20,6 +20,7 @@ import {
 } from "@/lib/layer-icons";
 import {
   AREA_TOOLBAR_OPTIONS,
+  FASILITAS_UMUM_LAYER_KEYS,
   MARKER_TOOLBAR_GROUPS,
 } from "@/lib/map-layers-catalog";
 
@@ -44,6 +45,7 @@ export function MapToolbar({
   onToggleMarker,
   disasterJenis,
   onToggleDisasterJenis,
+  onToggleFasilitasUmum,
 }: {
   areaLayer: AreaLayerKey | null;
   onAreaLayerChange: (k: AreaLayerKey | null) => void;
@@ -51,12 +53,14 @@ export function MapToolbar({
   onToggleMarker: (k: MarkerLayerKey) => void;
   disasterJenis: string[];
   onToggleDisasterJenis: (jenis: string) => void;
+  onToggleFasilitasUmum: () => void;
 }) {
   const t = useTranslations("map");
   const [tab, setTab] = useState<TabKey>("lokasi");
   /** Mobile bottom-sheet open state. Desktop panel is always shown via md: classes. */
   const [expanded, setExpanded] = useState(false);
   const [jenisExpanded, setJenisExpanded] = useState(false);
+  const [fasilitasExpanded, setFasilitasExpanded] = useState(false);
 
   const { data: areaLegend } = useQuery({
     queryKey: [...qk.area(areaLayer ?? "villageDistribution"), "legend"],
@@ -65,6 +69,9 @@ export function MapToolbar({
   });
 
   const parentDisasterOn = markerLayers.includes("disasterEvents");
+  const parentFasilitasOn = FASILITAS_UMUM_LAYER_KEYS.some((k) =>
+    markerLayers.includes(k)
+  );
   const activeCount = markerLayers.length + (areaLayer ? 1 : 0);
 
   const tabs: { key: TabKey; label: string }[] = [
@@ -305,6 +312,76 @@ export function MapToolbar({
                       </div>
                     );
                   })}
+                  {group.groupKey === "groupMain" && (
+                    <div>
+                      <div
+                        className="map-option"
+                        data-active={parentFasilitasOn ? "true" : "false"}
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={fasilitasExpanded}
+                        onClick={() => setFasilitasExpanded((v) => !v)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setFasilitasExpanded((v) => !v);
+                          }
+                        }}
+                      >
+                        <input
+                          className="map-check"
+                          type="checkbox"
+                          checked={parentFasilitasOn}
+                          onChange={onToggleFasilitasUmum}
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => e.stopPropagation()}
+                        />
+                        <MapLayerIcon
+                          iconSrc={getLayerIconPath("facHealth")}
+                          fallbackColor={LAYER_COLORS.facHealth}
+                        />
+                        <span className="min-w-0 flex-1 leading-snug">
+                          {t("fasilitasUmum")}
+                        </span>
+                        <ChevronDown
+                          size={16}
+                          className={`shrink-0 text-[var(--text-dim)] transition duration-200 ${
+                            fasilitasExpanded ? "rotate-180" : ""
+                          }`}
+                          aria-hidden
+                        />
+                      </div>
+                      {fasilitasExpanded && (
+                        <div className="mt-0.5 space-y-0.5 pl-6">
+                          {FASILITAS_UMUM_LAYER_KEYS.map((key) => {
+                            const childActive = markerLayers.includes(key);
+                            return (
+                              <label
+                                key={key}
+                                className="map-option"
+                                data-active={childActive ? "true" : "false"}
+                              >
+                                <input
+                                  className="map-check"
+                                  type="checkbox"
+                                  checked={childActive}
+                                  onChange={() => onToggleMarker(key)}
+                                />
+                                <MapLayerIcon
+                                  iconSrc={getLayerIconPath(key)}
+                                  fallbackColor={LAYER_COLORS[key]}
+                                  size="sm"
+                                />
+                                <span className="leading-snug text-[0.8rem]">
+                                  {t(key)}
+                                </span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </fieldset>
               ))}
             </div>
