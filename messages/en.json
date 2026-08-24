@@ -188,7 +188,18 @@
     "irbi2025": "IRBI 2025 (kab risk)",
     "coordApprox": "Approximate coordinates",
     "coordOffshore": "Offshore / outside bbox",
-    "coordApproxLegend": "The “Approximate coordinates” chip marks integer lon/lat truncated in the source — not precise GPS. Points are not shifted."
+    "coordApproxLegend": "The “Approximate coordinates” chip marks integer lon/lat truncated in the source — not precise GPS. Points are not shifted.",
+    "basemapPositron": "Simple",
+    "basemapDark": "Dark",
+    "basemapStreets": "Streets",
+    "basemapSatellite": "HD satellite",
+    "basemapSentinel": "Sentinel-2",
+    "basemapKindRaster": "Carto raster",
+    "basemapKindVector": "OSM vector",
+    "basemapKindImagery": "Imagery",
+    "basemapHint": "Carto/OSM raster · Esri World Imagery · Copernicus Sentinel-2 Cloudless (EOX). OpenFreeMap vector is optional.",
+    "basemapVectorOptional": "Try OpenFreeMap vector (falls back to Carto if it fails)",
+    "sentinelFreshness": "Annual mosaic {year}. Latest L2A scene over Aceh: {date} ({cloud}% cloud)."
   },
   "profilDesa": {
     "close": "Close",
@@ -328,6 +339,10 @@
     "s6": {
       "title": "Aceh DIBI dashboard",
       "body": "The homepage “Aceh disaster dashboard” aggregates figures from BNPB’s public DIBI dashboard (https://dibi.bnpb.go.id/superset/dashboard/2/), dataset Dampak kejadian bencana. Every query filters provinsi=Aceh and is_bencana=true, plus DIBI’s default hazard categories. This uses Apache Superset’s internal API (not the official Satu Data Bencana CKAN channel); if DIBI is unavailable the app falls back to a snapshot fixture. Housing-loss estimates follow DIBI’s million-rupiah unit."
+    },
+    "s7": {
+      "title": "Basemap, performance, and Sentinel",
+      "body": "The map runs on MapLibre (GPU). The default operational basemap is Carto Positron raster (OSM). OpenFreeMap vector is optional (`?vector=1`) and falls back to Carto if the CDN fails — that already happened in our sandbox. HD satellite uses Esri World Imagery. The Sentinel-2 option is EOX’s annual Cloudless mosaic (Copernicus, 10 m) — a background, not “today’s” image, because Aceh is usually cloudy. Latest Sentinel-2 L2A scenes are queried via STAC (Element84) as an archive heartbeat, not as the basemap. Location points render as GPU-clustered GeoJSON, not HTML markers, so thousands of facilities stay light. Area overlays remain PMTiles. Architecture notes: docs/basemap.md."
     }
   },
   "prrpkaChart": {

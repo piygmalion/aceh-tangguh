@@ -1,29 +1,44 @@
 "use client";
 
 import { Settings2, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import type { BasemapId } from "@/lib/types";
+import { BASEMAP_OPTIONS, BASEMAP_VECTOR_URLS } from "@/lib/basemap";
+import { fetchPublicApi } from "@/lib/preview/public-api";
+import { formatSceneDate, type SentinelStatus } from "@/lib/sentinel";
 
-const BASEMAPS: { id: BasemapId; label: string }[] = [
-  { id: "positron", label: "Sederhana" },
-  { id: "dark", label: "Gelap" },
-  { id: "streets", label: "Jalan" },
-  { id: "satellite", label: "Satelit" },
-];
+async function fetchSentinelStatusClient(): Promise<SentinelStatus | null> {
+  const res = await fetchPublicApi("/api/sentinel/status");
+  if (!res.ok) return null;
+  return (await res.json()) as SentinelStatus;
+}
 
 export function MapSettings({
   basemap,
   onBasemapChange,
+  preferVector = false,
+  onPreferVectorChange,
 }: {
   basemap: BasemapId;
   onBasemapChange: (b: BasemapId) => void;
+  preferVector?: boolean;
+  onPreferVectorChange?: (on: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const t = useTranslations("map");
+  const locale = useLocale();
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const { data: sentinel } = useQuery({
+    queryKey: ["sentinel-status"],
+    queryFn: fetchSentinelStatusClient,
+    staleTime: 6 * 60 * 60 * 1000,
+    enabled: open,
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -104,7 +119,7 @@ export function MapSettings({
             {t("basemap")}
           </div>
           <div className="grid grid-cols-2 gap-1.5">
-            {BASEMAPS.map((b) => (
+            {BASEMAP_OPTIONS.map((b) => (
               <button
                 key={b.id}
                 type="button"
@@ -115,13 +130,39 @@ export function MapSettings({
                     : "border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--accent)]"
                 }`}
               >
-                {b.label}
+                <span className="block">{t(b.labelKey)}</span>
+                <span className="mt-0.5 block text-[10px] font-normal text-[var(--text-dim)]">
+                  {b.kind === "raster" ? t("basemapKindRaster") : t("basemapKindImagery")}
+                </span>
               </button>
             ))}
           </div>
+          {onPreferVectorChange && BASEMAP_VECTOR_URLS[basemap] ? (
+            <label className="mt-2.5 flex cursor-pointer items-start gap-2 text-[10px] leading-snug text-[var(--text-dim)]">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={preferVector}
+                onChange={(e) => onPreferVectorChange(e.target.checked)}
+              />
+              <span>{t("basemapVectorOptional")}</span>
+            </label>
+          ) : null}
           <p className="mt-2.5 text-[10px] leading-snug text-[var(--text-dim)]">
-            Basemap: Carto (Sederhana/Gelap) · OSM (Jalan) · Esri (Satelit)
+            {t("basemapHint")}
           </p>
+          {basemap === "sentinel" && sentinel?.latestScene && (
+            <p className="mt-1.5 text-[10px] leading-snug text-[var(--text-dim)]">
+              {t("sentinelFreshness", {
+                year: sentinel.mosaic.year,
+                date: formatSceneDate(sentinel.latestScene.datetime, locale),
+                cloud:
+                  sentinel.latestScene.cloudCover == null
+                    ? "—"
+                    : String(sentinel.latestScene.cloudCover),
+              })}
+            </p>
+          )}
         </div>
       )}
     </div>

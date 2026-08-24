@@ -113,6 +113,17 @@ Outputs:
 
 `MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON.
 
+## Basemap (Carto raster + Sentinel)
+
+The map uses MapLibre with **Carto Positron raster** (OSM) as the default Simple / Dark / Streets basemap. OpenFreeMap vector is optional (`?vector=1`) and falls back to Carto if the style CDN fails. **Esri World Imagery** is the HD satellite option, and **EOX Sentinel-2 Cloudless 2024** is the Copernicus option (`?basemap=sentinel`). Markers are GPU-clustered GeoJSON (not HTML pins). Architecture and the Sentinel update path: `docs/basemap.md`.
+
+```
+node scripts/verify-basemap.mjs
+node scripts/refresh-sentinel-status.mjs
+```
+
+Deep-link Sentinel: `/id/peta?basemap=sentinel`.
+
 ## IRBI 2025
 
 Rebuild kab GeoJSON + legend + raw fixture (exact name join 23/23 onto `r3pDistribution`):
