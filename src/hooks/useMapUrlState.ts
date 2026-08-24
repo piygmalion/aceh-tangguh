@@ -10,6 +10,7 @@ import {
   type MapViewState,
   type MarkerLayerKey,
 } from "@/lib/types";
+import { isBasemapId } from "@/lib/basemap";
 import { DISASTER_JENIS, encodeDisasterJenis } from "@/lib/disaster-jenis";
 import {
   canonicalMapUrlPatch,
@@ -49,9 +50,7 @@ export function useMapUrlState() {
         longitude: Number.isFinite(lng) ? lng : DEFAULT_VIEW.longitude,
         zoom: Number.isFinite(z) ? z : DEFAULT_VIEW.zoom,
       },
-      basemap: ["positron", "dark", "satellite", "streets"].includes(basemap)
-        ? basemap
-        : "positron",
+      basemap: isBasemapId(basemap) ? basemap : "positron",
       areaLayer: resolved.areaLayer,
       markerLayers: resolved.markerLayers,
       disasterJenis: resolved.disasterJenis,

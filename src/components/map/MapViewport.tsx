@@ -6,7 +6,6 @@ import maplibregl from "maplibre-gl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Map, {
   Layer,
-  Marker,
   NavigationControl,
   Popup,
   Source,
@@ -17,18 +16,18 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { withBasePath } from "@/lib/preview/env";
 import { qk } from "@/lib/qk";
-import {
-  BASEMAP_STYLES,
-  type AreaLayerKey,
-  type BasemapId,
-  type LegendModel,
-  type MapViewState,
-  type MarkerLayerKey,
+import type {
+  AreaLayerKey,
+  BasemapId,
+  LegendModel,
+  MapViewState,
+  MarkerLayerKey,
 } from "@/lib/types";
-import type { FeatureCollection, Point } from "geojson";
+import { getBasemapStyle } from "@/lib/basemap";
+import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
-import type { FilterSpecification, MapLayerMouseEvent } from "maplibre-gl";
+import type { FilterSpecification, GeoJSONSource, MapLayerMouseEvent } from "maplibre-gl";
 import { LAYER_COLORS } from "@/lib/layer-colors";
 import { Chip } from "@/components/ui/Chip";
 import { StatusChip } from "@/components/ui/StatusChip";
@@ -39,7 +38,6 @@ import {
   readCoordQuality,
   type CoordQuality,
 } from "@/lib/coord-quality";
-import { MapMarkerPin } from "@/components/map/MapMarkerPin";
 
 export { LAYER_COLORS };
 
@@ -91,6 +89,15 @@ function ensurePmtilesProtocol() {
   const protocol = new Protocol();
   maplibregl.addProtocol("pmtiles", protocol.tile);
   pmtilesProtocolReady = true;
+}
+
+const EMPTY_FC: FeatureCollection = { type: "FeatureCollection", features: [] };
+
+function markerColor(layer: MarkerLayerKey, jenis: string): string {
+  if (layer === "disasterEvents") {
+    return DISASTER_JENIS_COLORS[jenis] ?? LAYER_COLORS.disasterEvents;
+  }
+  return (LAYER_COLORS as Record<string, string>)[layer] ?? "#64748b";
 }
 
 type AreaResponse = FeatureCollection & { legend?: LegendModel };
@@ -222,12 +229,17 @@ export function MapViewport({
     coordQuality?: CoordQuality | null;
   } | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
+  const [useRasterFallback, setUseRasterFallback] = useState(false);
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const villageClickEnabled = areaLayer === "villageDistribution";
 
   useEffect(() => {
     ensurePmtilesProtocol();
   }, []);
+
+  useEffect(() => {
+    setUseRasterFallback(false);
+  }, [basemap]);
 
   const sortedKeys = useMemo(
     () => [...markerLayers].sort(),
@@ -256,6 +268,33 @@ export function MapViewport({
     queryFn: () => fetchMarkers(sortedKeys),
     enabled: sortedKeys.length > 0,
   });
+
+  const markerGeojson = useMemo((): FeatureCollection => {
+    if (!data?.features?.length) return EMPTY_FC;
+    const features: Feature<Point>[] = [];
+    for (const f of data.features) {
+      if (f.geometry.type !== "Point") continue;
+      const layer = (f.properties?.layer as MarkerLayerKey) || "disasterEvents";
+      const jenis = String(f.properties?.jenis_bencana ?? "");
+      if (layer === "disasterEvents" && disasterJenisSet && !disasterJenisSet.has(jenis)) {
+        continue;
+      }
+      const quality = readCoordQuality(f.properties as Record<string, unknown> | null);
+      features.push({
+        type: "Feature",
+        geometry: f.geometry as Point,
+        properties: {
+          layer,
+          title: String(f.properties?.title ?? "Titik"),
+          status: f.properties?.status ? String(f.properties.status) : "",
+          jenisBencana: layer === "disasterEvents" ? jenis : "",
+          color: markerColor(layer, jenis),
+          coordQuality: quality ?? "",
+        },
+      });
+    }
+    return { type: "FeatureCollection", features };
+  }, [data, disasterJenisSet]);
 
   const { data: areaData } = useQuery({
     queryKey: qk.area(areaLayer ?? "villageDistribution"),
@@ -287,8 +326,36 @@ export function MapViewport({
     return `pmtiles://${abs}`;
   }, [usePmtiles, pmtilesMeta]);
 
-  const onAreaClick = useCallback(
+  const onMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
+      const clusterFeat = e.features?.find((f) => f.layer?.id === "marker-clusters");
+      if (clusterFeat && clusterFeat.geometry.type === "Point") {
+        const source = mapRef.current?.getSource("markers") as GeoJSONSource | undefined;
+        const clusterId = clusterFeat.properties?.cluster_id as number | undefined;
+        const center = clusterFeat.geometry.coordinates as [number, number];
+        if (source && typeof clusterId === "number") {
+          void source.getClusterExpansionZoom(clusterId).then((zoom) => {
+            mapRef.current?.easeTo({ center, zoom, duration: 400 });
+          });
+        }
+        return;
+      }
+
+      const pointFeat = e.features?.find((f) => f.layer?.id === "marker-points");
+      if (pointFeat && pointFeat.geometry.type === "Point") {
+        const [lng, lat] = pointFeat.geometry.coordinates as [number, number];
+        const props = pointFeat.properties ?? {};
+        setPopup({
+          lng,
+          lat,
+          title: String(props.title ?? "Titik"),
+          status: props.status ? String(props.status) : undefined,
+          layer: (props.layer as MarkerLayerKey) || "disasterEvents",
+          coordQuality: readCoordQuality(props as Record<string, unknown>),
+        });
+        return;
+      }
+
       if (!villageClickEnabled || !onVillageClick) return;
       const feature = e.features?.find((f) => f.layer?.id === "area-fill");
       if (!feature) return;
@@ -317,23 +384,31 @@ export function MapViewport({
   return (
     <div className="absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
       <Map
-        key={basemap}
         ref={mapRef}
         initialViewState={view}
-        mapStyle={BASEMAP_STYLES[basemap] as never}
+        mapStyle={getBasemapStyle(basemap, { rasterFallback: useRasterFallback }) as never}
         style={{ width: "100%", height: "100%", background: "#d4dce4" }}
         cursor={cursor as never}
-        interactiveLayerIds={villageClickEnabled ? ["area-fill"] : []}
-        onClick={onAreaClick}
-        onMouseEnter={
-          villageClickEnabled ? () => setCursor("pointer") : undefined
-        }
-        onMouseLeave={
-          villageClickEnabled ? () => setCursor("auto") : undefined
-        }
+        interactiveLayerIds={[
+          "marker-clusters",
+          "marker-points",
+          ...(villageClickEnabled ? (["area-fill"] as const) : []),
+        ]}
+        onClick={onMapClick}
+        onMouseEnter={() => setCursor("pointer")}
+        onMouseLeave={() => setCursor("auto")}
         onMoveEnd={onMoveEnd}
+        onError={(e) => {
+          const msg = e.error?.message ?? "";
+          if (!useRasterFallback && /style|fetch|network|failed/i.test(msg)) {
+            setUseRasterFallback(true);
+          }
+        }}
         attributionControl
-        reuseMaps={false}
+        reuseMaps
+        dragRotate={false}
+        pitchWithRotate={false}
+        maxPitch={0}
       >
         <NavigationControl position="top-left" />
         {pmtilesUrl && pmtilesMeta && (
@@ -427,50 +502,76 @@ export function MapViewport({
             )}
           </Source>
         )}
-        {data?.features.map((f) => {
-          if (f.geometry.type !== "Point") return null;
-          const [lng, lat] = (f.geometry as Point).coordinates;
-          const layer = (f.properties?.layer as MarkerLayerKey) || "disasterEvents";
-          if (layer === "disasterEvents" && disasterJenisSet) {
-            const jenis = String(f.properties?.jenis_bencana ?? "");
-            if (!disasterJenisSet.has(jenis)) return null;
-          }
-          const title = String(f.properties?.title ?? "Titik");
-          const status = f.properties?.status
-            ? String(f.properties.status)
-            : undefined;
-          const jenisBencana =
-            layer === "disasterEvents"
-              ? String(f.properties?.jenis_bencana ?? "")
-              : null;
-          return (
-            <Marker
-              key={String(f.id ?? `${lng}-${lat}-${title}`)}
-              longitude={lng}
-              latitude={lat}
-              anchor="bottom"
-              onClick={(e) => {
-                e.originalEvent.stopPropagation();
-                setPopup({
-                  lng,
-                  lat,
-                  title,
-                  status,
-                  layer,
-                  coordQuality: readCoordQuality(
-                    f.properties as Record<string, unknown> | null
-                  ),
-                });
+        {sortedKeys.length > 0 && (
+          <Source
+            id="markers"
+            type="geojson"
+            data={markerGeojson}
+            cluster
+            clusterMaxZoom={12}
+            clusterRadius={48}
+          >
+            <Layer
+              id="marker-clusters"
+              type="circle"
+              filter={["has", "point_count"]}
+              paint={{
+                "circle-color": [
+                  "step",
+                  ["get", "point_count"],
+                  "#38bdf8",
+                  25,
+                  "#0ea5e9",
+                  80,
+                  "#0369a1",
+                ],
+                "circle-radius": [
+                  "step",
+                  ["get", "point_count"],
+                  16,
+                  25,
+                  20,
+                  80,
+                  26,
+                ],
+                "circle-stroke-width": 2,
+                "circle-stroke-color": "#fff",
+                "circle-opacity": 0.92,
               }}
-            >
-              <MapMarkerPin
-                layer={layer}
-                jenisBencana={jenisBencana}
-                title={title}
-              />
-            </Marker>
-          );
-        })}
+            />
+            <Layer
+              id="marker-cluster-count"
+              type="symbol"
+              filter={["has", "point_count"]}
+              layout={{
+                "text-field": ["get", "point_count_abbreviated"],
+                "text-size": 12,
+                "text-font": ["Noto Sans Regular", "Open Sans Regular"],
+              }}
+              paint={{ "text-color": "#0f172a" }}
+            />
+            <Layer
+              id="marker-points"
+              type="circle"
+              filter={["!", ["has", "point_count"]]}
+              paint={{
+                "circle-color": ["coalesce", ["get", "color"], "#64748b"],
+                "circle-radius": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  6,
+                  4,
+                  12,
+                  7,
+                ],
+                "circle-stroke-width": 1.5,
+                "circle-stroke-color": "#fff",
+                "circle-opacity": 0.95,
+              }}
+            />
+          </Source>
+        )}
         {popup && (
           <Popup
             longitude={popup.lng}

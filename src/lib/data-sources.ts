@@ -259,15 +259,15 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: "https://github.com/pararawendy/border-desa-indonesia-geojson",
   },
   {
-    id: "basemap-carto",
-    titleId: "Peta dasar Carto (Positron / Dark Matter)",
-    titleEn: "Carto basemap tiles (Positron / Dark Matter)",
-    source: "Carto basemaps CDN (basemaps.cartocdn.com)",
-    license: "Carto basemap terms; © OpenStreetMap contributors",
-    date: "Live tiles",
-    format: "Raster XYZ PNG",
-    usedFor: "Light and dark operational basemaps",
-    href: "https://carto.com/basemaps/",
+    id: "basemap-openfreemap",
+    titleId: "Peta dasar OpenFreeMap (vektor OSM)",
+    titleEn: "OpenFreeMap vector OSM basemap",
+    source: "OpenFreeMap (tiles.openfreemap.org) — OpenMapTiles schema from OpenStreetMap",
+    license: "OpenFreeMap terms; © OpenStreetMap contributors",
+    date: "Live vector tiles",
+    format: "MapLibre style JSON + vector PBF",
+    usedFor: "Light, dark, and streets operational basemaps (GPU vector)",
+    href: "https://openfreemap.org/",
   },
   {
     id: "basemap-esri",
@@ -277,8 +277,22 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     license: "Esri Terms of Use; attribution required",
     date: "Live tiles",
     format: "Raster XYZ",
-    usedFor: "Satellite basemap option on the map",
+    usedFor: "HD satellite basemap option on the map",
     href: "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9",
+  },
+  {
+    id: "basemap-sentinel",
+    titleId: "Sentinel-2 Cloudless (Copernicus / EOX)",
+    titleEn: "Sentinel-2 Cloudless (Copernicus / EOX)",
+    source:
+      "EOX Sentinel-2 cloudless 2024 WMTS + Element84 Earth Search STAC (sentinel-2-l2a) for Aceh freshness",
+    license:
+      "Contains modified Copernicus Sentinel data; EOX cloudless terms; STAC from AWS Earth Search",
+    date: "Annual mosaic 2024; L2A scenes ~5-day revisit",
+    format: "WMTS JPEG + STAC JSON",
+    usedFor:
+      "Sentinel-2 basemap option and archive heartbeat (not a daily true-color layer — Aceh is usually cloudy)",
+    href: "https://s2maps.eu/",
   },
   {
     id: "weather-forecast",

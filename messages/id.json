@@ -188,7 +188,16 @@
     "irbi2025": "IRBI 2025 (risiko kab)",
     "coordApprox": "Koordinat perkiraan",
     "coordOffshore": "Lepas pantai / di luar bbox",
-    "coordApproxLegend": "Chip “Koordinat perkiraan” menandai lon/lat integer terpotong dari sumber — bukan GPS presisi. Titik tidak digeser."
+    "coordApproxLegend": "Chip “Koordinat perkiraan” menandai lon/lat integer terpotong dari sumber — bukan GPS presisi. Titik tidak digeser.",
+    "basemapPositron": "Sederhana",
+    "basemapDark": "Gelap",
+    "basemapStreets": "Jalan",
+    "basemapSatellite": "Satelit HD",
+    "basemapSentinel": "Sentinel-2",
+    "basemapKindVector": "Vektor OSM",
+    "basemapKindImagery": "Citra",
+    "basemapHint": "OpenFreeMap vektor OSM · Esri World Imagery · Copernicus Sentinel-2 Cloudless (EOX)",
+    "sentinelFreshness": "Mosaik tahunan {year}. Adegan L2A terbaru di Aceh: {date} ({cloud}% awan)."
   },
   "profilDesa": {
     "close": "Tutup",
@@ -328,6 +337,10 @@
     "s6": {
       "title": "Dashboard DIBI Aceh",
       "body": "Bagian beranda “Dashboard bencana Aceh” menarik agregat dari dasbor publik DIBI BNPB (https://dibi.bnpb.go.id/superset/dashboard/2/), dataset Dampak kejadian bencana. Setiap kueri menyertakan filter provinsi=Aceh dan is_bencana=true, plus kategori bencana default DIBI. Ini memakai API internal Apache Superset (bukan kanal CKAN resmi Satu Data Bencana); jika layanan DIBI gagal, aplikasi jatuh ke snapshot fixture. Estimasi kerugian rumah mengikuti satuan juta rupiah sebagaimana dilabeli di DIBI."
+    },
+    "s7": {
+      "title": "Peta dasar, performa, dan Sentinel",
+      "body": "Peta memakai MapLibre (GPU). Basemap operasional adalah ubin vektor OpenFreeMap (OSM), dengan raster Carto sebagai cadangan jika CDN vektor diblokir. Satelit HD memakai Esri World Imagery. Opsi Sentinel-2 adalah mosaik tahunan Cloudless EOX (Copernicus, 10 m) — cocok sebagai latar, bukan citra “hari ini”, karena Aceh hampir selalu berawan. Adegan Sentinel-2 L2A terbaru di-query lewat STAC (Element84) sebagai denyut arsip, bukan sebagai basemap. Titik lokasi dirender sebagai GeoJSON terkluster di GPU, bukan marker HTML, agar ribuan fasilitas tetap ringan. Overlay wilayah tetap PMTiles. Rincian arsitektur: docs/basemap.md."
     }
   },
   "prrpkaChart": {

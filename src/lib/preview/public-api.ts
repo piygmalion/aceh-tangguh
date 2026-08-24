@@ -109,6 +109,13 @@ async function resolveStaticGet(input: string): Promise<Response> {
   if (path === "/api/weather") {
     return jsonResponse(await fetchJson("/fixtures/weather-snapshot.json"));
   }
+  if (path === "/api/sentinel/status") {
+    const data = (await fetchJson("/fixtures/sentinel-status.json")) as Record<
+      string,
+      unknown
+    >;
+    return jsonResponse({ ...data, source: "fixture" });
+  }
   if (path === "/api/irbi") {
     const data = (await fetchJson("/fixtures/irbi-2025.json")) as Record<
       string,
