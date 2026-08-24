@@ -37,7 +37,7 @@ Open `/id/admin/login` (or the **Masuk** control in the navbar) with that email/
 
 ## Roles
 
-- `admin` — report moderation only (`queued` / `published` / `rejected`).
+- `admin` — report moderation (`laporan_*` plus legacy `reports`).
 - `super_admin` — moderation plus CMS (`publikasi`, `kejadian_bencana`) and typed table editors (not a raw SQL console).
 
 ## Optional one-off scripts

@@ -1,18 +1,23 @@
 import { Chip } from "@/components/ui/Chip";
-import type { ReportStatus } from "@/lib/supabase/types";
 
-const TONE: Record<ReportStatus, "warn" | "ok" | "danger"> = {
+const TONE: Record<string, "warn" | "ok" | "danger" | "info" | "neutral"> = {
   queued: "warn",
+  submitted: "warn",
+  in_review: "info",
+  needs_info: "warn",
   published: "ok",
+  approved: "ok",
   rejected: "danger",
+  archived: "neutral",
+  draft: "neutral",
 };
 
 export function StatusBadge({
   status,
   label,
 }: {
-  status: ReportStatus;
+  status: string;
   label: string;
 }) {
-  return <Chip tone={TONE[status]}>{label}</Chip>;
+  return <Chip tone={TONE[status] ?? "neutral"}>{label}</Chip>;
 }

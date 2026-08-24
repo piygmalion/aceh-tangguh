@@ -45,7 +45,7 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    bun run build
    ```
 3. Schema documentation: `supabase/migrations/20260823_init_aceh_tangguh_backend.sql`
-4. Staff admin (`/id/admin`): apply `supabase/migrations/20260825_admin_auth.sql` then create the first `super_admin` manually — see `docs/admin-setup.md`. Do not put `SERVICE_ROLE` in `.env` for the app to run.
+4. Staff admin (`/id/admin`): apply `supabase/migrations/20260825_admin_auth.sql` then create the first `super_admin` manually — see `docs/admin-setup.md`. Laporan writes (not the admin UI) need `SUPABASE_SERVICE_ROLE_KEY` on the Node server — never on GitHub Pages.
 5. Seed area feature metadata from fixtures (needs service role or SQL admin; anon is SELECT-only on `area_feature_meta`):
    ```
    bun run seed:area-meta
@@ -57,8 +57,13 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 
 | Method | Path | Source |
 |--------|------|--------|
-| GET/POST | `/api/reports` | Supabase `reports` (GET = published + consent) |
-| GET/PATCH | `/api/admin/reports` | Staff JWT — list / set status |
+| GET/POST | `/api/reports` | Legacy `reports` (POST = service role; GET = published + consent) |
+| GET/PATCH | `/api/admin/reports` | Staff JWT — legacy `reports` |
+| GET/PATCH | `/api/admin/laporan` | Staff JWT — `laporan_kejadian` / `laporan_penanganan` |
+| POST | `/api/laporan/kejadian` | Service role insert after Zod + rate limit |
+| POST | `/api/laporan/penanganan` | Service role insert after Zod + rate limit |
+| POST | `/api/laporan/upload` | Service role storage; magic-byte MIME; rate limit |
+| GET | `/api/laporan/peta` | Approved kejadian only (no `jawaban_json`) |
 | GET | `/api/admin/me` | Session + `admin_profiles` |
 | GET/POST/PATCH/DELETE | `/api/admin/cms/*` | Super-admin CMS |
 | GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
@@ -152,7 +157,7 @@ Facility children keep their existing keys and `?layers=` URLs. Parent checkbox 
 
 `missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. They are seeded in `map_layers` with `enabled=false` (see `supabase/migrations/20260827_map_layers_live_registry.sql`).
 
-**Partisipasi** toolbar layers: `laporanKejadian` and `laporanPenanganan` (live query from `laporan_*` where `status = approved` AND `tampil_di_peta = true`). `citizenReports` is removed (helipad pattern): not in the toolbar or type union; `?layers=citizenReports` aliases to `laporanKejadian` and is rewritten away. Default URL layers: `disasterEvents,facHealth,laporanKejadian`. Layers stay empty until a moderator publishes a real laporan — no dummy fixture points. `/admin/moderasi` still edits legacy `reports`; publish `laporan_*` via Database explorer (`status` + `tampil_di_peta`) until that UI is rebuilt.
+**Partisipasi** toolbar layers: `laporanKejadian` and `laporanPenanganan` (live query from `laporan_*` where `status = approved` AND `tampil_di_peta = true`). `citizenReports` is removed (helipad pattern): not in the toolbar or type union; `?layers=citizenReports` aliases to `laporanKejadian` and is rewritten away. Default URL layers: `disasterEvents,facHealth,laporanKejadian`. Layers stay empty until a moderator publishes a real laporan — no dummy fixture points. `/admin/moderasi` edits `laporan_kejadian` / `laporan_penanganan` (legacy `reports` remains a third tab).
 
 Live toolbar layers that must exist in `map_layers`: `facHealth`, `facEducation`, `policeOffices`, `facGov`, `facReligious` (Data utama → Fasilitas Umum nest), `infraRoadBridge`, `laporanKejadian`, `laporanPenanganan` (plus `disasterEvents`). There is no separate Fasilitas toolbar cluster. `helipad` and `starlink` were removed from the toolbar, fixtures, and `map_layers`. The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
 

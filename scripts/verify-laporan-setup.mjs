@@ -20,12 +20,12 @@ function fail(label, detail = "") {
 console.log("Aceh Tangguh — laporan masyarakat setup check\n");
 
 if (process.env.LAPORAN_PII_KEY?.length === 64) ok("LAPORAN_PII_KEY", "set (AES-256-GCM)");
-else warn("LAPORAN_PII_KEY", "missing or invalid — dev hash fallback");
+else fail("LAPORAN_PII_KEY", "missing or invalid — production submits will 503");
 
 if (process.env.LAPORAN_PII_SALT && process.env.LAPORAN_PII_SALT !== "aceh-tangguh-dev") {
   ok("LAPORAN_PII_SALT", "custom");
 } else {
-  warn("LAPORAN_PII_SALT", "using dev default");
+  fail("LAPORAN_PII_SALT", "using dev default — production submits will 503");
 }
 
 if (process.env.LAPORAN_CRON_SECRET) ok("LAPORAN_CRON_SECRET");
@@ -58,10 +58,11 @@ for (const table of tables) {
 }
 
 if (service) {
+  ok("SUPABASE_SERVICE_ROLE_KEY");
   const { data: buckets } = await client.storage.listBuckets();
   const bucket = buckets?.find((b) => b.id === "laporan-media");
   if (bucket) ok("storage bucket laporan-media");
   else warn("storage bucket laporan-media", "not found — run 20260826_laporan_production.sql");
 } else {
-  warn("SUPABASE_SERVICE_ROLE_KEY", "not set — skip storage check");
+  fail("SUPABASE_SERVICE_ROLE_KEY", "required for laporan writes after 20260902_harden_laporan_rls.sql");
 }

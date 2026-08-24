@@ -91,6 +91,9 @@ async function readStore(): Promise<Store> {
 }
 
 async function writeStore(store: Store): Promise<void> {
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("Laporan file-store is disabled in production");
+  }
   await fs.mkdir(STORE_DIR, { recursive: true });
   await fs.writeFile(STORE_FILE, JSON.stringify(store, null, 2), "utf8");
 }

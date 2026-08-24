@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { kabupatenIndexKeys } from "@/lib/irbi-by-kab";
+import { bearerMatches } from "@/lib/security/bearer";
 import { loadRegistry } from "@/lib/weather/service";
 import { fetchBmkgForecast } from "@/lib/weather/bmkg";
 import { fetchOpenMeteoForecast } from "@/lib/weather/open-meteo";
@@ -38,8 +39,7 @@ export async function POST(request: Request) {
   if (!secret) {
     return NextResponse.json({ error: "Cron not configured" }, { status: 503 });
   }
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${secret}`) {
+  if (!bearerMatches(request.headers.get("authorization"), secret)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

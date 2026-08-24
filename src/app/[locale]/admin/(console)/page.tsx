@@ -3,25 +3,32 @@ import { Link } from "@/i18n/routing";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { isSuperAdmin } from "@/lib/auth/types";
 import { requireStaffPage } from "@/lib/auth/admin";
-import type { ReportStatus } from "@/lib/supabase/types";
+
+const OVERVIEW_STATUSES = ["submitted", "in_review", "approved", "rejected"] as const;
 
 export default async function AdminOverviewPage() {
   const t = await getTranslations("admin");
   const { supabase, profile } = await requireStaffPage();
   const superAdmin = isSuperAdmin(profile);
 
-  const counts: Record<ReportStatus, number> = {
-    queued: 0,
-    published: 0,
+  const counts = {
+    submitted: 0,
+    in_review: 0,
+    approved: 0,
     rejected: 0,
   };
-  for (const status of Object.keys(counts) as ReportStatus[]) {
+  for (const status of OVERVIEW_STATUSES) {
     const { count } = await supabase
-      .from("reports")
+      .from("laporan_kejadian")
       .select("id", { count: "exact", head: true })
       .eq("status", status);
     counts[status] = count ?? 0;
   }
+
+  const { count: legacyQueued } = await supabase
+    .from("reports")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "queued");
 
   const cards = [
     { href: "/admin/moderasi" as const, title: t("navModeration"), body: t("overviewModeration") },
@@ -33,6 +40,13 @@ export default async function AdminOverviewPage() {
       : []),
   ];
 
+  const statusLabel = {
+    submitted: t("statusSubmitted"),
+    in_review: t("statusInReview"),
+    approved: t("statusApproved"),
+    rejected: t("statusRejected"),
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <GlassPanel className="p-5 sm:p-6">
@@ -43,28 +57,21 @@ export default async function AdminOverviewPage() {
             role: superAdmin ? t("roleSuperAdmin") : t("roleAdmin"),
           })}
         </p>
-        <div className="mt-5 grid grid-cols-3 gap-3">
-          {(
-            [
-              ["queued", counts.queued],
-              ["published", counts.published],
-              ["rejected", counts.rejected],
-            ] as const
-          ).map(([key, value]) => (
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {OVERVIEW_STATUSES.map((key) => (
             <div key={key} className="rounded-xl border border-[var(--glass-border)] p-3">
               <p className="text-xs uppercase tracking-wide text-[var(--text-dim)]">
-                {t(
-                  key === "queued"
-                    ? "statusQueued"
-                    : key === "published"
-                      ? "statusPublished"
-                      : "statusRejected"
-                )}
+                {statusLabel[key]}
               </p>
-              <p className="mt-1 text-2xl font-semibold">{value}</p>
+              <p className="mt-1 text-2xl font-semibold">{counts[key]}</p>
             </div>
           ))}
         </div>
+        {(legacyQueued ?? 0) > 0 ? (
+          <p className="mt-3 text-xs text-[var(--text-dim)]">
+            {t("overviewLegacyQueued")}: {legacyQueued}
+          </p>
+        ) : null}
       </GlassPanel>
       <div className="grid gap-3 md:grid-cols-2">
         {cards.map((card) => (

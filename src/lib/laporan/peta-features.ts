@@ -8,22 +8,11 @@ import { getPetaKejadianPublik, getPetaPenangananPublik } from "./service";
  * `tampil_di_peta = true` is enough — the next `/api/layers/markers` fetch
  * queries the laporan tables directly.
  *
- * STATIC_EXPORT / missing Supabase: these helpers return [] (file-store is
- * empty unless a local submit was approved).
+ * Public rows never include `jawaban_json` (PII / free-text dump).
  */
 
 type KejadianRow = Awaited<ReturnType<typeof getPetaKejadianPublik>>[number];
 type PenangananRow = Awaited<ReturnType<typeof getPetaPenangananPublik>>[number];
-
-function titleFromJawaban(jawaban: unknown, fallback: string): string {
-  if (typeof jawaban === "object" && jawaban !== null) {
-    const rec = jawaban as Record<string, unknown>;
-    if (typeof rec.deskripsi_kejadian === "string" && rec.deskripsi_kejadian.trim()) {
-      return rec.deskripsi_kejadian.slice(0, 80);
-    }
-  }
-  return fallback;
-}
 
 export function kejadianRowToFeature(row: KejadianRow): Feature<Point> {
   return {
@@ -35,7 +24,7 @@ export function kejadianRowToFeature(row: KejadianRow): Feature<Point> {
     },
     properties: {
       layer: "laporanKejadian",
-      title: titleFromJawaban(row.jawaban_json, row.nomor_laporan),
+      title: row.nomor_laporan,
       status: "approved",
       kabupaten: row.kabupaten_kota,
       kecamatan: row.kecamatan ?? undefined,

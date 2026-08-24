@@ -1,5 +1,4 @@
 import { randomUUID } from "crypto";
-import { createServerClient } from "@/lib/supabase/server";
 import {
   computeUrgency,
   encryptPii,
@@ -17,9 +16,23 @@ import {
   fileStoreQueueWa,
 } from "./file-store";
 import type { KejadianSubmit, PenangananSubmit } from "./schemas";
+import type { PublicPetaKejadian, PublicPetaPenanganan } from "./status";
+import { LaporanConfigError, requireLaporanWriter } from "./writer";
 import type { Json } from "@/lib/supabase/types";
+import type { TypedSupabaseClient } from "@/lib/supabase/server";
+import { createServerClient } from "@/lib/supabase/server";
 
-async function insertPelapor(data: KejadianSubmit["pelapor"]) {
+async function nextNomor(client: TypedSupabaseClient, prefix: "KJD" | "PNG") {
+  const { data, error } = await client.rpc("next_laporan_nomor", { prefix });
+  if (!error && typeof data === "string" && data.length > 0) return data;
+  const fallbackSeq = Date.now() % 10_000;
+  return generateNomor(prefix, fallbackSeq);
+}
+
+async function insertPelapor(
+  writer: ReturnType<typeof requireLaporanWriter>,
+  data: KejadianSubmit["pelapor"]
+) {
   const id = randomUUID();
   const row = {
     id,
@@ -32,9 +45,8 @@ async function insertPelapor(data: KejadianSubmit["pelapor"]) {
     telepon_hash: data.telepon ? hashPii(data.telepon) : null,
   };
 
-  const supabase = createServerClient();
-  if (supabase) {
-    const { error } = await supabase.from("laporan_pelapor").insert(row);
+  if (writer.kind === "supabase") {
+    const { error } = await writer.client.from("laporan_pelapor").insert(row);
     if (error) throw new Error(error.message);
   } else {
     await fileStoreInsertPelapor({
@@ -49,13 +61,14 @@ async function insertPelapor(data: KejadianSubmit["pelapor"]) {
   return id;
 }
 
-async function queueWa(
+export async function queueWaNotification(
   laporanTipe: "kejadian" | "penanganan",
   laporanId: string,
   telepon: string,
   template: string,
   payload: Record<string, unknown>
 ) {
+  const writer = requireLaporanWriter();
   const row = {
     id: randomUUID(),
     laporan_tipe: laporanTipe,
@@ -63,11 +76,10 @@ async function queueWa(
     nomor_tujuan_enc: encryptPii(telepon),
     template_kode: template,
     payload_json: payload as Json,
-    status: "pending",
+    status: "pending" as const,
   };
-  const supabase = createServerClient();
-  if (supabase) {
-    await supabase.from("notifikasi_wa").insert(row);
+  if (writer.kind === "supabase") {
+    await writer.client.from("notifikasi_wa").insert(row);
   } else {
     await fileStoreQueueWa({
       ...row,
@@ -79,20 +91,17 @@ async function queueWa(
 
 export async function submitKejadian(body: KejadianSubmit) {
   validateAcehLocation(body.lokasi.latitude, body.lokasi.longitude);
-  const pelaporId = await insertPelapor(body.pelapor);
+  const writer = requireLaporanWriter();
+  const pelaporId = await insertPelapor(writer, body.pelapor);
   const id = randomUUID();
-  const skor = computeUrgency(body.jenis_bencana as JenisBencana, body.jawaban);
+  const skor = Math.min(200, Math.max(0, computeUrgency(body.jenis_bencana as JenisBencana, body.jawaban)));
   const now = new Date().toISOString();
 
-  const supabase = createServerClient();
   let nomor: string;
 
-  if (supabase) {
-    const { count } = await supabase
-      .from("laporan_kejadian")
-      .select("*", { count: "exact", head: true });
-    nomor = generateNomor("KJD", (count ?? 0) + 1);
-    const { error } = await supabase.from("laporan_kejadian").insert({
+  if (writer.kind === "supabase") {
+    nomor = await nextNomor(writer.client, "KJD");
+    const { error } = await writer.client.from("laporan_kejadian").insert({
       id,
       nomor_laporan: nomor,
       pelapor_id: pelaporId,
@@ -133,7 +142,7 @@ export async function submitKejadian(body: KejadianSubmit) {
   }
 
   if (body.pelapor.telepon) {
-    await queueWa("kejadian", id, body.pelapor.telepon, "laporan_submitted", {
+    await queueWaNotification("kejadian", id, body.pelapor.telepon, "laporan_submitted", {
       nomor_laporan: nomor,
       jenis: body.jenis_bencana,
     });
@@ -144,25 +153,23 @@ export async function submitKejadian(body: KejadianSubmit) {
 
 export async function submitPenanganan(body: PenangananSubmit) {
   validateAcehLocation(body.lokasi.latitude, body.lokasi.longitude);
-  const pelaporId = await insertPelapor(body.pelapor);
+  const writer = requireLaporanWriter();
+  const pelaporId = await insertPelapor(writer, body.pelapor);
   const id = randomUUID();
   const now = new Date().toISOString();
 
-  const supabase = createServerClient();
   let nomor: string;
 
-  if (supabase) {
-    const { count } = await supabase
-      .from("laporan_penanganan")
-      .select("*", { count: "exact", head: true });
-    nomor = generateNomor("PNG", (count ?? 0) + 1);
-    const { error } = await supabase.from("laporan_penanganan").insert({
+  if (writer.kind === "supabase") {
+    nomor = await nextNomor(writer.client, "PNG");
+    const { error } = await writer.client.from("laporan_penanganan").insert({
       id,
       nomor_laporan: nomor,
       pelapor_id: pelaporId,
       jenis_bencana: body.jenis_bencana,
       tipe_laporan: body.tipe_laporan,
       fase_penanganan: body.fase_penanganan ?? null,
+      status: "submitted",
       status_kebutuhan_sisa: body.status_kebutuhan_sisa ?? null,
       tanggal_penanganan: body.tanggal_penanganan,
       jam_penanganan: body.jam_penanganan ?? null,
@@ -212,7 +219,7 @@ export async function submitPenanganan(body: PenangananSubmit) {
   }
 
   if (body.pelapor.telepon) {
-    await queueWa("penanganan", id, body.pelapor.telepon, "laporan_submitted", {
+    await queueWaNotification("penanganan", id, body.pelapor.telepon, "laporan_submitted", {
       nomor_laporan: nomor,
       tipe: body.tipe_laporan,
     });
@@ -230,50 +237,84 @@ function hasMapCoords(row: { latitude?: number | null; longitude?: number | null
   );
 }
 
-/** Moderated = `status = approved` AND `tampil_di_peta = true` AND lat/lon present. */
-export async function getPetaKejadianPublik() {
+const KEJADIAN_PUBLIC_COLUMNS =
+  "id, nomor_laporan, jenis_bencana, latitude, longitude, kabupaten_kota, kecamatan, desa, skor_urgensi, submitted_at";
+
+const PENANGANAN_PUBLIC_COLUMNS =
+  "id, nomor_laporan, jenis_bencana, tipe_laporan, fase_penanganan, status_kebutuhan_sisa, tanggal_penanganan, deskripsi_penanganan, latitude, longitude, kabupaten_kota, kecamatan, desa, submitted_at";
+
+/** Moderated = `status = approved` AND `tampil_di_peta = true` AND lat/lon present. No jawaban_json. */
+export async function getPetaKejadianPublik(): Promise<PublicPetaKejadian[]> {
   const supabase = createServerClient();
   if (supabase) {
     const { data, error } = await supabase
       .from("laporan_kejadian")
-      .select(
-        "id, nomor_laporan, jenis_bencana, latitude, longitude, kabupaten_kota, kecamatan, desa, skor_urgensi, submitted_at, jawaban_json"
-      )
+      .select(KEJADIAN_PUBLIC_COLUMNS)
       .eq("status", "approved")
       .eq("tampil_di_peta", true)
       .not("latitude", "is", null)
       .not("longitude", "is", null)
       .order("skor_urgensi", { ascending: false });
     if (!error && data) {
-      return data
-        .filter(hasMapCoords)
-        .map((r) => ({ ...r, laporan_tipe: "kejadian" as const }));
+      return data.filter(hasMapCoords).map((r) => ({
+        ...r,
+        laporan_tipe: "kejadian" as const,
+      }));
     }
   }
   const rows = await fileStoreGetPetaKejadian();
-  return rows.filter(hasMapCoords).map((r) => ({ ...r, laporan_tipe: "kejadian" as const }));
+  return rows.filter(hasMapCoords).map((r) => ({
+    id: r.id,
+    nomor_laporan: r.nomor_laporan,
+    jenis_bencana: r.jenis_bencana,
+    latitude: r.latitude,
+    longitude: r.longitude,
+    kabupaten_kota: r.kabupaten_kota,
+    kecamatan: r.kecamatan ?? null,
+    desa: r.desa ?? null,
+    skor_urgensi: r.skor_urgensi,
+    submitted_at: r.submitted_at,
+    laporan_tipe: "kejadian" as const,
+  }));
 }
 
 /** Same moderation gate as kejadian; live query (not marker_features sync). */
-export async function getPetaPenangananPublik() {
+export async function getPetaPenangananPublik(): Promise<PublicPetaPenanganan[]> {
   const supabase = createServerClient();
   if (supabase) {
     const { data, error } = await supabase
       .from("laporan_penanganan")
-      .select(
-        "id, nomor_laporan, jenis_bencana, tipe_laporan, fase_penanganan, status_kebutuhan_sisa, tanggal_penanganan, deskripsi_penanganan, latitude, longitude, kabupaten_kota, kecamatan, desa, submitted_at"
-      )
+      .select(PENANGANAN_PUBLIC_COLUMNS)
       .eq("status", "approved")
       .eq("tampil_di_peta", true)
       .not("latitude", "is", null)
       .not("longitude", "is", null)
       .order("submitted_at", { ascending: false });
     if (!error && data) {
-      return data
-        .filter(hasMapCoords)
-        .map((r) => ({ ...r, laporan_tipe: "penanganan" as const }));
+      return data.filter(hasMapCoords).map((r) => ({
+        ...r,
+        laporan_tipe: "penanganan" as const,
+      }));
     }
   }
   const rows = await fileStoreGetPetaPenanganan();
-  return rows.filter(hasMapCoords).map((r) => ({ ...r, laporan_tipe: "penanganan" as const }));
+  return rows.filter(hasMapCoords).map((r) => ({
+    id: r.id,
+    nomor_laporan: r.nomor_laporan,
+    jenis_bencana: r.jenis_bencana,
+    tipe_laporan: r.tipe_laporan,
+    fase_penanganan: r.fase_penanganan ?? null,
+    status_kebutuhan_sisa: r.status_kebutuhan_sisa ?? null,
+    tanggal_penanganan: r.tanggal_penanganan,
+    deskripsi_penanganan: r.deskripsi_penanganan,
+    latitude: r.latitude,
+    longitude: r.longitude,
+    kabupaten_kota: r.kabupaten_kota,
+    kecamatan: r.kecamatan ?? null,
+    desa: r.desa ?? null,
+    submitted_at: r.submitted_at,
+    laporan_tipe: "penanganan" as const,
+  }));
 }
+
+export { LaporanConfigError };

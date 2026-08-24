@@ -5,6 +5,7 @@ import {
   sendWhatsAppGateway,
   type WaQueueRow,
 } from "@/lib/laporan/whatsapp";
+import { bearerMatches } from "@/lib/security/bearer";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -17,8 +18,7 @@ export async function POST(request: Request) {
   if (!secret) {
     return NextResponse.json({ error: "LAPORAN_CRON_SECRET not configured" }, { status: 503 });
   }
-  const auth = request.headers.get("authorization");
-  if (auth !== `Bearer ${secret}`) {
+  if (!bearerMatches(request.headers.get("authorization"), secret)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
