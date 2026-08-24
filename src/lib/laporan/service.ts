@@ -10,6 +10,7 @@ import {
 import type { JenisBencana } from "./definitions";
 import {
   fileStoreGetPetaKejadian,
+  fileStoreGetPetaPenanganan,
   fileStoreInsertKejadian,
   fileStoreInsertPelapor,
   fileStoreInsertPenanganan,
@@ -220,6 +221,16 @@ export async function submitPenanganan(body: PenangananSubmit) {
   return { id, nomor_laporan: nomor, status: "submitted" as const, tampil_di_peta: false };
 }
 
+function hasMapCoords(row: { latitude?: number | null; longitude?: number | null }) {
+  return (
+    typeof row.latitude === "number" &&
+    Number.isFinite(row.latitude) &&
+    typeof row.longitude === "number" &&
+    Number.isFinite(row.longitude)
+  );
+}
+
+/** Moderated = `status = approved` AND `tampil_di_peta = true` AND lat/lon present. */
 export async function getPetaKejadianPublik() {
   const supabase = createServerClient();
   if (supabase) {
@@ -230,11 +241,39 @@ export async function getPetaKejadianPublik() {
       )
       .eq("status", "approved")
       .eq("tampil_di_peta", true)
+      .not("latitude", "is", null)
+      .not("longitude", "is", null)
       .order("skor_urgensi", { ascending: false });
     if (!error && data) {
-      return data.map((r) => ({ ...r, laporan_tipe: "kejadian" as const }));
+      return data
+        .filter(hasMapCoords)
+        .map((r) => ({ ...r, laporan_tipe: "kejadian" as const }));
     }
   }
   const rows = await fileStoreGetPetaKejadian();
-  return rows.map((r) => ({ ...r, laporan_tipe: "kejadian" as const }));
+  return rows.filter(hasMapCoords).map((r) => ({ ...r, laporan_tipe: "kejadian" as const }));
+}
+
+/** Same moderation gate as kejadian; live query (not marker_features sync). */
+export async function getPetaPenangananPublik() {
+  const supabase = createServerClient();
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("laporan_penanganan")
+      .select(
+        "id, nomor_laporan, jenis_bencana, tipe_laporan, fase_penanganan, status_kebutuhan_sisa, tanggal_penanganan, deskripsi_penanganan, latitude, longitude, kabupaten_kota, kecamatan, desa, submitted_at"
+      )
+      .eq("status", "approved")
+      .eq("tampil_di_peta", true)
+      .not("latitude", "is", null)
+      .not("longitude", "is", null)
+      .order("submitted_at", { ascending: false });
+    if (!error && data) {
+      return data
+        .filter(hasMapCoords)
+        .map((r) => ({ ...r, laporan_tipe: "penanganan" as const }));
+    }
+  }
+  const rows = await fileStoreGetPetaPenanganan();
+  return rows.filter(hasMapCoords).map((r) => ({ ...r, laporan_tipe: "penanganan" as const }));
 }

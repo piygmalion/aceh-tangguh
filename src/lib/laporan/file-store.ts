@@ -133,3 +133,8 @@ export async function fileStoreGetPetaKejadian(): Promise<StoredKejadian[]> {
   const s = await readStore();
   return s.kejadian.filter((k) => k.status === "approved" && k.tampil_di_peta);
 }
+
+export async function fileStoreGetPetaPenanganan(): Promise<StoredPenanganan[]> {
+  const s = await readStore();
+  return s.penanganan.filter((k) => k.status === "approved" && k.tampil_di_peta);
+}

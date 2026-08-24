@@ -12,8 +12,9 @@ Inputs (expected under /workspace/drive-aceh-data/):
       Real GPS when present; otherwise jittered kab centroids (approx=true).
 
 Preserves non-main layers already present in markers.geojson
-(policeOffices, facGov, facReligious, infraRoadBridge, citizenReports)
-so a rebuild only refreshes disasterEvents / facHealth / facEducation.
+(policeOffices, facGov, facReligious, infraRoadBridge). Do not seed
+laporanKejadian / laporanPenanganan / citizenReports fixture points —
+those layers are live overlays from moderated laporan_* rows.
 
 Usage:
   python3 scripts/build-main-markers.py

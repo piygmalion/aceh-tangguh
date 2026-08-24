@@ -13,7 +13,7 @@ import { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 const TEASER_CHIP_CLASS: Record<(typeof DEFAULT_LAYERS)[number], string> = {
   disasterEvents: "bg-amber-500/25 text-amber-100",
   facHealth: "bg-rose-500/25 text-rose-100",
-  citizenReports: "bg-orange-500/25 text-orange-100",
+  laporanKejadian: "bg-orange-500/25 text-orange-100",
 };
 
 export function MapTeaserSection() {

@@ -7,6 +7,7 @@ import {
 import { filterAndPaginateKejadian } from "@/lib/kejadian-query";
 import type { KejadianFixture, KejadianQuery } from "@/lib/kejadian-types";
 import type { LegendModel } from "@/lib/types";
+import { expandMarkerLayerKeys } from "@/lib/map-url-aliases";
 import { isStaticExport, withBasePath } from "./env";
 import { HAZARD_STATUS_FALLBACK, LIVE_STATS_FALLBACK } from "./fallbacks";
 
@@ -43,7 +44,7 @@ function filterMarkersByKeys(
   keys: string[]
 ): FeatureCollection {
   if (keys.length === 0) return fc;
-  const set = new Set(keys);
+  const set = new Set<string>(expandMarkerLayerKeys(keys));
   return {
     type: "FeatureCollection",
     features: fc.features.filter((f) =>
@@ -104,6 +105,12 @@ async function resolveStaticGet(input: string): Promise<Response> {
       unknown
     >;
     return jsonResponse({ ...data, source: "fixture" });
+  }
+  if (path === "/api/laporan/peta") {
+    return jsonResponse({
+      kejadian: { layerId: "laporanKejadian", count: 0, items: [] },
+      penanganan: { layerId: "laporanPenanganan", count: 0, items: [] },
+    });
   }
   if (path === "/api/layers/markers") {
     const fc = (await fetchJson("/fixtures/markers.geojson")) as FeatureCollection;

@@ -60,7 +60,8 @@ const LAYER_DOMAIN: Record<string, StatusDomain> = {
   facHealth: "health",
   disasterEvents: "disaster",
   infraRoadBridge: "infra",
-  citizenReports: "reports",
+  laporanKejadian: "reports",
+  laporanPenanganan: "reports",
 };
 
 const EDUCATION: VocabEntry[] = [

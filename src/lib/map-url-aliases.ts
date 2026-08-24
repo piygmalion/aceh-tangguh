@@ -17,11 +17,26 @@ const KNOWN_MARKER_LAYER_KEYS = new Set<string>([
 ]);
 const REMOVED_LAYER_SET = new Set<string>(REMOVED_MARKER_LAYER_KEYS);
 
+/** Live Partisipasi layers that replaced the single `citizenReports` key. */
+export const PARTICIPATION_LAYER_KEYS = [
+  "laporanKejadian",
+  "laporanPenanganan",
+] as const satisfies readonly MarkerLayerKey[];
+
+/**
+ * Soft URL alias: old `?layers=citizenReports` → `laporanKejadian` only
+ * (the previous overlay was kejadian-only). Then the token is treated as
+ * removed (helipad pattern) so it never stays in the toolbar or URL.
+ */
+export const MARKER_LAYER_ALIASES: Record<string, readonly MarkerLayerKey[]> = {
+  citizenReports: ["laporanKejadian"],
+};
+
 /** Default public map layers when `layers` is omitted. */
 export const DEFAULT_LAYERS = [
   "disasterEvents",
   "facHealth",
-  "citizenReports",
+  "laporanKejadian",
 ] as const satisfies readonly MarkerLayerKey[];
 
 const CLUSTER_IDS: readonly ClusterId[] = [
@@ -53,17 +68,17 @@ export type ClusterLayerPreset = {
  * Posko / tendPoints were removed from the toolbar — do not map clusters
  * back onto those keys.
  *
- * - sar / pemulihan → disaster events + citizen reports
+ * - sar / pemulihan → disaster events + laporan kejadian
  * - logistik → disaster events + road/bridge infra
- * - pengungsian → disaster events + citizen reports (shelter layers retired)
+ * - pengungsian → disaster events + laporan kejadian (shelter layers retired)
  * - kesehatan → health facilities
  * - pendidikan → education facilities
  */
 export const CLUSTER_TO_LAYERS: Record<ClusterId, ClusterLayerPreset> = {
-  sar: { markerLayers: ["disasterEvents", "citizenReports"] },
-  pemulihan: { markerLayers: ["disasterEvents", "citizenReports"] },
+  sar: { markerLayers: ["disasterEvents", "laporanKejadian"] },
+  pemulihan: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   logistik: { markerLayers: ["disasterEvents", "infraRoadBridge"] },
-  pengungsian: { markerLayers: ["disasterEvents", "citizenReports"] },
+  pengungsian: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   kesehatan: { markerLayers: ["facHealth"] },
   pendidikan: { markerLayers: ["facEducation"] },
 };
@@ -92,15 +107,35 @@ export function parseHazardKind(raw: string | null | undefined): HazardKind | un
   return HAZARD_KINDS.includes(raw as HazardKind) ? (raw as HazardKind) : undefined;
 }
 
+export function expandMarkerLayerKeys(keys: readonly string[]): MarkerLayerKey[] {
+  const seen = new Set<MarkerLayerKey>();
+  const out: MarkerLayerKey[] = [];
+  for (const raw of keys) {
+    const mapped: readonly string[] = MARKER_LAYER_ALIASES[raw] ?? [raw];
+    for (const key of mapped) {
+      if (!KNOWN_MARKER_LAYER_KEYS.has(key) || REMOVED_LAYER_SET.has(key)) continue;
+      const typed = key as MarkerLayerKey;
+      if (seen.has(typed)) continue;
+      seen.add(typed);
+      out.push(typed);
+    }
+  }
+  return out;
+}
+
+export function layersRawHasCitizenReportsAlias(raw: string | null): boolean {
+  if (!raw) return false;
+  return raw.split(",").some((s) => s.trim() === "citizenReports");
+}
+
 export function parseMarkerLayers(raw: string | null): MarkerLayerKey[] {
   if (!raw) return [...DEFAULT_LAYERS];
-  return raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(
-      (s): s is MarkerLayerKey =>
-        Boolean(s) && KNOWN_MARKER_LAYER_KEYS.has(s) && !REMOVED_LAYER_SET.has(s)
-    );
+  return expandMarkerLayerKeys(
+    raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  );
 }
 
 export type ResolvedMapUrlAliases = {
@@ -127,6 +162,7 @@ export function resolveMapUrlAliases(input: {
   const cluster = parseClusterId(input.cluster);
   const hazard = parseHazardKind(input.hazard);
   const hasAliasParam = Boolean(input.cluster || input.hazard);
+  const hasCitizenReportsAlias = layersRawHasCitizenReportsAlias(input.layersRaw);
 
   let markerLayers = parseMarkerLayers(input.layersRaw);
   let disasterJenis = parseDisasterJenis(input.disasterJenisRaw);
@@ -151,7 +187,7 @@ export function resolveMapUrlAliases(input: {
     markerLayers,
     disasterJenis,
     areaLayer,
-    needsCanonicalSync: hasAliasParam,
+    needsCanonicalSync: hasAliasParam || hasCitizenReportsAlias,
   };
 }
 
