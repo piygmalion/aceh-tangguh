@@ -11,11 +11,18 @@ export const RETIRED_MARKER_LAYER_KEYS = [
   "poskos",
   "tendPoints",
   "missingPersons",
-  "citizenReports",
 ] as const satisfies readonly MarkerLayerKey[];
 
-/** Fully removed layers — drop from remote catalog merges and URL `?layers=`. */
-export const REMOVED_MARKER_LAYER_KEYS = ["helipad", "starlink"] as const;
+/**
+ * Fully removed layers — drop from remote catalog merges and leftover `?layers=` tokens.
+ * `citizenReports` is aliased to `laporanKejadian` first (see map-url-aliases),
+ * then treated like helipad/starlink so it never stays in the toolbar or URL.
+ */
+export const REMOVED_MARKER_LAYER_KEYS = [
+  "helipad",
+  "starlink",
+  "citizenReports",
+] as const;
 
 export type MapLayerCatalogEntry = {
   key: string;
@@ -270,20 +277,6 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     enabled: true,
     sort_order: 410,
     meta: { toolbar: "groupParticipation" },
-  },
-  {
-    key: "citizenReports",
-    kind: "marker",
-    title_id: "Laporan warga",
-    title_en: "Citizen reports",
-    description:
-      "Retired Partisipasi key. Old ?layers=citizenReports expands to laporanKejadian+laporanPenanganan.",
-    source_path: null,
-    source_type: "api",
-    pmtiles_path: null,
-    enabled: false,
-    sort_order: 930,
-    meta: { retired: true, aliasOf: ["laporanKejadian", "laporanPenanganan"] },
   },
   {
     key: "poskos",

@@ -40,9 +40,9 @@ insert into public.map_layers (
 ) values (
   'citizenReports', 'marker',
   'Laporan warga', 'Citizen reports',
-  'Retired Partisipasi key. Old ?layers=citizenReports expands to laporanKejadian+laporanPenanganan.',
+  'Removed Partisipasi key (helipad pattern). Old ?layers=citizenReports aliases to laporanKejadian.',
   null, 'api', false, 930,
-  '{"retired":true,"aliasOf":["laporanKejadian","laporanPenanganan"]}'::jsonb,
+  '{"removed":true,"aliasOf":["laporanKejadian"]}'::jsonb,
   now()
 )
 on conflict (key) do update set

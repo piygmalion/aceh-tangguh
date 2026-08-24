@@ -14,7 +14,6 @@ const TEASER_CHIP_CLASS: Record<(typeof DEFAULT_LAYERS)[number], string> = {
   disasterEvents: "bg-amber-500/25 text-amber-100",
   facHealth: "bg-rose-500/25 text-rose-100",
   laporanKejadian: "bg-orange-500/25 text-orange-100",
-  laporanPenanganan: "bg-teal-500/25 text-teal-100",
 };
 
 export function MapTeaserSection() {

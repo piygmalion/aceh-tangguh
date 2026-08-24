@@ -74,12 +74,19 @@ Dua layer Partisipasi, keduanya live-query dari tabel laporan (bukan sync ke `ma
 
 `GET /api/laporan/peta` mengembalikan kedua set (`?tipe=kejadian\|penanganan` untuk satu sisi). `GET /api/layers/markers` menggabungkan overlay ini ke GeoJSON peta.
 
-Key lama `citizenReports` **retired**: tidak ada di toolbar; `?layers=citizenReports` di-expand ke kedua layer baru. STATIC_EXPORT / tanpa data: array kosong — jangan seed titik dummy.
+Key lama `citizenReports` **removed** (pola helipad): tidak ada di toolbar; `?layers=citizenReports` di-alias ke `laporanKejadian` saja. STATIC_EXPORT / tanpa data: array kosong — jangan seed titik dummy.
 
-Setelah approve, set `status = approved` dan `tampil_di_peta = true`. Titik muncul pada fetch berikutnya.
+Setelah approve, set `status = approved` dan `tampil_di_peta = true`. Titik muncul pada fetch berikutnya. Tidak ada sync ke `marker_features`.
 
 ## 6. Moderasi
 
-Moderator: **BPBA Pusdalops**. Staff console (`is_staff`) dapat SELECT/UPDATE `laporan_kejadian` dan `laporan_penanganan`. UI moderasi laporan baru dapat ditambahkan di `/admin/moderasi` (legacy `reports` masih ada).
+Moderator: **BPBA Pusdalops**. Staff console (`is_staff`) dapat SELECT/UPDATE `laporan_kejadian` dan `laporan_penanganan`.
+
+`/admin/moderasi` masih memakai tabel legacy `reports` (`queued` / `published` / `rejected`) — **bukan** sumber titik Partisipasi. Untuk menampilkan laporan homepage di peta, set di **Database explorer** (`/admin/database`) pada `laporan_kejadian` / `laporan_penanganan`:
+
+- `status` → `approved`
+- `tampil_di_peta` → `true`
+
+UI moderasi laporan baru di `/admin/moderasi` masih belum dibangun ulang.
 
 Setelah approve kejadian atau penanganan, set `status = approved`, `tampil_di_peta = true`, dan enqueue WA `laporan_approved` (manual atau API admin). Titik muncul di layer Partisipasi yang sesuai pada fetch peta berikutnya.

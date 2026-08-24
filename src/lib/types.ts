@@ -30,8 +30,7 @@ export type MarkerLayerKey =
   | "facReligious"
   | "infraRoadBridge"
   | "laporanKejadian"
-  | "laporanPenanganan"
-  | "citizenReports";
+  | "laporanPenanganan";
 
 export type ReportTopic =
   | "banjir"

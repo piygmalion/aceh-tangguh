@@ -2,6 +2,8 @@ import type { Database } from "@/lib/supabase/types";
 
 export type AdminTableKey =
   | "reports"
+  | "laporan_kejadian"
+  | "laporan_penanganan"
   | "kejadian_bencana"
   | "publikasi"
   | "marker_features"
@@ -32,6 +34,8 @@ export type AdminTableConfig = {
 
 export const ADMIN_TABLE_KEYS: AdminTableKey[] = [
   "reports",
+  "laporan_kejadian",
+  "laporan_penanganan",
   "kejadian_bencana",
   "publikasi",
   "marker_features",
@@ -39,10 +43,21 @@ export const ADMIN_TABLE_KEYS: AdminTableKey[] = [
   "profil_desa",
 ];
 
+const LAPORAN_STATUS_OPTIONS = [
+  "draft",
+  "submitted",
+  "in_review",
+  "approved",
+  "rejected",
+  "needs_info",
+  "archived",
+];
+
 export const ADMIN_TABLES: Record<AdminTableKey, AdminTableConfig> = {
   reports: {
     key: "reports",
-    label: "Laporan warga",
+    label: "Laporan warga (legacy reports)",
+    note: "Alur lama. Titik Partisipasi di peta memakai laporan_kejadian / laporan_penanganan.",
     pk: "id",
     defaultSort: { column: "created_at", ascending: false },
     searchable: ["description", "place_name", "topic"],
@@ -83,6 +98,63 @@ export const ADMIN_TABLES: Record<AdminTableKey, AdminTableConfig> = {
         editable: false,
       },
       { key: "created_at", label: "Dibuat", type: "datetime", editable: false },
+    ],
+  },
+  laporan_kejadian: {
+    key: "laporan_kejadian",
+    label: "Laporan kejadian",
+    pk: "id",
+    defaultSort: { column: "submitted_at", ascending: false },
+    searchable: ["nomor_laporan", "jenis_bencana", "kabupaten_kota", "status"],
+    allowInsert: false,
+    allowDelete: false,
+    note: "Set status=approved dan tampil_di_peta=true agar titik muncul di layer laporanKejadian.",
+    columns: [
+      { key: "id", label: "ID", type: "text", editable: false },
+      { key: "nomor_laporan", label: "Nomor", type: "text", editable: false },
+      { key: "jenis_bencana", label: "Jenis", type: "text", editable: false },
+      {
+        key: "status",
+        label: "Status",
+        type: "select",
+        editable: true,
+        options: LAPORAN_STATUS_OPTIONS,
+      },
+      { key: "tampil_di_peta", label: "Tampil di peta", type: "boolean", editable: true },
+      { key: "latitude", label: "Latitude", type: "number", editable: false },
+      { key: "longitude", label: "Longitude", type: "number", editable: false },
+      { key: "kabupaten_kota", label: "Kabupaten", type: "text", editable: false },
+      { key: "skor_urgensi", label: "Urgensi", type: "number", editable: false },
+      { key: "submitted_at", label: "Dikirim", type: "datetime", editable: false },
+    ],
+  },
+  laporan_penanganan: {
+    key: "laporan_penanganan",
+    label: "Laporan penanganan",
+    pk: "id",
+    defaultSort: { column: "submitted_at", ascending: false },
+    searchable: ["nomor_laporan", "jenis_bencana", "kabupaten_kota", "status"],
+    allowInsert: false,
+    allowDelete: false,
+    note: "Set status=approved dan tampil_di_peta=true agar titik muncul di layer laporanPenanganan.",
+    columns: [
+      { key: "id", label: "ID", type: "text", editable: false },
+      { key: "nomor_laporan", label: "Nomor", type: "text", editable: false },
+      { key: "jenis_bencana", label: "Jenis", type: "text", editable: false },
+      { key: "tipe_laporan", label: "Tipe", type: "text", editable: false },
+      {
+        key: "status",
+        label: "Status",
+        type: "select",
+        editable: true,
+        options: LAPORAN_STATUS_OPTIONS,
+      },
+      { key: "tampil_di_peta", label: "Tampil di peta", type: "boolean", editable: true },
+      { key: "latitude", label: "Latitude", type: "number", editable: false },
+      { key: "longitude", label: "Longitude", type: "number", editable: false },
+      { key: "kabupaten_kota", label: "Kabupaten", type: "text", editable: false },
+      { key: "tanggal_penanganan", label: "Tanggal", type: "text", editable: false },
+      { key: "submitted_at", label: "Dikirim", type: "datetime", editable: false },
     ],
   },
   kejadian_bencana: {

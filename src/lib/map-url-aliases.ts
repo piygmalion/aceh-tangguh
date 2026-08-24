@@ -24,12 +24,12 @@ export const PARTICIPATION_LAYER_KEYS = [
 ] as const satisfies readonly MarkerLayerKey[];
 
 /**
- * Soft URL alias: `citizenReports` → both Partisipasi layers.
- * Documented so old `?layers=…,citizenReports` bookmarks keep working
- * without leaving a "Laporan warga" toolbar toggle.
+ * Soft URL alias: old `?layers=citizenReports` → `laporanKejadian` only
+ * (the previous overlay was kejadian-only). Then the token is treated as
+ * removed (helipad pattern) so it never stays in the toolbar or URL.
  */
 export const MARKER_LAYER_ALIASES: Record<string, readonly MarkerLayerKey[]> = {
-  citizenReports: PARTICIPATION_LAYER_KEYS,
+  citizenReports: ["laporanKejadian"],
 };
 
 /** Default public map layers when `layers` is omitted. */
@@ -37,7 +37,6 @@ export const DEFAULT_LAYERS = [
   "disasterEvents",
   "facHealth",
   "laporanKejadian",
-  "laporanPenanganan",
 ] as const satisfies readonly MarkerLayerKey[];
 
 const CLUSTER_IDS: readonly ClusterId[] = [
@@ -69,17 +68,17 @@ export type ClusterLayerPreset = {
  * Posko / tendPoints were removed from the toolbar — do not map clusters
  * back onto those keys.
  *
- * - sar / pemulihan → disaster events + both Partisipasi laporan layers
+ * - sar / pemulihan → disaster events + laporan kejadian
  * - logistik → disaster events + road/bridge infra
- * - pengungsian → disaster events + both Partisipasi laporan layers (shelter layers retired)
+ * - pengungsian → disaster events + laporan kejadian (shelter layers retired)
  * - kesehatan → health facilities
  * - pendidikan → education facilities
  */
 export const CLUSTER_TO_LAYERS: Record<ClusterId, ClusterLayerPreset> = {
-  sar: { markerLayers: ["disasterEvents", ...PARTICIPATION_LAYER_KEYS] },
-  pemulihan: { markerLayers: ["disasterEvents", ...PARTICIPATION_LAYER_KEYS] },
+  sar: { markerLayers: ["disasterEvents", "laporanKejadian"] },
+  pemulihan: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   logistik: { markerLayers: ["disasterEvents", "infraRoadBridge"] },
-  pengungsian: { markerLayers: ["disasterEvents", ...PARTICIPATION_LAYER_KEYS] },
+  pengungsian: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   kesehatan: { markerLayers: ["facHealth"] },
   pendidikan: { markerLayers: ["facEducation"] },
 };
