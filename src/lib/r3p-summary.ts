@@ -1,3 +1,4 @@
+/** @deprecated Homepage slideshow now uses `prrpka-summary` + `/api/prrpka/summary`. */
 import { readFile } from "fs/promises";
 import path from "path";
 import type { R3PSlideshow, R3PSummaryResponse } from "@/lib/r3p-types";

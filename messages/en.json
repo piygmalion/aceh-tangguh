@@ -330,49 +330,65 @@
       "body": "The homepage “Aceh disaster dashboard” aggregates figures from BNPB’s public DIBI dashboard (https://dibi.bnpb.go.id/superset/dashboard/2/), dataset Dampak kejadian bencana. Every query filters provinsi=Aceh and is_bencana=true, plus DIBI’s default hazard categories. This uses Apache Superset’s internal API (not the official Satu Data Bencana CKAN channel); if DIBI is unavailable the app falls back to a snapshot fixture. Housing-loss estimates follow DIBI’s million-rupiah unit."
     }
   },
-  "r3pChart": {
-    "heading": "R3P multi-sector — post-disaster damage",
-    "lead": "Aceh Post-Disaster Rehabilitation and Reconstruction Plan summary: housing, roads, drainage, farmland, and affected village coverage by kab/kota.",
-    "loading": "Loading R3P charts…",
-    "error": "Failed to load R3P data.",
+  "prrpkaChart": {
+    "heading": "PRRPKA — Master Plan for Accelerated Post-Disaster Rehabilitation and Reconstruction under Aceh Authority",
+    "lead": "Data from the RENCANA INDUK Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh (PRRPKA / PRRKA), Aceh Governor Decree No. 300.2/666/2026, period 2026–2028. JITUPASNA damage/loss, RR needs, housing vintages (PRRP / R3P / BNBA), PRRKA funding, and tier gaps — not the former generic R3P multi-sector slides.",
+    "loading": "Loading PRRPKA charts…",
+    "error": "Failed to load PRRPKA data.",
     "prev": "Previous",
     "next": "Next",
     "pause": "Pause",
     "play": "Play",
     "autoplay": "Autoplay",
-    "slidesAria": "R3P visualization slides",
-    "sourceNote": "Source: r3p_aceh.json · Tanggapi R3P Aceh sheet",
+    "slidesAria": "PRRPKA / Rencana Induk visualization slides",
+    "sourceNote": "Source: Aceh Governor Decree No. 300.2/666/2026 · PRRPKA 2026–2028 fixture",
+    "downloadDoc": "Download original document (Kepgub Renduk PRRPKA)",
     "unit": {
-      "rumah": "homes",
-      "km": "km",
-      "ha": "ha",
-      "desa": "villages",
+      "rumah": "units",
+      "kk": "HH",
+      "rp": "Rp",
+      "kab": "kab/kota",
       "pct": "%"
     },
-    "severity": {
-      "rr": "Light damage (RR)",
-      "rs": "Moderate damage (RS)",
-      "rb": "Heavy damage (RB)"
+    "series": {
+      "prrp": "PRRP (HH)",
+      "r3p": "R3P (units)",
+      "bnba": "BNBA (units)",
+      "kebutuhan": "Need",
+      "terakomodasi": "Covered",
+      "kesenjangan": "Gap"
+    },
+    "tingkat": {
+      "nasional": "National",
+      "provinsi": "Province",
+      "kabupaten_kota": "District/city"
     },
     "slides": {
-      "rumah": "Damaged homes",
-      "komposisi": "Home damage mix",
-      "jalan": "Damaged roads",
-      "drainase": "Damaged drainage",
-      "lahan": "Farmland",
-      "desa": "Affected villages"
+      "jitupasna": "JITUPASNA",
+      "kebutuhan": "RR needs",
+      "perumahan": "Housing",
+      "prrka": "PRRKA funding",
+      "kesenjangan": "Funding gap",
+      "sektor": "Funding by sector"
     },
     "kpi": {
-      "totalRumah": "Total homes",
-      "rr": "RR",
-      "rs": "RS",
-      "rb": "RB",
-      "jalanKm": "Damaged roads",
-      "drainaseKm": "Damaged drainage",
-      "lahanHa": "Affected farmland",
-      "desaRusak": "Affected villages",
-      "desaTotal": "Total villages",
-      "cakupan": "Coverage",
+      "kerusakan": "Damage & losses",
+      "kebutuhanRr": "RR needs",
+      "kabTerdampak": "Affected kab/kota",
+      "kabLingkup": "In PRRPKA scope",
+      "kebutuhanPusat": "Central authority",
+      "kebutuhanProvinsi": "Province (R3P)",
+      "kebutuhanKabR3p": "District (R3P)",
+      "kebutuhanKabPrrp": "District (PRRP)",
+      "prrpKk": "PRRP housing",
+      "r3pUnit": "R3P housing",
+      "bnbaUnit": "BNBA housing",
+      "prrkaAceh": "PRRKA Aceh authority",
+      "prrkaLintas": "PRRKA cross-district",
+      "surplusNasional": "National gap",
+      "defisitProvinsi": "Province gap",
+      "defisitKab": "District/city gap",
+      "sektorTop": "Largest sector",
       "kab": "Kab/kota"
     }
   },

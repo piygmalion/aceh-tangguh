@@ -330,49 +330,65 @@
       "body": "Bagian beranda “Dashboard bencana Aceh” menarik agregat dari dasbor publik DIBI BNPB (https://dibi.bnpb.go.id/superset/dashboard/2/), dataset Dampak kejadian bencana. Setiap kueri menyertakan filter provinsi=Aceh dan is_bencana=true, plus kategori bencana default DIBI. Ini memakai API internal Apache Superset (bukan kanal CKAN resmi Satu Data Bencana); jika layanan DIBI gagal, aplikasi jatuh ke snapshot fixture. Estimasi kerugian rumah mengikuti satuan juta rupiah sebagaimana dilabeli di DIBI."
     }
   },
-  "r3pChart": {
-    "heading": "R3P multi-sektor — kerusakan pascabencana",
-    "lead": "Ringkasan Rencana Rehabilitasi dan Rekonstruksi Pascabencana Aceh: rumah, jalan, drainase, lahan pertanian, dan cakupan desa terdampak per kab/kota.",
-    "loading": "Memuat grafik R3P…",
-    "error": "Gagal memuat data R3P.",
+  "prrpkaChart": {
+    "heading": "PRRPKA — RENCANA INDUK Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh",
+    "lead": "Data RENCANA INDUK Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh (PRRPKA / PRRKA), Keputusan Gubernur Aceh Nomor 300.2/666/2026, periode 2026–2028. Ringkasan JITUPASNA, kebutuhan RR, perumahan (PRRP / R3P / BNBA), pendanaan PRRKA, dan kesenjangan tingkat — bukan slide R3P multi-sektor lama.",
+    "loading": "Memuat grafik PRRPKA…",
+    "error": "Gagal memuat data PRRPKA.",
     "prev": "Sebelumnya",
     "next": "Berikutnya",
     "pause": "Jeda",
     "play": "Putar",
     "autoplay": "Putar otomatis",
-    "slidesAria": "Slide visualisasi R3P",
-    "sourceNote": "Sumber: r3p_aceh.json · lembar Tanggapi R3P Aceh",
+    "slidesAria": "Slide visualisasi PRRPKA / Rencana Induk",
+    "sourceNote": "Sumber: Kepgub Aceh No. 300.2/666/2026 · fixture PRRPKA 2026–2028",
+    "downloadDoc": "Unduh dokumen asli (Kepgub Renduk PRRPKA)",
     "unit": {
-      "rumah": "rumah",
-      "km": "km",
-      "ha": "ha",
-      "desa": "desa",
+      "rumah": "unit",
+      "kk": "KK",
+      "rp": "Rp",
+      "kab": "kab/kota",
       "pct": "%"
     },
-    "severity": {
-      "rr": "Rusak ringan (RR)",
-      "rs": "Rusak sedang (RS)",
-      "rb": "Rusak berat (RB)"
+    "series": {
+      "prrp": "PRRP (KK)",
+      "r3p": "R3P (unit)",
+      "bnba": "BNBA (unit)",
+      "kebutuhan": "Kebutuhan",
+      "terakomodasi": "Terakomodasi",
+      "kesenjangan": "Kesenjangan"
+    },
+    "tingkat": {
+      "nasional": "Nasional",
+      "provinsi": "Provinsi",
+      "kabupaten_kota": "Kabupaten/kota"
     },
     "slides": {
-      "rumah": "Rumah rusak",
-      "komposisi": "Komposisi rumah",
-      "jalan": "Jalan rusak",
-      "drainase": "Drainase rusak",
-      "lahan": "Lahan pertanian",
-      "desa": "Desa terdampak"
+      "jitupasna": "JITUPASNA",
+      "kebutuhan": "Kebutuhan RR",
+      "perumahan": "Perumahan",
+      "prrka": "Pendanaan PRRKA",
+      "kesenjangan": "Kesenjangan",
+      "sektor": "Sektor pendanaan"
     },
     "kpi": {
-      "totalRumah": "Total rumah",
-      "rr": "RR",
-      "rs": "RS",
-      "rb": "RB",
-      "jalanKm": "Jalan rusak",
-      "drainaseKm": "Drainase rusak",
-      "lahanHa": "Lahan terdampak",
-      "desaRusak": "Desa terdampak",
-      "desaTotal": "Total desa/kel.",
-      "cakupan": "Cakupan",
+      "kerusakan": "Kerusakan & kerugian",
+      "kebutuhanRr": "Kebutuhan RR",
+      "kabTerdampak": "Kab/kota terdampak",
+      "kabLingkup": "Dalam lingkup PRRPKA",
+      "kebutuhanPusat": "Kewenangan pusat",
+      "kebutuhanProvinsi": "Provinsi (R3P)",
+      "kebutuhanKabR3p": "Kabupaten (R3P)",
+      "kebutuhanKabPrrp": "Kabupaten (PRRP)",
+      "prrpKk": "Perumahan PRRP",
+      "r3pUnit": "Perumahan R3P",
+      "bnbaUnit": "Perumahan BNBA",
+      "prrkaAceh": "PRRKA kewenangan Aceh",
+      "prrkaLintas": "PRRKA lintas kabupaten",
+      "surplusNasional": "Kesenjangan nasional",
+      "defisitProvinsi": "Kesenjangan provinsi",
+      "defisitKab": "Kesenjangan kab/kota",
+      "sektorTop": "Sektor terbesar",
       "kab": "Kab/kota"
     }
   },
