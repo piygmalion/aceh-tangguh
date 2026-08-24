@@ -29,8 +29,6 @@ export type MarkerLayerKey =
   | "facGov"
   | "facReligious"
   | "infraRoadBridge"
-  | "helipad"
-  | "starlink"
   | "citizenReports";
 
 export type ReportTopic =

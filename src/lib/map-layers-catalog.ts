@@ -13,6 +13,9 @@ export const RETIRED_MARKER_LAYER_KEYS = [
   "missingPersons",
 ] as const satisfies readonly MarkerLayerKey[];
 
+/** Fully removed layers — drop from remote catalog merges and URL `?layers=`. */
+export const REMOVED_MARKER_LAYER_KEYS = ["helipad", "starlink"] as const;
+
 export type MapLayerCatalogEntry = {
   key: string;
   kind: MapLayerKind;
@@ -58,11 +61,7 @@ export const MARKER_TOOLBAR_GROUPS: MarkerToolbarGroup[] = [
   },
   {
     groupKey: "groupInfra",
-    options: [
-      { key: "infraRoadBridge", labelKey: "infraRoadBridge" },
-      { key: "helipad", labelKey: "helipad" },
-      { key: "starlink", labelKey: "starlink" },
-    ],
+    options: [{ key: "infraRoadBridge", labelKey: "infraRoadBridge" }],
   },
   {
     groupKey: "groupParticipation",
@@ -241,32 +240,6 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     meta: { toolbar: "groupInfra" },
   },
   {
-    key: "helipad",
-    kind: "marker",
-    title_id: "Helipad",
-    title_en: "Helipads",
-    description: "Titik helipad operasional.",
-    source_path: "/fixtures/markers.geojson",
-    source_type: "geojson",
-    pmtiles_path: null,
-    enabled: true,
-    sort_order: 310,
-    meta: { toolbar: "groupInfra" },
-  },
-  {
-    key: "starlink",
-    kind: "marker",
-    title_id: "Starlink",
-    title_en: "Starlink",
-    description: "Titik terminal Starlink.",
-    source_path: "/fixtures/markers.geojson",
-    source_type: "geojson",
-    pmtiles_path: null,
-    enabled: true,
-    sort_order: 320,
-    meta: { toolbar: "groupInfra" },
-  },
-  {
     key: "citizenReports",
     kind: "marker",
     title_id: "Laporan warga",
@@ -321,9 +294,12 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
 ];
 
 const RETIRED_SET = new Set<string>(RETIRED_MARKER_LAYER_KEYS);
+const REMOVED_SET = new Set<string>(REMOVED_MARKER_LAYER_KEYS);
 
 export function enabledMapLayersCatalog(): MapLayerCatalogEntry[] {
-  return MAP_LAYERS_CATALOG.filter((row) => row.enabled && !RETIRED_SET.has(row.key));
+  return MAP_LAYERS_CATALOG.filter(
+    (row) => row.enabled && !RETIRED_SET.has(row.key) && !REMOVED_SET.has(row.key)
+  );
 }
 
 export function mergeMapLayersCatalog<T extends { key: string; enabled?: boolean }>(
@@ -335,7 +311,7 @@ export function mergeMapLayersCatalog<T extends { key: string; enabled?: boolean
     (local) => remoteByKey.get(local.key) ?? local
   );
   for (const row of remote ?? []) {
-    if (RETIRED_SET.has(row.key)) continue;
+    if (RETIRED_SET.has(row.key) || REMOVED_SET.has(row.key)) continue;
     if (!row.enabled) continue;
     if (localEnabled.some((l) => l.key === row.key)) continue;
     merged.push(row);
