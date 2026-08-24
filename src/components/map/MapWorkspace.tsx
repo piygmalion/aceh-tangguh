@@ -15,6 +15,7 @@ function MapWorkspaceInner() {
     state,
     setView,
     setBasemap,
+    setPreferVector,
     setAreaLayer,
     toggleMarkerLayer,
     toggleDisasterJenis,
@@ -35,6 +36,7 @@ function MapWorkspaceInner() {
         view={state.view}
         onViewChange={setView}
         basemap={state.basemap}
+        preferVector={state.preferVector}
         markerLayers={state.markerLayers}
         areaLayer={state.areaLayer}
         disasterJenis={state.disasterJenis}
@@ -57,7 +59,12 @@ function MapWorkspaceInner() {
         onToggleDisasterJenis={toggleDisasterJenis}
         onToggleFasilitasUmum={toggleFasilitasUmum}
       />
-      <MapSettings basemap={state.basemap} onBasemapChange={setBasemap} />
+      <MapSettings
+        basemap={state.basemap}
+        onBasemapChange={setBasemap}
+        preferVector={state.preferVector}
+        onPreferVectorChange={setPreferVector}
+      />
       <ReportFAB />
     </div>
   );

@@ -76,6 +76,8 @@ export interface GeoFeatureSummary {
 export interface MapUrlState {
   view: MapViewState;
   basemap: BasemapId;
+  /** Opt-in OpenFreeMap vector (`?vector=1`). Default is Carto raster. */
+  preferVector: boolean;
   areaLayer: AreaLayerKey | null;
   markerLayers: MarkerLayerKey[];
   /** Active jenis_bencana filters; empty = all jenis when disasterEvents is on. */

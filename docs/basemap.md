@@ -7,15 +7,16 @@ Rencana operasional untuk peta Aceh Tangguh. Bukan glosarium vendor: ini pilihan
 - **Renderer:** MapLibre GL JS (WebGL) + react-map-gl — jalur yang dipakai tim peta FOSS 2024–2026, bukan Leaflet DOM raster.
 - **Overlay wilayah:** PMTiles (tippecanoe) untuk choropleth kab/desa/IRBI, fallback GeoJSON.
 - **Titik:** sebelumnya HTML `<Marker>` per fitur. Fasilitas pendidikan saja >3.000 titik — itu memaksa layout DOM, bukan GPU.
-- **Basemap lama:** raster Carto / OSM / Esri. Mudah, tapi raster OSM/Carto lebih berat di zoom, tidak sharp di retina, dan tile OSM.org tidak untuk aplikasi produksi.
+- **Basemap default:** raster Carto Positron / Dark + OSM.org streets. Mudah, CORS terbuka, sudah terbukti di sandbox.
 
 ## Target (yang dikerjakan sekarang)
 
 | Lapisan | Teknologi | Alasan |
 |---|---|---|
-| Peta dasar OSM | **OpenFreeMap vector** (Positron / Dark / Liberty) | Ubin vektor GPU, tanpa API key, data OSM berjalan. Raster Carto tetap jadi *fallback* jika CDN vektor diblokir. |
+| Peta dasar OSM | **Carto raster (Positron / Dark)** + OSM streets | Default yang andal. Tidak bergantung pada CDN vektor yang sudah gagal di sandbox (peta kosong). |
+| Vektor OSM (opsional) | OpenFreeMap Positron / Dark / Liberty | GPU, tajam di retina. Aktifkan dengan `?vector=1` atau kotak di pengaturan peta. Jika style fetch gagal → **Carto**. |
 | Satelit HD | Esri World Imagery | Resolusi tinggi untuk identifikasi bangunan/jalan. Bukan citra “hari ini”. |
-| Satelit Copernicus | **Sentinel-2 Cloudless 2024 (EOX WMTS)** | 10 m, mosaik tahunan bebas awan, CORS terbuka, tanpa kunci. Ini jalur Sentinel yang *bisa* masuk basemap tanpa tile server sendiri. |
+| Satelit Copernicus | **Sentinel-2 Cloudless 2024 (EOX WMTS)** | 10 m, mosaik tahunan bebas awan, CORS terbuka, tanpa kunci. Ini jalur Sentinel yang *bisa* masuk basemap tanpa tile server sendiri. Deep-link: `?basemap=sentinel`. |
 | Marker | **GeoJSON cluster native MapLibre** | Satu source, cluster di GPU. Klik cluster → zoom. Tidak merender ribuan node HTML. |
 | Ganti basemap | `setStyle` tanpa remount peta | Overlay PMTiles + cluster tetap hidup; kamera tidak di-reset. |
 
@@ -50,17 +51,18 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 
 ### Yang tidak disarankan
 
-- Mengganti Esri/OpenFreeMap dengan *hanya* Sentinel: 10 m terlalu kasar untuk jalan desa, dan tidak ada label.
+- Mengganti Carto/Esri dengan *hanya* Sentinel: 10 m terlalu kasar untuk jalan desa, dan tidak ada label.
+- Menjadikan OpenFreeMap default: CDN vektor sudah gagal sekali di sandbox ini.
 - Tile proxy L2A real-time di Next.js: timeout, biaya, dan awan tropis.
 - Sentinel-1 SAR sebagai basemap: bagus untuk *flood overlay* pasca kejadian (fase terpisah), buruk sebagai peta dasar.
 
 ## Aturan performa yang dipegang
 
-1. Basemap vektor atau satu raster; overlay vektor PMTiles; titik di *satu* GeoJSON source ber-cluster.
+1. Satu raster basemap (Carto/Esri/Sentinel) atau vektor opsional; overlay vektor PMTiles; titik di *satu* GeoJSON source ber-cluster.
 2. Jangan `key={basemap}` (itu merusak cache GL dan memuat ulang semua overlay).
 3. Cluster radius ~48 px, `clusterMaxZoom` 12 — di atas itu titik individual.
 4. HTML pin hanya untuk popup, bukan untuk 3.000 sekolah.
-5. Attribution selalu terlihat (OSM, EOX/Copernicus, Esri).
+5. Attribution selalu terlihat (OSM/Carto, EOX/Copernicus, Esri).
 
 ## Operasi
 
@@ -68,7 +70,7 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 # Cek STAC + tulis fixture pratinjau statis
 node scripts/refresh-sentinel-status.mjs
 
-# Verifikasi CDN (vektor + Sentinel tile + STAC)
+# Verifikasi CDN (Carto raster + Sentinel tile + STAC; OpenFreeMap opsional)
 node scripts/verify-basemap.mjs
 ```
 

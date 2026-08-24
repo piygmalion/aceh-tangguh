@@ -113,9 +113,9 @@ Outputs:
 
 `MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON.
 
-## Basemap (vektor + Sentinel)
+## Basemap (Carto raster + Sentinel)
 
-The map uses MapLibre with **OpenFreeMap vector tiles** (OSM) for Simple / Dark / Streets, **Esri World Imagery** for HD satellite, and **EOX Sentinel-2 Cloudless 2024** as a Copernicus option. Markers are GPU-clustered GeoJSON (not HTML pins). Architecture and the Sentinel update path: `docs/basemap.md`.
+The map uses MapLibre with **Carto Positron raster** (OSM) as the default Simple / Dark / Streets basemap. OpenFreeMap vector is optional (`?vector=1`) and falls back to Carto if the style CDN fails. **Esri World Imagery** is the HD satellite option, and **EOX Sentinel-2 Cloudless 2024** is the Copernicus option (`?basemap=sentinel`). Markers are GPU-clustered GeoJSON (not HTML pins). Architecture and the Sentinel update path: `docs/basemap.md`.
 
 ```
 node scripts/verify-basemap.mjs

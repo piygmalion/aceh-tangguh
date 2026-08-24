@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import type { BasemapId } from "@/lib/types";
-import { BASEMAP_OPTIONS } from "@/lib/basemap";
+import { BASEMAP_OPTIONS, BASEMAP_VECTOR_URLS } from "@/lib/basemap";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { formatSceneDate, type SentinelStatus } from "@/lib/sentinel";
 
@@ -19,9 +19,13 @@ async function fetchSentinelStatusClient(): Promise<SentinelStatus | null> {
 export function MapSettings({
   basemap,
   onBasemapChange,
+  preferVector = false,
+  onPreferVectorChange,
 }: {
   basemap: BasemapId;
   onBasemapChange: (b: BasemapId) => void;
+  preferVector?: boolean;
+  onPreferVectorChange?: (on: boolean) => void;
 }) {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -128,11 +132,22 @@ export function MapSettings({
               >
                 <span className="block">{t(b.labelKey)}</span>
                 <span className="mt-0.5 block text-[10px] font-normal text-[var(--text-dim)]">
-                  {b.kind === "vector" ? t("basemapKindVector") : t("basemapKindImagery")}
+                  {b.kind === "raster" ? t("basemapKindRaster") : t("basemapKindImagery")}
                 </span>
               </button>
             ))}
           </div>
+          {onPreferVectorChange && BASEMAP_VECTOR_URLS[basemap] ? (
+            <label className="mt-2.5 flex cursor-pointer items-start gap-2 text-[10px] leading-snug text-[var(--text-dim)]">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={preferVector}
+                onChange={(e) => onPreferVectorChange(e.target.checked)}
+              />
+              <span>{t("basemapVectorOptional")}</span>
+            </label>
+          ) : null}
           <p className="mt-2.5 text-[10px] leading-snug text-[var(--text-dim)]">
             {t("basemapHint")}
           </p>

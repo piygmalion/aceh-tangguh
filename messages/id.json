@@ -194,9 +194,11 @@
     "basemapStreets": "Jalan",
     "basemapSatellite": "Satelit HD",
     "basemapSentinel": "Sentinel-2",
+    "basemapKindRaster": "Raster Carto",
     "basemapKindVector": "Vektor OSM",
     "basemapKindImagery": "Citra",
-    "basemapHint": "OpenFreeMap vektor OSM · Esri World Imagery · Copernicus Sentinel-2 Cloudless (EOX)",
+    "basemapHint": "Carto/OSM raster · Esri World Imagery · Copernicus Sentinel-2 Cloudless (EOX). OpenFreeMap vektor opsional.",
+    "basemapVectorOptional": "Coba OpenFreeMap vektor (jika gagal, kembali ke Carto)",
     "sentinelFreshness": "Mosaik tahunan {year}. Adegan L2A terbaru di Aceh: {date} ({cloud}% awan)."
   },
   "profilDesa": {
@@ -340,7 +342,7 @@
     },
     "s7": {
       "title": "Peta dasar, performa, dan Sentinel",
-      "body": "Peta memakai MapLibre (GPU). Basemap operasional adalah ubin vektor OpenFreeMap (OSM), dengan raster Carto sebagai cadangan jika CDN vektor diblokir. Satelit HD memakai Esri World Imagery. Opsi Sentinel-2 adalah mosaik tahunan Cloudless EOX (Copernicus, 10 m) — cocok sebagai latar, bukan citra “hari ini”, karena Aceh hampir selalu berawan. Adegan Sentinel-2 L2A terbaru di-query lewat STAC (Element84) sebagai denyut arsip, bukan sebagai basemap. Titik lokasi dirender sebagai GeoJSON terkluster di GPU, bukan marker HTML, agar ribuan fasilitas tetap ringan. Overlay wilayah tetap PMTiles. Rincian arsitektur: docs/basemap.md."
+      "body": "Peta memakai MapLibre (GPU). Basemap operasional default adalah raster Carto Positron (OSM). OpenFreeMap vektor bersifat opsional (`?vector=1`) dan jatuh ke Carto jika CDN gagal — itu sudah terjadi di sandbox. Satelit HD memakai Esri World Imagery. Opsi Sentinel-2 adalah mosaik tahunan Cloudless EOX (Copernicus, 10 m) — cocok sebagai latar, bukan citra “hari ini”, karena Aceh hampir selalu berawan. Adegan Sentinel-2 L2A terbaru di-query lewat STAC (Element84) sebagai denyut arsip, bukan sebagai basemap. Titik lokasi dirender sebagai GeoJSON terkluster di GPU, bukan marker HTML, agar ribuan fasilitas tetap ringan. Overlay wilayah tetap PMTiles. Rincian arsitektur: docs/basemap.md."
     }
   },
   "prrpkaChart": {

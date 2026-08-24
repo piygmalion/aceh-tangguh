@@ -203,6 +203,7 @@ export function MapViewport({
   view,
   onViewChange,
   basemap,
+  preferVector = false,
   markerLayers,
   areaLayer,
   disasterJenis = [],
@@ -212,6 +213,8 @@ export function MapViewport({
   view: MapViewState;
   onViewChange: (v: Partial<MapViewState>) => void;
   basemap: BasemapId;
+  /** Opt-in OpenFreeMap vector; Carto raster is the default and the fallback. */
+  preferVector?: boolean;
   markerLayers: MarkerLayerKey[];
   areaLayer: AreaLayerKey | null;
   disasterJenis?: string[];
@@ -229,7 +232,7 @@ export function MapViewport({
     coordQuality?: CoordQuality | null;
   } | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
-  const [useRasterFallback, setUseRasterFallback] = useState(false);
+  const [vectorFailed, setVectorFailed] = useState(false);
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const villageClickEnabled = areaLayer === "villageDistribution";
 
@@ -238,8 +241,16 @@ export function MapViewport({
   }, []);
 
   useEffect(() => {
-    setUseRasterFallback(false);
-  }, [basemap]);
+    setVectorFailed(false);
+  }, [basemap, preferVector]);
+
+  const mapStyle = useMemo(
+    () =>
+      getBasemapStyle(basemap, {
+        preferVector: preferVector && !vectorFailed,
+      }),
+    [basemap, preferVector, vectorFailed]
+  );
 
   const sortedKeys = useMemo(
     () => [...markerLayers].sort(),
@@ -386,7 +397,7 @@ export function MapViewport({
       <Map
         ref={mapRef}
         initialViewState={view}
-        mapStyle={getBasemapStyle(basemap, { rasterFallback: useRasterFallback }) as never}
+        mapStyle={mapStyle as never}
         style={{ width: "100%", height: "100%", background: "#d4dce4" }}
         cursor={cursor as never}
         interactiveLayerIds={[
@@ -400,8 +411,8 @@ export function MapViewport({
         onMoveEnd={onMoveEnd}
         onError={(e) => {
           const msg = e.error?.message ?? "";
-          if (!useRasterFallback && /style|fetch|network|failed/i.test(msg)) {
-            setUseRasterFallback(true);
+          if (preferVector && !vectorFailed && /style|fetch|network|failed/i.test(msg)) {
+            setVectorFailed(true);
           }
         }}
         attributionControl

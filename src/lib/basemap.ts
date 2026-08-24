@@ -24,7 +24,7 @@ export const SENTINEL_CLOUDLESS_TILES =
 
 export const SENTINEL_CLOUDLESS_YEAR = 2024;
 
-export type BasemapKind = "vector" | "imagery";
+export type BasemapKind = "raster" | "imagery";
 
 export type BasemapOption = {
   id: BasemapId;
@@ -33,9 +33,9 @@ export type BasemapOption = {
 };
 
 export const BASEMAP_OPTIONS: BasemapOption[] = [
-  { id: "positron", labelKey: "basemapPositron", kind: "vector" },
-  { id: "dark", labelKey: "basemapDark", kind: "vector" },
-  { id: "streets", labelKey: "basemapStreets", kind: "vector" },
+  { id: "positron", labelKey: "basemapPositron", kind: "raster" },
+  { id: "dark", labelKey: "basemapDark", kind: "raster" },
+  { id: "streets", labelKey: "basemapStreets", kind: "raster" },
   { id: "satellite", labelKey: "basemapSatellite", kind: "imagery" },
   { id: "sentinel", labelKey: "basemapSentinel", kind: "imagery" },
 ];
@@ -73,15 +73,19 @@ function rasterStyle(opts: {
   };
 }
 
-/** Vector OSM styles (OpenFreeMap). No API key; GPU-rendered, light on the wire. */
+/**
+ * Optional OpenFreeMap vector styles. Not the default — the sandbox has already
+ * failed to load this CDN (empty map). Enable with `?vector=1`; Carto raster is
+ * the fallback if the style fetch fails.
+ */
 export const BASEMAP_VECTOR_URLS: Partial<Record<BasemapId, string>> = {
   positron: "https://tiles.openfreemap.org/styles/positron",
   dark: "https://tiles.openfreemap.org/styles/dark",
   streets: "https://tiles.openfreemap.org/styles/liberty",
 };
 
-/** Raster fallbacks if a vector CDN is blocked (sandboxed browsers, flaky CORS). */
-export const BASEMAP_RASTER_FALLBACKS: Record<BasemapId, BasemapStyle> = {
+/** Default operational styles: Carto/OSM raster XYZ, Esri, Sentinel-2 Cloudless. */
+export const BASEMAP_RASTER: Record<BasemapId, BasemapStyle> = {
   positron: rasterStyle({
     name: "positron-raster",
     tiles: [
@@ -121,21 +125,21 @@ export const BASEMAP_RASTER_FALLBACKS: Record<BasemapId, BasemapStyle> = {
   }),
 };
 
+/** @deprecated Alias — raster is the default, not a fallback. */
+export const BASEMAP_RASTER_FALLBACKS = BASEMAP_RASTER;
+
 export function getBasemapStyle(
   id: BasemapId,
-  opts?: { rasterFallback?: boolean }
+  opts?: { preferVector?: boolean; rasterFallback?: boolean }
 ): BasemapStyle {
-  if (opts?.rasterFallback) return BASEMAP_RASTER_FALLBACKS[id];
-  const vector = BASEMAP_VECTOR_URLS[id];
-  if (vector) return vector;
-  return BASEMAP_RASTER_FALLBACKS[id];
+  // rasterFallback kept so older call sites that meant “use Carto” still work.
+  const useVector = opts?.preferVector === true && opts?.rasterFallback !== true;
+  if (useVector) {
+    const vector = BASEMAP_VECTOR_URLS[id];
+    if (vector) return vector;
+  }
+  return BASEMAP_RASTER[id];
 }
 
-/** Default export used by the map: vector OSM + imagery rasters. */
-export const BASEMAP_STYLES: Record<BasemapId, BasemapStyle> = {
-  positron: BASEMAP_VECTOR_URLS.positron!,
-  dark: BASEMAP_VECTOR_URLS.dark!,
-  streets: BASEMAP_VECTOR_URLS.streets!,
-  satellite: BASEMAP_RASTER_FALLBACKS.satellite,
-  sentinel: BASEMAP_RASTER_FALLBACKS.sentinel,
-};
+/** Default export used by the map: Carto/OSM rasters + imagery. */
+export const BASEMAP_STYLES: Record<BasemapId, BasemapStyle> = { ...BASEMAP_RASTER };

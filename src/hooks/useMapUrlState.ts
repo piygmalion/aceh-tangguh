@@ -51,6 +51,7 @@ export function useMapUrlState() {
         zoom: Number.isFinite(z) ? z : DEFAULT_VIEW.zoom,
       },
       basemap: isBasemapId(basemap) ? basemap : "positron",
+      preferVector: searchParams.get("vector") === "1",
       areaLayer: resolved.areaLayer,
       markerLayers: resolved.markerLayers,
       disasterJenis: resolved.disasterJenis,
@@ -84,6 +85,11 @@ export function useMapUrlState() {
   );
 
   const setBasemap = useCallback((b: BasemapId) => push({ basemap: b }), [push]);
+
+  const setPreferVector = useCallback(
+    (on: boolean) => push({ vector: on ? "1" : null }),
+    [push]
+  );
 
   const setAreaLayer = useCallback(
     (k: AreaLayerKey | null) => push({ area: k }),
@@ -172,6 +178,7 @@ export function useMapUrlState() {
     state,
     setView,
     setBasemap,
+    setPreferVector,
     setAreaLayer,
     toggleMarkerLayer,
     toggleDisasterJenis,

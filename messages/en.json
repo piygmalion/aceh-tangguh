@@ -194,9 +194,11 @@
     "basemapStreets": "Streets",
     "basemapSatellite": "HD satellite",
     "basemapSentinel": "Sentinel-2",
+    "basemapKindRaster": "Carto raster",
     "basemapKindVector": "OSM vector",
     "basemapKindImagery": "Imagery",
-    "basemapHint": "OpenFreeMap OSM vectors · Esri World Imagery · Copernicus Sentinel-2 Cloudless (EOX)",
+    "basemapHint": "Carto/OSM raster · Esri World Imagery · Copernicus Sentinel-2 Cloudless (EOX). OpenFreeMap vector is optional.",
+    "basemapVectorOptional": "Try OpenFreeMap vector (falls back to Carto if it fails)",
     "sentinelFreshness": "Annual mosaic {year}. Latest L2A scene over Aceh: {date} ({cloud}% cloud)."
   },
   "profilDesa": {
@@ -340,7 +342,7 @@
     },
     "s7": {
       "title": "Basemap, performance, and Sentinel",
-      "body": "The map runs on MapLibre (GPU). The operational basemap is OpenFreeMap vector tiles (OSM), with Carto rasters as a fallback if the vector CDN is blocked. HD satellite uses Esri World Imagery. The Sentinel-2 option is EOX’s annual Cloudless mosaic (Copernicus, 10 m) — a background, not “today’s” image, because Aceh is usually cloudy. Latest Sentinel-2 L2A scenes are queried via STAC (Element84) as an archive heartbeat, not as the basemap. Location points render as GPU-clustered GeoJSON, not HTML markers, so thousands of facilities stay light. Area overlays remain PMTiles. Architecture notes: docs/basemap.md."
+      "body": "The map runs on MapLibre (GPU). The default operational basemap is Carto Positron raster (OSM). OpenFreeMap vector is optional (`?vector=1`) and falls back to Carto if the CDN fails — that already happened in our sandbox. HD satellite uses Esri World Imagery. The Sentinel-2 option is EOX’s annual Cloudless mosaic (Copernicus, 10 m) — a background, not “today’s” image, because Aceh is usually cloudy. Latest Sentinel-2 L2A scenes are queried via STAC (Element84) as an archive heartbeat, not as the basemap. Location points render as GPU-clustered GeoJSON, not HTML markers, so thousands of facilities stay light. Area overlays remain PMTiles. Architecture notes: docs/basemap.md."
     }
   },
   "prrpkaChart": {
