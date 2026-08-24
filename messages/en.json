@@ -96,8 +96,8 @@
   },
   "mapTeaser": {
     "heading": "All data, one map",
-    "lead": "Disaster events, health facilities, citizen reports, and Aceh admin boundaries.",
-    "overlay": "Disaster events, health facilities, and citizen reports on the operational basemap.",
+    "lead": "Disaster events, health facilities, incident reports, response reports, and Aceh admin boundaries.",
+    "overlay": "Disaster events, health facilities, and moderated incident and response reports on the operational basemap.",
     "cta": "Open full map"
   },
   "participation": {
@@ -157,6 +157,8 @@
     "poskos": "Posts",
     "tendPoints": "Shelter points",
     "citizenReports": "Citizen reports",
+    "laporanKejadian": "Incident reports",
+    "laporanPenanganan": "Response reports",
     "missingPersons": "Missing persons",
     "policeOffices": "Police offices",
     "facHealth": "Health facilities",
@@ -233,7 +235,7 @@
   },
   "laporHub": {
     "title": "Report to Aceh Tangguh",
-    "subtitle": "Choose the type of report. Incident reports may appear on the map after BPBA Pusdalops moderation.",
+    "subtitle": "Choose the type of report. Incident and response reports may appear on the map after BPBA Pusdalops moderation.",
     "kejadianTitle": "Report incident",
     "kejadianBody": "Report a disaster that is ongoing or recently occurred at your location.",
     "kejadianCta": "Open incident form",
@@ -254,8 +256,8 @@
   },
   "laporPenanganan": {
     "title": "Report response",
-    "subtitle": "Report aid or response activities independently.",
-    "notOnMap": "Response reports are not shown on the public map.",
+    "subtitle": "Report aid or response activities independently. Appears on the map after moderator approval.",
+    "notOnMap": "The report appears on the map after a moderator approves it and enables map display.",
     "next": "Next",
     "back": "Back",
     "submit": "Submit response report",

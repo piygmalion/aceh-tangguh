@@ -65,10 +65,21 @@ Path disimpan di `jawaban_json` (field `foto` / `video`). Staff melihat file via
 
 ## 5. Peta publik
 
-Hanya laporan kejadian dengan `status = approved` dan `tampil_di_peta = true` digabung ke layer `citizenReports`. Penanganan **tidak** di peta.
+Dua layer Partisipasi, keduanya live-query dari tabel laporan (bukan sync ke `marker_features`):
+
+| Layer key | Tabel | Syarat tampil |
+|-----------|--------|----------------|
+| `laporanKejadian` | `laporan_kejadian` | `status = approved` AND `tampil_di_peta = true` AND lat/lon ada |
+| `laporanPenanganan` | `laporan_penanganan` | sama |
+
+`GET /api/laporan/peta` mengembalikan kedua set (`?tipe=kejadian\|penanganan` untuk satu sisi). `GET /api/layers/markers` menggabungkan overlay ini ke GeoJSON peta.
+
+Key lama `citizenReports` **retired**: tidak ada di toolbar; `?layers=citizenReports` di-expand ke kedua layer baru. STATIC_EXPORT / tanpa data: array kosong — jangan seed titik dummy.
+
+Setelah approve, set `status = approved` dan `tampil_di_peta = true`. Titik muncul pada fetch berikutnya.
 
 ## 6. Moderasi
 
 Moderator: **BPBA Pusdalops**. Staff console (`is_staff`) dapat SELECT/UPDATE `laporan_kejadian` dan `laporan_penanganan`. UI moderasi laporan baru dapat ditambahkan di `/admin/moderasi` (legacy `reports` masih ada).
 
-Setelah approve kejadian, set `status = approved`, `tampil_di_peta = true`, dan enqueue WA `laporan_approved` (manual atau API admin).
+Setelah approve kejadian atau penanganan, set `status = approved`, `tampil_di_peta = true`, dan enqueue WA `laporan_approved` (manual atau API admin). Titik muncul di layer Partisipasi yang sesuai pada fetch peta berikutnya.

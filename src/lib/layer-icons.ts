@@ -15,6 +15,8 @@ export const LAYER_ICON_FILES: Record<MarkerLayerKey, string> = {
   facGov: "icon-fasilitas-pemerintahan.png",
   facReligious: "icon-fasilitas-keagamaan.png",
   infraRoadBridge: "icon-jalan-jembatan.png",
+  laporanKejadian: "icon-laporan-warga.png",
+  laporanPenanganan: "icon-posko.png",
   citizenReports: "icon-laporan-warga.png",
 };
 

@@ -11,6 +11,7 @@ export const RETIRED_MARKER_LAYER_KEYS = [
   "poskos",
   "tendPoints",
   "missingPersons",
+  "citizenReports",
 ] as const satisfies readonly MarkerLayerKey[];
 
 /** Fully removed layers — drop from remote catalog merges and URL `?layers=`. */
@@ -65,7 +66,10 @@ export const MARKER_TOOLBAR_GROUPS: MarkerToolbarGroup[] = [
   },
   {
     groupKey: "groupParticipation",
-    options: [{ key: "citizenReports", labelKey: "citizenReports" }],
+    options: [
+      { key: "laporanKejadian", labelKey: "laporanKejadian" },
+      { key: "laporanPenanganan", labelKey: "laporanPenanganan" },
+    ],
   },
 ];
 
@@ -240,17 +244,46 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     meta: { toolbar: "groupInfra" },
   },
   {
-    key: "citizenReports",
+    key: "laporanKejadian",
     kind: "marker",
-    title_id: "Laporan warga",
-    title_en: "Citizen reports",
-    description: "Laporan partisipasi publik (fixture + laporan masyarakat).",
-    source_path: "/fixtures/markers.geojson",
-    source_type: "mixed",
+    title_id: "Laporan Kejadian",
+    title_en: "Incident reports",
+    description:
+      "Live overlay from laporan_kejadian: status=approved AND tampil_di_peta=true. Empty until moderators publish a point.",
+    source_path: "/api/laporan/peta",
+    source_type: "api",
     pmtiles_path: null,
     enabled: true,
     sort_order: 400,
     meta: { toolbar: "groupParticipation" },
+  },
+  {
+    key: "laporanPenanganan",
+    kind: "marker",
+    title_id: "Laporan Penanganan",
+    title_en: "Response reports",
+    description:
+      "Live overlay from laporan_penanganan: status=approved AND tampil_di_peta=true. Empty until moderators publish a point.",
+    source_path: "/api/laporan/peta",
+    source_type: "api",
+    pmtiles_path: null,
+    enabled: true,
+    sort_order: 410,
+    meta: { toolbar: "groupParticipation" },
+  },
+  {
+    key: "citizenReports",
+    kind: "marker",
+    title_id: "Laporan warga",
+    title_en: "Citizen reports",
+    description:
+      "Retired Partisipasi key. Old ?layers=citizenReports expands to laporanKejadian+laporanPenanganan.",
+    source_path: null,
+    source_type: "api",
+    pmtiles_path: null,
+    enabled: false,
+    sort_order: 930,
+    meta: { retired: true, aliasOf: ["laporanKejadian", "laporanPenanganan"] },
   },
   {
     key: "poskos",

@@ -68,7 +68,8 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
 | GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
 | GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
-| GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture |
+| GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` |
+| GET | `/api/laporan/peta` | Moderated `laporan_kejadian` + `laporan_penanganan` (`status=approved` AND `tampil_di_peta`) |
 | GET | `/api/layers/markers/summary` | Same as markers (debug counts) |
 | GET | `/api/boundaries` | GeoJSON fixtures |
 | GET | `/api/kejadian` | `kejadian_bencana` (filter/paginate), else fixture |
@@ -131,9 +132,11 @@ Map toolbar **Data utama** (`groupMain`) defaults to:
 3. `facEducation` — Fasilitas pendidikan (Google Sheet `1fguZcbW…`; **coordinates approximated to kabupaten centroids** — schools have no precise lat/lng in the sheet)
 4. `policeOffices` — kept when present
 
-`missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. They are seeded in `map_layers` with `enabled=false` (see `supabase/migrations/20260827_map_layers_live_registry.sql`). Default URL layers: `disasterEvents,facHealth,citizenReports`.
+`missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. They are seeded in `map_layers` with `enabled=false` (see `supabase/migrations/20260827_map_layers_live_registry.sql`).
 
-Live toolbar layers that must exist in `map_layers`: `facGov`, `facReligious`, `infraRoadBridge` (plus the Data Utama + citizenReports keys). `helipad` and `starlink` were removed from the toolbar, fixtures, and `map_layers`. The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
+**Partisipasi** toolbar layers: `laporanKejadian` and `laporanPenanganan` (live query from `laporan_*` where `status = approved` AND `tampil_di_peta = true`). The retired key `citizenReports` stays in the type union; `?layers=citizenReports` expands to both new keys and is rewritten away. Default URL layers: `disasterEvents,facHealth,laporanKejadian,laporanPenanganan`. Layers stay empty until a moderator publishes a real laporan — no dummy fixture points.
+
+Live toolbar layers that must exist in `map_layers`: `facGov`, `facReligious`, `infraRoadBridge`, `laporanKejadian`, `laporanPenanganan` (plus the Data Utama keys). `helipad` and `starlink` were removed from the toolbar, fixtures, and `map_layers`. The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
 
 Integer lon/lat (truncated GPS) are flagged `properties.coord_quality = "truncated_integer"` and `approx=true`. Do not invent decimals. Re-flag:
 

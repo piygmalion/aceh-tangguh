@@ -114,6 +114,30 @@ export const DATA_SOURCES: DataSourceEntry[] = [
       "Toolbar Infrastruktur — live layer registered in map_layers. Sparse inventory; do not invent additional points.",
   },
   {
+    id: "laporan-kejadian",
+    titleId: "Laporan Kejadian (partisipasi)",
+    titleEn: "Incident reports (participation)",
+    source:
+      "Homepage form → laporan_kejadian (Supabase). Public map reads approved + tampil_di_peta rows only.",
+    license: "Public participation — identity withheld; attribute BPBA Pusdalops moderation",
+    date: "Live (no fixture seed)",
+    format: "Supabase rows → GeoJSON overlay (laporanKejadian)",
+    usedFor:
+      "Toolbar Partisipasi — live layer. Empty until a moderator sets status=approved and tampil_di_peta=true. Not stored in marker_features.",
+  },
+  {
+    id: "laporan-penanganan",
+    titleId: "Laporan Penanganan (partisipasi)",
+    titleEn: "Response reports (participation)",
+    source:
+      "Homepage form → laporan_penanganan (Supabase). Public map reads approved + tampil_di_peta rows only.",
+    license: "Public participation — identity withheld; attribute BPBA Pusdalops moderation",
+    date: "Live (no fixture seed)",
+    format: "Supabase rows → GeoJSON overlay (laporanPenanganan)",
+    usedFor:
+      "Toolbar Partisipasi — live layer. Empty until a moderator sets status=approved and tampil_di_peta=true. Not stored in marker_features.",
+  },
+  {
     id: "compiled-r3p",
     titleId: "R3P multi-sektor (rumah, jalan, drainase, lahan, desa)",
     titleEn: "R3P multi-sector (housing, roads, drainage, farmland, villages)",

@@ -10,6 +10,7 @@ import {
 } from "./supabase/fallback";
 import type { TypedSupabaseClient } from "./supabase/server";
 import type { MarkerFeatureRow } from "./supabase/types";
+import { expandMarkerLayerKeys } from "./map-url-aliases";
 import { applyStatusVocabToProperties } from "./status-vocab";
 
 export type MarkersResponse = FeatureCollection & {
@@ -112,7 +113,7 @@ export function filterMarkersByKeys(
   keys: string[]
 ): FeatureCollection {
   if (keys.length === 0) return fc;
-  const set = new Set(keys);
+  const set = new Set<string>(expandMarkerLayerKeys(keys));
   return {
     type: "FeatureCollection",
     features: fc.features.filter((f) =>
