@@ -6,9 +6,11 @@ export type AdminTableKey =
   | "laporan_penanganan"
   | "kejadian_bencana"
   | "publikasi"
+  | "publikasi_kegiatan"
   | "marker_features"
   | "anggaran_kegiatan"
-  | "profil_desa";
+  | "profil_desa"
+  | "map_layers";
 
 export type ColumnType = "text" | "number" | "boolean" | "select" | "json" | "datetime";
 
@@ -38,9 +40,11 @@ export const ADMIN_TABLE_KEYS: AdminTableKey[] = [
   "laporan_penanganan",
   "kejadian_bencana",
   "publikasi",
+  "publikasi_kegiatan",
   "marker_features",
   "anggaran_kegiatan",
   "profil_desa",
+  "map_layers",
 ];
 
 const LAPORAN_STATUS_OPTIONS = [
@@ -180,12 +184,13 @@ export const ADMIN_TABLES: Record<AdminTableKey, AdminTableConfig> = {
   },
   publikasi: {
     key: "publikasi",
-    label: "Publikasi",
+    label: "Publikasi Analisis",
     pk: "slug",
     defaultSort: { column: "published_at", ascending: false },
     searchable: ["slug", "title", "description"],
     allowInsert: true,
     allowDelete: false,
+    note: "9 artikel Tanggapi BTT. Kegiatan BPBA ada di Publikasi Kegiatan.",
     columns: [
       { key: "slug", label: "Slug", type: "text", editable: false },
       { key: "title", label: "Judul", type: "text", editable: true },
@@ -193,6 +198,50 @@ export const ADMIN_TABLES: Record<AdminTableKey, AdminTableConfig> = {
       { key: "published_at", label: "Terbit", type: "datetime", editable: true },
       { key: "tags", label: "Tag", type: "json", editable: true },
       { key: "payload", label: "Payload", type: "json", editable: true },
+      { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
+    ],
+  },
+  publikasi_kegiatan: {
+    key: "publikasi_kegiatan",
+    label: "Publikasi Kegiatan",
+    pk: "id",
+    defaultSort: { column: "tanggal_publikasi", ascending: false },
+    searchable: [
+      "id",
+      "judul",
+      "ringkasan",
+      "lokasi_teks",
+      "penulis",
+      "jenis_kegiatan",
+      "jenis_bencana",
+    ],
+    allowInsert: false,
+    allowDelete: false,
+    note: "186 berita kegiatan BPBA. Halaman publik hanya menampilkan 15 terbaru.",
+    columns: [
+      { key: "id", label: "ID", type: "text", editable: false },
+      { key: "slug", label: "Slug", type: "text", editable: false },
+      { key: "judul", label: "Judul", type: "text", editable: true },
+      { key: "ringkasan", label: "Ringkasan", type: "text", editable: true },
+      { key: "tanggal_publikasi", label: "Terbit", type: "datetime", editable: false },
+      { key: "penulis", label: "Penulis", type: "text", editable: true },
+      { key: "kategori", label: "Kategori", type: "text", editable: false },
+      { key: "jenis_kegiatan", label: "Jenis kegiatan", type: "text", editable: false },
+      { key: "jenis_bencana", label: "Jenis bencana", type: "text", editable: false },
+      { key: "fase", label: "Fase", type: "text", editable: false },
+      { key: "lokasi_teks", label: "Lokasi", type: "text", editable: true },
+      { key: "url", label: "URL", type: "text", editable: true },
+      { key: "foto_sampul_url", label: "Foto sampul", type: "text", editable: true },
+      {
+        key: "foto_sampul_thumbnail_url",
+        label: "Thumbnail",
+        type: "text",
+        editable: false,
+      },
+      { key: "jumlah_foto", label: "Jumlah foto", type: "number", editable: false },
+      { key: "kabupaten", label: "Kabupaten", type: "json", editable: false },
+      { key: "photos", label: "Foto", type: "json", editable: false },
+      { key: "sumber", label: "Sumber", type: "text", editable: false },
       { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
     ],
   },
@@ -273,6 +322,25 @@ export const ADMIN_TABLES: Record<AdminTableKey, AdminTableConfig> = {
         type: "number",
         editable: true,
       },
+      { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
+    ],
+  },
+  map_layers: {
+    key: "map_layers",
+    label: "Map layers",
+    pk: "key",
+    defaultSort: { column: "sort_order", ascending: true },
+    searchable: ["key", "title_id", "title_en"],
+    allowInsert: false,
+    allowDelete: false,
+    note: "Registry layer peta (termasuk infraRoadBridge / Jembatan). Hanya judul, enabled, dan urutan yang bisa diubah.",
+    columns: [
+      { key: "key", label: "Key", type: "text", editable: false },
+      { key: "title_id", label: "Judul (ID)", type: "text", editable: true },
+      { key: "title_en", label: "Judul (EN)", type: "text", editable: true },
+      { key: "enabled", label: "Enabled", type: "boolean", editable: true },
+      { key: "sort_order", label: "Urutan", type: "number", editable: true },
+      { key: "kind", label: "Jenis", type: "text", editable: false },
       { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
     ],
   },
