@@ -8,6 +8,7 @@ import type {
   WeatherForecastKab,
   WeatherSource,
 } from "@/lib/weather-types";
+import { kabupatenIndexKeys } from "@/lib/irbi-by-kab";
 import { createServerClient } from "@/lib/supabase/server";
 import { fetchBmkgForecast } from "./bmkg";
 import { fetchOpenMeteoForecast } from "./open-meteo";
@@ -37,17 +38,15 @@ async function loadIrbiCuacaMap(): Promise<
   const data = JSON.parse(raw) as { kabupaten_kota?: IrbiKab[] };
   const map = new Map<string, { ir: number; kelas: string }>();
   for (const kab of data.kabupaten_kota ?? []) {
-    const key = (
-      kab.kabupaten_kota_kode ??
-      kab.kabupaten_kota ??
-      ""
-    ).toUpperCase();
-    if (!key) continue;
-    if (typeof kab.ir_cuaca_ekstrem === "number" && kab.kelas_cuaca_ekstrem) {
-      map.set(key, {
-        ir: kab.ir_cuaca_ekstrem,
-        kelas: kab.kelas_cuaca_ekstrem,
-      });
+    if (typeof kab.ir_cuaca_ekstrem !== "number" || !kab.kelas_cuaca_ekstrem) {
+      continue;
+    }
+    const value = {
+      ir: kab.ir_cuaca_ekstrem,
+      kelas: kab.kelas_cuaca_ekstrem,
+    };
+    for (const key of kabupatenIndexKeys(kab)) {
+      if (!map.has(key)) map.set(key, value);
     }
   }
   return map;
@@ -70,7 +69,11 @@ function mergeIrbi(
   forecast: WeatherForecastKab,
   irbiMap: Map<string, { ir: number; kelas: string }>,
 ): WeatherForecastKab {
-  const irbi = irbiMap.get(forecast.kabupaten_kota_kode);
+  let irbi: { ir: number; kelas: string } | undefined;
+  for (const key of kabupatenIndexKeys(forecast)) {
+    irbi = irbiMap.get(key);
+    if (irbi) break;
+  }
   if (!irbi) return forecast;
   return {
     ...forecast,

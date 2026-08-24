@@ -72,6 +72,24 @@ export function buildIrbiByKabMap(
   return map;
 }
 
+export function kabupatenIndexKeys(query: {
+  kabupaten_kota?: string;
+  kabupaten_kota_kode?: string;
+}): string[] {
+  const keys: string[] = [];
+  const seen = new Set<string>();
+  for (const key of [
+    exactKodeKey(query.kabupaten_kota_kode),
+    indexKey(query.kabupaten_kota_kode),
+    indexKey(query.kabupaten_kota),
+  ]) {
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    keys.push(key);
+  }
+  return keys;
+}
+
 export function lookupIrbiKab(
   map: IrbiByKabMap,
   query: {
@@ -79,15 +97,10 @@ export function lookupIrbiKab(
     kabupaten_kota_kode?: string;
   },
 ): IrbiKabSummary | undefined {
-  const kodeExact = exactKodeKey(query.kabupaten_kota_kode);
-  if (kodeExact && map.has(kodeExact)) return map.get(kodeExact);
-
-  const kodeNorm = indexKey(query.kabupaten_kota_kode);
-  if (kodeNorm && map.has(kodeNorm)) return map.get(kodeNorm);
-
-  const nameNorm = indexKey(query.kabupaten_kota);
-  if (nameNorm && map.has(nameNorm)) return map.get(nameNorm);
-
+  for (const key of kabupatenIndexKeys(query)) {
+    const hit = map.get(key);
+    if (hit) return hit;
+  }
   return undefined;
 }
 

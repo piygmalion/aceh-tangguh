@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { Chip } from "@/components/ui/Chip";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import {
   buildIrbiByKabMap,
@@ -78,19 +79,16 @@ function compassFromDeg(deg: number): string | null {
   return COMPASS[idx];
 }
 
-function kelasTone(kelas?: string): string {
-  const k = (kelas ?? "").toUpperCase();
-  if (k === "TINGGI" || k === "SANGAT TINGGI") {
-    return "bg-[var(--danger-dim)] text-[var(--danger)]";
-  }
-  if (k === "SEDANG" || k === "MEDIUM") {
-    return "bg-[var(--warn-dim)] text-[var(--warn)]";
-  }
-  if (k === "RENDAH" || k === "LOW") {
-    return "bg-[var(--accent-dim)] text-[var(--accent)]";
-  }
-  return "bg-[var(--bg-muted)] text-[var(--text-dim)]";
+/** Same tones as WeatherKabCard IRBI chip. */
+function riskTone(kelas?: string): "danger" | "warn" | "neutral" {
+  if (!kelas) return "neutral";
+  const k = kelas.toUpperCase();
+  if (k === "TINGGI" || k === "SANGAT TINGGI") return "danger";
+  if (k === "SEDANG" || k === "MEDIUM") return "warn";
+  return "neutral";
 }
+
+const compactChipClass = "gap-1 px-1.5 py-0.5 text-[0.58rem] leading-none";
 
 /**
  * Label the provider honestly.
@@ -132,7 +130,7 @@ function WeatherThumb({
   const kelas = irbi?.kelas_risiko;
   const score =
     typeof irbi?.irb_2025 === "number" ? irbi.irb_2025.toFixed(1) : null;
-  const cuacaKelas = kab.kelas_cuaca_ekstrem ?? irbi?.kelas_cuaca_ekstrem;
+  const cuacaKelas = kab.kelas_cuaca_ekstrem;
   const threatKey = irbi?.ancaman_tertinggi;
   const threatLabel = threatKey
     ? tIrbi.has(`hazard_${threatKey}`)
@@ -203,12 +201,9 @@ function WeatherThumb({
 
         <div className="mt-auto flex min-w-0 flex-wrap items-center gap-1">
           {kelas ? (
-            <span
-              className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[0.58rem] font-semibold uppercase leading-none ${kelasTone(kelas)}`}
-              aria-label={t("irbiKelasAria", { kelas })}
-            >
+            <Chip tone={riskTone(kelas)} className={compactChipClass}>
               {kelas}
-            </span>
+            </Chip>
           ) : (
             <span className="text-[0.62rem] text-[var(--text-dim)]">
               {t("irbiMissing")}
@@ -221,11 +216,9 @@ function WeatherThumb({
             {score ?? t("irbiMissing")}
           </span>
           {cuacaKelas ? (
-            <span
-              className={`inline-flex max-w-full items-center truncate rounded-full px-1.5 py-0.5 text-[0.55rem] font-medium leading-none ${kelasTone(cuacaKelas)}`}
-            >
+            <Chip tone={riskTone(cuacaKelas)} className={`${compactChipClass} max-w-full truncate`}>
               {t("cuacaEkstremChip", { kelas: cuacaKelas })}
-            </span>
+            </Chip>
           ) : null}
         </div>
 

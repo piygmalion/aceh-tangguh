@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 const tones = {
   neutral:
@@ -29,7 +30,13 @@ export function Chip({
     <Comp
       type={onClick ? "button" : undefined}
       onClick={onClick}
-      className={`inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition duration-200 ${tones[tone]} ${active ? "ring-2 ring-[var(--accent)]" : ""} ${onClick ? "hover:brightness-110 cursor-pointer" : ""} ${className}`}
+      className={cn(
+        "inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-medium transition duration-200",
+        tones[tone],
+        active ? "ring-2 ring-[var(--accent)]" : "",
+        onClick ? "hover:brightness-110 cursor-pointer" : "",
+        className,
+      )}
     >
       {children}
     </Comp>
