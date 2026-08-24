@@ -88,6 +88,13 @@ async function resolveStaticGet(input: string): Promise<Response> {
     >;
     return jsonResponse({ ...data, source: "fixture" });
   }
+  if (path === "/api/dibi/aceh") {
+    const data = (await fetchJson("/fixtures/dibi-aceh.json")) as Record<
+      string,
+      unknown
+    >;
+    return jsonResponse({ ...data, source: "fixture" });
+  }
   if (path === "/api/weather") {
     return jsonResponse(await fetchJson("/fixtures/weather-snapshot.json"));
   }

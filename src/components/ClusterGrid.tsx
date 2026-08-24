@@ -14,6 +14,7 @@ import { Link } from "@/i18n/routing";
 import type { ClusterId } from "@/lib/types";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { DibiDashboard } from "@/components/dibi/DibiDashboard";
 
 const ICONS: Record<ClusterId, typeof Shield> = {
   sar: Shield,
@@ -45,7 +46,16 @@ export function ClusterGrid() {
           <p className="mt-3 text-[var(--text-dim)]">{t("lead")}</p>
         </div>
       </BlurFade>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+      <DibiDashboard />
+
+      <BlurFade delay={0.1} inView>
+        <h3 className="mt-10 text-lg font-semibold tracking-tight">
+          {t("mapHeading")}
+        </h3>
+        <p className="mt-1.5 text-sm text-[var(--text-dim)]">{t("mapLead")}</p>
+      </BlurFade>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {IDS.map((id, i) => {
           const Icon = ICONS[id];
           return (

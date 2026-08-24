@@ -49,7 +49,7 @@ Do **not** set `SUPABASE_SERVICE_ROLE_KEY` or laporan/weather cron secrets on th
 
 ### What works on the static preview
 
-- `/` → `/id/` (and `/en/`) homepage: hero stats (fallback numbers), hazards fallback, weather snapshot, R3P + IRBI charts, map teaser
+- `/` → `/id/` (and `/en/`) homepage: hero stats (fallback numbers), hazards fallback, weather snapshot, Aceh DIBI dashboard, R3P + IRBI charts, map teaser
 - `/id/peta` (and `/en/peta`): marker + area layers from `public/fixtures`, PMTiles from `public/tiles`
 - Read-only catalogs: data bencana, anggaran, publikasi, sumber data, metodologi
 
@@ -108,6 +108,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/anggaran` | `anggaran_analisis` + `anggaran_kegiatan`, else fixture |
 | GET | `/api/publikasi` | `publikasi` + `publikasi_meta`, else fixture |
 | GET | `/api/r3p/summary` | `r3p_summary`, else fixture |
+| GET | `/api/dibi/aceh` | Live BNPB DIBI Superset (Aceh-only), else `dibi-aceh.json` |
 | GET | `/api/profil-desa/kecamatan` | Supabase `profil_desa` kecamatan aggregate (`?kabupaten=&kecamatan=` or `?kode_kecamatan=`) |
 | GET | `/api/profil-desa/desa` | Single desa (`?kode=` or `?id=`) |
 | GET | `/api/profil-desa/kabupaten` | Optional kabupaten rollup (`?kabupaten=` or `?kode_kabupaten=`) |
