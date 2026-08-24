@@ -169,13 +169,13 @@ function sortKey(row: KejadianRow): number {
   return 0;
 }
 
-export function filterAndPaginateKejadian(
-  data: KejadianFixture,
-  query: KejadianQuery,
-  source?: "supabase" | "fixture"
-): KejadianListResult {
-  const pageSize = Math.min(100, Math.max(1, query.pageSize ?? 10));
-  const page = Math.max(1, query.page ?? 1);
+/** Analysis / export fetches may request a larger page than the table UI. */
+export const KEJADIAN_MAX_PAGE_SIZE = 500;
+
+export function filterKejadianRows(
+  rows: KejadianRow[],
+  query: KejadianQuery
+): KejadianRow[] {
   const from = parseIsoDay(query.from);
   const to = parseIsoDay(query.to);
   const toEnd = to
@@ -190,7 +190,7 @@ export function filterAndPaginateKejadian(
     ? normalizeStatus(query.status, "disasterEvents").key
     : "";
 
-  let filtered = data.kejadian.filter((row) => {
+  const filtered = rows.filter((row) => {
     if (isRekapitulasiTahunan(row.jenis_bencana)) return false;
     if (jenis && norm(row.jenis_bencana) !== jenis) return false;
     const kab = norm(row.lokasi?.kabupaten || row.lokasi?.kabupaten_kota);
@@ -208,11 +208,24 @@ export function filterAndPaginateKejadian(
     return true;
   });
 
-  filtered = [...filtered].sort((a, b) => {
+  return [...filtered].sort((a, b) => {
     const diff = sortKey(b) - sortKey(a);
     if (diff !== 0) return diff;
     return b.id.localeCompare(a.id);
   });
+}
+
+export function filterAndPaginateKejadian(
+  data: KejadianFixture,
+  query: KejadianQuery,
+  source?: "supabase" | "fixture"
+): KejadianListResult {
+  const pageSize = Math.min(
+    KEJADIAN_MAX_PAGE_SIZE,
+    Math.max(1, query.pageSize ?? 10)
+  );
+  const page = Math.max(1, query.page ?? 1);
+  const filtered = filterKejadianRows(data.kejadian, query);
 
   const total = filtered.length;
   const start = (page - 1) * pageSize;

@@ -29,6 +29,18 @@ export type KejadianJumlahKorban = {
   hilang?: number;
 };
 
+export type KejadianKerusakanTingkat = {
+  rusak_berat?: number;
+  rusak_sedang?: number;
+  rusak_ringan?: number;
+  terancam?: number;
+};
+
+export type KejadianKerusakanDanKorban = {
+  rumah?: KejadianKerusakanTingkat;
+  [key: string]: unknown;
+};
+
 export type KejadianPenanganan = {
   langkah?: string;
   status_proses?: string;
@@ -41,7 +53,7 @@ export type KejadianRow = {
   jam?: string;
   penyebab?: string;
   jenis_bencana: string;
-  kerusakan_dan_korban?: Record<string, unknown>;
+  kerusakan_dan_korban?: KejadianKerusakanDanKorban;
   jumlah_korban?: KejadianJumlahKorban;
   kronologi?: string;
   kendala_kebutuhan_mendesak?: string;

@@ -27,8 +27,10 @@ export type {
 export {
   parseHariTanggal,
   buildFacets,
+  filterKejadianRows,
   filterAndPaginateKejadian,
   findKejadianById,
+  KEJADIAN_MAX_PAGE_SIZE,
 } from "./kejadian-query";
 
 let cache: KejadianFixture | null = null;
