@@ -165,6 +165,43 @@ async function resolveStaticGet(input: string): Promise<Response> {
       source: "fixture",
     });
   }
+  if (path === "/api/publikasi/kegiatan") {
+    const data = (await fetchJson("/fixtures/publikasi-kegiatan.json")) as {
+      metadata?: {
+        judul?: string;
+        sumber?: string;
+        total?: number;
+        ditampilkan?: number;
+        interval_detik?: number;
+      };
+      kegiatan?: Array<Record<string, unknown>>;
+      slideshow?: Array<Record<string, unknown>>;
+    };
+    const all = Array.isArray(data.kegiatan) ? data.kegiatan : [];
+    const slides = Array.isArray(data.slideshow) ? data.slideshow : [];
+    const pool = all.length > 0 ? all : slides;
+    const sorted = [...pool].sort((a, b) => {
+      const dateCmp = String(b.tanggal_publikasi ?? "").localeCompare(
+        String(a.tanggal_publikasi ?? ""),
+      );
+      if (dateCmp !== 0) return dateCmp;
+      return String(b.id ?? "").localeCompare(String(a.id ?? ""));
+    });
+    const kegiatan = sorted.slice(0, 15);
+    const total = all.length > 0 ? all.length : data.metadata?.total ?? slides.length;
+    return jsonResponse({
+      metadata: {
+        judul: data.metadata?.judul ?? "Publikasi Kegiatan BPBA",
+        sumber: data.metadata?.sumber ?? "https://bpba.acehprov.go.id",
+        total,
+        ditampilkan: Math.min(15, kegiatan.length),
+        interval_detik: data.metadata?.interval_detik ?? 10,
+      },
+      kegiatan,
+      total,
+      source: "fixture",
+    });
+  }
   if (path === "/api/publikasi") {
     const data = (await fetchJson("/fixtures/publikasi-btt.json")) as {
       metadata: Record<string, unknown>;

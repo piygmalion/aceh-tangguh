@@ -628,6 +628,72 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
+      publikasi_kegiatan: {
+        Row: {
+          id: string;
+          slug: string | null;
+          judul: string;
+          ringkasan: string | null;
+          tanggal_publikasi: string | null;
+          penulis: string | null;
+          kategori: string | null;
+          jenis_kegiatan: string | null;
+          jenis_bencana: string | null;
+          fase: string | null;
+          lokasi_teks: string | null;
+          url: string | null;
+          foto_sampul_url: string | null;
+          foto_sampul_thumbnail_url: string | null;
+          jumlah_foto: number | null;
+          kabupaten: Json | null;
+          photos: Json | null;
+          sumber: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id: string;
+          slug?: string | null;
+          judul: string;
+          ringkasan?: string | null;
+          tanggal_publikasi?: string | null;
+          penulis?: string | null;
+          kategori?: string | null;
+          jenis_kegiatan?: string | null;
+          jenis_bencana?: string | null;
+          fase?: string | null;
+          lokasi_teks?: string | null;
+          url?: string | null;
+          foto_sampul_url?: string | null;
+          foto_sampul_thumbnail_url?: string | null;
+          jumlah_foto?: number | null;
+          kabupaten?: Json;
+          photos?: Json;
+          sumber?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          slug?: string | null;
+          judul?: string;
+          ringkasan?: string | null;
+          tanggal_publikasi?: string | null;
+          penulis?: string | null;
+          kategori?: string | null;
+          jenis_kegiatan?: string | null;
+          jenis_bencana?: string | null;
+          fase?: string | null;
+          lokasi_teks?: string | null;
+          url?: string | null;
+          foto_sampul_url?: string | null;
+          foto_sampul_thumbnail_url?: string | null;
+          jumlah_foto?: number | null;
+          kabupaten?: Json;
+          photos?: Json;
+          sumber?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: EmptyRelationships;
+      };
       r3p_summary: {
         Row: {
           id: number;
@@ -801,6 +867,8 @@ export type AnggaranAnalisisRow = Database["public"]["Tables"]["anggaran_analisi
 export type AnggaranKegiatanRow = Database["public"]["Tables"]["anggaran_kegiatan"]["Row"];
 export type PublikasiMetaRow = Database["public"]["Tables"]["publikasi_meta"]["Row"];
 export type PublikasiRow = Database["public"]["Tables"]["publikasi"]["Row"];
+export type PublikasiKegiatanRow =
+  Database["public"]["Tables"]["publikasi_kegiatan"]["Row"];
 export type R3PSummaryRow = Database["public"]["Tables"]["r3p_summary"]["Row"];
 export type IrbiDocumentRow = Database["public"]["Tables"]["irbi_documents"]["Row"];
 export type DataDocumentRow = Database["public"]["Tables"]["data_documents"]["Row"];

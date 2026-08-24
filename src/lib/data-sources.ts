@@ -198,8 +198,20 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     date: "2026 (fixture 2026-08-23; 9 publikasi)",
     format: "JSON (publikasi-btt.json)",
     usedFor:
-      "Halaman Publikasi — katalog artikel analitik BTT dengan pencarian & filter tag",
+      "Halaman Publikasi — bagian Analisis: katalog artikel analitik BTT dengan pencarian & filter tag",
     href: "https://tanggapi.acehprov.go.id",
+  },
+  {
+    id: "publikasi-kegiatan",
+    titleId: "Publikasi Kegiatan BPBA",
+    titleEn: "BPBA activity publications",
+    source: "BPBA — https://bpba.acehprov.go.id",
+    license: "Public BPBA news — attribute Badan Penanggulangan Bencana Aceh",
+    date: "2025–2026 (compact fixture; full catalog 186 items when seeded)",
+    format: "JSON (publikasi-kegiatan.json) + Supabase publikasi_kegiatan",
+    usedFor:
+      "Halaman Publikasi — slideshow 15 kegiatan terbaru (bukan daftar penuh)",
+    href: "https://bpba.acehprov.go.id",
   },
   {
     id: "titik-pengungsian",
