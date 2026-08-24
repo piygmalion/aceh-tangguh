@@ -240,10 +240,11 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
   {
     key: "infraRoadBridge",
     kind: "marker",
-    title_id: "Jalan & jembatan",
-    title_en: "Roads & bridges",
-    description: "Titik infrastruktur jalan/jembatan terdampak.",
-    source_path: "/fixtures/markers.geojson",
+    title_id: "Jembatan",
+    title_en: "Bridges",
+    description:
+      "Inventarisasi jembatan Aceh (OSM + dokumen resmi). 7547 titik, 23 kabupaten/kota.",
+    source_path: "/fixtures/jembatan.json",
     source_type: "geojson",
     pmtiles_path: null,
     enabled: true,
