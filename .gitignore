@@ -51,3 +51,14 @@ run-start.bat
 run-only-start.bat
 start-dev.bat
 patch_flat_icons.py
+# local one-off / generated seed dumps (do not commit)
+scripts/_*/
+scripts/_*
+scripts/seed-sql/
+scripts/*-log.txt
+scripts/bmkg-*-test.txt
+scripts/inspect_*.js
+scripts/resolve-pr*.js
+scripts/resolve-types.js
+scripts/seed_*_sql.js
+scripts/split_seed_sql.js
