@@ -18,7 +18,8 @@
     "normalize:status": "node scripts/normalize-status.js",
     "verify:laporan": "node --env-file=.env.local scripts/verify-laporan-setup.mjs",
     "laporan:wa": "node scripts/process-laporan-wa.mjs",
-    "laporan:pii-key": "node scripts/generate-laporan-pii-key.mjs"
+    "laporan:pii-key": "node scripts/generate-laporan-pii-key.mjs",
+    "pack:local": "bash scripts/pack-local.sh"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",

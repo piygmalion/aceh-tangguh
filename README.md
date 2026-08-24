@@ -4,6 +4,21 @@ MVP scaffold: mandum rimba-inspired homepage × Tanggapi-inspired map.
 
 Inspired-by only. Does **not** copy AGPL Mandum source — patterns only, own implementation.
 
+## Pengembangan lokal
+
+Development utama di folder **`Aceh tangguh`**. GitHub hanya di-push setelah fitur final.
+
+```bash
+# Clone langsung ke nama folder kerja
+git clone https://github.com/piygmalion/aceh-tangguh.git "Aceh tangguh"
+cd "Aceh tangguh"
+
+# atau buat salinan terstruktur (+ zip) dari repo ini:
+# bash scripts/pack-local.sh "$HOME/Aceh tangguh"
+```
+
+Mulai: `MULAI-DISINI.md` · peta folder: `docs/STRUKTUR.md` · alur kerja: `docs/PENGEMBANGAN-LOKAL.md`
+
 ## Stack
 
 - Next.js 14 + React 18 + TypeScript
@@ -15,7 +30,7 @@ Inspired-by only. Does **not** copy AGPL Mandum source — patterns only, own im
 ## Run
 
 ```
-cd /workspace/aceh-tangguh
+cd "Aceh tangguh"
 bun install
 bun run dev
 ```
