@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { kabupatenIndexKeys } from "@/lib/irbi-by-kab";
 import { loadRegistry } from "@/lib/weather/service";
 import { fetchBmkgForecast } from "@/lib/weather/bmkg";
 import { fetchOpenMeteoForecast } from "@/lib/weather/open-meteo";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 120;
 
 type IrbiKab = {
+  kabupaten_kota?: string;
   kabupaten_kota_kode?: string;
   ir_cuaca_ekstrem?: number;
   kelas_cuaca_ekstrem?: string;
@@ -22,9 +24,10 @@ async function loadIrbiMap() {
   const data = JSON.parse(raw) as { kabupaten_kota?: IrbiKab[] };
   const map = new Map<string, { ir: number; kelas: string }>();
   for (const kab of data.kabupaten_kota ?? []) {
-    const key = (kab.kabupaten_kota_kode ?? "").toUpperCase();
-    if (key && kab.ir_cuaca_ekstrem != null && kab.kelas_cuaca_ekstrem) {
-      map.set(key, { ir: kab.ir_cuaca_ekstrem, kelas: kab.kelas_cuaca_ekstrem });
+    if (kab.ir_cuaca_ekstrem == null || !kab.kelas_cuaca_ekstrem) continue;
+    const value = { ir: kab.ir_cuaca_ekstrem, kelas: kab.kelas_cuaca_ekstrem };
+    for (const key of kabupatenIndexKeys(kab)) {
+      if (!map.has(key)) map.set(key, value);
     }
   }
   return map;
@@ -71,7 +74,11 @@ export async function POST(request: Request) {
     }
     if (!forecast) continue;
 
-    const irbi = irbiMap.get(forecast.kabupaten_kota_kode);
+    let irbi: { ir: number; kelas: string } | undefined;
+    for (const key of kabupatenIndexKeys(forecast)) {
+      irbi = irbiMap.get(key);
+      if (irbi) break;
+    }
     if (irbi) {
       forecast.ir_cuaca_ekstrem = irbi.ir;
       forecast.kelas_cuaca_ekstrem = irbi.kelas;
