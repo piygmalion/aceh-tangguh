@@ -11,7 +11,5 @@ export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
   facGov: "#475569",
   facReligious: "#0d9488",
   infraRoadBridge: "#a16207",
-  helipad: "#0891b2",
-  starlink: "#6366f1",
   citizenReports: "#ea580c",
 };

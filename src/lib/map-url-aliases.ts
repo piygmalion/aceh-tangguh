@@ -5,6 +5,17 @@ import type {
   MarkerLayerKey,
 } from "@/lib/types";
 import { encodeDisasterJenis, parseDisasterJenis } from "@/lib/disaster-jenis";
+import {
+  LIVE_MARKER_LAYER_KEYS,
+  REMOVED_MARKER_LAYER_KEYS,
+  RETIRED_MARKER_LAYER_KEYS,
+} from "@/lib/map-layers-catalog";
+
+const KNOWN_MARKER_LAYER_KEYS = new Set<string>([
+  ...LIVE_MARKER_LAYER_KEYS,
+  ...RETIRED_MARKER_LAYER_KEYS,
+]);
+const REMOVED_LAYER_SET = new Set<string>(REMOVED_MARKER_LAYER_KEYS);
 
 /** Default public map layers when `layers` is omitted. */
 export const DEFAULT_LAYERS = [
@@ -86,7 +97,10 @@ export function parseMarkerLayers(raw: string | null): MarkerLayerKey[] {
   return raw
     .split(",")
     .map((s) => s.trim())
-    .filter(Boolean) as MarkerLayerKey[];
+    .filter(
+      (s): s is MarkerLayerKey =>
+        Boolean(s) && KNOWN_MARKER_LAYER_KEYS.has(s) && !REMOVED_LAYER_SET.has(s)
+    );
 }
 
 export type ResolvedMapUrlAliases = {

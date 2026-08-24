@@ -133,7 +133,7 @@ Map toolbar **Data utama** (`groupMain`) defaults to:
 
 `missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. They are seeded in `map_layers` with `enabled=false` (see `supabase/migrations/20260827_map_layers_live_registry.sql`). Default URL layers: `disasterEvents,facHealth,citizenReports`.
 
-Live toolbar layers that must exist in `map_layers`: `facGov`, `facReligious`, `infraRoadBridge`, `helipad`, `starlink` (plus the Data Utama + citizenReports keys). The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
+Live toolbar layers that must exist in `map_layers`: `facGov`, `facReligious`, `infraRoadBridge` (plus the Data Utama + citizenReports keys). `helipad` and `starlink` were removed from the toolbar, fixtures, and `map_layers`. The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
 
 Integer lon/lat (truncated GPS) are flagged `properties.coord_quality = "truncated_integer"` and `approx=true`. Do not invent decimals. Re-flag:
 

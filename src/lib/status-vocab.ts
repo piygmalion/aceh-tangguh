@@ -25,8 +25,6 @@ export type StatusDomain =
   | "health"
   | "disaster"
   | "infra"
-  | "helipad"
-  | "starlink"
   | "reports"
   | "generic";
 
@@ -62,8 +60,6 @@ const LAYER_DOMAIN: Record<string, StatusDomain> = {
   facHealth: "health",
   disasterEvents: "disaster",
   infraRoadBridge: "infra",
-  helipad: "helipad",
-  starlink: "starlink",
   citizenReports: "reports",
 };
 
@@ -115,17 +111,6 @@ const INFRA: VocabEntry[] = [
   { key: "Lainnya", slug: "lainnya", labelId: "Lainnya", tone: "neutral" },
 ];
 
-const HELIPAD: VocabEntry[] = [
-  { key: "siap", slug: "siap", labelId: "Siap", tone: "ok" },
-  { key: "Lainnya", slug: "lainnya", labelId: "Lainnya", tone: "neutral" },
-];
-
-const STARLINK: VocabEntry[] = [
-  { key: "online", slug: "online", labelId: "Online", tone: "ok" },
-  { key: "offline", slug: "offline", labelId: "Offline", tone: "danger" },
-  { key: "Lainnya", slug: "lainnya", labelId: "Lainnya", tone: "neutral" },
-];
-
 const REPORTS: VocabEntry[] = [
   { key: "queued", slug: "queued", labelId: "Antrean", tone: "warn" },
   { key: "published", slug: "published", labelId: "Terbit", tone: "ok" },
@@ -145,8 +130,6 @@ const BY_DOMAIN: Record<StatusDomain, VocabEntry[]> = {
   health: HEALTH,
   disaster: DISASTER,
   infra: INFRA,
-  helipad: HELIPAD,
-  starlink: STARLINK,
   reports: REPORTS,
   generic: GENERIC,
 };
@@ -186,8 +169,6 @@ const LOOKUP: Record<StatusDomain, Lookup> = {
   health: buildLookup(HEALTH),
   disaster: buildLookup(DISASTER),
   infra: buildLookup(INFRA),
-  helipad: buildLookup(HELIPAD),
-  starlink: buildLookup(STARLINK),
   reports: buildLookup(REPORTS),
   generic: buildLookup(GENERIC),
 };
@@ -198,8 +179,6 @@ const EMPTY_KEY: Record<StatusDomain, string> = {
   health: "Lainnya",
   disaster: "Lainnya",
   infra: "Lainnya",
-  helipad: "Lainnya",
-  starlink: "Lainnya",
   reports: "Lainnya",
   generic: "Lainnya",
 };

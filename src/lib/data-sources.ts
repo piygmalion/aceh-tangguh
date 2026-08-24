@@ -114,28 +114,6 @@ export const DATA_SOURCES: DataSourceEntry[] = [
       "Toolbar Infrastruktur — live layer registered in map_layers. Sparse inventory; do not invent additional points.",
   },
   {
-    id: "helipad",
-    titleId: "Helipad",
-    titleEn: "Helipads",
-    source: "Operational inventory — helipad markers in markers.geojson",
-    license: "Internal operational dataset — attribution to data providers",
-    date: "2026-08-23 (4 titik)",
-    format: "GeoJSON markers (helipad)",
-    usedFor:
-      "Toolbar Infrastruktur — live layer registered in map_layers. Sparse inventory; do not invent additional points.",
-  },
-  {
-    id: "starlink",
-    titleId: "Starlink",
-    titleEn: "Starlink",
-    source: "Operational inventory — starlink markers in markers.geojson",
-    license: "Internal operational dataset — attribution to data providers",
-    date: "2026-08-23 (4 titik)",
-    format: "GeoJSON markers (starlink)",
-    usedFor:
-      "Toolbar Infrastruktur — live layer registered in map_layers. Sparse inventory; do not invent additional points.",
-  },
-  {
     id: "compiled-r3p",
     titleId: "R3P multi-sektor (rumah, jalan, drainase, lahan, desa)",
     titleEn: "R3P multi-sector (housing, roads, drainage, farmland, villages)",

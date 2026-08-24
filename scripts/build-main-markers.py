@@ -12,9 +12,8 @@ Inputs (expected under /workspace/drive-aceh-data/):
       Real GPS when present; otherwise jittered kab centroids (approx=true).
 
 Preserves non-main layers already present in markers.geojson
-(policeOffices, facGov, facReligious, infraRoadBridge, helipad, starlink,
-citizenReports) so a rebuild only refreshes disasterEvents / facHealth /
-facEducation.
+(policeOffices, facGov, facReligious, infraRoadBridge, citizenReports)
+so a rebuild only refreshes disasterEvents / facHealth / facEducation.
 
 Usage:
   python3 scripts/build-main-markers.py
