@@ -104,14 +104,15 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     id: "infra-jalan-jembatan",
-    titleId: "Jalan & jembatan",
-    titleEn: "Roads & bridges",
-    source: "Operational inventory — infraRoadBridge markers in markers.geojson",
+    titleId: "Jembatan",
+    titleEn: "Bridges",
+    source:
+      "jembatan_aceh.json — inventarisasi jembatan Aceh (OSM Overpass + BPJN/Bina Marga/Geoportal), compacted to public/fixtures/jembatan.json",
     license: "Internal operational dataset — attribution to data providers",
-    date: "2026-08-23 (5 titik)",
-    format: "GeoJSON markers (infraRoadBridge)",
+    date: "2026-08-24 (7547 titik; 23 kab/kota)",
+    format: "JSON → GeoJSON markers (infraRoadBridge)",
     usedFor:
-      "Toolbar Infrastruktur — live layer registered in map_layers. Sparse inventory; do not invent additional points.",
+      "Toolbar Infrastruktur — live layer infraRoadBridge. Full 23-kab inventory. Do not invent extra points.",
   },
   {
     id: "laporan-kejadian",
