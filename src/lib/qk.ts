@@ -8,6 +8,8 @@ export const qk = {
   irbi: ["irbi", "2025"] as const,
   kejadian: (params: Record<string, string | number | undefined>) =>
     ["kejadian", params] as const,
+  kejadianAnalisis: (params: Record<string, string | number | undefined>) =>
+    ["kejadian", "analisis", params] as const,
   anggaran: ["anggaran", "2026"] as const,
   publikasi: ["publikasi", "btt"] as const,
   r3pSummary: ["r3p", "summary"] as const,
