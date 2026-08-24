@@ -2,9 +2,7 @@ name: Deploy GitHub Pages preview
 
 on:
   push:
-    branches:
-      - main
-      - cursor/dibi-aceh-dashboard-f526
+    branches: [main]
   workflow_dispatch:
 
 permissions:
