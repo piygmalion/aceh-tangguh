@@ -44,7 +44,7 @@ function filterMarkersByKeys(
   keys: string[]
 ): FeatureCollection {
   if (keys.length === 0) return fc;
-  const set = new Set(expandMarkerLayerKeys(keys));
+  const set = new Set<string>(expandMarkerLayerKeys(keys));
   return {
     type: "FeatureCollection",
     features: fc.features.filter((f) =>
