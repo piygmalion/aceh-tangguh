@@ -1,6 +1,6 @@
 # Aceh Tangguh
 
-MVP scaffold: Mandum-inspired homepage × Tanggapi-inspired map.
+MVP scaffold: mandum rimba-inspired homepage × Tanggapi-inspired map.
 
 Inspired-by only. Does **not** copy AGPL Mandum source — patterns only, own implementation.
 
