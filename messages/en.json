@@ -56,32 +56,43 @@
     }
   },
   "clusters": {
-    "heading": "Six response clusters",
-    "lead": "Jump into the map with a relevant cluster filter.",
-    "sar": {
-      "title": "SAR",
-      "desc": "Search and rescue"
+    "heading": "Aceh disaster dashboard",
+    "lead": "Disaster impact summary for Aceh province only, drawn from BNPB’s Data Informasi Bencana Indonesia (DIBI). National figures are not shown."
+  },
+  "dibi": {
+    "provinceBadge": "Aceh province · BNPB DIBI",
+    "allYears": "All years",
+    "yearAria": "Aceh DIBI dashboard year filter",
+    "error": "Failed to load the Aceh DIBI dashboard.",
+    "chartKategori": "Events by hazard category",
+    "chartKabupaten": "Top 10 districts/cities by event count",
+    "chartTahun": "Events by year",
+    "chartCumulative": "Cumulative Aceh province totals on DIBI filters (not national).",
+    "unit": {
+      "kejadian": "events"
     },
-    "logistik": {
-      "title": "Logistics",
-      "desc": "Aid & stock distribution"
+    "kpi": {
+      "kejadian": "Events",
+      "kejadianSub": "Aceh {from}–{to}",
+      "yearSub": "Aceh, {year}",
+      "meninggalHilang": "Dead & missing",
+      "meninggalHilangSub": "{meninggal} dead · {hilang} missing",
+      "terdampak": "People affected",
+      "terdampakSub": "{mengungsi} suffering/displaced · {luka} injured",
+      "rumahRusak": "Damaged houses",
+      "rumahRusakSub": "Heavy {rb} · Moderate {rs} · Light {rr}",
+      "terendam": "Flooded houses",
+      "terendamSub": "Housing units",
+      "kerugian": "Housing-loss estimate",
+      "kerugianSub": "Million rupiah, as labelled in DIBI"
     },
-    "pengungsian": {
-      "title": "Displacement",
-      "desc": "Posts and shelter points"
-    },
-    "kesehatan": {
-      "title": "Health",
-      "desc": "Health facilities & services"
-    },
-    "pendidikan": {
-      "title": "Education",
-      "desc": "Schools & emergency learning"
-    },
-    "pemulihan": {
-      "title": "Recovery",
-      "desc": "Rehab-recon & economic recovery"
-    }
+    "tooltipKategori": "{meninggal} dead/missing · {terdampak} people affected",
+    "tooltipKab": "{rusak} damaged houses · {terendam} flooded",
+    "tooltipTahun": "{meninggal} dead/missing · {rusak} damaged houses",
+    "attribution": "Data source: National Disaster Management Agency (BNPB), Data Informasi Bencana Indonesia (DIBI), public dashboard “Data Informasi Bencana Indonesia”. Shown for Aceh province only (provinsi=Aceh, is_bencana=true).",
+    "updated": "Fetched {time}.",
+    "fixtureNote": "Showing a snapshot fixture because the DIBI API is unavailable.",
+    "sourceLink": "Open BNPB DIBI dashboard"
   },
   "mapTeaser": {
     "heading": "All data, one map",
@@ -313,6 +324,10 @@
     "s5": {
       "title": "Limits & updates",
       "body": "A small set of village names remains unmatched (ambiguous names or no reliable geometry). The Drive inventory is rebuilt via local scripts; map layers ship as GeoJSON APIs, with optional PMTiles vector tiles for performance. Homepage and map figures follow the deployed fixture snapshot."
+    },
+    "s6": {
+      "title": "Aceh DIBI dashboard",
+      "body": "The homepage “Aceh disaster dashboard” aggregates figures from BNPB’s public DIBI dashboard (https://dibi.bnpb.go.id/superset/dashboard/2/), dataset Dampak kejadian bencana. Every query filters provinsi=Aceh and is_bencana=true, plus DIBI’s default hazard categories. This uses Apache Superset’s internal API (not the official Satu Data Bencana CKAN channel); if DIBI is unavailable the app falls back to a snapshot fixture. Housing-loss estimates follow DIBI’s million-rupiah unit."
     }
   },
   "r3pChart": {

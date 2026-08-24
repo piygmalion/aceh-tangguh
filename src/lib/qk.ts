@@ -21,4 +21,5 @@ export const qk = {
   profilDesa: (params: { kode?: string; id?: string; nama?: string }) =>
     ["profil-desa", "desa", params] as const,
   weather: ["weather"] as const,
+  dibiAceh: ["dibi", "aceh"] as const,
 };

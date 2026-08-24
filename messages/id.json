@@ -56,32 +56,43 @@
     }
   },
   "clusters": {
-    "heading": "Enam klaster penanggulangan",
-    "lead": "Masuk ke peta dengan filter klaster yang relevan.",
-    "sar": {
-      "title": "SAR",
-      "desc": "Pencarian dan penyelamatan"
+    "heading": "Dashboard bencana Aceh",
+    "lead": "Ringkasan dampak kejadian bencana khusus Provinsi Aceh, diolah dari Data Informasi Bencana Indonesia (DIBI) BNPB. Angka nasional tidak ditampilkan."
+  },
+  "dibi": {
+    "provinceBadge": "Provinsi Aceh · DIBI BNPB",
+    "allYears": "Semua tahun",
+    "yearAria": "Filter tahun dashboard DIBI Aceh",
+    "error": "Gagal memuat dashboard DIBI Aceh.",
+    "chartKategori": "Kejadian menurut kategori bencana",
+    "chartKabupaten": "10 kabupaten/kota dengan kejadian terbanyak",
+    "chartTahun": "Kejadian per tahun",
+    "chartCumulative": "Kumulatif Provinsi Aceh pada filter DIBI (bukan nasional).",
+    "unit": {
+      "kejadian": "kejadian"
     },
-    "logistik": {
-      "title": "Logistik",
-      "desc": "Distribusi bantuan & stok"
+    "kpi": {
+      "kejadian": "Kejadian",
+      "kejadianSub": "Aceh {from}–{to}",
+      "yearSub": "Aceh tahun {year}",
+      "meninggalHilang": "Meninggal & hilang",
+      "meninggalHilangSub": "{meninggal} meninggal · {hilang} hilang",
+      "terdampak": "Jiwa terdampak",
+      "terdampakSub": "{mengungsi} menderita/mengungsi · {luka} luka/sakit",
+      "rumahRusak": "Rumah rusak",
+      "rumahRusakSub": "RB {rb} · RS {rs} · RR {rr}",
+      "terendam": "Rumah terendam",
+      "terendamSub": "Unit rumah",
+      "kerugian": "Estimasi kerugian rumah",
+      "kerugianSub": "Satuan juta rupiah sebagaimana di DIBI"
     },
-    "pengungsian": {
-      "title": "Pengungsian",
-      "desc": "Posko dan titik pengungsi"
-    },
-    "kesehatan": {
-      "title": "Kesehatan",
-      "desc": "Fasilitas & layanan kesehatan"
-    },
-    "pendidikan": {
-      "title": "Pendidikan",
-      "desc": "Sekolah & ruang belajar darurat"
-    },
-    "pemulihan": {
-      "title": "Pemulihan",
-      "desc": "Rehab-rekon & pemulihan ekonomi"
-    }
+    "tooltipKategori": "{meninggal} meninggal/hilang · {terdampak} jiwa terdampak",
+    "tooltipKab": "{rusak} rumah rusak · {terendam} terendam",
+    "tooltipTahun": "{meninggal} meninggal/hilang · {rusak} rumah rusak",
+    "attribution": "Sumber data: Badan Nasional Penanggulangan Bencana (BNPB), Data Informasi Bencana Indonesia (DIBI), dasbor publik “Data Informasi Bencana Indonesia”. Ditampilkan hanya untuk Provinsi Aceh (filter provinsi=Aceh, is_bencana=true).",
+    "updated": "Diambil {time}.",
+    "fixtureNote": "Menampilkan snapshot fixture karena API DIBI tidak tersedia.",
+    "sourceLink": "Buka dasbor DIBI BNPB"
   },
   "mapTeaser": {
     "heading": "Semua data, dalam satu peta",
@@ -313,6 +324,10 @@
     "s5": {
       "title": "Batasan & pembaruan",
       "body": "Sebagian kecil nama desa tetap tidak tertaut (nama ambigu atau tanpa geometri andal). Inventaris Drive diperbarui lewat skrip build lokal; lapisan peta dilayani sebagai GeoJSON API, dengan opsi ubin vektor PMTiles untuk performa. Angka di beranda dan peta mengikuti snapshot fixture yang sedang di-deploy."
+    },
+    "s6": {
+      "title": "Dashboard DIBI Aceh",
+      "body": "Bagian beranda “Dashboard bencana Aceh” menarik agregat dari dasbor publik DIBI BNPB (https://dibi.bnpb.go.id/superset/dashboard/2/), dataset Dampak kejadian bencana. Setiap kueri menyertakan filter provinsi=Aceh dan is_bencana=true, plus kategori bencana default DIBI. Ini memakai API internal Apache Superset (bukan kanal CKAN resmi Satu Data Bencana); jika layanan DIBI gagal, aplikasi jatuh ke snapshot fixture. Estimasi kerugian rumah mengikuti satuan juta rupiah sebagaimana dilabeli di DIBI."
     }
   },
   "r3pChart": {

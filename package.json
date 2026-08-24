@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "preview": "next dev",
     "build": "node scripts/run-next-build.mjs",
     "build:next": "next build",
     "start": "next start",
@@ -11,6 +12,7 @@
     "build:tiles": "bash scripts/build-pmtiles.sh",
     "seed:area-meta": "bun scripts/seed-area-meta-from-fixtures.mjs",
     "build:weather": "node scripts/build-weather-snapshot.mjs",
+    "build:dibi": "node scripts/fetch-dibi-aceh.mjs",
     "resolve:adm4": "node scripts/resolve-adm4-codes.mjs",
     "refresh:weather": "node scripts/refresh-weather-cache.mjs",
     "verify:weather": "node scripts/verify-weather-setup.mjs",

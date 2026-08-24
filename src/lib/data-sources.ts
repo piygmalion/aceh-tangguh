@@ -14,6 +14,20 @@ export type DataSourceEntry = {
 
 export const DATA_SOURCES: DataSourceEntry[] = [
   {
+    id: "dibi-aceh",
+    titleId: "DIBI BNPB — dampak kejadian bencana Provinsi Aceh",
+    titleEn: "BNPB DIBI — Aceh province disaster impact",
+    source:
+      "BNPB Data Informasi Bencana Indonesia (DIBI) — Apache Superset dashboard “Data Informasi Bencana Indonesia”, dataset Dampak kejadian bencana (pdsi_staging.mv_dibi_dampak_by_kejadian). Filtered to provinsi=Aceh, is_bencana=true.",
+    license:
+      "Public DIBI dashboard — attribute Badan Nasional Penanggulangan Bencana (BNPB). Internal Superset API; schema may change without notice.",
+    date: "Live query + snapshot fixture 2026-08-24 (Aceh 2008–2026)",
+    format: "JSON via POST /api/v1/chart/data (dashboard_id=2, Aceh filters)",
+    usedFor:
+      "Homepage disaster dashboard — Aceh-only KPIs (events, casualties, displacement, damaged/flooded houses, housing-loss estimate) and charts by hazard type, kabupaten/kota, and year",
+    href: "https://dibi.bnpb.go.id/superset/dashboard/2/",
+  },
+  {
     id: "kejadian-bencana",
     titleId: "Kejadian bencana",
     titleEn: "Disaster events",
