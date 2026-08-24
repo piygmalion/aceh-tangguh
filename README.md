@@ -126,18 +126,18 @@ Homepage hero tabs: **Utama** · **Peta** · **Irbi 2025**. Map deep-link: `/id/
 
 ## Data Utama (marker layers)
 
-Map toolbar **Data utama** (`groupMain`) defaults to:
+Map toolbar **Data utama** (`groupMain`) has two expandable parents:
 
-1. `disasterEvents` — Kejadian bencana (`kejadian_bencana_aceh_lengkap.json`)
-2. `facHealth` — Fasilitas kesehatan (Google Sheet `1npB5v7T…`)
-3. `facEducation` — Fasilitas pendidikan (Google Sheet `1fguZcbW…`; **coordinates approximated to kabupaten centroids** — schools have no precise lat/lng in the sheet)
-4. `policeOffices` — kept when present
+1. `disasterEvents` — Kejadian bencana (`kejadian_bencana_aceh_lengkap.json`), with a jenis nest
+2. **Fasilitas Umum** (UI nest only, not a layer key) — `facHealth`, `facEducation`, `policeOffices`, `facGov`, `facReligious`
+
+Facility children keep their existing keys and `?layers=` URLs. Parent checkbox is on if any child is on; toggling the parent turns all five on or off.
 
 `missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. They are seeded in `map_layers` with `enabled=false` (see `supabase/migrations/20260827_map_layers_live_registry.sql`).
 
 **Partisipasi** toolbar layers: `laporanKejadian` and `laporanPenanganan` (live query from `laporan_*` where `status = approved` AND `tampil_di_peta = true`). `citizenReports` is removed (helipad pattern): not in the toolbar or type union; `?layers=citizenReports` aliases to `laporanKejadian` and is rewritten away. Default URL layers: `disasterEvents,facHealth,laporanKejadian`. Layers stay empty until a moderator publishes a real laporan — no dummy fixture points. `/admin/moderasi` still edits legacy `reports`; publish `laporan_*` via Database explorer (`status` + `tampil_di_peta`) until that UI is rebuilt.
 
-Live toolbar layers that must exist in `map_layers`: `facGov`, `facReligious`, `infraRoadBridge`, `laporanKejadian`, `laporanPenanganan` (plus the Data Utama keys). `helipad` and `starlink` were removed from the toolbar, fixtures, and `map_layers`. The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
+Live toolbar layers that must exist in `map_layers`: `facHealth`, `facEducation`, `policeOffices`, `facGov`, `facReligious` (Data utama → Fasilitas Umum nest), `infraRoadBridge`, `laporanKejadian`, `laporanPenanganan` (plus `disasterEvents`). There is no separate Fasilitas toolbar cluster. `helipad` and `starlink` were removed from the toolbar, fixtures, and `map_layers`. The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
 
 Integer lon/lat (truncated GPS) are flagged `properties.coord_quality = "truncated_integer"` and `approx=true`. Do not invent decimals. Re-flag:
 

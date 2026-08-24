@@ -17,6 +17,7 @@ import {
   parseHazardKind,
   resolveMapUrlAliases,
 } from "@/lib/map-url-aliases";
+import { FASILITAS_UMUM_LAYER_KEYS } from "@/lib/map-layers-catalog";
 
 export { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 
@@ -157,6 +158,17 @@ export function useMapUrlState() {
     [push, state.disasterJenis, state.markerLayers]
   );
 
+  const toggleFasilitasUmum = useCallback(() => {
+    const set = new Set(state.markerLayers);
+    const anyOn = FASILITAS_UMUM_LAYER_KEYS.some((k) => set.has(k));
+    if (anyOn) {
+      for (const k of FASILITAS_UMUM_LAYER_KEYS) set.delete(k);
+    } else {
+      for (const k of FASILITAS_UMUM_LAYER_KEYS) set.add(k);
+    }
+    push({ layers: Array.from(set).join(",") || null });
+  }, [push, state.markerLayers]);
+
   return {
     state,
     setView,
@@ -164,5 +176,6 @@ export function useMapUrlState() {
     setAreaLayer,
     toggleMarkerLayer,
     toggleDisasterJenis,
+    toggleFasilitasUmum,
   };
 }

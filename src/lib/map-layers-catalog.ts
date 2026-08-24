@@ -40,7 +40,6 @@ export type MapLayerCatalogEntry = {
 
 export type MarkerToolbarGroupKey =
   | "groupMain"
-  | "groupFacilities"
   | "groupInfra"
   | "groupParticipation";
 
@@ -49,23 +48,23 @@ export type MarkerToolbarGroup = {
   options: { key: MarkerLayerKey; labelKey: MarkerLayerKey }[];
 };
 
-/** Same order / keys as MapToolbar Lokasi — source of truth for live marker layers. */
+/**
+ * Public-facility children under the Data utama “Fasilitas Umum” nest.
+ * UI-only nest — not a MarkerLayerKey. Order matches the Lokasi toolbar.
+ */
+export const FASILITAS_UMUM_LAYER_KEYS = [
+  "facHealth",
+  "facEducation",
+  "policeOffices",
+  "facGov",
+  "facReligious",
+] as const satisfies readonly MarkerLayerKey[];
+
+/** Same order / keys as MapToolbar Lokasi top-level groups (nests listed separately). */
 export const MARKER_TOOLBAR_GROUPS: MarkerToolbarGroup[] = [
   {
     groupKey: "groupMain",
-    options: [
-      { key: "disasterEvents", labelKey: "disasterEvents" },
-      { key: "facHealth", labelKey: "facHealth" },
-      { key: "facEducation", labelKey: "facEducation" },
-      { key: "policeOffices", labelKey: "policeOffices" },
-    ],
-  },
-  {
-    groupKey: "groupFacilities",
-    options: [
-      { key: "facGov", labelKey: "facGov" },
-      { key: "facReligious", labelKey: "facReligious" },
-    ],
+    options: [{ key: "disasterEvents", labelKey: "disasterEvents" }],
   },
   {
     groupKey: "groupInfra",
@@ -88,8 +87,13 @@ export const AREA_TOOLBAR_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "regencyFundAllocation", labelKey: "regencyFundAllocation" },
 ];
 
-export const LIVE_MARKER_LAYER_KEYS: MarkerLayerKey[] =
-  MARKER_TOOLBAR_GROUPS.flatMap((g) => g.options.map((o) => o.key));
+export const LIVE_MARKER_LAYER_KEYS: MarkerLayerKey[] = [
+  ...MARKER_TOOLBAR_GROUPS.flatMap((g) =>
+    g.groupKey === "groupMain"
+      ? [...g.options.map((o) => o.key), ...FASILITAS_UMUM_LAYER_KEYS]
+      : g.options.map((o) => o.key)
+  ),
+];
 
 export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
   {
@@ -221,7 +225,7 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     pmtiles_path: null,
     enabled: true,
     sort_order: 200,
-    meta: { toolbar: "groupFacilities" },
+    meta: { toolbar: "groupMain" },
   },
   {
     key: "facReligious",
@@ -235,7 +239,7 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     pmtiles_path: null,
     enabled: true,
     sort_order: 210,
-    meta: { toolbar: "groupFacilities" },
+    meta: { toolbar: "groupMain" },
   },
   {
     key: "infraRoadBridge",
