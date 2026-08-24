@@ -51,7 +51,7 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    bun run seed:area-meta
    ```
 
-Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kejadian, markers, anggaran, publikasi, R3P, IRBI analysis) is read from Supabase first; loaders fall back to fixtures if env is missing, a query fails, or the table is empty.
+Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kejadian, markers, anggaran, publikasi, IRBI analysis) is read from Supabase first; loaders fall back to fixtures if env is missing, a query fails, or the table is empty. The homepage PRRPKA section is fixture-driven (`prrpka_aceh.json` + `prrpka_ringkasan.json`); there is no matching Supabase seed table.
 
 ### API endpoints
 
@@ -75,7 +75,8 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/kejadian/[id]` | Single event detail |
 | GET | `/api/anggaran` | `anggaran_analisis` + `anggaran_kegiatan`, else fixture |
 | GET | `/api/publikasi` | `publikasi` + `publikasi_meta`, else fixture |
-| GET | `/api/r3p/summary` | `r3p_summary`, else fixture |
+| GET | `/api/prrpka/summary` | PRRPKA fixtures (`prrpka_aceh.json` + `prrpka_ringkasan.json`) |
+| GET | `/api/r3p/summary` | Same PRRPKA payload (legacy path) |
 | GET | `/api/dibi/aceh` | Live BNPB DIBI Superset (Aceh-only), else `dibi-aceh.json` |
 | GET | `/api/profil-desa/kecamatan` | Supabase `profil_desa` kecamatan aggregate (`?kabupaten=&kecamatan=` or `?kode_kecamatan=`) |
 | GET | `/api/profil-desa/desa` | Single desa (`?kode=` or `?id=`) |

@@ -115,16 +115,20 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     id: "compiled-r3p",
-    titleId: "R3P multi-sektor (rumah, jalan, drainase, lahan, desa)",
-    titleEn: "R3P multi-sector (housing, roads, drainage, farmland, villages)",
+    titleId:
+      "PRRPKA / PRRKA — Rencana Induk Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh",
+    titleEn:
+      "PRRPKA / PRRKA — Aceh Authority Master Plan for Accelerated Post-Disaster Rehabilitation and Reconstruction",
     source:
-      "Aceh Tanggapi / Drive — r3p_aceh.json (Rencana Rehabilitasi dan Rekonstruksi Pascabencana Aceh); also Compiled_R3P_Data.xlsx for map choropleth",
-    license: "Internal operational dataset — attribution to data providers",
-    date: "2025–2026 (slideshow fixture 2026-08-23)",
-    format: "JSON (r3p-slideshow.json) + XLSX → aggregated GeoJSON / PMTiles",
+      "Keputusan Gubernur Aceh Nomor 300.2/666/2026 tentang Rencana Induk Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh Tahun 2026–2028 (PRRPKA / PRRKA). Homepage fixtures: prrpka_aceh.json (23 kab/kota) + prrpka_ringkasan.json. Map choropleth r3pDistribution still uses Compiled_R3P_Data.xlsx (rumah RR+RS+RB), unchanged in this release.",
+    license:
+      "Dokumen publik Pemerintah Aceh — attribute Kepgub Aceh No. 300.2/666/2026",
+    date: "2026–2028 (Kepgub 2026; fixture 2026-08-24)",
+    format:
+      "JSON (prrpka_aceh.json + prrpka_ringkasan.json) + PDF Kepgub; choropleth still GeoJSON / PMTiles from Compiled R3P",
     usedFor:
-      "Homepage R3P slideshow (multi-sektor KPIs & charts); kabupaten/village choropleth (rumah RR+RS+RB)",
-    href: "https://docs.google.com/spreadsheets/d/1eG7jewwOeuv0GKLLlfJp8hrDAwvW1wtnYFK4mz_DwPA/edit?gid=0",
+      "Homepage PRRPKA slideshow (JITUPASNA, kebutuhan RR, perumahan PRRP/R3P/BNBA, pendanaan PRRKA, kesenjangan tingkat, sektor). Fixture-driven API `/api/prrpka/summary` — no Supabase seed table. Kabupaten/village R3P choropleth (rumah RR+RS+RB) is a separate, unchanged layer.",
+    href: "/docs/Kepgub_Renduk_PRRPKA_26-28.pdf",
   },
   {
     id: "irbi-2025",

@@ -6,6 +6,11 @@ import {
 } from "@/lib/area-layers";
 import { filterAndPaginateKejadian } from "@/lib/kejadian-query";
 import type { KejadianFixture, KejadianQuery } from "@/lib/kejadian-types";
+import {
+  asPrrpkaAcehFixture,
+  asPrrpkaRingkasan,
+  buildPrrpkaSummary,
+} from "@/lib/prrpka-types";
 import type { LegendModel } from "@/lib/types";
 import { isStaticExport, withBasePath } from "./env";
 import { HAZARD_STATUS_FALLBACK, LIVE_STATS_FALLBACK } from "./fallbacks";
@@ -81,12 +86,17 @@ async function resolveStaticGet(input: string): Promise<Response> {
   if (path === "/api/hazards") {
     return jsonResponse(HAZARD_STATUS_FALLBACK);
   }
-  if (path === "/api/r3p/summary") {
-    const data = (await fetchJson("/fixtures/r3p-slideshow.json")) as Record<
-      string,
-      unknown
-    >;
-    return jsonResponse({ ...data, source: "fixture" });
+  if (path === "/api/prrpka/summary" || path === "/api/r3p/summary") {
+    const [acehRaw, ringkasanRaw] = await Promise.all([
+      fetchJson("/fixtures/prrpka_aceh.json"),
+      fetchJson("/fixtures/prrpka_ringkasan.json"),
+    ]);
+    const aceh = asPrrpkaAcehFixture(acehRaw);
+    const ringkasan = asPrrpkaRingkasan(ringkasanRaw);
+    if (!aceh || !ringkasan) {
+      return jsonResponse({ error: "Invalid PRRPKA fixtures" }, 500);
+    }
+    return jsonResponse(buildPrrpkaSummary(aceh, ringkasan));
   }
   if (path === "/api/dibi/aceh") {
     const data = (await fetchJson("/fixtures/dibi-aceh.json")) as Record<
