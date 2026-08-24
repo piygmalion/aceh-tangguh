@@ -82,19 +82,21 @@ function asKabupaten(value: unknown): string[] {
 
 function asPhotos(value: unknown): PublikasiKegiatanPhoto[] {
   if (!Array.isArray(value)) return [];
-  return value
-    .map((raw, index) => {
-      const rec = asRecord(raw);
-      const url = asString(rec.url);
-      if (!url) return null;
-      return {
-        urutan: typeof rec.urutan === "number" ? rec.urutan : index + 1,
-        peran: asString(rec.peran),
-        url,
-        url_thumbnail: asString(rec.url_thumbnail) || undefined,
-      };
-    })
-    .filter((photo): photo is PublikasiKegiatanPhoto => photo !== null);
+  const photos: PublikasiKegiatanPhoto[] = [];
+  for (let index = 0; index < value.length; index += 1) {
+    const rec = asRecord(value[index]);
+    const url = asString(rec.url);
+    if (!url) continue;
+    const photo: PublikasiKegiatanPhoto = {
+      urutan: typeof rec.urutan === "number" ? rec.urutan : index + 1,
+      peran: asString(rec.peran),
+      url,
+    };
+    const thumb = asString(rec.url_thumbnail);
+    if (thumb) photo.url_thumbnail = thumb;
+    photos.push(photo);
+  }
+  return photos;
 }
 
 export function compareKegiatanDesc(
