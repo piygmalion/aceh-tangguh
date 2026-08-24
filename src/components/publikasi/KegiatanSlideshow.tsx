@@ -10,7 +10,7 @@ import {
   KEGIATAN_INTERVAL_DETIK,
   type PublikasiKegiatanItem,
   type PublikasiKegiatanListResponse,
-} from "@/lib/publikasi-kegiatan";
+} from "@/lib/publikasi-kegiatan-types";
 import { qk } from "@/lib/qk";
 import { cn } from "@/lib/utils";
 
