@@ -50,6 +50,11 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    ```
    bun run seed:area-meta
    ```
+   `villageDistribution` is not included there. Seed it only for the intersection of GeoJSON 10-digit `properties.kode_desa_kelurahan` ∩ coded `profil_desa` rows (join on that kode, never `feature.id`). Do **not** run `--apply` against production until the coordinator reviews:
+   ```
+   npm run seed:village-area-meta -- --dry-run
+   npm run seed:village-area-meta -- --apply
+   ```
 
 Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kejadian, markers, anggaran, publikasi, IRBI analysis) is read from Supabase first; loaders fall back to fixtures if env is missing, a query fails, or the table is empty. The homepage PRRPKA section is fixture-driven (`prrpka_aceh.json` + `prrpka_ringkasan.json`); there is no matching Supabase seed table.
 
