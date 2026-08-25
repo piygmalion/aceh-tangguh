@@ -42,7 +42,6 @@ export function HeroSection() {
   });
 
   const incidents = isError ? null : data?.activeIncidents;
-  const posko = isError ? null : data?.poskoCount;
   const reports = isError ? null : data?.reportsLast24h;
 
   const tabs: { key: HeroTab; label: string }[] = [
@@ -179,17 +178,6 @@ export function HeroSection() {
                     />
                   )}{" "}
                   {t("chipIncidents")}
-                </Chip>
-                <Chip tone="glass" className="text-[0.9rem]">
-                  {isLoading || posko == null ? (
-                    <StatSkeleton />
-                  ) : (
-                    <NumberTicker
-                      value={posko}
-                      className="font-semibold tabular-nums text-white"
-                    />
-                  )}{" "}
-                  {t("chipPosko")}
                 </Chip>
                 <Chip tone="glass" className="text-[0.9rem]">
                   {isLoading || reports == null ? (
