@@ -55,6 +55,11 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    npm run seed:village-area-meta -- --dry-run
    npm run seed:village-area-meta -- --apply
    ```
+   Refresh `profil_desa` counts from the coordinator Google Sheet (join on 10-digit `kode_desa_kelurahan` only; dry-run default; never insert or fill the 4 null-kode rows). Do **not** run `--apply` against production until the coordinator reviews — Backend only:
+   ```
+   npm run update:profil-sheet
+   npm run update:profil-sheet -- --apply
+   ```
 
 Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kejadian, markers, anggaran, publikasi, IRBI analysis) is read from Supabase first; loaders fall back to fixtures if env is missing, a query fails, or the table is empty. The homepage PRRPKA section is fixture-driven (`prrpka_aceh.json` + `prrpka_ringkasan.json`); there is no matching Supabase seed table.
 
