@@ -64,5 +64,12 @@ if (service) {
   if (bucket) ok("storage bucket laporan-media");
   else warn("storage bucket laporan-media", "not found — run 20260826_laporan_production.sql");
 } else {
-  fail("SUPABASE_SERVICE_ROLE_KEY", "required for laporan writes after 20260902_harden_laporan_rls.sql");
+  fail(
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "required for laporan writes (20260902) and staff /api/admin/laporan reads (20260904)"
+  );
 }
+
+// Existence check above uses service role when present (bypasses GRANT).
+// Column GRANT lists are in 20260902 (anon) and 20260904 (authenticated);
+// this script does not query information_schema.

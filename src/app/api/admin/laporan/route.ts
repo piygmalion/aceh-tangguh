@@ -5,9 +5,30 @@ import { decryptPii } from "@/lib/laporan/crypto";
 import { queueWaNotification } from "@/lib/laporan/service";
 import { isLaporanStatus, LAPORAN_STATUSES, type LaporanStatus } from "@/lib/laporan/status";
 import { rejectCrossOrigin } from "@/lib/security/origin";
+import { createServiceClient, type TypedSupabaseClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/types";
 
 export const dynamic = "force-dynamic";
+
+/**
+ * JWT GRANT on laporan_* is column-limited (no jawaban_json / pelapor_id).
+ * Staff moderation reads those via service_role after requireStaffApi.
+ */
+function requireStaffLaporanClient():
+  | { ok: true; client: TypedSupabaseClient }
+  | { ok: false; response: NextResponse } {
+  const client = createServiceClient();
+  if (!client) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: "Supabase service role missing" },
+        { status: 503 }
+      ),
+    };
+  }
+  return { ok: true, client };
+}
 
 const patchSchema = z.object({
   tipe: z.enum(["kejadian", "penanganan"]),
@@ -104,6 +125,8 @@ function toPenangananItem(row: {
 export async function GET(req: NextRequest) {
   const auth = await requireStaffApi();
   if (!auth.ok) return auth.response;
+  const svc = requireStaffLaporanClient();
+  if (!svc.ok) return svc.response;
 
   const sp = req.nextUrl.searchParams;
   const tipe = sp.get("tipe") === "penanganan" ? "penanganan" : "kejadian";
@@ -125,7 +148,7 @@ export async function GET(req: NextRequest) {
     };
     const table = tipe === "penanganan" ? "laporan_penanganan" : "laporan_kejadian";
     for (const s of LAPORAN_STATUSES) {
-      const { count } = await auth.supabase
+      const { count } = await svc.client
         .from(table)
         .select("id", { count: "exact", head: true })
         .eq("status", s);
@@ -142,7 +165,7 @@ export async function GET(req: NextRequest) {
   const to = from + pageSize - 1;
 
   if (tipe === "penanganan") {
-    let query = auth.supabase
+    let query = svc.client
       .from("laporan_penanganan")
       .select("*", { count: "exact" })
       .order("submitted_at", { ascending: false });
@@ -163,7 +186,7 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  let query = auth.supabase
+  let query = svc.client
     .from("laporan_kejadian")
     .select("*", { count: "exact" })
     .order("submitted_at", { ascending: false });
@@ -190,6 +213,8 @@ export async function PATCH(req: NextRequest) {
 
   const auth = await requireStaffApi();
   if (!auth.ok) return auth.response;
+  const svc = requireStaffLaporanClient();
+  if (!svc.ok) return svc.response;
 
   let json: unknown;
   try {
@@ -209,7 +234,7 @@ export async function PATCH(req: NextRequest) {
   let item: ReturnType<typeof toKejadianItem> | ReturnType<typeof toPenangananItem>;
 
   if (parsed.data.tipe === "penanganan") {
-    const { data, error } = await auth.supabase
+    const { data, error } = await svc.client
       .from("laporan_penanganan")
       .update({
         status: parsed.data.status,
@@ -234,7 +259,7 @@ export async function PATCH(req: NextRequest) {
   } else {
     const showOnMap =
       parsed.data.tampil_di_peta ?? parsed.data.status === "approved";
-    const { data, error } = await auth.supabase
+    const { data, error } = await svc.client
       .from("laporan_kejadian")
       .update({
         status: parsed.data.status,
