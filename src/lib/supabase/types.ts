@@ -100,21 +100,21 @@ export interface Database {
         Row: {
           id: number;
           active_incidents: number;
-          posko_count: number;
+          posko_count: number | null;
           reports_last_24h: number;
           updated_at: string;
         };
         Insert: {
           id?: number;
           active_incidents?: number;
-          posko_count?: number;
+          posko_count?: number | null;
           reports_last_24h?: number;
           updated_at?: string;
         };
         Update: {
           id?: number;
           active_incidents?: number;
-          posko_count?: number;
+          posko_count?: number | null;
           reports_last_24h?: number;
           updated_at?: string;
         };

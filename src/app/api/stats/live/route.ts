@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { LiveStats } from "@/lib/types";
+import { normalizePoskoCount } from "@/lib/live-stats";
 import { createServerClient } from "@/lib/supabase/server";
 import { LIVE_STATS_FALLBACK } from "@/lib/preview/fallbacks";
 
@@ -7,6 +8,7 @@ export const dynamic = "force-dynamic";
 
 const FALLBACK: LiveStats = {
   ...LIVE_STATS_FALLBACK,
+  poskoCount: normalizePoskoCount(LIVE_STATS_FALLBACK.poskoCount),
   updatedAt: new Date().toISOString(),
 };
 
@@ -40,7 +42,7 @@ export async function GET() {
 
     const body: LiveStats & { source: string } = {
       activeIncidents: row.active_incidents,
-      poskoCount: row.posko_count,
+      poskoCount: normalizePoskoCount(row.posko_count),
       reportsLast24h,
       updatedAt: row.updated_at,
       source: "supabase",

@@ -65,7 +65,8 @@ export interface MapViewState {
 
 export interface LiveStats {
   activeIncidents: number;
-  poskoCount: number;
+  /** Absent until a real inventory exists. Never seed or invent a count. */
+  poskoCount?: number | null;
   reportsLast24h: number;
   updatedAt: string;
 }
