@@ -138,7 +138,7 @@ Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
 
 ## Basemap (Carto raster + Sentinel)
 
-The map uses MapLibre with **Carto Positron raster** (OSM) as the default Simple / Dark / Streets basemap. OpenFreeMap vector is optional (`?vector=1`) and falls back to Carto if the style CDN fails. **Esri World Imagery** is the HD satellite option, and **EOX Sentinel-2 Cloudless 2024** is the Copernicus option (`?basemap=sentinel`). Markers are GPU-clustered GeoJSON (not HTML pins). Architecture and the Sentinel update path: `docs/basemap.md`.
+The map uses MapLibre with **Carto Positron raster** (OSM) as the default Simple / Dark / Streets basemap. OpenFreeMap vector is optional (`?vector=1`) and falls back to Carto if the style CDN fails. Three brand style presets (Sederhana merek / Gelap merek / Abu-abu minimal) are additional options (`?basemap=brand-light` and siblings) — they are not the default. **Esri World Imagery** is the HD satellite option, and **EOX Sentinel-2 Cloudless 2024** is the Copernicus option (`?basemap=sentinel`). Markers are GPU-clustered GeoJSON (not HTML pins). Architecture and the Sentinel update path: `docs/basemap.md`.
 
 ```
 node scripts/verify-basemap.mjs

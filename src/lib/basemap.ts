@@ -1,11 +1,24 @@
-import type { BasemapId } from "./types";
+import type { BasemapId, BrandBasemapId, RasterBasemapId } from "./types";
+import {
+  BRAND_BASEMAP_IDS,
+  OPENFREEMAP_GLYPHS,
+  buildBrandBasemapStyle,
+  isBrandBasemapId,
+} from "./basemap-presets";
 
-export const BASEMAP_IDS: BasemapId[] = [
+export { BRAND_BASEMAP_IDS, isBrandBasemapId, OPENFREEMAP_GLYPHS };
+
+export const RASTER_BASEMAP_IDS: RasterBasemapId[] = [
   "positron",
   "dark",
   "streets",
   "satellite",
   "sentinel",
+];
+
+export const BASEMAP_IDS: BasemapId[] = [
+  ...RASTER_BASEMAP_IDS,
+  ...BRAND_BASEMAP_IDS,
 ];
 
 export function isBasemapId(value: string | null | undefined): value is BasemapId {
@@ -15,16 +28,13 @@ export function isBasemapId(value: string | null | undefined): value is BasemapI
 /** Aceh operational AOI — used for STAC scans, not for clamping the map camera. */
 export const ACEH_BBOX: [number, number, number, number] = [95.0, 2.0, 98.3, 6.15];
 
-const OPENFREEMAP_GLYPHS =
-  "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf";
-
 /** EOX Sentinel-2 cloudless 2024 (WebMercator WMTS). Template is z/y/x. */
 export const SENTINEL_CLOUDLESS_TILES =
   "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/{z}/{y}/{x}.jpg";
 
 export const SENTINEL_CLOUDLESS_YEAR = 2024;
 
-export type BasemapKind = "raster" | "imagery";
+export type BasemapKind = "raster" | "imagery" | "vector";
 
 export type BasemapOption = {
   id: BasemapId;
@@ -38,6 +48,9 @@ export const BASEMAP_OPTIONS: BasemapOption[] = [
   { id: "streets", labelKey: "basemapStreets", kind: "raster" },
   { id: "satellite", labelKey: "basemapSatellite", kind: "imagery" },
   { id: "sentinel", labelKey: "basemapSentinel", kind: "imagery" },
+  { id: "brand-light", labelKey: "basemapBrandLight", kind: "vector" },
+  { id: "brand-dark", labelKey: "basemapBrandDark", kind: "vector" },
+  { id: "brand-grey", labelKey: "basemapBrandGrey", kind: "vector" },
 ];
 
 export type BasemapStyle = string | Record<string, unknown>;
@@ -85,7 +98,7 @@ export const BASEMAP_VECTOR_URLS: Partial<Record<BasemapId, string>> = {
 };
 
 /** Default operational styles: Carto/OSM raster XYZ, Esri, Sentinel-2 Cloudless. */
-export const BASEMAP_RASTER: Record<BasemapId, BasemapStyle> = {
+export const BASEMAP_RASTER: Record<RasterBasemapId, BasemapStyle> = {
   positron: rasterStyle({
     name: "positron-raster",
     tiles: [
@@ -128,10 +141,29 @@ export const BASEMAP_RASTER: Record<BasemapId, BasemapStyle> = {
 /** @deprecated Alias — raster is the default, not a fallback. */
 export const BASEMAP_RASTER_FALLBACKS = BASEMAP_RASTER;
 
+/** Carto raster to use if a brand vector style/source fails. */
+export const BRAND_RASTER_FALLBACK: Record<BrandBasemapId, RasterBasemapId> = {
+  "brand-light": "positron",
+  "brand-dark": "dark",
+  "brand-grey": "positron",
+};
+
+export const BASEMAP_BRAND: Record<BrandBasemapId, BasemapStyle> = {
+  "brand-light": buildBrandBasemapStyle("brand-light"),
+  "brand-dark": buildBrandBasemapStyle("brand-dark"),
+  "brand-grey": buildBrandBasemapStyle("brand-grey"),
+};
+
 export function getBasemapStyle(
   id: BasemapId,
   opts?: { preferVector?: boolean; rasterFallback?: boolean }
 ): BasemapStyle {
+  if (isBrandBasemapId(id)) {
+    if (opts?.rasterFallback === true) {
+      return BASEMAP_RASTER[BRAND_RASTER_FALLBACK[id]];
+    }
+    return BASEMAP_BRAND[id];
+  }
   // rasterFallback kept so older call sites that meant “use Carto” still work.
   const useVector = opts?.preferVector === true && opts?.rasterFallback !== true;
   if (useVector) {
@@ -141,5 +173,8 @@ export function getBasemapStyle(
   return BASEMAP_RASTER[id];
 }
 
-/** Default export used by the map: Carto/OSM rasters + imagery. */
-export const BASEMAP_STYLES: Record<BasemapId, BasemapStyle> = { ...BASEMAP_RASTER };
+/** Default export used by the map: Carto rasters stay default; brand styles are extra. */
+export const BASEMAP_STYLES: Record<BasemapId, BasemapStyle> = {
+  ...BASEMAP_RASTER,
+  ...BASEMAP_BRAND,
+};
