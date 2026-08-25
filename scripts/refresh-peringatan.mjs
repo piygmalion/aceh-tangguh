@@ -2,7 +2,9 @@
  * Refresh MAGMA + Sipongi early-warning fixtures from public official feeds.
  * Never invents earthquakes or hotspots — writes only what the live fetch returns.
  *
- * Usage: node scripts/refresh-peringatan.mjs
+ * Usage:
+ *   node scripts/refresh-peringatan.mjs
+ *   node scripts/refresh-peringatan.mjs --sipongi-only
  */
 import { writeFile } from "fs/promises";
 import path from "path";
@@ -246,13 +248,24 @@ async function refreshSipongi() {
   console.log(`Wrote ${out} (${points.length} Aceh medium/high points)`);
 }
 
-const results = await Promise.allSettled([refreshMagma(), refreshSipongi()]);
-let failed = 0;
-for (const [i, result] of results.entries()) {
-  const name = i === 0 ? "MAGMA" : "Sipongi";
-  if (result.status === "fulfilled") continue;
-  failed += 1;
-  console.error(`${name} refresh failed:`, result.reason);
+const sipongiOnly = process.argv.includes("--sipongi-only");
+
+if (sipongiOnly) {
+  try {
+    await refreshSipongi();
+  } catch (err) {
+    console.error("Sipongi refresh failed:", err);
+    process.exit(1);
+  }
+} else {
+  const results = await Promise.allSettled([refreshMagma(), refreshSipongi()]);
+  let failed = 0;
+  for (const [i, result] of results.entries()) {
+    const name = i === 0 ? "MAGMA" : "Sipongi";
+    if (result.status === "fulfilled") continue;
+    failed += 1;
+    console.error(`${name} refresh failed:`, result.reason);
+  }
+  if (failed === 2) process.exit(1);
+  if (failed === 1) process.exit(0);
 }
-if (failed === 2) process.exit(1);
-if (failed === 1) process.exit(0);
