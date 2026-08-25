@@ -14,9 +14,11 @@ import {
 import type { LegendModel } from "@/lib/types";
 import { unavailableMagmaCard, type SipongiCard } from "@/lib/peringatan-dini-types";
 import { summarizeWeatherWarning } from "@/lib/peringatan-dini/weather-summary";
+import { annotatePoliceOfficeCoordQuality } from "@/lib/coord-quality";
 import { expandMarkerLayerKeys } from "@/lib/map-url-aliases";
 import type { WeatherApiResponse } from "@/lib/weather-types";
 import { isStaticExport, withBasePath } from "./env";
+import { ensureExistingHazardKindBuckets } from "@/lib/hazard-kinds";
 import { HAZARD_STATUS_FALLBACK, LIVE_STATS_FALLBACK } from "./fallbacks";
 
 const STATIC_UNAVAILABLE = {
@@ -88,7 +90,7 @@ async function resolveStaticGet(input: string): Promise<Response> {
     return jsonResponse({ ...LIVE_STATS_FALLBACK, source: "fallback" });
   }
   if (path === "/api/hazards") {
-    return jsonResponse(HAZARD_STATUS_FALLBACK);
+    return jsonResponse(ensureExistingHazardKindBuckets(HAZARD_STATUS_FALLBACK));
   }
   if (path === "/api/prrpka/summary" || path === "/api/r3p/summary") {
     const [acehRaw, ringkasanRaw] = await Promise.all([
@@ -154,11 +156,15 @@ async function resolveStaticGet(input: string): Promise<Response> {
   }
   if (path === "/api/layers/markers") {
     const fc = (await fetchJson("/fixtures/markers.geojson")) as FeatureCollection;
+    const annotated: FeatureCollection = {
+      ...fc,
+      features: fc.features.map((f) => annotatePoliceOfficeCoordQuality(f)),
+    };
     const keysParam = searchParams.get("keys");
     const keys = keysParam
       ? keysParam.split(",").map((s) => s.trim()).filter(Boolean)
       : [];
-    const filtered = keys.length ? filterMarkersByKeys(fc, keys) : fc;
+    const filtered = keys.length ? filterMarkersByKeys(annotated, keys) : annotated;
     return jsonResponse({ ...filtered, source: "fixture" });
   }
   if (path.startsWith("/api/layers/areas/")) {

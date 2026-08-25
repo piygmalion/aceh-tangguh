@@ -1,3 +1,4 @@
+import { normalizeKabupatenKey } from "@/lib/kabupaten-join";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 
 /**
@@ -28,21 +29,7 @@ export type IrbiSummaryPayload = {
 
 export type IrbiByKabMap = Map<string, IrbiKabSummary>;
 
-const ADMIN_PREFIX =
-  /^(kota(\s+administratif)?|kabupaten|kab\.?|kotamadya)\s+/i;
-
-export function normalizeKabupatenKey(
-  raw: string | undefined | null,
-): string {
-  if (!raw) return "";
-  const folded = raw
-    .normalize("NFC")
-    .trim()
-    .toLowerCase()
-    .replace(/[_./-]+/g, " ")
-    .replace(/\s+/g, " ");
-  return folded.replace(ADMIN_PREFIX, "").trim();
-}
+export { normalizeKabupatenKey };
 
 function indexKey(raw: string | undefined | null): string | null {
   const key = normalizeKabupatenKey(raw);

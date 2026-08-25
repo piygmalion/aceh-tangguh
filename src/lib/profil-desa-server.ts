@@ -1,7 +1,16 @@
+import { kabupatenQueryCandidates } from "@/lib/kabupaten-join";
 import type { TypedSupabaseClient } from "@/lib/supabase/server";
 import type { ProfilDesaRow } from "@/lib/supabase/types";
 
 const PAGE_SIZE = 1000;
+
+function kabupatenIlikeFilter(raw: string): string | null {
+  const candidates = kabupatenQueryCandidates(raw);
+  if (candidates.length === 0) return null;
+  return candidates
+    .map((value) => `kabupaten.ilike."${value.replace(/"/g, "")}"`)
+    .join(",");
+}
 
 export type ProfilDesaFilter =
   | { kind: "kode_kecamatan"; value: string }
@@ -29,29 +38,37 @@ async function fetchPage(
     case "kode_kecamatan":
       query = query.eq("kode_kecamatan", filter.value);
       break;
-    case "kecamatan":
-      if (filter.kabupaten) {
-        query = query.ilike("kabupaten", filter.kabupaten);
-      }
+    case "kecamatan": {
+      const kabFilter = filter.kabupaten
+        ? kabupatenIlikeFilter(filter.kabupaten)
+        : null;
+      if (kabFilter) query = query.or(kabFilter);
       query = query.ilike("kecamatan", filter.kecamatan);
       break;
+    }
     case "kode_kabupaten":
       query = query.eq("kode_kabupaten", filter.value);
       break;
-    case "kabupaten":
-      query = query.ilike("kabupaten", filter.value);
+    case "kabupaten": {
+      const kabFilter = kabupatenIlikeFilter(filter.value);
+      if (kabFilter) query = query.or(kabFilter);
       break;
+    }
     case "kode_desa":
       query = query.eq("kode_desa_kelurahan", filter.value);
       break;
     case "id":
       query = query.eq("id", filter.value);
       break;
-    case "nama":
+    case "nama": {
       query = query.ilike("nama", filter.nama);
-      if (filter.kabupaten) query = query.ilike("kabupaten", filter.kabupaten);
+      const kabFilter = filter.kabupaten
+        ? kabupatenIlikeFilter(filter.kabupaten)
+        : null;
+      if (kabFilter) query = query.or(kabFilter);
       if (filter.kecamatan) query = query.ilike("kecamatan", filter.kecamatan);
       break;
+    }
   }
 
   const { data, error } = await query.range(from, to);
