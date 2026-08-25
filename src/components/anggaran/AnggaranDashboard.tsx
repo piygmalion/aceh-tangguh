@@ -343,10 +343,14 @@ export function AnggaranDashboard() {
             <div className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
               {card.label}
             </div>
-            <div
-              className="mt-2 text-xl font-semibold tracking-tight text-[var(--text)]"
-              style={"kelas" in card ? { color: kelasFill(card.kelas) } : undefined}
-            >
+            <div className="mt-2 flex items-center gap-2 text-xl font-semibold tracking-tight text-[var(--text)]">
+              {"kelas" in card ? (
+                <span
+                  className="inline-block h-2 w-2 shrink-0 rounded-sm"
+                  style={{ background: kelasFill(card.kelas) }}
+                  aria-hidden
+                />
+              ) : null}
               {card.value}
             </div>
             {card.sub ? (
