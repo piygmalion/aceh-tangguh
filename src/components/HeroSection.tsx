@@ -53,7 +53,7 @@ export function HeroSection() {
   return (
     <section
       className={cn(
-        "relative flex flex-col overflow-hidden bg-[#03060c] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
+        "relative flex flex-col overflow-hidden bg-[var(--bg)] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
         tab === "irbi"
           ? "min-h-[100svh] justify-start pb-16"
           : "min-h-[100svh] justify-end pb-20 sm:pb-24"
@@ -196,7 +196,7 @@ export function HeroSection() {
               </div>
             </BlurFade>
 
-            <p className="mt-6 text-[10px] text-white/40">
+            <p className="mt-6 text-xs text-white/60">
               {SITE_MEDIA.heroPoster.credit}
             </p>
           </div>
