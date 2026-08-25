@@ -81,10 +81,10 @@ export function readKabLodFocus(
   const kodeKab = readStoredKode(props, "kode_kab", "kode_kabupaten");
   const kabupaten = String(props.name ?? props.kabupaten ?? "").trim();
   if (!kodeKab && !kabupaten) return null;
-  return {
-    kodeKab: kodeKab || undefined,
-    kabupaten: kabupaten || undefined,
-  };
+  const focus: VillageLodFocus = {};
+  if (kodeKab) focus.kodeKab = kodeKab;
+  if (kabupaten) focus.kabupaten = kabupaten;
+  return focus;
 }
 
 export function mergeVillageLodFocus(
@@ -140,35 +140,35 @@ export function villageFeatureVisible(
   return true;
 }
 
-function missingKodeExpr(prop: string): FilterSpecification {
+type MapFilter = FilterSpecification;
+
+function missingKodeExpr(prop: string): MapFilter {
   return [
     "any",
     ["!", ["has", prop]],
-    ["==", ["typeof", ["get", prop]], "null"],
     ["==", ["to-string", ["coalesce", ["get", prop], ""]], ""],
     ["==", ["to-string", ["get", prop]], "null"],
-  ];
+  ] as MapFilter;
 }
 
-function hasKodeExpr(prop: string): FilterSpecification {
+function hasKodeExpr(prop: string): MapFilter {
   return [
     "all",
     ["has", prop],
-    ["!=", ["typeof", ["get", prop]], "null"],
     ["!=", ["to-string", ["coalesce", ["get", prop], ""]], ""],
     ["!=", ["to-string", ["get", prop]], "null"],
-  ];
+  ] as MapFilter;
 }
 
-function presentKodeEquals(prop: string, value: string): FilterSpecification {
+function presentKodeEquals(prop: string, value: string): MapFilter {
   return [
     "all",
     hasKodeExpr(prop),
     ["==", ["to-string", ["get", prop]], value],
-  ];
+  ] as MapFilter;
 }
 
-function presentKodePrefix(prop: string, prefix: string): FilterSpecification {
+function presentKodePrefix(prop: string, prefix: string): MapFilter {
   return [
     "all",
     hasKodeExpr(prop),
@@ -177,11 +177,11 @@ function presentKodePrefix(prop: string, prefix: string): FilterSpecification {
       ["slice", ["to-string", ["coalesce", ["get", prop], ""]], 0, prefix.length],
       prefix,
     ],
-  ];
+  ] as MapFilter;
 }
 
-function kabMatchExpr(focus: VillageLodFocus): FilterSpecification {
-  const any: FilterSpecification[] = [];
+function kabMatchExpr(focus: VillageLodFocus): MapFilter {
+  const any: MapFilter[] = [];
   if (focus.kodeKab) {
     any.push(presentKodeEquals("kode_kab", focus.kodeKab));
     any.push(presentKodeEquals("kode_kabupaten", focus.kodeKab));
@@ -189,23 +189,23 @@ function kabMatchExpr(focus: VillageLodFocus): FilterSpecification {
     any.push(presentKodePrefix("kode_desa_kelurahan", focus.kodeKab));
   }
   if (focus.kabupaten) {
-    any.push(["==", ["get", "kabupaten"], focus.kabupaten]);
+    any.push(["==", ["get", "kabupaten"], focus.kabupaten] as MapFilter);
   }
   any.push([
     "all",
     ...KODE_PROPS.map((prop) => missingKodeExpr(prop)),
     missingKodeExpr("kabupaten"),
-  ]);
-  return ["any", ...any];
+  ] as MapFilter);
+  return ["any", ...any] as MapFilter;
 }
 
-function kecMatchExpr(kodeKecamatan: string): FilterSpecification {
+function kecMatchExpr(kodeKecamatan: string): MapFilter {
   return [
     "any",
     presentKodeEquals("kode_kecamatan", kodeKecamatan),
     presentKodePrefix("kode_desa_kelurahan", kodeKecamatan),
     ["all", missingKodeExpr("kode_kecamatan"), missingKodeExpr("kode_desa_kelurahan")],
-  ];
+  ] as MapFilter;
 }
 
 /** MapLibre filter for village-r3p. Undefined = no filter (all features). */
@@ -219,7 +219,7 @@ export function villageLayerFilter(
   if (focus.kodeKab || focus.kabupaten) parts.push(kabMatchExpr(focus));
   if (focus.kodeKecamatan) parts.push(kecMatchExpr(focus.kodeKecamatan));
   if (parts.length === 1) return parts[0];
-  return ["all", ...parts];
+  return ["all", ...parts] as FilterSpecification;
 }
 
 export const AREA_OUTLINE_COLOR = COLOR_TOKENS.forest;
@@ -252,11 +252,7 @@ export const VILLAGE_OUTLINE_PAINT = {
   ],
 } as const;
 
-export function areaOutlinePaint(kind: "kab" | "village"): {
-  "line-color": string;
-  "line-width": number | unknown[];
-  "line-opacity": number | unknown[];
-} {
+export function areaOutlinePaint(kind: "kab" | "village") {
   return kind === "village" ? VILLAGE_OUTLINE_PAINT : KAB_OUTLINE_PAINT;
 }
 
