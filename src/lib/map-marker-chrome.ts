@@ -1,5 +1,5 @@
 import type { Feature, Point } from "geojson";
-import type { MarkerLayerKey } from "@/lib/types";
+import type { BasemapId, MarkerLayerKey } from "@/lib/types";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import { isTruncatedAcehLongitude, isTruncatedCoordQuality } from "@/lib/coord-quality";
 
@@ -10,6 +10,26 @@ export const MAP_ICON_MIN_ZOOM = 11;
 export const MAP_DOT_RADIUS_PX = 7;
 export const MAP_DOT_STROKE_PX = 1.5;
 export const MAP_PAPER_STROKE = COLOR_TOKENS.paper;
+/** Dark ring for light grey canvases (Carto Positron / brand-light / brand-grey). */
+export const MAP_LIGHT_CANVAS_STROKE = COLOR_TOKENS.ink;
+
+const LIGHT_CANVAS_BASEMAPS = new Set<BasemapId>([
+  "positron",
+  "streets",
+  "brand-light",
+  "brand-grey",
+]);
+
+/**
+ * Stroke that sits on the ground. Paper (~1.15:1) disappears on Carto Positron
+ * and other light grey presets; ink reads on those canvases. Dark canvas and
+ * imagery keep paper.
+ */
+export function markerHaloStroke(basemap: BasemapId): string {
+  return LIGHT_CANVAS_BASEMAPS.has(basemap)
+    ? MAP_LIGHT_CANVAS_STROKE
+    : MAP_PAPER_STROKE;
+}
 
 /** High-zoom pin: 24px glyph on a 28px charcoal/paper disc. */
 export const MAP_PIN_DISC_PX = 28;
