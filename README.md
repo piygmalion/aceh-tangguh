@@ -69,7 +69,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
 | GET | `/api/hazards` | `hazard_status` |
 | GET | `/api/peringatan-dini` | Homepage early-warning cards (cuaca + MAGMA + Sipongi; fail independently) |
-| GET | `/api/peringatan-dini/magma` | MAGMA Indonesia Aceh gempa (live homepage feed, else `peringatan-magma.json`) |
+| GET | `/api/peringatan-dini/magma` | MAGMA Indonesia Aceh gempa (live homepage / VSI homepage; empty+stale if both fail) |
 | GET | `/api/peringatan-dini/sipongi` | Sipongi Aceh medium/high hotspots (live GeoJSON, else `peringatan-sipongi.json`) |
 | GET | `/api/layers/catalog` | enabled `map_layers` merged with local toolbar catalog (`src/lib/map-layers-catalog.ts`) |
 | GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
