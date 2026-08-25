@@ -324,12 +324,16 @@ function readVillageSelection(
   const kodeKecamatan = props.kode_kecamatan
     ? String(props.kode_kecamatan)
     : undefined;
+  const kodeKabupaten = props.kode_kabupaten
+    ? String(props.kode_kabupaten)
+    : undefined;
   return {
     name,
     kabupaten,
     kecamatan,
     kodeDesa,
     kodeKecamatan,
+    kodeKabupaten,
     level: props.level ? String(props.level) : "desa",
   };
 }

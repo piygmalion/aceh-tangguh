@@ -10,6 +10,8 @@ export type VillageClickSelection = {
   kecamatan: string;
   kodeDesa?: string;
   kodeKecamatan?: string;
+  /** Existing map/profil field `kode_kabupaten` — do not invent values. */
+  kodeKabupaten?: string;
   level?: string;
 };
 
@@ -96,14 +98,16 @@ export type DesaProfilResponse = ProfilSummary & {
   source: "supabase";
 };
 
+export type KecamatanListItem = {
+  kecamatan: string;
+  kode_kecamatan: string | null;
+  desa_count: number;
+  badge: ImpactBadge;
+  total_rumah_rusak: NullableCount;
+};
+
 export type KabupatenProfilResponse = ProfilSummary & {
-  kecamatan_list: Array<{
-    kecamatan: string;
-    kode_kecamatan: string | null;
-    desa_count: number;
-    badge: ImpactBadge;
-    total_rumah_rusak: NullableCount;
-  }>;
+  kecamatan_list: KecamatanListItem[];
   source: "supabase";
 };
 
@@ -293,6 +297,18 @@ export function sortDesaItems(items: DesaListItem[]): DesaListItem[] {
     const db = b.total_rumah_rusak ?? -1;
     if (db !== da) return db - da;
     return a.nama.localeCompare(b.nama, "id");
+  });
+}
+
+/** Kabupaten kecamatan_list: rusak desc, then nama with id locale. */
+export function sortKecamatanListItems(
+  items: KecamatanListItem[]
+): KecamatanListItem[] {
+  return [...items].sort((a, b) => {
+    const da = a.total_rumah_rusak ?? -1;
+    const db = b.total_rumah_rusak ?? -1;
+    if (db !== da) return db - da;
+    return a.kecamatan.localeCompare(b.kecamatan, "id");
   });
 }
 
