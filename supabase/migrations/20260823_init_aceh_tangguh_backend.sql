@@ -19,13 +19,13 @@ create index if not exists reports_status_idx on public.reports (status);
 create table if not exists public.live_stats (
   id int primary key default 1 check (id = 1),
   active_incidents int not null default 0,
-  posko_count int not null default 0,
+  posko_count int,
   reports_last_24h int not null default 0,
   updated_at timestamptz not null default now()
 );
 
 insert into public.live_stats (id, active_incidents, posko_count, reports_last_24h)
-values (1, 3, 656, 0)
+values (1, 3, null, 0)
 on conflict (id) do nothing;
 
 create table if not exists public.hazard_status (
