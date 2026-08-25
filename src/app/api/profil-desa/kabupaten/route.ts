@@ -4,6 +4,7 @@ import { fetchProfilDesaRows } from "@/lib/profil-desa-server";
 import {
   badgeFromMetrics,
   metricsFromRows,
+  sortKecamatanListItems,
   summarizeRows,
   type KabupatenProfilResponse,
 } from "@/lib/profil-desa";
@@ -54,8 +55,8 @@ export async function GET(req: NextRequest) {
     byKec.set(key, list);
   }
 
-  const kecamatan_list = Array.from(byKec.entries())
-    .map(([name, kecRows]) => {
+  const kecamatan_list = sortKecamatanListItems(
+    Array.from(byKec.entries()).map(([name, kecRows]) => {
       const metrics = metricsFromRows(kecRows);
       return {
         kecamatan: name,
@@ -68,12 +69,7 @@ export async function GET(req: NextRequest) {
         total_rumah_rusak: metrics.total_rumah_rusak,
       };
     })
-    .sort((a, b) => {
-      const da = a.total_rumah_rusak ?? -1;
-      const db = b.total_rumah_rusak ?? -1;
-      if (db !== da) return db - da;
-      return a.kecamatan.localeCompare(b.kecamatan, "id");
-    });
+  );
 
   const body: KabupatenProfilResponse = {
     ...summary,

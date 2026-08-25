@@ -300,6 +300,18 @@ export function sortDesaItems(items: DesaListItem[]): DesaListItem[] {
   });
 }
 
+/** Kabupaten kecamatan_list: rusak desc, then nama with id locale. */
+export function sortKecamatanListItems(
+  items: KecamatanListItem[]
+): KecamatanListItem[] {
+  return [...items].sort((a, b) => {
+    const da = a.total_rumah_rusak ?? -1;
+    const db = b.total_rumah_rusak ?? -1;
+    if (db !== da) return db - da;
+    return a.kecamatan.localeCompare(b.kecamatan, "id");
+  });
+}
+
 export function toDesaListItem(row: ProfilDesaRow): DesaListItem {
   const metrics = metricsFromRow(row);
   return {

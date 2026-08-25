@@ -8,7 +8,7 @@ import {
   AREA_PROFIL_ROUTES,
   AREA_PROFIL_VIEWS,
   areaProfilBack,
-  areaProfilBreadcrumbEnabled,
+  areaProfilBreadcrumbLevels,
   areaProfilBreadcrumbTarget,
   areaProfilViewOnOpen,
   kabupatenNameFromSelection,
@@ -17,7 +17,11 @@ import {
   profilKabupatenSearchParams,
   profilKecamatanSearchParams,
 } from "./area-profil-ia";
-import type { VillageClickSelection } from "./profil-desa";
+import {
+  sortKecamatanListItems,
+  type KecamatanListItem,
+  type VillageClickSelection,
+} from "./profil-desa";
 
 const ROOT = process.cwd();
 
@@ -32,7 +36,7 @@ function sel(
 }
 
 describe("signed Distribusi area panel IA", () => {
-  it("locks three views only and always opens at kabupaten", () => {
+  it("opens at kabupaten when selection.kabupaten is set, even if the click was a desa", () => {
     assert.deepEqual(AREA_PROFIL_VIEWS, ["kabupaten", "kecamatan", "desa"]);
     assert.equal(AREA_PROFIL_INITIAL_VIEW, "kabupaten");
     assert.equal(AREA_PROFIL_VIEWS.includes("desa-list" as never), false);
@@ -51,64 +55,79 @@ describe("signed Distribusi area panel IA", () => {
       kecamatan: "Bakongan",
       level: "kecamatan",
     });
-    const kabPolygon = sel({
-      name: "Aceh Barat",
-      level: "kab",
-    });
 
     assert.equal(areaProfilViewOnOpen(desaClick), "kabupaten");
     assert.equal(areaProfilViewOnOpen(kecClick), "kabupaten");
-    assert.equal(areaProfilViewOnOpen(kabPolygon), "kabupaten");
-    assert.equal(areaProfilViewOnOpen(null), "kabupaten");
+    assert.equal(desaClick.kabupaten.trim().length > 0, true);
   });
 
-  it("backs desa → kec → kab → close", () => {
+  it("backs desa → kecamatan → kabupaten → close", () => {
     assert.equal(areaProfilBack("desa"), "kecamatan");
     assert.equal(areaProfilBack("kecamatan"), "kabupaten");
     assert.equal(areaProfilBack("kabupaten"), "close");
   });
 
-  it("makes Kab · Kec · Desa crumbs clickable only after that level is reached", () => {
+  it("omits missing breadcrumb levels; ancestors are buttons, current is text", () => {
     assert.deepEqual(AREA_PROFIL_CRUMBS, ["Kab", "Kec", "Desa"]);
+    assert.deepEqual(areaProfilBreadcrumbLevels("kabupaten"), ["kabupaten"]);
+    assert.deepEqual(areaProfilBreadcrumbLevels("kecamatan"), [
+      "kabupaten",
+      "kecamatan",
+    ]);
+    assert.deepEqual(areaProfilBreadcrumbLevels("desa"), [
+      "kabupaten",
+      "kecamatan",
+      "desa",
+    ]);
 
-    const none = { kecamatan: false, desa: false };
-    const kecReached = { kecamatan: true, desa: false };
-    const desaReached = { kecamatan: true, desa: true };
+    assert.equal(areaProfilBreadcrumbTarget("kabupaten", "kabupaten"), null);
+    assert.equal(areaProfilBreadcrumbTarget("kabupaten", "kecamatan"), null);
+    assert.equal(areaProfilBreadcrumbTarget("kabupaten", "desa"), null);
 
-    assert.equal(areaProfilBreadcrumbEnabled("kabupaten", "kabupaten", none), true);
-    assert.equal(areaProfilBreadcrumbEnabled("kabupaten", "kecamatan", none), false);
-    assert.equal(areaProfilBreadcrumbEnabled("kabupaten", "desa", none), false);
-    assert.equal(
-      areaProfilBreadcrumbTarget("kabupaten", "kabupaten", none),
-      null
-    );
+    assert.equal(areaProfilBreadcrumbTarget("kecamatan", "kabupaten"), "kabupaten");
+    assert.equal(areaProfilBreadcrumbTarget("kecamatan", "kecamatan"), null);
+    assert.equal(areaProfilBreadcrumbTarget("kecamatan", "desa"), null);
 
-    assert.equal(
-      areaProfilBreadcrumbEnabled("kecamatan", "kabupaten", kecReached),
-      true
-    );
-    assert.equal(
-      areaProfilBreadcrumbTarget("kecamatan", "kabupaten", kecReached),
-      "kabupaten"
-    );
-    assert.equal(
-      areaProfilBreadcrumbTarget("kecamatan", "kecamatan", kecReached),
-      null
-    );
-    assert.equal(
-      areaProfilBreadcrumbEnabled("kecamatan", "desa", kecReached),
-      false
-    );
+    assert.equal(areaProfilBreadcrumbTarget("desa", "kabupaten"), "kabupaten");
+    assert.equal(areaProfilBreadcrumbTarget("desa", "kecamatan"), "kecamatan");
+    assert.equal(areaProfilBreadcrumbTarget("desa", "desa"), null);
+  });
 
-    assert.equal(
-      areaProfilBreadcrumbTarget("desa", "kecamatan", desaReached),
-      "kecamatan"
+  it("sorts kecamatan_list rusak desc, then nama with id locale", () => {
+    const items: KecamatanListItem[] = [
+      {
+        kecamatan: "Bakongan",
+        kode_kecamatan: "110101",
+        desa_count: 2,
+        badge: "tidak_diketahui",
+        total_rumah_rusak: 10,
+      },
+      {
+        kecamatan: "Trumon",
+        kode_kecamatan: "110102",
+        desa_count: 3,
+        badge: "terdampak",
+        total_rumah_rusak: 40,
+      },
+      {
+        kecamatan: "Kluet Utara",
+        kode_kecamatan: "110103",
+        desa_count: 1,
+        badge: "terdampak",
+        total_rumah_rusak: 40,
+      },
+      {
+        kecamatan: "Tapaktuan",
+        kode_kecamatan: null,
+        desa_count: 1,
+        badge: "tidak_diketahui",
+        total_rumah_rusak: null,
+      },
+    ];
+    assert.deepEqual(
+      sortKecamatanListItems(items).map((row) => row.kecamatan),
+      ["Kluet Utara", "Trumon", "Bakongan", "Tapaktuan"]
     );
-    assert.equal(
-      areaProfilBreadcrumbTarget("desa", "kabupaten", desaReached),
-      "kabupaten"
-    );
-    assert.equal(areaProfilBreadcrumbTarget("desa", "desa", desaReached), null);
   });
 
   it("uses existing /api/profil-desa query params and does not invent kodes", () => {
@@ -192,15 +211,19 @@ describe("AreaProfilPanel source lock", () => {
   it("drops desa-list and the viewDesa footer", () => {
     assert.equal(panel.includes("desa-list"), false);
     assert.equal(panel.includes("viewDesa"), false);
+    assert.equal(panel.includes("locationLine"), false);
     assert.match(panel, /useState<AreaProfilView>\(AREA_PROFIL_INITIAL_VIEW\)/);
     assert.match(panel, /areaProfilViewOnOpen/);
-    assert.match(panel, /crumbKab/);
-    assert.match(panel, /crumbKec/);
-    assert.match(panel, /crumbDesa/);
+    assert.match(panel, /areaProfilBreadcrumbLevels/);
+    assert.match(panel, /TYPE_FLOOR_CLASS/);
+    assert.match(panel, /clickedHint/);
     assert.match(panel, /t\("empty"\)/);
     assert.match(panel, /t\("emptyHint"\)/);
     assert.match(panel, /t\("unknown"\)/);
     assert.match(panel, /kecamatan_list/);
+    assert.match(panel, /sortKecamatanListItems/);
+    assert.match(panel, /desaCount/);
+    assert.match(panel, /Escape/);
   });
 
   it("keeps Empty / Belum Diketahui copy and Kab · Kec · Desa crumbs", () => {

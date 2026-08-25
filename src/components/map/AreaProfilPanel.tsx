@@ -7,7 +7,7 @@ import { ArrowLeft, Home, X } from "lucide-react";
 import {
   AREA_PROFIL_INITIAL_VIEW,
   areaProfilBack,
-  areaProfilBreadcrumbEnabled,
+  areaProfilBreadcrumbLevels,
   areaProfilBreadcrumbTarget,
   areaProfilViewOnOpen,
   kabupatenNameFromSelection,
@@ -29,6 +29,7 @@ import {
   type KecamatanProfilResponse,
   type MetricBundle,
   type NullableCount,
+  sortKecamatanListItems,
   type VillageClickSelection,
 } from "@/lib/profil-desa";
 import { Button } from "@/components/ui/Button";
@@ -261,28 +262,25 @@ function EmptyState() {
 
 function Breadcrumb({
   view,
-  reached,
   onGo,
 }: {
   view: AreaProfilView;
-  reached: { kecamatan: boolean; desa: boolean };
   onGo: (next: AreaProfilView) => void;
 }) {
   const t = useTranslations("profilDesa");
-  const crumbs: { id: AreaProfilView; label: string }[] = [
-    { id: "kabupaten", label: t("crumbKab") },
-    { id: "kecamatan", label: t("crumbKec") },
-    { id: "desa", label: t("crumbDesa") },
-  ];
+  const labels: Record<AreaProfilView, string> = {
+    kabupaten: t("crumbKab"),
+    kecamatan: t("crumbKec"),
+    desa: t("crumbDesa"),
+  };
+  const levels = areaProfilBreadcrumbLevels(view);
   return (
     <nav aria-label={t("crumbKab")}>
       <ol className={cn("mt-0.5 flex flex-wrap items-center gap-x-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-        {crumbs.map((crumb, index) => {
-          const enabled = areaProfilBreadcrumbEnabled(view, crumb.id, reached);
-          const target = areaProfilBreadcrumbTarget(view, crumb.id, reached);
-          const current = crumb.id === view;
+        {levels.map((id, index) => {
+          const target = areaProfilBreadcrumbTarget(view, id);
           return (
-            <li key={crumb.id} className="flex items-center gap-x-1">
+            <li key={id} className="flex items-center gap-x-1">
               {index > 0 ? <span aria-hidden>{t("locationSep")}</span> : null}
               {target ? (
                 <button
@@ -290,17 +288,11 @@ function Breadcrumb({
                   className="text-[var(--text)] underline-offset-2 hover:underline"
                   onClick={() => onGo(target)}
                 >
-                  {crumb.label}
+                  {labels[id]}
                 </button>
               ) : (
-                <span
-                  className={cn(
-                    current ? "font-medium text-[var(--text)]" : "",
-                    !enabled ? "opacity-50" : ""
-                  )}
-                  aria-current={current ? "page" : undefined}
-                >
-                  {crumb.label}
+                <span className="font-medium text-[var(--text)]" aria-current="page">
+                  {labels[id]}
                 </span>
               )}
             </li>
@@ -436,25 +428,13 @@ export function AreaProfilPanel({
       : view === "kecamatan"
         ? (kec?.badge ?? activeKecamatan?.badge ?? null)
         : (kab?.badge ?? null);
-  const desaCount =
-    view === "desa" ? 0 : view === "kecamatan" ? (kec?.desa_count ?? 0) : (kab?.desa_count ?? 0);
   const kicker =
     view === "desa"
       ? t("desaLabel")
       : view === "kecamatan"
         ? t("kecamatanLabel")
         : t("kabupatenLabel");
-  const reached = {
-    kecamatan: !!activeKecamatan,
-    desa: !!activeDesa,
-  };
-  const showClickedHint =
-    Boolean(selection.name) &&
-    view !== "desa" &&
-    selection.name !== kabName &&
-    selection.name !== selection.kecamatan &&
-    selection.level !== "kab" &&
-    selection.level !== "kabupaten";
+  const showClickedHint = Boolean(selection.name) && view !== "desa";
 
   const goBack = () => {
     const next = areaProfilBack(view);
@@ -518,12 +498,7 @@ export function AreaProfilPanel({
               <h2 className="truncate text-base font-semibold tracking-tight">{title}</h2>
               {badge ? <BadgeChip badge={badge} /> : null}
             </div>
-            <Breadcrumb view={view} reached={reached} onGo={setView} />
-            {desaCount > 0 ? (
-              <p className="mt-0.5 truncate text-xs text-[var(--text-dim)]">
-                {t("desaCount", { count: desaCount })}
-              </p>
-            ) : null}
+            <Breadcrumb view={view} onGo={setView} />
             {showClickedHint ? (
               <p className={cn("mt-0.5 truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                 {t("clickedHint", { name: selection.name })}
@@ -555,27 +530,25 @@ export function AreaProfilPanel({
                   </h3>
                   {kab.kecamatan_list.length > 0 ? (
                     <ul className="space-y-1.5">
-                      {kab.kecamatan_list.map((item) => {
+                      {sortKecamatanListItems(kab.kecamatan_list).map((item) => {
                         const highlighted =
                           item.kode_kecamatan === selection.kodeKecamatan ||
                           item.kecamatan.toLowerCase() ===
                             selection.kecamatan.toLowerCase();
+                        const rusak =
+                          item.total_rumah_rusak != null
+                            ? t("damageCount", {
+                                count: formatMetricId(
+                                  item.total_rumah_rusak,
+                                  t("unknown")
+                                ),
+                              })
+                            : t("unknown");
                         return (
                           <ListRow
                             key={item.kode_kecamatan || item.kecamatan}
                             title={item.kecamatan}
-                            subtitle={
-                              item.desa_count > 0
-                                ? t("desaCount", { count: item.desa_count })
-                                : item.total_rumah_rusak != null
-                                  ? t("damageCount", {
-                                      count: formatMetricId(
-                                        item.total_rumah_rusak,
-                                        t("unknown")
-                                      ),
-                                    })
-                                  : t("unknown")
-                            }
+                            subtitle={`${t("desaCount", { count: item.desa_count })} ${t("locationSep")} ${rusak}`}
                             badge={item.badge}
                             highlighted={highlighted}
                             onClick={() => openKecamatan(item)}

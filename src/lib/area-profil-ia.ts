@@ -4,7 +4,7 @@ export const AREA_PROFIL_VIEWS = ["kabupaten", "kecamatan", "desa"] as const;
 
 export type AreaProfilView = (typeof AREA_PROFIL_VIEWS)[number];
 
-/** Signed IA: the panel always lands on kabupaten, including desa / kab polygon clicks. */
+/** Signed IA: kabupaten | kecamatan | desa. No desa-list screen. */
 export const AREA_PROFIL_INITIAL_VIEW: AreaProfilView = "kabupaten";
 
 export const AREA_PROFIL_CRUMBS = ["Kab", "Kec", "Desa"] as const;
@@ -17,9 +17,11 @@ export const AREA_PROFIL_ROUTES = {
 
 const KAB_POLYGON_LEVELS = new Set(["kab", "kabupaten"]);
 
+/** Open at kabupaten when selection.kabupaten is set — even if the click was a desa. */
 export function areaProfilViewOnOpen(
-  _selection?: VillageClickSelection | null
+  selection?: VillageClickSelection | null
 ): AreaProfilView {
+  if (selection?.kabupaten?.trim()) return "kabupaten";
   return AREA_PROFIL_INITIAL_VIEW;
 }
 
@@ -29,24 +31,24 @@ export function areaProfilBack(view: AreaProfilView): AreaProfilView | "close" {
   return "close";
 }
 
-export function areaProfilBreadcrumbEnabled(
-  view: AreaProfilView,
-  crumb: AreaProfilView,
-  reached: { kecamatan: boolean; desa: boolean }
-): boolean {
-  if (crumb === "kabupaten") return true;
-  if (crumb === "kecamatan") return reached.kecamatan || view === "kecamatan" || view === "desa";
-  return reached.desa || view === "desa";
+/** Visible crumbs only. Omit Kec/Desa until that level is on the trail. */
+export function areaProfilBreadcrumbLevels(
+  view: AreaProfilView
+): AreaProfilView[] {
+  if (view === "kabupaten") return ["kabupaten"];
+  if (view === "kecamatan") return ["kabupaten", "kecamatan"];
+  return ["kabupaten", "kecamatan", "desa"];
 }
 
+/** Ancestors are buttons; current level is text (returns null). */
 export function areaProfilBreadcrumbTarget(
   view: AreaProfilView,
-  crumb: AreaProfilView,
-  reached: { kecamatan: boolean; desa: boolean }
+  crumb: AreaProfilView
 ): AreaProfilView | null {
-  if (!areaProfilBreadcrumbEnabled(view, crumb, reached)) return null;
-  if (crumb === view) return null;
-  return crumb;
+  const levels = areaProfilBreadcrumbLevels(view);
+  if (!levels.includes(crumb) || crumb === view) return null;
+  if (crumb === "kabupaten" || crumb === "kecamatan") return crumb;
+  return null;
 }
 
 /** Prefer the kabupaten field; kab polygons often only stamp `name`. */
