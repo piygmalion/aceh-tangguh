@@ -11,16 +11,16 @@ export function MapLayerIcon({
 }: MapLayerIconProps) {
   if (iconSrc) {
     return (
-      <img
-        src={iconSrc}
-        alt=""
+      <span
         className={
           size === "sm"
-            ? "map-layer-icon map-layer-icon-sm"
-            : "map-layer-icon"
+            ? "map-layer-icon-disc map-layer-icon-disc-sm"
+            : "map-layer-icon-disc"
         }
         aria-hidden
-      />
+      >
+        <img src={iconSrc} alt="" className="map-layer-icon-glyph" />
+      </span>
     );
   }
 

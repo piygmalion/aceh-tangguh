@@ -79,12 +79,14 @@ export const MARKER_TOOLBAR_GROUPS: MarkerToolbarGroup[] = [
   },
 ];
 
+/**
+ * Visible distribusi radios. Hardcoded (not map_layers.enabled).
+ * Retired keys stay in AREA_LAYER_KEYS / parseAreaLayerKey so old ?area=
+ * URLs still resolve, but they must not appear here as selectable radios.
+ */
 export const AREA_TOOLBAR_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
-  { key: "r3pDistribution", labelKey: "r3pDistribution" },
   { key: "irbi2025", labelKey: "irbi2025" },
-  { key: "ngoDistribution", labelKey: "ngoDistribution" },
-  { key: "regencyFundAllocation", labelKey: "regencyFundAllocation" },
 ];
 
 export const LIVE_MARKER_LAYER_KEYS: MarkerLayerKey[] = [

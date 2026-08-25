@@ -1,16 +1,43 @@
 import type { MarkerLayerKey } from "@/lib/types";
 
+/**
+ * Official Sistem Warna tokens for map chrome.
+ * HEX is the source of truth — no leftover Tailwind lime / sky / violet.
+ */
+export const COLOR_TOKENS = {
+  forest: "#1F4C15",
+  sage: "#8A9A5B",
+  orange: "#FF7722",
+  gold: "#C4A35A",
+  ink: "#1A1A17",
+  paper: "#F7F7F4",
+  paperWarm: "#F4F5F0",
+  awas: "#B42318",
+  teal: "#2F6B66",
+} as const;
+
+export type OfficialColorToken = (typeof COLOR_TOKENS)[keyof typeof COLOR_TOKENS];
+
+export const OFFICIAL_COLOR_HEX = new Set<string>(Object.values(COLOR_TOKENS));
+
 export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
-  disasterEvents: "#f59e0b",
-  missingPersons: "#dc2626",
-  tendPoints: "#0ea5e9",
-  policeOffices: "#1d4ed8",
-  poskos: "#1F4C15",
-  facHealth: "#e11d48",
-  facEducation: "#7c3aed",
-  facGov: "#475569",
-  facReligious: "#0d9488",
-  infraRoadBridge: "#a16207",
-  laporanKejadian: "#ea580c",
-  laporanPenanganan: "#0f766e",
+  disasterEvents: COLOR_TOKENS.orange,
+  missingPersons: COLOR_TOKENS.awas,
+  tendPoints: COLOR_TOKENS.teal,
+  policeOffices: COLOR_TOKENS.ink,
+  poskos: COLOR_TOKENS.forest,
+  facHealth: COLOR_TOKENS.awas,
+  facEducation: COLOR_TOKENS.sage,
+  facGov: COLOR_TOKENS.ink,
+  facReligious: COLOR_TOKENS.teal,
+  infraRoadBridge: COLOR_TOKENS.gold,
+  laporanKejadian: COLOR_TOKENS.orange,
+  laporanPenanganan: COLOR_TOKENS.teal,
 };
+
+export const CLUSTER_COLORS = {
+  low: COLOR_TOKENS.sage,
+  high: COLOR_TOKENS.forest,
+  textOnLow: COLOR_TOKENS.ink,
+  textOnHigh: COLOR_TOKENS.paper,
+} as const;

@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import type { MarkerLayerKey } from "@/lib/types";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
-import { LAYER_COLORS } from "@/lib/layer-colors";
+import { COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
 import { getMarkerIconPath } from "@/lib/layer-icons";
 
 type MapMarkerPinProps = {
@@ -14,7 +14,7 @@ export function MapMarkerPin({ layer, jenisBencana, title }: MapMarkerPinProps) 
   const fallbackColor =
     layer === "disasterEvents"
       ? DISASTER_JENIS_COLORS[jenisBencana ?? ""] ?? LAYER_COLORS.disasterEvents
-      : LAYER_COLORS[layer] ?? "#999";
+      : LAYER_COLORS[layer] ?? COLOR_TOKENS.ink;
 
   const iconSrc = getMarkerIconPath(layer, jenisBencana);
 

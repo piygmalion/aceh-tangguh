@@ -77,3 +77,44 @@ export function getMarkerIconPath(
   }
   return getLayerIconPath(layer);
 }
+
+export function slugIconId(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function markerIconImageId(
+  layer: MarkerLayerKey,
+  jenisBencana?: string | null
+): string {
+  if (layer === "disasterEvents" && jenisBencana) {
+    const file = DISASTER_JENIS_ICON_FILES[jenisBencana];
+    if (file) return `jenis:${slugIconId(jenisBencana)}`;
+  }
+  return `layer:${layer}`;
+}
+
+export type MapSymbolIcon = { id: string; url: string };
+
+/** Existing flat glyphs only — no new art. Used as map-pin faces after disc composite. */
+export function listMapSymbolIcons(): MapSymbolIcon[] {
+  const seen = new Set<string>();
+  const out: MapSymbolIcon[] = [];
+  for (const key of Object.keys(LAYER_ICON_FILES) as MarkerLayerKey[]) {
+    const id = `layer:${key}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push({ id, url: getLayerIconPath(key) });
+  }
+  for (const jenis of Object.keys(DISASTER_JENIS_ICON_FILES)) {
+    const id = `jenis:${slugIconId(jenis)}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const url = getDisasterJenisIconPath(jenis);
+    if (url) out.push({ id, url });
+  }
+  return out;
+}

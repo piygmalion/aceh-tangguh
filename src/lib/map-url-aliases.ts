@@ -4,6 +4,7 @@ import type {
   HazardKind,
   MarkerLayerKey,
 } from "@/lib/types";
+import { parseAreaLayerKey } from "@/lib/area-layers";
 import { encodeDisasterJenis, parseDisasterJenis } from "@/lib/disaster-jenis";
 import {
   LIVE_MARKER_LAYER_KEYS,
@@ -170,7 +171,7 @@ export function resolveMapUrlAliases(input: {
 
   let markerLayers = parseMarkerLayers(input.layersRaw);
   let disasterJenis = parseDisasterJenis(input.disasterJenisRaw);
-  let areaLayer = (input.areaRaw as AreaLayerKey | null) || null;
+  let areaLayer = parseAreaLayerKey(input.areaRaw);
 
   if (cluster && !input.layersRaw) {
     const preset = CLUSTER_TO_LAYERS[cluster];
