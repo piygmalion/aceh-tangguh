@@ -298,6 +298,50 @@
     "label": "Hazard status",
     "error": "Failed to load status"
   },
+  "peringatanDini": {
+    "title": "Early warning",
+    "subtitle": "Early warnings from BMKG, MAGMA ESDM and Sipongi KLHK",
+    "error": "Failed to load early warnings.",
+    "stale": "Data delayed",
+    "tone": {
+      "neutral": "Normal",
+      "warn": "Watch",
+      "danger": "Danger"
+    },
+    "cuaca": {
+      "source": "Weather warning · BMKG",
+      "empty": "No extreme weather warning",
+      "kabupaten": "Kabupaten",
+      "kondisi": "Kondisi",
+      "curahHujan": "Curah hujan",
+      "periode": "Periode",
+      "sumber": "Sumber",
+      "rainValue": "{value} mm",
+      "more": "+{n} other districts",
+      "aria": "BMKG weather warning, jump to Aceh weather strip"
+    },
+    "magma": {
+      "source": "MAGMA Indonesia · PVMBG ESDM",
+      "empty": "No Aceh earthquake on the current feed.",
+      "magnitudo": "Magnitudo",
+      "waktu": "Waktu Kejadian",
+      "koordinat": "Koordinat dan Kedalaman",
+      "wilayah": "Wilayah",
+      "intensitas": "Intensitas gempa (Skala MMI)",
+      "gunung": "Gunung Api Terdekat",
+      "aria": "MAGMA Indonesia earthquake warning, open official site"
+    },
+    "sipongi": {
+      "source": "Sipongi · KLHK",
+      "empty": "No medium/high hotspots in Aceh.",
+      "tanggal": "Tanggal",
+      "sumber": "Sumber",
+      "desa": "Desa",
+      "kecamatan": "Kecamatan",
+      "kabkota": "Kota/Kabupaten",
+      "aria": "Sipongi Aceh hotspots, open official map"
+    }
+  },
   "sumberData": {
     "title": "Data sources",
     "lead": "Datasets, boundaries, basemaps, and media used by Aceh Tangguh. Catalogued from the Drive → app fixture pipeline.",
@@ -343,6 +387,10 @@
     "s7": {
       "title": "Basemap, performance, and Sentinel",
       "body": "The map runs on MapLibre (GPU). The default operational basemap is Carto Positron raster (OSM). OpenFreeMap vector is optional (`?vector=1`) and falls back to Carto if the CDN fails — that already happened in our sandbox. HD satellite uses Esri World Imagery. The Sentinel-2 option is EOX’s annual Cloudless mosaic (Copernicus, 10 m) — a background, not “today’s” image, because Aceh is usually cloudy. Latest Sentinel-2 L2A scenes are queried via STAC (Element84) as an archive heartbeat, not as the basemap. Location points render as GPU-clustered GeoJSON, not HTML markers, so thousands of facilities stay light. Area overlays remain PMTiles. Architecture notes: docs/basemap.md."
+    },
+    "s8": {
+      "title": "Homepage early warnings",
+      "body": "The homepage Hazard strip is replaced by Peringatan Dini: three cards (weather, MAGMA, Sipongi) that fail independently. Weather summarises the existing /api/weather stack (BMKG / Open-Meteo + snapshot) and only surfaces conditions that need attention (heavy/extreme rain, strong wind, thunderstorms); IRBI extreme-weather class is not treated as a live alert. MAGMA parses the public magma.esdm.go.id homepage feed (markersGempa) and keeps Aceh events (bbox ~95–98.3E / 2–6.15N or wilayah text). Sipongi uses the map’s public opsroom GeoJSON (indoHotspot), Aceh only, medium/high confidence. Earthquake and hotspot numbers are never invented: if a live fetch fails the card shows the last fixture snapshot plus a delayed-data label. GET /api/hazards and map ?hazard= aliases remain."
     }
   },
   "prrpkaChart": {

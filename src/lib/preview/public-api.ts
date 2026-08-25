@@ -12,7 +12,10 @@ import {
   buildPrrpkaSummary,
 } from "@/lib/prrpka-types";
 import type { LegendModel } from "@/lib/types";
+import type { MagmaCard, SipongiCard } from "@/lib/peringatan-dini-types";
+import { summarizeWeatherWarning } from "@/lib/peringatan-dini/weather-summary";
 import { expandMarkerLayerKeys } from "@/lib/map-url-aliases";
+import type { WeatherApiResponse } from "@/lib/weather-types";
 import { isStaticExport, withBasePath } from "./env";
 import { HAZARD_STATUS_FALLBACK, LIVE_STATS_FALLBACK } from "./fallbacks";
 
@@ -108,6 +111,28 @@ async function resolveStaticGet(input: string): Promise<Response> {
   }
   if (path === "/api/weather") {
     return jsonResponse(await fetchJson("/fixtures/weather-snapshot.json"));
+  }
+  if (path === "/api/peringatan-dini") {
+    const [weather, magma, sipongi] = await Promise.all([
+      fetchJson("/fixtures/weather-snapshot.json") as Promise<WeatherApiResponse>,
+      fetchJson("/fixtures/peringatan-magma.json") as Promise<MagmaCard>,
+      fetchJson("/fixtures/peringatan-sipongi.json") as Promise<SipongiCard>,
+    ]);
+    return jsonResponse({
+      cuaca: summarizeWeatherWarning(weather),
+      magma: { ...magma, stale: true, source: "fixture" },
+      sipongi: { ...sipongi, stale: true, source: "fixture" },
+    });
+  }
+  if (path === "/api/peringatan-dini/magma") {
+    const magma = (await fetchJson("/fixtures/peringatan-magma.json")) as MagmaCard;
+    return jsonResponse({ ...magma, stale: true, source: "fixture" });
+  }
+  if (path === "/api/peringatan-dini/sipongi") {
+    const sipongi = (await fetchJson(
+      "/fixtures/peringatan-sipongi.json",
+    )) as SipongiCard;
+    return jsonResponse({ ...sipongi, stale: true, source: "fixture" });
   }
   if (path === "/api/sentinel/status") {
     const data = (await fetchJson("/fixtures/sentinel-status.json")) as Record<

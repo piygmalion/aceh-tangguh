@@ -298,6 +298,50 @@
     "label": "Status hazard",
     "error": "Gagal memuat status"
   },
+  "peringatanDini": {
+    "title": "Peringatan Dini",
+    "subtitle": "Peringatan dini dari BMKG, Magma ESDM dan Sipongi KLHK",
+    "error": "Gagal memuat peringatan dini.",
+    "stale": "Data tertunda",
+    "tone": {
+      "neutral": "Normal",
+      "warn": "Waspada",
+      "danger": "Bahaya"
+    },
+    "cuaca": {
+      "source": "Peringatan cuaca · BMKG",
+      "empty": "Tidak ada peringatan ekstrem",
+      "kabupaten": "Kabupaten",
+      "kondisi": "Kondisi",
+      "curahHujan": "Curah hujan",
+      "periode": "Periode",
+      "sumber": "Sumber",
+      "rainValue": "{value} mm",
+      "more": "+{n} kabupaten lain",
+      "aria": "Peringatan cuaca BMKG, menuju perkiraan cuaca Aceh"
+    },
+    "magma": {
+      "source": "MAGMA Indonesia · PVMBG ESDM",
+      "empty": "Tidak ada gempa Aceh pada feed terkini.",
+      "magnitudo": "Magnitudo",
+      "waktu": "Waktu Kejadian",
+      "koordinat": "Koordinat dan Kedalaman",
+      "wilayah": "Wilayah",
+      "intensitas": "Intensitas gempa (Skala MMI)",
+      "gunung": "Gunung Api Terdekat",
+      "aria": "Peringatan gempa MAGMA Indonesia, buka situs resmi"
+    },
+    "sipongi": {
+      "source": "Sipongi · KLHK",
+      "empty": "Tidak ada hotspot medium/tinggi di Aceh.",
+      "tanggal": "Tanggal",
+      "sumber": "Sumber",
+      "desa": "Desa",
+      "kecamatan": "Kecamatan",
+      "kabkota": "Kota/Kabupaten",
+      "aria": "Hotspot Sipongi Aceh, buka peta resmi"
+    }
+  },
   "sumberData": {
     "title": "Sumber data",
     "lead": "Daftar dataset, batas wilayah, peta dasar, dan media yang dipakai Aceh Tangguh. Inventaris disusun dari pipeline Drive → fixture aplikasi.",
@@ -343,6 +387,10 @@
     "s7": {
       "title": "Peta dasar, performa, dan Sentinel",
       "body": "Peta memakai MapLibre (GPU). Basemap operasional default adalah raster Carto Positron (OSM). OpenFreeMap vektor bersifat opsional (`?vector=1`) dan jatuh ke Carto jika CDN gagal — itu sudah terjadi di sandbox. Satelit HD memakai Esri World Imagery. Opsi Sentinel-2 adalah mosaik tahunan Cloudless EOX (Copernicus, 10 m) — cocok sebagai latar, bukan citra “hari ini”, karena Aceh hampir selalu berawan. Adegan Sentinel-2 L2A terbaru di-query lewat STAC (Element84) sebagai denyut arsip, bukan sebagai basemap. Titik lokasi dirender sebagai GeoJSON terkluster di GPU, bukan marker HTML, agar ribuan fasilitas tetap ringan. Overlay wilayah tetap PMTiles. Rincian arsitektur: docs/basemap.md."
+    },
+    "s8": {
+      "title": "Peringatan dini beranda",
+      "body": "Strip Hazard di beranda diganti bagian Peringatan Dini: tiga kartu (cuaca, MAGMA, Sipongi) yang gagal secara independen. Cuaca merangkum /api/weather yang sudah ada (BMKG / Open-Meteo + snapshot) — hanya kondisi yang perlu perhatian (hujan lebat/ekstrem, angin kencang, petir); IRBI cuaca ekstrem tidak dipakai sebagai peringatan palsu. MAGMA mem-parse umpan publik beranda magma.esdm.go.id (daftar markersGempa) lalu memfilter Aceh (bbox ~95–98,3BT / 2–6,15LU atau teks wilayah). Sipongi memakai GeoJSON publik peta opsroom (indoHotspot), provinsi Aceh, kepercayaan medium/tinggi saja. Angka gempa/hotspot tidak pernah diciptakan: jika unduhan langsung gagal, kartu menampilkan snapshot fixture terakhir dan label “data tertunda”. GET /api/hazards dan alias peta ?hazard= tetap ada."
     }
   },
   "prrpkaChart": {
