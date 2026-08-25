@@ -3,8 +3,10 @@
  * Overlay PMTiles per-tile size enforcer (stage 1).
  *
  * Checks Mapbox vector tiles *inside* committed archives under public/tiles/.
- * The archive file size is irrelevant (village-r3p.pmtiles ~3 MB is fine).
- * Limit: 500 KB per individual tile. Carto raster remains the default basemap.
+ * Per-tile limit: 500 KB (Mapbox vector tile payload). Archive size is not that
+ * limit — village-r3p.pmtiles ~2.9 MB is fine. Second gate: that archive < 4 MB.
+ * Known overlays must keep MapViewport source-layers: r3p, village, irbi.
+ * Carto raster remains the default basemap. Geometry stays on disk, not PostGIS.
  *
  * Usage:
  *   node scripts/check-tiles.mjs
@@ -19,6 +21,16 @@ import { PMTiles, TileType, tileIdToZxy } from "pmtiles";
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 const DEFAULT_DIR = join(ROOT, "public", "tiles");
 const DEFAULT_LIMIT_BYTES = 500 * 1024;
+
+/** @type {Record<string, { sourceLayer: string, maxArchiveBytes?: number }>} */
+const EXPECTED_OVERLAYS = {
+  "r3p-kab.pmtiles": { sourceLayer: "r3p" },
+  "village-r3p.pmtiles": {
+    sourceLayer: "village",
+    maxArchiveBytes: 4 * 1024 * 1024,
+  },
+  "irbi-2025.pmtiles": { sourceLayer: "irbi" },
+};
 
 class NodeFileSource {
   /**
@@ -51,6 +63,17 @@ function formatBytes(n) {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
   return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+/**
+ * @param {unknown} metadata
+ */
+function vectorLayerIds(metadata) {
+  if (!metadata || typeof metadata !== "object") return [];
+  const layers = /** @type {{ vector_layers?: { id?: string }[] }} */ (metadata)
+    .vector_layers;
+  if (!Array.isArray(layers)) return [];
+  return layers.map((layer) => layer?.id).filter((id) => typeof id === "string");
 }
 
 function tileTypeLabel(type) {
@@ -116,9 +139,12 @@ async function inspectArchive(filePath) {
   try {
     const archive = new PMTiles(new NodeFileSource(handle, filePath));
     const header = await archive.getHeader();
-    const tiles = await collectTiles(archive, header);
+    const [tiles, metadata] = await Promise.all([
+      collectTiles(archive, header),
+      archive.getMetadata(),
+    ]);
     const fileBytes = (await stat(filePath)).size;
-    return { header, tiles, fileBytes };
+    return { header, tiles, fileBytes, metadata };
   } finally {
     await handle.close();
   }
@@ -198,8 +224,9 @@ for (const filePath of files) {
   let header;
   let tiles;
   let fileBytes;
+  let metadata;
   try {
-    ({ header, tiles, fileBytes } = await inspectArchive(filePath));
+    ({ header, tiles, fileBytes, metadata } = await inspectArchive(filePath));
   } catch (err) {
     failed += 1;
     const msg = err instanceof Error ? err.message : String(err);
@@ -207,6 +234,9 @@ for (const filePath of files) {
     console.log(`    FAIL  ${msg}\n`);
     continue;
   }
+  const basename = filePath.split(/[\\/]/).pop() ?? "";
+  const expected = EXPECTED_OVERLAYS[basename];
+  let archiveFailed = false;
   const max = tiles.reduce(
     (best, tile) => (tile.bytes > best.bytes ? tile : best),
     { z: 0, x: 0, y: 0, bytes: 0 },
@@ -235,6 +265,31 @@ for (const filePath of files) {
     warned += 1;
   }
 
+  if (expected?.sourceLayer) {
+    const ids = vectorLayerIds(metadata);
+    if (!ids.includes(expected.sourceLayer)) {
+      archiveFailed = true;
+      console.log(
+        `    FAIL  expected source-layer "${expected.sourceLayer}" (MapViewport), found ${ids.join(", ") || "(none)"}`,
+      );
+    } else {
+      console.log(`    source-layer: ${expected.sourceLayer}`);
+    }
+  }
+
+  if (expected?.maxArchiveBytes) {
+    if (fileBytes > expected.maxArchiveBytes) {
+      archiveFailed = true;
+      console.log(
+        `    FAIL  archive ${formatBytes(fileBytes)} exceeds ${formatBytes(expected.maxArchiveBytes)} budget`,
+      );
+    } else {
+      console.log(
+        `    archive budget: ${formatBytes(fileBytes)} / ${formatBytes(expected.maxArchiveBytes)}`,
+      );
+    }
+  }
+
   if (near.length) {
     warned += 1;
     console.log(`    warn  ${near.length} tile(s) > ${formatBytes(WARN_BYTES)}`);
@@ -244,7 +299,7 @@ for (const filePath of files) {
   }
 
   if (over.length) {
-    failed += 1;
+    archiveFailed = true;
     console.log(`    FAIL  ${over.length} tile(s) > ${formatBytes(LIMIT_BYTES)}`);
     for (const t of over.slice(0, 12)) {
       console.log(`      z${t.z}/${t.x}/${t.y}  ${formatBytes(t.bytes)}`);
@@ -252,6 +307,7 @@ for (const filePath of files) {
   } else {
     console.log(`    ok   all tiles ≤ ${formatBytes(LIMIT_BYTES)}`);
   }
+  if (archiveFailed) failed += 1;
   console.log("");
 }
 
@@ -259,7 +315,9 @@ if (failed) {
   console.error(`${failed} archive(s) failed the overlay tile check`);
   process.exit(1);
 }
-console.log(`All overlay PMTiles are within the ${formatBytes(LIMIT_BYTES)} per-tile limit.`);
+console.log(
+  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; village archive budget and source-layers ok).`,
+);
 if (warned) {
   console.log(`${warned} warning(s) — see above.`);
 }

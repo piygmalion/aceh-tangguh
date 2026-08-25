@@ -113,19 +113,19 @@ bun run build:tiles
 # or: bash scripts/build-pmtiles.sh
 ```
 
-Per-tile size cap: **500 KB** (not the `.pmtiles` file size). `village-r3p.pmtiles` ~3 MB as a file is fine.
+Per-tile size cap: **500 KB** (not the `.pmtiles` file size). Second gate: `village-r3p.pmtiles` archive **under 4 MB** (~2.9 MB today is fine).
 
 ```
 npm run check:tiles
 ```
 
-Outputs:
+Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
 
-- `public/tiles/r3p-kab.pmtiles` — from `fixtures/areas/r3pDistribution.geojson`
-- `public/tiles/village-r3p.pmtiles` — from `fixtures/areas/villageDistribution.geojson` (simplified)
-- `public/tiles/irbi-2025.pmtiles` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
+- `public/tiles/r3p-kab.pmtiles` — `r3p` — from `fixtures/areas/r3pDistribution.geojson`
+- `public/tiles/village-r3p.pmtiles` — `village` — from `fixtures/areas/villageDistribution.geojson` (simplified)
+- `public/tiles/irbi-2025.pmtiles` — `irbi` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
 
-`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON.
+`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS.
 
 ## Basemap (Carto raster + Sentinel)
 

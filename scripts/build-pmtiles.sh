@@ -2,7 +2,8 @@
 # Rebuild overlay vector PMTiles for R3P kab + village choropleth layers.
 # Requires: tippecanoe (apt install tippecanoe)
 # Overlay archives only — Carto raster stays the default basemap.
-# After build, check:tiles enforces a 500 KB *per-tile* limit (not archive size).
+# tippecanoe --layer must stay r3p / village / irbi (MapViewport source-layer).
+# After build, check:tiles enforces 500 KB per MVT tile + village archive < 4 MB.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 AREAS="$ROOT/public/fixtures/areas"
