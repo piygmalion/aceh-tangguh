@@ -1,0 +1,58 @@
+name: Overlay tiles
+
+on:
+  pull_request:
+    paths:
+      - "public/tiles/**"
+      - "public/fixtures/areas/**"
+      - "scripts/build-pmtiles.sh"
+      - "scripts/check-tiles.mjs"
+      - "scripts/verify-basemap.mjs"
+      - "src/lib/basemap.ts"
+      - ".github/workflows/overlay-tiles.yml"
+  push:
+    branches: [main]
+    paths:
+      - "public/tiles/**"
+      - "public/fixtures/areas/**"
+      - "scripts/build-pmtiles.sh"
+      - "scripts/check-tiles.mjs"
+      - "scripts/verify-basemap.mjs"
+      - "src/lib/basemap.ts"
+      - ".github/workflows/overlay-tiles.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-tiles:
+    name: Per-tile size (500 KB)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check overlay PMTiles per-tile size
+        run: npm run check:tiles
+
+  verify-basemap:
+    name: Basemap CDN probe
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Probe Carto / EOX / STAC (OpenFreeMap optional)
+        run: npm run verify:basemap

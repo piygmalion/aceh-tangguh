@@ -64,6 +64,22 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 4. HTML pin hanya untuk popup, bukan untuk 3.000 sekolah.
 5. Attribution selalu terlihat (OSM/Carto, EOX/Copernicus, Esri).
 
+## Overlay PMTiles (bukan basemap)
+
+`public/tiles/*.pmtiles` adalah **overlay vektor** (R3P kab, village, IRBI) yang dibangun tippecanoe. **Carto raster tetap basemap default.** Jangan ganti default ke OpenFreeMap / PMTiles planet.
+
+Batas: **500 KB per tile** (payload Mapbox Vector Tile di dalam arsip), bukan ukuran file arsip. `village-r3p.pmtiles` ~3 MB sebagai file itu wajar; yang dilarang adalah satu tile `z/x/y` > 500 KB (zoom padat, terutama village z12).
+
+```bash
+# Cek ukuran per-tile pada arsip yang sudah di-commit (cepat; tidak rebuild)
+npm run check:tiles
+
+# Rebuild lokal — butuh tippecanoe (`sudo apt install tippecanoe`), lalu check:tiles
+npm run build:tiles
+```
+
+CI (`.github/workflows/overlay-tiles.yml`) hanya menjalankan `check:tiles` pada PMTiles yang sudah di-commit, plus probe `verify:basemap` (non-blocking). Tidak memasang tippecanoe dan tidak rebuild di setiap PR.
+
 ## Operasi
 
 ```bash

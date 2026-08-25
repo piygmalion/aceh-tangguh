@@ -104,11 +104,19 @@ Homepage **Peringatan Dini** (`#status`) summarises existing weather plus live M
 
 ## Rebuild PMTiles
 
-Requires [tippecanoe](https://github.com/felt/tippecanoe) (`sudo apt install tippecanoe`).
+Overlay vector tiles only (R3P / IRBI choropleth). **Carto raster stays the default basemap.**
+
+Requires [tippecanoe](https://github.com/felt/tippecanoe) (`sudo apt install tippecanoe`). CI does **not** rebuild — it only checks already-committed archives.
 
 ```
 bun run build:tiles
 # or: bash scripts/build-pmtiles.sh
+```
+
+Per-tile size cap: **500 KB** (not the `.pmtiles` file size). `village-r3p.pmtiles` ~3 MB as a file is fine.
+
+```
+npm run check:tiles
 ```
 
 Outputs:
