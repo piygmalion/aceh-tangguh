@@ -115,10 +115,8 @@ export function HeroSection() {
             <BlurFade delay={0.12} inView>
               <h1 className="max-w-[46rem] text-[2.35rem] font-semibold leading-[1.12] tracking-tight sm:text-[3.4rem] lg:text-[4.4rem]">
                 {t.rich("title", {
-                  brand: () => (
-                    <span className="text-[var(--bnpb-orange)]">
-                      {t("titleHighlight")}
-                    </span>
+                  brand: (chunks) => (
+                    <span className="text-[var(--bnpb-orange)]">{chunks}</span>
                   ),
                 })}
               </h1>
