@@ -15,6 +15,23 @@ export const AREA_PROFIL_ROUTES = {
   desa: "/api/profil-desa/desa",
 } as const;
 
+/**
+ * Backend-confirmed query keys. Do not rename.
+ * kabupaten: kabupaten | kode_kabupaten
+ * kecamatan: kabupaten + kecamatan | kode_kecamatan
+ * desa: ?kode= (never kode_desa_kelurahan)
+ */
+export const PROFIL_QUERY_KEYS = {
+  kabupaten: ["kabupaten", "kode_kabupaten"],
+  kecamatan: ["kabupaten", "kecamatan", "kode_kecamatan"],
+  desa: ["kode", "id", "nama", "kabupaten", "kecamatan"],
+} as const;
+
+export const PROFIL_FORBIDDEN_QUERY_KEYS = [
+  "kode_desa_kelurahan",
+  "kode_desa",
+] as const;
+
 const KAB_POLYGON_LEVELS = new Set(["kab", "kabupaten"]);
 
 /** Open at kabupaten when selection.kabupaten is set — even if the click was a desa. */
@@ -62,35 +79,56 @@ export function kabupatenNameFromSelection(
   return "";
 }
 
-function setExisting(params: URLSearchParams, key: string, value?: string | null) {
+function setAllowed(
+  params: URLSearchParams,
+  allowed: readonly string[],
+  key: string,
+  value?: string | null
+) {
+  if (!allowed.includes(key)) return;
   const trimmed = value?.trim() ?? "";
   if (trimmed) params.set(key, trimmed);
 }
 
-/** Existing kabupaten query params only: `kabupaten`, `kode_kabupaten`. */
+/** Kabupaten: `kabupaten` | `kode_kabupaten`. */
 export function profilKabupatenSearchParams(
   selection: VillageClickSelection
 ): URLSearchParams {
   const params = new URLSearchParams();
-  setExisting(params, "kabupaten", kabupatenNameFromSelection(selection));
-  setExisting(params, "kode_kabupaten", selection.kodeKabupaten);
+  setAllowed(
+    params,
+    PROFIL_QUERY_KEYS.kabupaten,
+    "kabupaten",
+    kabupatenNameFromSelection(selection)
+  );
+  setAllowed(
+    params,
+    PROFIL_QUERY_KEYS.kabupaten,
+    "kode_kabupaten",
+    selection.kodeKabupaten
+  );
   return params;
 }
 
-/** Existing kecamatan query params only: `kabupaten`, `kecamatan`, `kode_kecamatan`. */
+/** Kecamatan: `kabupaten` + `kecamatan` | `kode_kecamatan`. */
 export function profilKecamatanSearchParams(opts: {
   kabupaten?: string | null;
   kecamatan?: string | null;
   kodeKecamatan?: string | null;
 }): URLSearchParams {
   const params = new URLSearchParams();
-  setExisting(params, "kabupaten", opts.kabupaten);
-  setExisting(params, "kecamatan", opts.kecamatan);
-  setExisting(params, "kode_kecamatan", opts.kodeKecamatan);
+  setAllowed(params, PROFIL_QUERY_KEYS.kecamatan, "kabupaten", opts.kabupaten);
+  setAllowed(params, PROFIL_QUERY_KEYS.kecamatan, "kecamatan", opts.kecamatan);
+  setAllowed(
+    params,
+    PROFIL_QUERY_KEYS.kecamatan,
+    "kode_kecamatan",
+    opts.kodeKecamatan
+  );
   return params;
 }
 
-/** Existing desa query params only: `id`, `kode`, `nama`, `kabupaten`, `kecamatan`. */
+/** Desa village code is `kode`, never `kode_desa_kelurahan`. */
 export function profilDesaSearchParams(opts: {
   id?: string | null;
   kode?: string | null;
@@ -99,11 +137,11 @@ export function profilDesaSearchParams(opts: {
   kecamatan?: string | null;
 }): URLSearchParams {
   const params = new URLSearchParams();
-  setExisting(params, "id", opts.id);
-  setExisting(params, "kode", opts.kode);
-  setExisting(params, "nama", opts.nama);
-  setExisting(params, "kabupaten", opts.kabupaten);
-  setExisting(params, "kecamatan", opts.kecamatan);
+  setAllowed(params, PROFIL_QUERY_KEYS.desa, "kode", opts.kode);
+  setAllowed(params, PROFIL_QUERY_KEYS.desa, "id", opts.id);
+  setAllowed(params, PROFIL_QUERY_KEYS.desa, "nama", opts.nama);
+  setAllowed(params, PROFIL_QUERY_KEYS.desa, "kabupaten", opts.kabupaten);
+  setAllowed(params, PROFIL_QUERY_KEYS.desa, "kecamatan", opts.kecamatan);
   return params;
 }
 

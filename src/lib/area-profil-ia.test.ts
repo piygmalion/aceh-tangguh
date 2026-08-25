@@ -7,6 +7,8 @@ import {
   AREA_PROFIL_INITIAL_VIEW,
   AREA_PROFIL_ROUTES,
   AREA_PROFIL_VIEWS,
+  PROFIL_FORBIDDEN_QUERY_KEYS,
+  PROFIL_QUERY_KEYS,
   areaProfilBack,
   areaProfilBreadcrumbLevels,
   areaProfilBreadcrumbTarget,
@@ -130,7 +132,26 @@ describe("signed Distribusi area panel IA", () => {
     );
   });
 
-  it("uses existing /api/profil-desa query params and does not invent kodes", () => {
+  it("keeps backend-confirmed query params stable and adds no routes", () => {
+    assert.deepEqual(PROFIL_QUERY_KEYS.kabupaten, [
+      "kabupaten",
+      "kode_kabupaten",
+    ]);
+    assert.deepEqual(PROFIL_QUERY_KEYS.kecamatan, [
+      "kabupaten",
+      "kecamatan",
+      "kode_kecamatan",
+    ]);
+    assert.equal((PROFIL_QUERY_KEYS.desa as readonly string[]).includes("kode"), true);
+    assert.equal(
+      (PROFIL_QUERY_KEYS.desa as readonly string[]).includes("kode_desa_kelurahan"),
+      false
+    );
+    assert.deepEqual(PROFIL_FORBIDDEN_QUERY_KEYS, [
+      "kode_desa_kelurahan",
+      "kode_desa",
+    ]);
+
     assert.equal(AREA_PROFIL_ROUTES.kabupaten, "/api/profil-desa/kabupaten");
     assert.equal(AREA_PROFIL_ROUTES.kecamatan, "/api/profil-desa/kecamatan");
     assert.equal(AREA_PROFIL_ROUTES.desa, "/api/profil-desa/desa");
@@ -146,7 +167,10 @@ describe("signed Distribusi area panel IA", () => {
     });
 
     const kab = profilKabupatenSearchParams(desaClick);
-    assert.deepEqual(Array.from(kab.keys()).sort(), ["kabupaten", "kode_kabupaten"]);
+    assert.deepEqual(Array.from(kab.keys()).sort(), [
+      "kabupaten",
+      "kode_kabupaten",
+    ]);
     assert.equal(kab.get("kabupaten"), "Aceh Selatan");
     assert.equal(kab.get("kode_kabupaten"), "1101");
     assert.equal(
@@ -154,37 +178,33 @@ describe("signed Distribusi area panel IA", () => {
       "/api/profil-desa/kabupaten?kabupaten=Aceh+Selatan&kode_kabupaten=1101"
     );
 
-    const kec = profilKecamatanSearchParams({
+    const kecByName = profilKecamatanSearchParams({
       kabupaten: "Aceh Selatan",
       kecamatan: "Bakongan",
+    });
+    assert.deepEqual(Array.from(kecByName.keys()).sort(), [
+      "kabupaten",
+      "kecamatan",
+    ]);
+    const kecByKode = profilKecamatanSearchParams({
       kodeKecamatan: "110101",
     });
-    assert.deepEqual(Array.from(kec.keys()).sort(), [
-      "kabupaten",
-      "kecamatan",
-      "kode_kecamatan",
-    ]);
-    assert.equal(
-      profilDesaApiPath("kecamatan", kec),
-      "/api/profil-desa/kecamatan?kabupaten=Aceh+Selatan&kecamatan=Bakongan&kode_kecamatan=110101"
-    );
+    assert.deepEqual(Array.from(kecByKode.keys()), ["kode_kecamatan"]);
 
     const desa = profilDesaSearchParams({
-      id: "row-1",
       kode: "1101012001",
-      nama: "Keude Bakongan",
-      kabupaten: "Aceh Selatan",
-      kecamatan: "Bakongan",
     });
-    assert.deepEqual(Array.from(desa.keys()).sort(), [
-      "id",
-      "kabupaten",
-      "kecamatan",
-      "kode",
-      "nama",
-    ]);
-    assert.equal(desa.has("kode_desa"), false);
-    assert.equal(desa.has("kode_desa_kelurahan"), false);
+    assert.deepEqual(Array.from(desa.keys()), ["kode"]);
+    assert.equal(desa.get("kode"), "1101012001");
+    assert.equal(
+      profilDesaApiPath("desa", desa),
+      "/api/profil-desa/desa?kode=1101012001"
+    );
+    for (const forbidden of PROFIL_FORBIDDEN_QUERY_KEYS) {
+      assert.equal(desa.has(forbidden), false);
+      assert.equal(kab.has(forbidden), false);
+      assert.equal(kecByName.has(forbidden), false);
+    }
   });
 
   it("resolves kabupaten polygons that only stamp name + level", () => {
@@ -251,5 +271,34 @@ describe("AreaProfilPanel source lock", () => {
     assert.match(viewport, /kodeKabupaten/);
     assert.match(viewport, /kode_kabupaten/);
     assert.equal(/["']kode_kab["']/.test(viewport), false);
+  });
+
+  it("reads the confirmed query keys on the three existing profil-desa routes", () => {
+    const kabRoute = readFileSync(
+      path.join(ROOT, "src/app/api/profil-desa/kabupaten/route.ts"),
+      "utf8"
+    );
+    const kecRoute = readFileSync(
+      path.join(ROOT, "src/app/api/profil-desa/kecamatan/route.ts"),
+      "utf8"
+    );
+    const desaRoute = readFileSync(
+      path.join(ROOT, "src/app/api/profil-desa/desa/route.ts"),
+      "utf8"
+    );
+
+    assert.match(kabRoute, /sp\.get\("kode_kabupaten"\)/);
+    assert.match(kabRoute, /sp\.get\("kabupaten"\)/);
+    assert.match(kecRoute, /sp\.get\("kabupaten"\)/);
+    assert.match(kecRoute, /sp\.get\("kecamatan"\)/);
+    assert.match(kecRoute, /sp\.get\("kode_kecamatan"\)/);
+    assert.match(desaRoute, /sp\.get\("kode"\)/);
+    assert.equal(/sp\.get\("kode_desa_kelurahan"\)/.test(desaRoute), false);
+    assert.equal(/sp\.get\("kode_desa"\)/.test(desaRoute), false);
+
+    assert.match(panel, /profilKabupatenSearchParams/);
+    assert.match(panel, /profilKecamatanSearchParams/);
+    assert.match(panel, /profilDesaSearchParams/);
+    assert.equal(/params\.set\("kode_desa_kelurahan"/.test(panel), false);
   });
 });
