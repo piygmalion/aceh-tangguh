@@ -39,7 +39,7 @@ export function isTruncatedCoordQuality(
 export function readCoordQuality(
   properties?: Record<string, unknown> | null
 ): CoordQuality | null {
-  const q = properties?.coord_quality;
+  const q = properties?.coord_quality ?? properties?.coordQuality;
   if (isTruncatedCoordQuality(q)) {
     return COORD_QUALITY_TRUNCATED;
   }

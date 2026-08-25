@@ -361,6 +361,7 @@ export function MapViewport({
           jenisBencana: layer === "disasterEvents" ? jenis : "",
           color: markerColor(layer, jenis),
           coordQuality: quality ?? "",
+          coord_quality: quality ?? "",
           desa: f.properties?.desa ?? "",
           icon: markerIconImageId(layer, layer === "disasterEvents" ? jenis : null),
           renderMode: markerRenderMode({
