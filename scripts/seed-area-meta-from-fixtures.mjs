@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 /**
- * Seed area_feature_meta from local fixtures.
+ * Seed area_feature_meta from local fixtures (irbi2025 + r3pDistribution only).
+ * villageDistribution is a separate intersection seed:
+ *   node scripts/seed-village-area-meta.mjs --dry-run
  * Uses NEXT_PUBLIC_SUPABASE_* from .env.local (anon).
  * Prefer SUPABASE_SERVICE_ROLE_KEY when set — anon has no INSERT policy on this table.
  */
