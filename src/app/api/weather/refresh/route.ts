@@ -10,7 +10,8 @@ import path from "path";
 import { revalidateTag } from "next/cache";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 120;
+/** Hobby cap is 60s. The GitHub Action still builds the long snapshot. */
+export const maxDuration = 60;
 
 type IrbiKab = {
   kabupaten_kota?: string;

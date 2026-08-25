@@ -3,6 +3,7 @@ import { fetchSentinelStatus } from "@/lib/sentinel";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 21600;
+export const maxDuration = 30;
 
 export async function GET() {
   try {
