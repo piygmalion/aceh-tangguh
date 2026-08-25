@@ -127,7 +127,7 @@ describe("signed Distribusi area panel IA", () => {
     });
 
     const kab = profilKabupatenSearchParams(desaClick);
-    assert.deepEqual([...kab.keys()].sort(), ["kabupaten", "kode_kabupaten"]);
+    assert.deepEqual(Array.from(kab.keys()).sort(), ["kabupaten", "kode_kabupaten"]);
     assert.equal(kab.get("kabupaten"), "Aceh Selatan");
     assert.equal(kab.get("kode_kabupaten"), "1101");
     assert.equal(
@@ -140,10 +140,11 @@ describe("signed Distribusi area panel IA", () => {
       kecamatan: "Bakongan",
       kodeKecamatan: "110101",
     });
-    assert.deepEqual(
-      [...kec.keys()].sort(),
-      ["kabupaten", "kecamatan", "kode_kecamatan"]
-    );
+    assert.deepEqual(Array.from(kec.keys()).sort(), [
+      "kabupaten",
+      "kecamatan",
+      "kode_kecamatan",
+    ]);
     assert.equal(
       profilDesaApiPath("kecamatan", kec),
       "/api/profil-desa/kecamatan?kabupaten=Aceh+Selatan&kecamatan=Bakongan&kode_kecamatan=110101"
@@ -156,10 +157,13 @@ describe("signed Distribusi area panel IA", () => {
       kabupaten: "Aceh Selatan",
       kecamatan: "Bakongan",
     });
-    assert.deepEqual(
-      [...desa.keys()].sort(),
-      ["id", "kabupaten", "kecamatan", "kode", "nama"]
-    );
+    assert.deepEqual(Array.from(desa.keys()).sort(), [
+      "id",
+      "kabupaten",
+      "kecamatan",
+      "kode",
+      "nama",
+    ]);
     assert.equal(desa.has("kode_desa"), false);
     assert.equal(desa.has("kode_desa_kelurahan"), false);
   });

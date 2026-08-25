@@ -362,7 +362,7 @@ export function AreaProfilPanel({
     setView(areaProfilViewOnOpen(selection));
     setActiveKecamatan(null);
     setActiveDesa(null);
-  }, [selection.kabupaten, selection.kecamatan, selection.kodeKecamatan, selection.kodeDesa]);
+  }, [selection]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
