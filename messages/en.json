@@ -388,7 +388,7 @@
     },
     "s3": {
       "title": "Village geometry join",
-      "body": "Primary geometry comes from Indonesian village borders for Aceh, with GADM admin4 fill-ins where needed. Matching is staged: kab+kec+desa, then kab+desa, then fuzzy within kab+kec and kab (score ≥86, near-ties rejected), plus a small manual alias map. R3P village codes are not crosswalked to GADM/Kemendagri codes because kab numbering schemes differ. After tuning, about 98.5% of R3P village rows link to geometry, with 100% damage-value coverage."
+      "body": "Village geometry comes from the Aceh geoportal (Peta_Administrasi_Desa / ADMINISTRASI_AR_DESA, 6,508 polygons). Damage figures and official names come from profil_desa in the data-bencana-aceh repository. The join key is the 10-digit kdepum (Kemendagri dots stripped) = BPS kode_desa_kelurahan; ArcGIS feature.id is never the join. Kode is stamped only when a coded profil row already exists — codes are not invented. The four null-kode profil rows stay ?id= lookup only. Official polygons with no profil pair (blank kdepum or a geo-only village) stay leftover without a kode."
     },
     "s4": {
       "title": "Terciles / color buckets",

@@ -50,7 +50,7 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    ```
    bun run seed:area-meta
    ```
-   `villageDistribution` is not included there. Seed it only for the intersection of GeoJSON 10-digit `properties.kode_desa_kelurahan` ∩ coded `profil_desa` rows (join on that kode, never `feature.id`). Do **not** run `--apply` against production until the coordinator reviews:
+   `villageDistribution` is not included there. Geometry is rebuilt from Geoportal Aceh `Peta_Administrasi_Desa` + `data-bencana-aceh` `profil_desa` (`npm run build:village-geoportal`). Seed `area_feature_meta` only for the intersection of GeoJSON 10-digit `properties.kode_desa_kelurahan` ∩ coded `profil_desa` rows (join on that kode, never `feature.id`). Do **not** run `--apply` against production until the coordinator reviews:
    ```
    npm run seed:village-area-meta -- --dry-run
    npm run seed:village-area-meta -- --apply

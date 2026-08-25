@@ -388,7 +388,7 @@
     },
     "s3": {
       "title": "Pencocokan geometri desa",
-      "body": "Geometri utama berasal dari batas desa Indonesia (Aceh) dengan isian dari GADM admin4 bila perlu. Pencocokan bertingkat: kab+kec+desa, lalu kab+desa, lalu fuzzy dalam kab+kec dan kab (skor ≥86, ikatan hampir sama ditolak), plus sedikit alias manual. Kode desa R3P tidak diselaraskan ke kode GADM/Kemendagri karena skema kab berbeda. Setelah perbaikan, sekitar 98,5% baris R3P desa tertaut geometri, dengan cakupan nilai kerusakan 100%."
+      "body": "Geometri desa diambil dari Geoportal Aceh (Peta_Administrasi_Desa / ADMINISTRASI_AR_DESA, 6.508 poligon). Atribut kerusakan dan nama resmi berasal dari profil_desa di repositori data-bencana-aceh. Kunci join adalah 10 digit kdepum (titik Kemendagri dihapus) = kode_desa_kelurahan BPS; feature.id ArcGIS tidak dipakai. Kode hanya dicap bila baris profil sudah punya kode itu — tidak ada kode yang diciptakan. Empat baris profil tanpa kode tetap lookup ?id= saja. Poligon resmi tanpa pasangan profil (kdepum kosong atau desa geo-only) tetap leftover tanpa kode."
     },
     "s4": {
       "title": "Tercile / bucket warna",
