@@ -337,7 +337,29 @@ describe("AreaProfilPanel source lock", () => {
   it("forwards existing kode_kabupaten from map clicks without inventing codes", () => {
     assert.match(viewport, /kodeKabupaten/);
     assert.match(viewport, /kode_kabupaten/);
-    assert.equal(/["']kode_kab["']/.test(viewport), false);
+    assert.equal(/params\.set\("kode_kab"/.test(panel), false);
+    assert.equal(PROFIL_QUERY_KEYS.kabupaten.includes("kode_kabupaten"), true);
+    assert.equal(
+      (PROFIL_QUERY_KEYS.kabupaten as readonly string[]).includes("kode_kab"),
+      false
+    );
+  });
+
+  it("keeps the #49 demografi MetricCards on every MetricSections view", () => {
+    assert.match(panel, /t\("kkLaki"\)/);
+    assert.match(panel, /metrics\.kk_laki_laki/);
+    assert.match(panel, /t\("kkPerempuan"\)/);
+    assert.match(panel, /t\("bayi"\)/);
+    assert.match(panel, /t\("balita"\)/);
+    assert.match(panel, /t\("anak"\)/);
+    assert.match(panel, /t\("remaja"\)/);
+    assert.match(panel, /t\("dewasa"\)/);
+    assert.match(panel, /t\("lansia"\)/);
+    assert.match(panel, /t\("disabilitas"\)/);
+    assert.match(panel, /metrics\.penyandang_disabilitas/);
+    const idJson = JSON.parse(id) as { profilDesa: Record<string, string> };
+    assert.equal(idJson.profilDesa.kkLaki, "KK Laki-laki");
+    assert.equal(idJson.profilDesa.disabilitas, "Penyandang Disabilitas");
   });
 
   it("reads the confirmed query keys on the three existing profil-desa routes", () => {
