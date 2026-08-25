@@ -4,13 +4,13 @@ Preview online memakai **Next.js Node di Vercel**, bukan GitHub Pages / static e
 
 ## 1. Import repo (sekali)
 
-1. Buka [vercel.com/new](https://vercel.com/new) dan login (GitHub `piygmalion`).
+1. Buka [vercel.com/new](https://vercel.com/new/import?s=https://github.com/piygmalion/aceh-tangguh) dan login (GitHub `piygmalion`).
 2. Import `piygmalion/aceh-tangguh`.
 3. Framework terdeteksi **Next.js**. Biarkan Root Directory `.`
 4. **Jangan** set `STATIC_EXPORT`, `GITHUB_PAGES`, atau `NEXT_PUBLIC_BASE_PATH`.
 5. Deploy. URL produksi biasanya `https://aceh-tangguh.vercel.app` (atau nama proyek yang dipilih). Setiap PR mendapat URL preview sendiri.
 
-`vercel.json` memaksa `npm ci` (bukan Bun — repo punya `bun.lock` dan `package-lock.json`; CI memakai npm) dan region `sin1` (Singapura).
+`vercel.json` memaksa `npm ci` (bukan Bun — repo punya `bun.lock` dan `package-lock.json`; CI memakai npm), Node **22.x**, dan region `sin1` (Singapura).
 
 ## 2. Preview tanpa env (cukup untuk hasil UI hari ini)
 

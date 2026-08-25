@@ -34,13 +34,13 @@ describe("Vercel Node preview (not static export)", () => {
     assert.match(nextCfg, /public\/fixtures/);
   });
 
-  it("pins Node 20 and keeps weather refresh within the Hobby 60s cap", () => {
+  it("pins Node 22 and keeps weather refresh within the Hobby 60s cap", () => {
     const nvm = read(".nvmrc").trim();
     const pkg = JSON.parse(read("package.json")) as {
       engines?: { node?: string };
     };
-    assert.equal(nvm, "20");
-    assert.equal(pkg.engines?.node, "20.x");
+    assert.equal(nvm, "22");
+    assert.equal(pkg.engines?.node, "22.x");
 
     const refresh = read("src/app/api/weather/refresh/route.ts");
     const match = refresh.match(/export const maxDuration = (\d+)/);

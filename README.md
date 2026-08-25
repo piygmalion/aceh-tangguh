@@ -16,7 +16,7 @@ Inspired-by only. Does **not** copy AGPL Mandum source — patterns only, own im
 
 Objek preview publik adalah **Vercel** (Next.js Node + API routes), bukan GitHub Pages.
 
-Import repo di [vercel.com/new](https://vercel.com/new) — langkah, env, dan URL cron: `docs/vercel.md`.
+Import repo di [vercel.com/new](https://vercel.com/new/import?s=https://github.com/piygmalion/aceh-tangguh) — langkah, env, dan URL cron: `docs/vercel.md`.
 
 Jangan set `STATIC_EXPORT` / `GITHUB_PAGES` / `NEXT_PUBLIC_BASE_PATH` di Vercel.
 
