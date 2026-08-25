@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireStaffApi, sanitizeSearch } from "@/lib/auth/admin";
+import { rejectCrossOrigin } from "@/lib/security/origin";
 import type { ReportRow, ReportStatus } from "@/lib/supabase/types";
 
 export const dynamic = "force-dynamic";
@@ -86,6 +87,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
+
   const auth = await requireStaffApi();
   if (!auth.ok) return auth.response;
 

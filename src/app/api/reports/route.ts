@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createServerClient } from "@/lib/supabase/server";
+import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import type { ReportRow } from "@/lib/supabase/types";
+import { guardPublicPost } from "@/lib/security/public-post";
 
 export const dynamic = "force-dynamic";
 
@@ -51,11 +52,13 @@ export async function GET() {
     }
   }
 
-  // Graceful empty fallback when Supabase env/query fails (no /tmp store).
   return NextResponse.json({ items: [], source: "fallback" });
 }
 
 export async function POST(req: NextRequest) {
+  const blocked = guardPublicPost(req, "reports", 8);
+  if (blocked) return blocked;
+
   let json: unknown;
   try {
     json = await req.json();
@@ -71,7 +74,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Consent required" }, { status: 400 });
   }
 
-  const supabase = createServerClient();
+  const supabase = createServiceClient();
   if (!supabase) {
     return NextResponse.json(
       { error: "Supabase is not configured" },

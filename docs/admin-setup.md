@@ -1,6 +1,6 @@
 # Admin dashboard setup
 
-The staff console lives at `/id/admin` (and `/en/admin`). The Next.js app only needs `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. **Do not add `SUPABASE_SERVICE_ROLE_KEY` for the app to run.**
+The staff console lives at `/id/admin` (and `/en/admin`). The admin UI only needs `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. **Do not put `SUPABASE_SERVICE_ROLE_KEY` in the browser bundle or GitHub Pages.** Citizen-report *writes* on the Node host do need the service role — see `docs/laporan-production.md`.
 
 This PR does **not** seed any Auth user or password.
 
@@ -37,7 +37,7 @@ Open `/id/admin/login` (or the **Masuk** control in the navbar) with that email/
 
 ## Roles
 
-- `admin` — report moderation only (`queued` / `published` / `rejected`).
+- `admin` — report moderation (`laporan_*` plus legacy `reports`).
 - `super_admin` — moderation plus CMS (`publikasi`, `kejadian_bencana`) and typed table editors (not a raw SQL console).
 
 ## Optional one-off scripts

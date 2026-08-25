@@ -1,19 +1,21 @@
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import {
+  detectMimeFromMagic,
+  extensionForMime,
+  isAllowedUploadField,
+} from "@/lib/security/magic-bytes";
+import { guardPublicPost } from "@/lib/security/public-post";
 
 export const dynamic = "force-dynamic";
 
 const MAX_BYTES = 10 * 1024 * 1024;
-const ALLOWED = new Set([
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "video/mp4",
-  "video/quicktime",
-]);
 
 export async function POST(req: NextRequest) {
+  const blocked = guardPublicPost(req, "laporan-upload", 20);
+  if (blocked) return blocked;
+
   const supabase = createServiceClient();
   if (!supabase) {
     return NextResponse.json({ error: "Upload service not configured" }, { status: 503 });
@@ -21,8 +23,8 @@ export async function POST(req: NextRequest) {
 
   const form = await req.formData();
   const file = form.get("file");
-  const laporanTipe = String(form.get("laporan_tipe") ?? "kejadian");
-  const fieldKey = String(form.get("field_key") ?? "media");
+  const laporanTipe = String(form.get("laporan_tipe") ?? "").trim();
+  const fieldKey = String(form.get("field_key") ?? "").trim();
 
   if (!(file instanceof File)) {
     return NextResponse.json({ error: "file required" }, { status: 400 });
@@ -30,16 +32,27 @@ export async function POST(req: NextRequest) {
   if (file.size > MAX_BYTES) {
     return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
   }
-  if (!ALLOWED.has(file.type)) {
-    return NextResponse.json({ error: "MIME type not allowed" }, { status: 400 });
+  if (!isAllowedUploadField(laporanTipe, fieldKey)) {
+    return NextResponse.json({ error: "Invalid upload field" }, { status: 400 });
   }
 
-  const ext = file.name.split(".").pop()?.replace(/[^a-z0-9]/gi, "") ?? "bin";
-  const path = `${laporanTipe}/${fieldKey}/${randomUUID()}.${ext}`;
   const buffer = Buffer.from(await file.arrayBuffer());
+  const sniffed = detectMimeFromMagic(buffer);
+  if (!sniffed) {
+    return NextResponse.json({ error: "Unrecognized file type" }, { status: 400 });
+  }
+  if (fieldKey === "foto" && !sniffed.startsWith("image/")) {
+    return NextResponse.json({ error: "foto must be an image" }, { status: 400 });
+  }
+  if (fieldKey === "video" && !sniffed.startsWith("video/")) {
+    return NextResponse.json({ error: "video must be a video" }, { status: 400 });
+  }
+
+  const ext = extensionForMime(sniffed);
+  const path = `${laporanTipe}/${fieldKey}/${randomUUID()}.${ext}`;
 
   const { error } = await supabase.storage.from("laporan-media").upload(path, buffer, {
-    contentType: file.type,
+    contentType: sniffed,
     upsert: false,
   });
 
@@ -51,6 +64,6 @@ export async function POST(req: NextRequest) {
     path,
     bucket: "laporan-media",
     size: file.size,
-    mime: file.type,
+    mime: sniffed,
   });
 }

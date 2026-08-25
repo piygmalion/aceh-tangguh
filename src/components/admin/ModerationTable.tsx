@@ -5,21 +5,56 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { StatusBadge } from "@/components/admin/StatusBadge";
-import type { ReportStatus, ReportTopic } from "@/lib/supabase/types";
+import type { ReportStatus } from "@/lib/supabase/types";
 
-type ReportItem = {
+type Tab = "kejadian" | "penanganan" | "legacy";
+type LaporanStatusFilter =
+  | "all"
+  | "submitted"
+  | "in_review"
+  | "approved"
+  | "rejected"
+  | "needs_info";
+
+type LaporanItem = {
   id: string;
-  topic: ReportTopic;
+  tipe: "kejadian" | "penanganan";
+  nomorLaporan: string;
+  jenisBencana: string;
+  topic?: string;
+  status: string;
+  latitude: number;
+  longitude: number;
+  kabupaten: string;
+  kecamatan: string | null;
+  desa: string | null;
+  skorUrgensi: number | null;
+  tampilDiPeta: boolean;
+  ringkasan: string;
+  submittedAt: string;
+};
+
+type LegacyItem = {
+  id: string;
+  topic: string;
   description: string;
   longitude: number;
   latitude: number;
   placeName?: string;
-  consentMapDisplay: boolean;
   status: ReportStatus;
   createdAt: string;
 };
 
-const STATUSES: Array<ReportStatus | "all"> = [
+const LAPORAN_FILTERS: LaporanStatusFilter[] = [
+  "all",
+  "submitted",
+  "in_review",
+  "approved",
+  "rejected",
+  "needs_info",
+];
+
+const LEGACY_FILTERS: Array<ReportStatus | "all"> = [
   "all",
   "queued",
   "published",
@@ -28,17 +63,34 @@ const STATUSES: Array<ReportStatus | "all"> = [
 
 export function ModerationTable() {
   const t = useTranslations("admin");
-  const [status, setStatus] = useState<ReportStatus | "all">("queued");
+  const [tab, setTab] = useState<Tab>("kejadian");
+  const [laporanStatus, setLaporanStatus] = useState<LaporanStatusFilter>("submitted");
+  const [legacyStatus, setLegacyStatus] = useState<ReportStatus | "all">("queued");
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
-  const [items, setItems] = useState<ReportItem[]>([]);
+  const [items, setItems] = useState<LaporanItem[]>([]);
+  const [legacyItems, setLegacyItems] = useState<LegacyItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const pageSize = 20;
 
-  const statusLabel = useMemo(
+  const laporanStatusLabel = useMemo(
+    () => ({
+      all: t("statusAll"),
+      submitted: t("statusSubmitted"),
+      in_review: t("statusInReview"),
+      approved: t("statusApproved"),
+      rejected: t("statusRejected"),
+      needs_info: t("statusNeedsInfo"),
+      archived: t("statusArchived"),
+      draft: t("statusDraft"),
+    }),
+    [t]
+  );
+
+  const legacyStatusLabel = useMemo(
     () => ({
       all: t("statusAll"),
       queued: t("statusQueued"),
@@ -55,9 +107,29 @@ export function ModerationTable() {
       page: String(page),
       pageSize: String(pageSize),
     });
-    if (status !== "all") params.set("status", status);
     if (q.trim()) params.set("q", q.trim());
-    const res = await fetch(`/api/admin/reports?${params.toString()}`, {
+
+    if (tab === "legacy") {
+      if (legacyStatus !== "all") params.set("status", legacyStatus);
+      const res = await fetch(`/api/admin/reports?${params.toString()}`, {
+        cache: "no-store",
+      });
+      if (!res.ok) {
+        setError(t("loadError"));
+        setLoading(false);
+        return;
+      }
+      const data = (await res.json()) as { items: LegacyItem[]; total: number };
+      setLegacyItems(data.items);
+      setItems([]);
+      setTotal(data.total);
+      setLoading(false);
+      return;
+    }
+
+    params.set("tipe", tab);
+    if (laporanStatus !== "all") params.set("status", laporanStatus);
+    const res = await fetch(`/api/admin/laporan?${params.toString()}`, {
       cache: "no-store",
     });
     if (!res.ok) {
@@ -65,8 +137,9 @@ export function ModerationTable() {
       setLoading(false);
       return;
     }
-    const data = (await res.json()) as { items: ReportItem[]; total: number };
+    const data = (await res.json()) as { items: LaporanItem[]; total: number };
     setItems(data.items);
+    setLegacyItems([]);
     setTotal(data.total);
     setLoading(false);
   }
@@ -74,14 +147,34 @@ export function ModerationTable() {
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, page]);
+  }, [tab, laporanStatus, legacyStatus, page]);
 
-  async function setReportStatus(id: string, next: ReportStatus) {
+  async function patchLaporan(id: string, status: string, tampilDiPeta?: boolean) {
+    setPendingId(id);
+    const res = await fetch("/api/admin/laporan", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tipe: tab,
+        id,
+        status,
+        tampil_di_peta: tampilDiPeta,
+      }),
+    });
+    setPendingId(null);
+    if (!res.ok) {
+      setError(t("updateError"));
+      return;
+    }
+    await load();
+  }
+
+  async function patchLegacy(id: string, status: ReportStatus) {
     setPendingId(id);
     const res = await fetch("/api/admin/reports", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status: next }),
+      body: JSON.stringify({ id, status }),
     });
     setPendingId(null);
     if (!res.ok) {
@@ -92,6 +185,7 @@ export function ModerationTable() {
   }
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
+  const tabs: Tab[] = ["kejadian", "penanganan", "legacy"];
 
   return (
     <GlassPanel className="p-4 sm:p-6">
@@ -120,24 +214,68 @@ export function ModerationTable() {
         </form>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {STATUSES.map((s) => (
+      <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label={t("moderationTabs")}>
+        {tabs.map((key) => (
           <button
-            key={s}
+            key={key}
             type="button"
+            role="tab"
+            aria-selected={tab === key}
             onClick={() => {
-              setStatus(s);
+              setTab(key);
               setPage(1);
             }}
             className={`rounded-full px-3 py-1.5 text-sm transition ${
-              status === s
+              tab === key
                 ? "bg-[var(--accent-dim)] font-medium text-[var(--accent)]"
                 : "text-[var(--text-dim)] hover:bg-[var(--accent-dim)]"
             }`}
           >
-            {statusLabel[s]}
+            {key === "kejadian"
+              ? t("tabKejadian")
+              : key === "penanganan"
+                ? t("tabPenanganan")
+                : t("tabLegacy")}
           </button>
         ))}
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {tab === "legacy"
+          ? LEGACY_FILTERS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => {
+                  setLegacyStatus(s);
+                  setPage(1);
+                }}
+                className={`rounded-full px-3 py-1.5 text-sm transition ${
+                  legacyStatus === s
+                    ? "bg-[var(--accent-dim)] font-medium text-[var(--accent)]"
+                    : "text-[var(--text-dim)] hover:bg-[var(--accent-dim)]"
+                }`}
+              >
+                {legacyStatusLabel[s]}
+              </button>
+            ))
+          : LAPORAN_FILTERS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => {
+                  setLaporanStatus(s);
+                  setPage(1);
+                }}
+                className={`rounded-full px-3 py-1.5 text-sm transition ${
+                  laporanStatus === s
+                    ? "bg-[var(--accent-dim)] font-medium text-[var(--accent)]"
+                    : "text-[var(--text-dim)] hover:bg-[var(--accent-dim)]"
+                }`}
+              >
+                {laporanStatusLabel[s]}
+              </button>
+            ))}
       </div>
 
       {error ? (
@@ -151,7 +289,9 @@ export function ModerationTable() {
           <thead className="text-[var(--text-dim)]">
             <tr>
               <th className="px-2 py-2 font-medium">{t("colStatus")}</th>
-              <th className="px-2 py-2 font-medium">{t("colTopic")}</th>
+              <th className="px-2 py-2 font-medium">
+                {tab === "legacy" ? t("colTopic") : t("colNomor")}
+              </th>
               <th className="px-2 py-2 font-medium">{t("colDescription")}</th>
               <th className="px-2 py-2 font-medium">{t("colPlace")}</th>
               <th className="px-2 py-2 font-medium">{t("colCreated")}</th>
@@ -165,6 +305,66 @@ export function ModerationTable() {
                   {t("loading")}
                 </td>
               </tr>
+            ) : tab === "legacy" ? (
+              legacyItems.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
+                    {t("empty")}
+                  </td>
+                </tr>
+              ) : (
+                legacyItems.map((item) => (
+                  <tr key={item.id} className="border-t border-[var(--border)] align-top">
+                    <td className="px-2 py-3">
+                      <StatusBadge status={item.status} label={legacyStatusLabel[item.status]} />
+                    </td>
+                    <td className="px-2 py-3 capitalize">{item.topic}</td>
+                    <td className="max-w-xs px-2 py-3 text-[var(--text-dim)]">{item.description}</td>
+                    <td className="px-2 py-3 text-[var(--text-dim)]">
+                      {item.placeName ?? "—"}
+                      <div className="text-xs opacity-70">
+                        {item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-2 py-3 text-[var(--text-dim)]">
+                      {new Date(item.createdAt).toLocaleString()}
+                    </td>
+                    <td className="px-2 py-3">
+                      <div className="flex flex-col gap-1">
+                        {item.status !== "published" ? (
+                          <Button
+                            size="sm"
+                            disabled={pendingId === item.id}
+                            onClick={() => void patchLegacy(item.id, "published")}
+                          >
+                            {t("actionPublish")}
+                          </Button>
+                        ) : null}
+                        {item.status !== "rejected" ? (
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            disabled={pendingId === item.id}
+                            onClick={() => void patchLegacy(item.id, "rejected")}
+                          >
+                            {t("actionReject")}
+                          </Button>
+                        ) : null}
+                        {item.status !== "queued" ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={pendingId === item.id}
+                            onClick={() => void patchLegacy(item.id, "queued")}
+                          >
+                            {t("actionQueue")}
+                          </Button>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )
             ) : items.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
@@ -175,30 +375,58 @@ export function ModerationTable() {
               items.map((item) => (
                 <tr key={item.id} className="border-t border-[var(--border)] align-top">
                   <td className="px-2 py-3">
-                    <StatusBadge status={item.status} label={statusLabel[item.status]} />
+                    <StatusBadge
+                      status={item.status}
+                      label={
+                        laporanStatusLabel[item.status as keyof typeof laporanStatusLabel] ??
+                        item.status
+                      }
+                    />
+                    {item.tampilDiPeta ? (
+                      <div className="mt-1 text-[10px] uppercase tracking-wide text-[var(--accent)]">
+                        {t("onMap")}
+                      </div>
+                    ) : null}
                   </td>
-                  <td className="px-2 py-3 capitalize">{item.topic}</td>
+                  <td className="px-2 py-3">
+                    <div className="font-medium">{item.nomorLaporan}</div>
+                    <div className="text-xs capitalize text-[var(--text-dim)]">
+                      {item.jenisBencana}
+                      {item.topic ? ` · ${item.topic}` : ""}
+                      {item.skorUrgensi != null ? ` · ${item.skorUrgensi}` : ""}
+                    </div>
+                  </td>
                   <td className="max-w-xs px-2 py-3 text-[var(--text-dim)]">
-                    {item.description}
+                    {item.ringkasan || "—"}
                   </td>
                   <td className="px-2 py-3 text-[var(--text-dim)]">
-                    {item.placeName ?? "—"}
+                    {[item.desa, item.kecamatan, item.kabupaten].filter(Boolean).join(", ") || "—"}
                     <div className="text-xs opacity-70">
                       {item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-2 py-3 text-[var(--text-dim)]">
-                    {new Date(item.createdAt).toLocaleString()}
+                    {new Date(item.submittedAt).toLocaleString()}
                   </td>
                   <td className="px-2 py-3">
                     <div className="flex flex-col gap-1">
-                      {item.status !== "published" ? (
+                      {item.status !== "approved" ? (
                         <Button
                           size="sm"
                           disabled={pendingId === item.id}
-                          onClick={() => void setReportStatus(item.id, "published")}
+                          onClick={() =>
+                            void patchLaporan(item.id, "approved", true)
+                          }
                         >
-                          {t("actionPublish")}
+                          {t("actionApprove")}
+                        </Button>
+                      ) : item.status === "approved" && !item.tampilDiPeta ? (
+                        <Button
+                          size="sm"
+                          disabled={pendingId === item.id}
+                          onClick={() => void patchLaporan(item.id, "approved", true)}
+                        >
+                          {t("actionShowMap")}
                         </Button>
                       ) : null}
                       {item.status !== "rejected" ? (
@@ -206,19 +434,19 @@ export function ModerationTable() {
                           size="sm"
                           variant="danger"
                           disabled={pendingId === item.id}
-                          onClick={() => void setReportStatus(item.id, "rejected")}
+                          onClick={() => void patchLaporan(item.id, "rejected")}
                         >
                           {t("actionReject")}
                         </Button>
                       ) : null}
-                      {item.status !== "queued" ? (
+                      {item.status !== "in_review" ? (
                         <Button
                           size="sm"
                           variant="outline"
                           disabled={pendingId === item.id}
-                          onClick={() => void setReportStatus(item.id, "queued")}
+                          onClick={() => void patchLaporan(item.id, "in_review")}
                         >
-                          {t("actionQueue")}
+                          {t("actionReview")}
                         </Button>
                       ) : null}
                     </div>

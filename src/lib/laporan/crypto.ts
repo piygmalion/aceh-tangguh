@@ -19,6 +19,14 @@ export function isProductionPiiConfigured(): boolean {
   return encryptionKey() != null && PII_SALT !== "aceh-tangguh-dev";
 }
 
+export function assertProductionPii(): void {
+  if (process.env.NODE_ENV === "production" && !isProductionPiiConfigured()) {
+    throw new Error(
+      "LAPORAN_PII_KEY (64 hex) and a non-default LAPORAN_PII_SALT are required in production"
+    );
+  }
+}
+
 export function hashPii(value: string): string {
   return createHash("sha256").update(`${PII_SALT}:${value}`).digest("hex");
 }
