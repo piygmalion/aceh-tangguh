@@ -10,6 +10,8 @@ export type VillageClickSelection = {
   kecamatan: string;
   kodeDesa?: string;
   kodeKecamatan?: string;
+  /** Existing map/profil field `kode_kabupaten` — do not invent values. */
+  kodeKabupaten?: string;
   level?: string;
 };
 
@@ -96,14 +98,16 @@ export type DesaProfilResponse = ProfilSummary & {
   source: "supabase";
 };
 
+export type KecamatanListItem = {
+  kecamatan: string;
+  kode_kecamatan: string | null;
+  desa_count: number;
+  badge: ImpactBadge;
+  total_rumah_rusak: NullableCount;
+};
+
 export type KabupatenProfilResponse = ProfilSummary & {
-  kecamatan_list: Array<{
-    kecamatan: string;
-    kode_kecamatan: string | null;
-    desa_count: number;
-    badge: ImpactBadge;
-    total_rumah_rusak: NullableCount;
-  }>;
+  kecamatan_list: KecamatanListItem[];
   source: "supabase";
 };
 

@@ -4,6 +4,19 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Home, X } from "lucide-react";
+import {
+  AREA_PROFIL_INITIAL_VIEW,
+  areaProfilBack,
+  areaProfilBreadcrumbEnabled,
+  areaProfilBreadcrumbTarget,
+  areaProfilViewOnOpen,
+  kabupatenNameFromSelection,
+  profilDesaApiPath,
+  profilDesaSearchParams,
+  profilKabupatenSearchParams,
+  profilKecamatanSearchParams,
+  type AreaProfilView,
+} from "@/lib/area-profil-ia";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import {
@@ -11,6 +24,8 @@ import {
   type DesaListItem,
   type DesaProfilResponse,
   type ImpactBadge,
+  type KabupatenProfilResponse,
+  type KecamatanListItem,
   type KecamatanProfilResponse,
   type MetricBundle,
   type NullableCount,
@@ -21,14 +36,23 @@ import { Chip } from "@/components/ui/Chip";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
-type PanelView = "kecamatan" | "desa-list" | "desa";
+async function fetchKabupaten(
+  sel: VillageClickSelection
+): Promise<KabupatenProfilResponse | null> {
+  const params = profilKabupatenSearchParams(sel);
+  const res = await fetchPublicApi(profilDesaApiPath("kabupaten", params));
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error("kabupaten fetch failed");
+  return res.json();
+}
 
-async function fetchKecamatan(sel: VillageClickSelection): Promise<KecamatanProfilResponse | null> {
-  const params = new URLSearchParams();
-  if (sel.kabupaten) params.set("kabupaten", sel.kabupaten);
-  if (sel.kecamatan) params.set("kecamatan", sel.kecamatan);
-  if (sel.kodeKecamatan) params.set("kode_kecamatan", sel.kodeKecamatan);
-  const res = await fetchPublicApi(`/api/profil-desa/kecamatan?${params.toString()}`);
+async function fetchKecamatan(opts: {
+  kabupaten?: string;
+  kecamatan?: string;
+  kodeKecamatan?: string;
+}): Promise<KecamatanProfilResponse | null> {
+  const params = profilKecamatanSearchParams(opts);
+  const res = await fetchPublicApi(profilDesaApiPath("kecamatan", params));
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("kecamatan fetch failed");
   return res.json();
@@ -41,13 +65,8 @@ async function fetchDesa(opts: {
   kabupaten?: string;
   kecamatan?: string;
 }): Promise<DesaProfilResponse | null> {
-  const params = new URLSearchParams();
-  if (opts.id) params.set("id", opts.id);
-  if (opts.kode) params.set("kode", opts.kode);
-  if (opts.nama) params.set("nama", opts.nama);
-  if (opts.kabupaten) params.set("kabupaten", opts.kabupaten);
-  if (opts.kecamatan) params.set("kecamatan", opts.kecamatan);
-  const res = await fetchPublicApi(`/api/profil-desa/desa?${params.toString()}`);
+  const params = profilDesaSearchParams(opts);
+  const res = await fetchPublicApi(profilDesaApiPath("desa", params));
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("desa fetch failed");
   return res.json();
@@ -240,6 +259,91 @@ function EmptyState() {
   );
 }
 
+function Breadcrumb({
+  view,
+  reached,
+  onGo,
+}: {
+  view: AreaProfilView;
+  reached: { kecamatan: boolean; desa: boolean };
+  onGo: (next: AreaProfilView) => void;
+}) {
+  const t = useTranslations("profilDesa");
+  const crumbs: { id: AreaProfilView; label: string }[] = [
+    { id: "kabupaten", label: t("crumbKab") },
+    { id: "kecamatan", label: t("crumbKec") },
+    { id: "desa", label: t("crumbDesa") },
+  ];
+  return (
+    <nav aria-label={t("crumbKab")}>
+      <ol className={cn("mt-0.5 flex flex-wrap items-center gap-x-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+        {crumbs.map((crumb, index) => {
+          const enabled = areaProfilBreadcrumbEnabled(view, crumb.id, reached);
+          const target = areaProfilBreadcrumbTarget(view, crumb.id, reached);
+          const current = crumb.id === view;
+          return (
+            <li key={crumb.id} className="flex items-center gap-x-1">
+              {index > 0 ? <span aria-hidden>{t("locationSep")}</span> : null}
+              {target ? (
+                <button
+                  type="button"
+                  className="text-[var(--text)] underline-offset-2 hover:underline"
+                  onClick={() => onGo(target)}
+                >
+                  {crumb.label}
+                </button>
+              ) : (
+                <span
+                  className={cn(
+                    current ? "font-medium text-[var(--text)]" : "",
+                    !enabled ? "opacity-50" : ""
+                  )}
+                  aria-current={current ? "page" : undefined}
+                >
+                  {crumb.label}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+function ListRow({
+  title,
+  subtitle,
+  badge,
+  highlighted,
+  onClick,
+}: {
+  title: string;
+  subtitle: string;
+  badge: ImpactBadge;
+  highlighted: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <li>
+      <button
+        type="button"
+        onClick={onClick}
+        className="map-option w-full"
+        data-active={highlighted ? "true" : "false"}
+      >
+        <span className="min-w-0 flex-1 text-left">
+          <span className="block truncate font-medium">{title}</span>
+          <span className={cn("block text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+            {subtitle}
+          </span>
+        </span>
+        <BadgeChip badge={badge} />
+      </button>
+    </li>
+  );
+}
+
 export function AreaProfilPanel({
   selection,
   onClose,
@@ -248,11 +352,15 @@ export function AreaProfilPanel({
   onClose: () => void;
 }) {
   const t = useTranslations("profilDesa");
-  const [view, setView] = useState<PanelView>("kecamatan");
+  const [view, setView] = useState<AreaProfilView>(AREA_PROFIL_INITIAL_VIEW);
+  const [activeKecamatan, setActiveKecamatan] = useState<KecamatanListItem | null>(
+    null
+  );
   const [activeDesa, setActiveDesa] = useState<DesaListItem | null>(null);
 
   useEffect(() => {
-    setView("kecamatan");
+    setView(areaProfilViewOnOpen(selection));
+    setActiveKecamatan(null);
     setActiveDesa(null);
   }, [selection.kabupaten, selection.kecamatan, selection.kodeKecamatan, selection.kodeDesa]);
 
@@ -264,13 +372,37 @@ export function AreaProfilPanel({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  const kabName = kabupatenNameFromSelection(selection);
+  const kabQuery = useQuery({
+    queryKey: qk.profilKabupaten({
+      kabupaten: kabName || undefined,
+      kodeKabupaten: selection.kodeKabupaten,
+    }),
+    queryFn: () => fetchKabupaten(selection),
+    enabled: Boolean(kabName || selection.kodeKabupaten),
+  });
+
+  const kecamatanName = activeKecamatan?.kecamatan || selection.kecamatan;
   const kecQuery = useQuery({
     queryKey: qk.profilKecamatan({
-      kabupaten: selection.kabupaten,
-      kecamatan: selection.kecamatan,
-      kodeKecamatan: selection.kodeKecamatan,
+      kabupaten: kabName || selection.kabupaten,
+      kecamatan: kecamatanName,
+      kodeKecamatan: activeKecamatan?.kode_kecamatan ?? selection.kodeKecamatan,
     }),
-    queryFn: () => fetchKecamatan(selection),
+    queryFn: () =>
+      fetchKecamatan({
+        kabupaten: kabName || selection.kabupaten,
+        kecamatan: kecamatanName,
+        kodeKecamatan:
+          activeKecamatan?.kode_kecamatan ?? selection.kodeKecamatan,
+      }),
+    enabled:
+      (view === "kecamatan" || view === "desa") &&
+      Boolean(
+        kecamatanName ||
+          activeKecamatan?.kode_kecamatan ||
+          selection.kodeKecamatan
+      ),
   });
 
   const desaQuery = useQuery({
@@ -284,40 +416,78 @@ export function AreaProfilPanel({
         id: activeDesa?.id,
         kode: activeDesa?.kode ?? undefined,
         nama: activeDesa?.nama,
-        kabupaten: activeDesa?.kabupaten ?? selection.kabupaten,
-        kecamatan: activeDesa?.kecamatan ?? selection.kecamatan,
+        kabupaten: activeDesa?.kabupaten ?? kabName ?? selection.kabupaten,
+        kecamatan: activeDesa?.kecamatan ?? kecamatanName,
       }),
     enabled: view === "desa" && !!activeDesa,
   });
 
+  const kab = kabQuery.data;
   const kec = kecQuery.data;
   const title =
     view === "desa"
       ? (desaQuery.data?.title ?? activeDesa?.nama ?? selection.name)
-      : (kec?.title ?? selection.kecamatan);
+      : view === "kecamatan"
+        ? (kec?.title ?? activeKecamatan?.kecamatan ?? selection.kecamatan)
+        : (kab?.title ?? kabName);
   const badge: ImpactBadge | null =
     view === "desa"
       ? (desaQuery.data?.badge ?? activeDesa?.badge ?? null)
-      : (kec?.badge ?? null);
-  const locationLine = [selection.kabupaten, selection.kecamatan].filter(Boolean).join(" · ");
-  const desaCount = kec?.desa_count ?? 0;
+      : view === "kecamatan"
+        ? (kec?.badge ?? activeKecamatan?.badge ?? null)
+        : (kab?.badge ?? null);
+  const desaCount =
+    view === "desa" ? 0 : view === "kecamatan" ? (kec?.desa_count ?? 0) : (kab?.desa_count ?? 0);
+  const kicker =
+    view === "desa"
+      ? t("desaLabel")
+      : view === "kecamatan"
+        ? t("kecamatanLabel")
+        : t("kabupatenLabel");
+  const reached = {
+    kecamatan: !!activeKecamatan,
+    desa: !!activeDesa,
+  };
+  const showClickedHint =
+    Boolean(selection.name) &&
+    view !== "desa" &&
+    selection.name !== kabName &&
+    selection.name !== selection.kecamatan &&
+    selection.level !== "kab" &&
+    selection.level !== "kabupaten";
 
   const goBack = () => {
-    if (view === "desa") {
-      setView("desa-list");
+    const next = areaProfilBack(view);
+    if (next === "close") {
+      onClose();
       return;
     }
-    if (view === "desa-list") {
-      setView("kecamatan");
-      return;
-    }
-    onClose();
+    setView(next);
+  };
+
+  const openKecamatan = (item: KecamatanListItem) => {
+    setActiveKecamatan(item);
+    setActiveDesa(null);
+    setView("kecamatan");
   };
 
   const openDesa = (item: DesaListItem) => {
     setActiveDesa(item);
     setView("desa");
   };
+
+  const loading =
+    view === "kabupaten"
+      ? kabQuery.isLoading
+      : view === "kecamatan"
+        ? kecQuery.isLoading
+        : desaQuery.isLoading;
+  const errored =
+    view === "kabupaten"
+      ? kabQuery.isError
+      : view === "kecamatan"
+        ? kecQuery.isError
+        : desaQuery.isError;
 
   return (
     <div className="pointer-events-none absolute inset-0 z-40">
@@ -342,21 +512,19 @@ export function AreaProfilPanel({
           </span>
           <div className="min-w-0 flex-1">
             <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
-              {view === "desa-list"
-                ? t("desaListTitle")
-                : view === "desa"
-                  ? t("desaLabel")
-                  : t("kecamatanLabel")}
+              {kicker}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="truncate text-base font-semibold tracking-tight">{title}</h2>
               {badge ? <BadgeChip badge={badge} /> : null}
             </div>
-            <p className="mt-0.5 truncate text-xs text-[var(--text-dim)]">
-              {locationLine}
-              {view !== "desa" && desaCount > 0 ? ` · ${t("desaCount", { count: desaCount })}` : ""}
-            </p>
-            {selection.name && view !== "desa" ? (
+            <Breadcrumb view={view} reached={reached} onGo={setView} />
+            {desaCount > 0 ? (
+              <p className="mt-0.5 truncate text-xs text-[var(--text-dim)]">
+                {t("desaCount", { count: desaCount })}
+              </p>
+            ) : null}
+            {showClickedHint ? (
               <p className={cn("mt-0.5 truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                 {t("clickedHint", { name: selection.name })}
               </p>
@@ -373,52 +541,99 @@ export function AreaProfilPanel({
         </header>
 
         <div className="min-h-0 flex-1 overflow-auto px-4 py-3">
-          {kecQuery.isLoading ? (
+          {loading ? (
             <p className="py-8 text-center text-sm text-[var(--text-dim)]">{t("loading")}</p>
-          ) : kecQuery.isError ? (
+          ) : errored ? (
             <p className="py-8 text-center text-sm text-[var(--danger)]">{t("error")}</p>
+          ) : view === "kabupaten" ? (
+            kab ? (
+              <div className="space-y-4">
+                <MetricSections metrics={kab.metrics} />
+                <section>
+                  <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                    {t("kecamatanLabel")}
+                  </h3>
+                  {kab.kecamatan_list.length > 0 ? (
+                    <ul className="space-y-1.5">
+                      {kab.kecamatan_list.map((item) => {
+                        const highlighted =
+                          item.kode_kecamatan === selection.kodeKecamatan ||
+                          item.kecamatan.toLowerCase() ===
+                            selection.kecamatan.toLowerCase();
+                        return (
+                          <ListRow
+                            key={item.kode_kecamatan || item.kecamatan}
+                            title={item.kecamatan}
+                            subtitle={
+                              item.desa_count > 0
+                                ? t("desaCount", { count: item.desa_count })
+                                : item.total_rumah_rusak != null
+                                  ? t("damageCount", {
+                                      count: formatMetricId(
+                                        item.total_rumah_rusak,
+                                        t("unknown")
+                                      ),
+                                    })
+                                  : t("unknown")
+                            }
+                            badge={item.badge}
+                            highlighted={highlighted}
+                            onClick={() => openKecamatan(item)}
+                          />
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <EmptyState />
+                  )}
+                </section>
+              </div>
+            ) : (
+              <EmptyState />
+            )
           ) : view === "kecamatan" ? (
             kec ? (
-              <MetricSections metrics={kec.metrics} />
+              <div className="space-y-4">
+                <MetricSections metrics={kec.metrics} />
+                <section>
+                  <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                    {t("desaLabel")}
+                  </h3>
+                  {kec.desa.length > 0 ? (
+                    <ul className="space-y-1.5">
+                      {kec.desa.map((item) => {
+                        const highlighted =
+                          item.kode === selection.kodeDesa ||
+                          item.nama.toLowerCase() === selection.name.toLowerCase();
+                        return (
+                          <ListRow
+                            key={item.id || item.kode || item.nama}
+                            title={item.nama}
+                            subtitle={
+                              item.total_rumah_rusak != null
+                                ? t("damageCount", {
+                                    count: formatMetricId(
+                                      item.total_rumah_rusak,
+                                      t("unknown")
+                                    ),
+                                  })
+                                : t("unknown")
+                            }
+                            badge={item.badge}
+                            highlighted={highlighted}
+                            onClick={() => openDesa(item)}
+                          />
+                        );
+                      })}
+                    </ul>
+                  ) : (
+                    <EmptyState />
+                  )}
+                </section>
+              </div>
             ) : (
               <EmptyState />
             )
-          ) : view === "desa-list" ? (
-            kec && kec.desa.length > 0 ? (
-              <ul className="space-y-1.5">
-                {kec.desa.map((item) => {
-                  const highlighted =
-                    item.kode === selection.kodeDesa ||
-                    item.nama.toLowerCase() === selection.name.toLowerCase();
-                  return (
-                    <li key={item.id || item.kode || item.nama}>
-                      <button
-                        type="button"
-                        onClick={() => openDesa(item)}
-                        className="map-option w-full"
-                        data-active={highlighted ? "true" : "false"}
-                      >
-                        <span className="min-w-0 flex-1 text-left">
-                          <span className="block truncate font-medium">{item.nama}</span>
-                          <span className={cn("block text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                            {item.total_rumah_rusak != null
-                              ? t("damageCount", {
-                                  count: formatMetricId(item.total_rumah_rusak, t("unknown")),
-                                })
-                              : t("unknown")}
-                          </span>
-                        </span>
-                        <BadgeChip badge={item.badge} />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <EmptyState />
-            )
-          ) : desaQuery.isLoading ? (
-            <p className="py-8 text-center text-sm text-[var(--text-dim)]">{t("loading")}</p>
           ) : desaQuery.data ? (
             <MetricSections metrics={desaQuery.data.metrics} />
           ) : (
@@ -437,16 +652,6 @@ export function AreaProfilPanel({
           >
             {t("back")}
           </Button>
-          {view === "kecamatan" && kec && kec.desa.length > 0 ? (
-            <Button
-              type="button"
-              size="sm"
-              className="ml-auto rounded-xl"
-              onClick={() => setView("desa-list")}
-            >
-              {t("viewDesa")}
-            </Button>
-          ) : null}
         </footer>
       </aside>
     </div>
