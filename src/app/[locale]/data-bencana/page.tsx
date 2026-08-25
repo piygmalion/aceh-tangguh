@@ -17,11 +17,11 @@ export default async function DataBencanaPage({
       <SiteNav />
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-28">
         <p className="text-sm text-[var(--text-dim)]">
-          <Link href="/" className="hover:text-[var(--accent)]">
+          <Link href="/" className="hover:text-[var(--primary)]">
             {t("backHome")}
           </Link>
           {" · "}
-          <Link href="/peta" className="hover:text-[var(--accent)]">
+          <Link href="/peta" className="hover:text-[var(--primary)]">
             {t("seeMap")}
           </Link>
         </p>

@@ -61,14 +61,14 @@ const CARD_TONE: Record<"info" | "danger" | "warn" | "ok", string> = {
   info: "border-[color-mix(in_srgb,var(--info)_35%,transparent)] bg-[var(--info-dim)]",
   danger: "border-[color-mix(in_srgb,var(--danger)_35%,transparent)] bg-[var(--danger-dim)]",
   warn: "border-[color-mix(in_srgb,var(--warn)_35%,transparent)] bg-[var(--warn-dim)]",
-  ok: "border-[color-mix(in_srgb,var(--accent)_35%,transparent)] bg-[var(--accent-dim)]",
+  ok: "border-[color-mix(in_srgb,var(--primary)_35%,transparent)] bg-[var(--primary-dim)]",
 };
 
 const CARD_VALUE: Record<"info" | "danger" | "warn" | "ok", string> = {
   info: "text-[var(--info)]",
   danger: "text-[var(--danger)]",
   warn: "text-[var(--warn)]",
-  ok: "text-[var(--accent)]",
+  ok: "text-[var(--primary)]",
 };
 
 function MetricCard({

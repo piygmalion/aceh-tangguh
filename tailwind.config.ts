@@ -9,9 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        primary: "var(--primary)",
         accent: "var(--accent)",
         danger: "var(--danger)",
         warn: "var(--warn)",
+        info: "var(--info)",
+        ring: "var(--ring)",
       },
       animation: {
         "shimmer-slide":

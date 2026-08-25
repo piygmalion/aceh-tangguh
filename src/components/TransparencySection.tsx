@@ -56,8 +56,8 @@ export function TransparencySection() {
       <div className="relative mt-10 grid gap-4 md:grid-cols-3">
         {cards.map((c, i) => (
           <BlurFade key={c.title} delay={0.08 * (i + 1)} inView>
-            <GlassPanel className="h-full p-5 hover:border-[var(--accent)]/40 hover:shadow-[var(--shadow-elevated)]">
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--accent-dim)] text-[var(--accent)]">
+            <GlassPanel className="h-full p-5 hover:border-[var(--primary)]/40 hover:shadow-[var(--shadow-elevated)]">
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary-dim)] text-[var(--primary)]">
                 <c.Icon size={18} strokeWidth={2.1} />
               </div>
               <h3 className="font-semibold tracking-tight">{c.title}</h3>
@@ -66,7 +66,7 @@ export function TransparencySection() {
               </p>
               <Link
                 href={c.href}
-                className="mt-4 inline-flex text-sm font-medium text-[var(--accent)] underline-offset-2 hover:underline"
+                className="mt-4 inline-flex text-sm font-medium text-[var(--primary)] underline-offset-2 hover:underline"
               >
                 {c.cta}
               </Link>

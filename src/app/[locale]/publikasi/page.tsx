@@ -18,15 +18,15 @@ export default async function PublikasiPage({
       <SiteNav />
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-28">
         <p className="text-sm text-[var(--text-dim)]">
-          <Link href="/" className="hover:text-[var(--accent)]">
+          <Link href="/" className="hover:text-[var(--primary)]">
             {t("backHome")}
           </Link>
           {" · "}
-          <Link href="/anggaran-bencana" className="hover:text-[var(--accent)]">
+          <Link href="/anggaran-bencana" className="hover:text-[var(--primary)]">
             {t("seeAnggaran")}
           </Link>
           {" · "}
-          <Link href="/sumber-data" className="hover:text-[var(--accent)]">
+          <Link href="/sumber-data" className="hover:text-[var(--primary)]">
             {t("seeSumber")}
           </Link>
         </p>
@@ -51,7 +51,7 @@ export default async function PublikasiPage({
                 href="https://bpba.acehprov.go.id"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[var(--accent)] hover:underline"
+                className="text-[var(--primary)] hover:underline"
               >
                 bpba.acehprov.go.id
               </a>
@@ -71,7 +71,7 @@ export default async function PublikasiPage({
                 href="https://tanggapi.acehprov.go.id"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[var(--accent)] hover:underline"
+                className="text-[var(--primary)] hover:underline"
               >
                 tanggapi.acehprov.go.id
               </a>

@@ -54,7 +54,7 @@ export function HazardStatusStrip() {
                         ? "warn"
                         : "neutral"
                   }
-                  className="hover:ring-1 hover:ring-[var(--accent)]"
+                  className="hover:ring-1 hover:ring-[var(--primary)]"
                 >
                   <span className="opacity-90">{h.label}</span>
                   <span className="rounded-full bg-black/10 px-1.5 py-0.5 text-xs dark:bg-white/10">

@@ -112,7 +112,7 @@ export function MediaBackdrop({
       />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_20%_10%,rgba(46,158,78,0.28),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_20%_10%,rgba(31,76,21,0.28),transparent_55%)]" />
       {showDots && slides.length > 1 && !reducedMotion ? (
         <div className="pointer-events-none absolute bottom-5 right-5 z-[1] flex gap-1.5">
           {slides.map((src, i) => (

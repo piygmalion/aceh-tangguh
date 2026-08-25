@@ -27,7 +27,7 @@ import type { KejadianRow } from "@/lib/kejadian-types";
 import { LAYER_COLORS } from "@/lib/layer-colors";
 import { getDisasterJenisIconPath } from "@/lib/layer-icons";
 
-const LINE_COLOR = "#2e9e4e";
+const LINE_COLOR = "var(--chart-1)";
 
 type Props = {
   windowRows: KejadianRow[];
@@ -101,13 +101,13 @@ function ImpactCard({
 }) {
   const tones = {
     neutral: "border-[var(--glass-border)]",
-    ok: "border-[var(--accent)]/35",
+    ok: "border-[var(--primary)]/35",
     warn: "border-[var(--warn)]/35",
     danger: "border-[var(--danger)]/35",
   } as const;
   const values = {
     neutral: "text-[var(--text)]",
-    ok: "text-[var(--accent)]",
+    ok: "text-[var(--primary)]",
     warn: "text-[var(--warn)]",
     danger: "text-[var(--danger)]",
   } as const;
@@ -221,8 +221,8 @@ export function KejadianAnalisis({
               aria-pressed={!selectedJenis}
               className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
                 !selectedJenis
-                  ? "border-[var(--accent)] bg-[var(--accent-dim)] text-[var(--accent)] ring-2 ring-[var(--accent)]/40"
-                  : "border-[var(--glass-border)] bg-[var(--bg-muted)]/50 text-[var(--text)] hover:border-[var(--accent)]"
+                  ? "border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-2 ring-[var(--primary)]/40"
+                  : "border-[var(--glass-border)] bg-[var(--bg-muted)]/50 text-[var(--text)] hover:border-[var(--primary)]"
               }`}
             >
               <span>{t("total")}</span>
@@ -242,8 +242,8 @@ export function KejadianAnalisis({
                   aria-label={t("selectJenis", { jenis: row.jenis })}
                   className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium transition ${
                     active
-                      ? "border-[var(--accent)] bg-[var(--accent-dim)] text-[var(--text)] ring-2 ring-[var(--accent)]/40"
-                      : "border-[var(--glass-border)] bg-[var(--bg-muted)]/50 text-[var(--text)] hover:border-[var(--accent)]"
+                      ? "border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--text)] ring-2 ring-[var(--primary)]/40"
+                      : "border-[var(--glass-border)] bg-[var(--bg-muted)]/50 text-[var(--text)] hover:border-[var(--primary)]"
                   }`}
                 >
                   {icon ? (
@@ -298,7 +298,7 @@ export function KejadianAnalisis({
                       tickLine={false}
                     />
                     <Tooltip
-                      cursor={{ fill: "var(--accent-dim)" }}
+                      cursor={{ fill: "var(--primary-dim)" }}
                       content={<ChartTooltip unit={t("unitKejadian")} />}
                     />
                     <Bar dataKey="value" radius={[0, 6, 6, 0]} maxBarSize={22}>

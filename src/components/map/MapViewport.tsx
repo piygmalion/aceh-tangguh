@@ -28,6 +28,7 @@ import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
 import type { FilterSpecification, GeoJSONSource, MapLayerMouseEvent } from "maplibre-gl";
+import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
 import { LAYER_COLORS } from "@/lib/layer-colors";
 import { Chip } from "@/components/ui/Chip";
 import { StatusChip } from "@/components/ui/StatusChip";
@@ -41,13 +42,45 @@ import {
 
 export { LAYER_COLORS };
 
-const BUCKET_FILL: Record<string, string> = {
-  rendah: "#c7f0d2",
-  sedang: "#6bcf8e",
-  tinggi: "#2e9e4e",
-  tahap1: "#fed7aa",
-  tahap2: "#fb923c",
+/** Village / R3P / NGO quantity terciles: forest-200 / 400 / 700 (not lime). */
+const QUANTITY_FILL: Record<string, string> = {
+  rendah: FOREST_SCALE[200],
+  sedang: FOREST_SCALE[400],
+  tinggi: FOREST_SCALE[700],
+  tahap1: "#E6D3A0",
+  tahap2: "#FF8F42",
 };
+
+/** IRBI kelas risiko — status tokens, not the quantity forest scale. */
+const IRBI_FILL: Record<string, string> = {
+  rendah: STATUS_HEX.RENDAH,
+  sedang: STATUS_HEX.SEDANG,
+  tinggi: STATUS_HEX.TINGGI,
+};
+
+function bucketFillFor(layer: AreaLayerKey | null | undefined): Record<string, string> {
+  if (layer === "irbi2025") return { ...QUANTITY_FILL, ...IRBI_FILL };
+  return QUANTITY_FILL;
+}
+
+function fillColorExpr(layer: AreaLayerKey | null | undefined) {
+  const fill = bucketFillFor(layer);
+  return [
+    "match",
+    ["get", "bucket"],
+    "rendah",
+    fill.rendah,
+    "sedang",
+    fill.sedang,
+    "tinggi",
+    fill.tinggi,
+    "tahap1",
+    fill.tahap1,
+    "tahap2",
+    fill.tahap2,
+    fill.rendah,
+  ] as unknown as string;
+}
 
 /** tippecanoe layer name + public URL for PMTiles-backed area layers */
 const PMTILES_AREA: Partial<
@@ -66,22 +99,6 @@ const PMTILES_AREA: Partial<
     sourceLayer: "irbi",
   },
 };
-
-const FILL_COLOR_EXPR = [
-  "match",
-  ["get", "bucket"],
-  "rendah",
-  BUCKET_FILL.rendah,
-  "sedang",
-  BUCKET_FILL.sedang,
-  "tinggi",
-  BUCKET_FILL.tinggi,
-  "tahap1",
-  BUCKET_FILL.tahap1,
-  "tahap2",
-  BUCKET_FILL.tahap2,
-  BUCKET_FILL.rendah,
-] as unknown as string;
 
 let pmtilesProtocolReady = false;
 function ensurePmtilesProtocol() {
@@ -325,11 +342,12 @@ export function MapViewport({
         properties: {
           ...f.properties,
           fillColor:
-            BUCKET_FILL[String(f.properties?.bucket ?? "")] ?? "#c7f0d2",
+            bucketFillFor(areaLayer)[String(f.properties?.bucket ?? "")] ??
+            FOREST_SCALE[200],
         },
       })),
     };
-  }, [areaData]);
+  }, [areaData, areaLayer]);
 
   const pmtilesUrl = useMemo(() => {
     if (!usePmtiles || !pmtilesMeta || typeof window === "undefined") return null;
@@ -433,7 +451,7 @@ export function MapViewport({
               type="fill"
               source-layer={pmtilesMeta.sourceLayer}
               paint={{
-                "fill-color": FILL_COLOR_EXPR as never,
+                "fill-color": fillColorExpr(areaLayer) as never,
                 "fill-opacity": [
                   "interpolate",
                   ["linear"],

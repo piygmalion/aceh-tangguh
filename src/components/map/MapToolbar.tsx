@@ -97,7 +97,7 @@ export function MapToolbar({
         aria-expanded={expanded}
         aria-label={expanded ? t("toolbarClose") : t("toolbarOpen")}
       >
-        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--accent-dim)] text-[var(--accent)]">
+        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--primary-dim)] text-[var(--primary)]">
           <Layers size={15} />
         </span>
         <span className="min-w-0 flex-1">
@@ -116,7 +116,7 @@ export function MapToolbar({
 
       {/* Desktop header */}
       <div className="hidden items-center gap-2 border-b border-[var(--border)] px-3 py-2.5 md:flex">
-        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--accent-dim)] text-[var(--accent)]">
+        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--primary-dim)] text-[var(--primary)]">
           <Layers size={15} />
         </span>
         <div className="min-w-0 flex-1">
@@ -190,7 +190,7 @@ export function MapToolbar({
                   />
                   <MapLayerIcon
                     iconSrc={getAreaLayerIconPath(opt.key)}
-                    fallbackColor="#2e9e4e"
+                    fallbackColor="#1F4C15"
                   />
                   <span>{t(opt.labelKey)}</span>
                 </label>
@@ -434,7 +434,7 @@ export function MapToolbar({
                   <div className="mb-2 flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
                     <MapLayerIcon
                       iconSrc={getAreaLayerIconPath(areaLayer)}
-                      fallbackColor="#2e9e4e"
+                      fallbackColor="#1F4C15"
                       size="sm"
                     />
                     <span>{areaLegend.title}</span>

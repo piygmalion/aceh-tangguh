@@ -29,19 +29,22 @@ import {
 } from "@/lib/dibi-types";
 import { Link } from "@/i18n/routing";
 
-const BAR_COLOR = "#2e9e4e";
-const YEAR_COLOR = "#3b82f6";
+import { CHART_SERIES, JENIS_HEX } from "@/lib/chart-colors";
+import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
+
+const BAR_COLOR = CHART_SERIES[0];
+const YEAR_COLOR = CHART_SERIES[1];
 
 const KATEGORI_COLOR: Record<string, string> = {
-  Banjir: "#3b82f6",
-  Longsor: "#84cc16",
-  "Cuaca ekstrem": "#a855f7",
-  "Gelombang pasang / Abrasi": "#06b6d4",
-  "Erupsi gunung api": "#f97316",
-  Gempabumi: "#e11d48",
-  Kekeringan: "#f59e0b",
-  "Kebakaran hutan dan lahan": "#ef4444",
-  Tsunami: "#0ea5e9",
+  Banjir: DISASTER_JENIS_COLORS.Banjir,
+  Longsor: DISASTER_JENIS_COLORS.Longsor,
+  "Cuaca ekstrem": JENIS_HEX.wind,
+  "Gelombang pasang / Abrasi": DISASTER_JENIS_COLORS.Abrasi,
+  "Erupsi gunung api": JENIS_HEX.fire,
+  Gempabumi: DISASTER_JENIS_COLORS["Gempa Bumi"],
+  Kekeringan: DISASTER_JENIS_COLORS.Kekeringan,
+  "Kebakaran hutan dan lahan": DISASTER_JENIS_COLORS["Kebakaran Hutan dan Lahan"],
+  Tsunami: JENIS_HEX.water,
 };
 
 const YEAR_CHIPS = 8;
@@ -86,7 +89,7 @@ function ChartTooltip({
   const row = payload[0]?.payload;
   if (!row) return null;
   return (
-    <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-xs shadow-[var(--shadow)]">
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] px-3 py-2 text-xs text-[var(--text)] shadow-[var(--shadow)]">
       <div className="font-semibold text-[var(--text)]">{row.name}</div>
       <div className="mt-0.5 text-[var(--text-dim)]">
         {fmt(row.value)} {unit}
@@ -323,7 +326,7 @@ export function DibiDashboard() {
                         tickLine={false}
                       />
                       <Tooltip
-                        cursor={{ fill: "var(--accent-dim)" }}
+                        cursor={{ fill: "var(--primary-dim)" }}
                         content={<ChartTooltip unit={t("unit.kejadian")} />}
                       />
                       <Bar dataKey="value" radius={[0, 6, 6, 0]} maxBarSize={22}>
@@ -373,7 +376,7 @@ export function DibiDashboard() {
                         tickLine={false}
                       />
                       <Tooltip
-                        cursor={{ fill: "var(--accent-dim)" }}
+                        cursor={{ fill: "var(--primary-dim)" }}
                         content={<ChartTooltip unit={t("unit.kejadian")} />}
                       />
                       <Bar dataKey="value" radius={[0, 6, 6, 0]} maxBarSize={22}>
@@ -415,7 +418,7 @@ export function DibiDashboard() {
                       width={40}
                     />
                     <Tooltip
-                      cursor={{ fill: "var(--accent-dim)" }}
+                      cursor={{ fill: "var(--primary-dim)" }}
                       content={<ChartTooltip unit={t("unit.kejadian")} />}
                     />
                     <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={28}>
@@ -451,7 +454,7 @@ export function DibiDashboard() {
             href={data?.metadata.source_url ?? DIBI_DASHBOARD_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[var(--accent)] underline-offset-2 hover:underline"
+            className="inline-flex items-center gap-1 text-[var(--primary)] underline-offset-2 hover:underline"
           >
             {t("sourceLink")}
             <ExternalLink className="h-3 w-3" />
@@ -459,7 +462,7 @@ export function DibiDashboard() {
           {" · "}
           <Link
             href="/sumber-data"
-            className="text-[var(--accent)] underline-offset-2 hover:underline"
+            className="text-[var(--primary)] underline-offset-2 hover:underline"
           >
             {tn("sumberData")}
           </Link>

@@ -123,7 +123,7 @@ export function PublikasiCatalog() {
             <button
               type="button"
               onClick={resetFilters}
-              className="text-xs text-[var(--text-dim)] hover:text-[var(--accent)]"
+              className="text-xs text-[var(--text-dim)] hover:text-[var(--primary)]"
             >
               {t("reset")}
             </button>
@@ -140,7 +140,7 @@ export function PublikasiCatalog() {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-muted)] py-2 pl-8 pr-3 text-sm outline-none focus:border-[var(--accent)]"
+            className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-muted)] py-2 pl-8 pr-3 text-sm outline-none focus:border-[var(--ring)]"
             aria-label={t("searchPlaceholder")}
           />
         </label>
@@ -237,7 +237,7 @@ export function PublikasiCatalog() {
                     <button
                       type="button"
                       onClick={() => setSelected(item)}
-                      className="rounded-full border border-[var(--glass-border)] px-3 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                      className="rounded-full border border-[var(--glass-border)] px-3 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
                     >
                       {t("detail")}
                     </button>
@@ -245,7 +245,7 @@ export function PublikasiCatalog() {
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-dim)] px-3 py-1.5 text-xs font-medium text-[var(--accent)] transition hover:brightness-110"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-[var(--primary-dim)] px-3 py-1.5 text-xs font-medium text-[var(--primary)] transition hover:brightness-110"
                     >
                       {t("openOriginal")}
                       <ExternalLink size={12} aria-hidden />
@@ -282,7 +282,7 @@ export function PublikasiCatalog() {
                 <button
                   type="button"
                   onClick={() => setSelected(null)}
-                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--glass-border)] text-[var(--text-dim)] hover:text-[var(--accent)]"
+                  className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--glass-border)] text-[var(--text-dim)] hover:text-[var(--primary)]"
                   aria-label={t("closeDetail")}
                 >
                   <X size={16} />
@@ -347,7 +347,7 @@ export function PublikasiCatalog() {
                 href={selected.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full bg-[var(--accent-dim)] px-4 py-2 text-sm font-medium text-[var(--accent)] transition hover:brightness-110"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[var(--primary-dim)] px-4 py-2 text-sm font-medium text-[var(--primary)] transition hover:brightness-110"
               >
                 {t("openOriginal")}
                 <ExternalLink size={14} aria-hidden />

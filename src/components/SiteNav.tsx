@@ -79,15 +79,15 @@ export function SiteNav() {
                   href={item.href}
                   className={`rounded-full px-3.5 py-2 transition duration-200 ${
                     active
-                      ? "bg-[var(--accent-dim)] text-[var(--accent)] font-medium"
-                      : "text-[var(--text-dim)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+                      ? "bg-[var(--primary-dim)] text-[var(--primary)] font-medium"
+                      : "text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
                   }`}
                 >
                   {item.label}
                 </Link>
               );
             })}
-            <ReportLaporDropdown className={laporActive ? "ring-2 ring-[var(--accent)]/30 rounded-full" : ""} />
+            <ReportLaporDropdown className={laporActive ? "ring-2 ring-[var(--ring)]/30 rounded-full" : ""} />
           </nav>
 
           <div className="flex items-center gap-2">
@@ -124,8 +124,8 @@ export function SiteNav() {
                     onClick={() => setOpen(false)}
                     className={`rounded-xl px-3 py-2.5 text-sm transition ${
                       active
-                        ? "bg-[var(--accent-dim)] font-medium text-[var(--accent)]"
-                        : "text-[var(--text-dim)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+                        ? "bg-[var(--primary-dim)] font-medium text-[var(--primary)]"
+                        : "text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
                     }`}
                   >
                     {item.label}

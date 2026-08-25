@@ -1,4 +1,5 @@
 import type { AreaLayerKey, LegendModel } from "@/lib/types";
+import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
 
 export const AREA_LAYER_KEYS: AreaLayerKey[] = [
   "villageDistribution",
@@ -20,41 +21,41 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
   villageDistribution: {
     title: "Distribusi desa (rumah rusak RR+RS+RB)",
     items: [
-      { color: "#c7f0d2", label: "Rendah (≤106)" },
-      { color: "#6bcf8e", label: "Sedang (≤1184)" },
-      { color: "#2e9e4e", label: "Tinggi (>1184)" },
+      { color: FOREST_SCALE[200], label: "Rendah (≤106)" },
+      { color: FOREST_SCALE[400], label: "Sedang (≤1184)" },
+      { color: FOREST_SCALE[700], label: "Tinggi (>1184)" },
     ],
   },
   r3pDistribution: {
     title: "Distribusi R3P (rumah rusak RR+RS+RB)",
     items: [
-      { color: "#c7f0d2", label: "Rendah (≤1362)" },
-      { color: "#6bcf8e", label: "Sedang (≤10795)" },
-      { color: "#2e9e4e", label: "Tinggi (>10795)" },
+      { color: FOREST_SCALE[200], label: "Rendah (≤1362)" },
+      { color: FOREST_SCALE[400], label: "Sedang (≤10795)" },
+      { color: FOREST_SCALE[700], label: "Tinggi (>10795)" },
     ],
   },
   ngoDistribution: {
     title: "Distribusi NGO",
     items: [
-      { color: "#c7f0d2", label: "Rendah" },
-      { color: "#6bcf8e", label: "Sedang" },
-      { color: "#2e9e4e", label: "Tinggi" },
+      { color: FOREST_SCALE[200], label: "Rendah" },
+      { color: FOREST_SCALE[400], label: "Sedang" },
+      { color: FOREST_SCALE[700], label: "Tinggi" },
     ],
   },
   regencyFundAllocation: {
     title: "Alokasi dana kab/kota",
     items: [
-      { color: "#fed7aa", label: "Tahap 1" },
-      { color: "#fb923c", label: "Tahap 2" },
-      { color: "#2e9e4e", label: "Tinggi" },
+      { color: "#E6D3A0", label: "Tahap 1" },
+      { color: "#FF8F42", label: "Tahap 2" },
+      { color: FOREST_SCALE[700], label: "Tinggi" },
     ],
   },
   irbi2025: {
     title: "IRBI 2025 — kelas risiko kab/kota",
     items: [
-      { color: "#c7f0d2", label: "Rendah" },
-      { color: "#6bcf8e", label: "Sedang" },
-      { color: "#2e9e4e", label: "Tinggi" },
+      { color: STATUS_HEX.RENDAH, label: "Rendah" },
+      { color: STATUS_HEX.SEDANG, label: "Sedang" },
+      { color: STATUS_HEX.TINGGI, label: "Tinggi" },
     ],
   },
 };

@@ -23,7 +23,7 @@ export function WeatherKabCard({ forecast }: { forecast: WeatherForecastKab }) {
       : forecast.current.weather_desc_id;
 
   return (
-    <GlassPanel className="flex flex-col gap-3 p-4 transition hover:ring-1 hover:ring-[var(--accent)]/40">
+    <GlassPanel className="flex flex-col gap-3 p-4 transition hover:ring-1 hover:ring-[var(--primary)]/40">
       <div className="flex items-start justify-between gap-2">
         <div>
           <h3 className="font-semibold tracking-tight">
@@ -31,7 +31,7 @@ export function WeatherKabCard({ forecast }: { forecast: WeatherForecastKab }) {
           </h3>
           <p className="text-sm text-[var(--text-dim)]">{desc}</p>
         </div>
-        <WeatherIcon code={forecast.current.weather_code} className="h-6 w-6 shrink-0 text-[var(--accent)]" />
+        <WeatherIcon code={forecast.current.weather_code} className="h-6 w-6 shrink-0 text-[var(--info)]" />
       </div>
 
       <div className="flex items-end gap-2">
