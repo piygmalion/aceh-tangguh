@@ -7,6 +7,7 @@ import {
   annotatePoliceOfficeCoordQuality,
   COORD_QUALITY_TRUNCATED,
   isTruncatedAcehLongitude,
+  readCoordQuality,
 } from "./coord-quality";
 
 describe("policeOffices coord_quality", () => {
@@ -27,6 +28,8 @@ describe("policeOffices coord_quality", () => {
     assert.deepEqual(out.geometry?.coordinates, [96, 4.52]);
     assert.equal(out.geometry?.coordinates[0], coordinates[0]);
     assert.equal(out.geometry?.coordinates[1], coordinates[1]);
+    assert.equal(readCoordQuality({ coordQuality: "truncated" }), COORD_QUALITY_TRUNCATED);
+    assert.equal(readCoordQuality({ coord_quality: "truncated_integer" }), COORD_QUALITY_TRUNCATED);
   });
 
   it("does not drop any policeOffices from the existing fixture", () => {

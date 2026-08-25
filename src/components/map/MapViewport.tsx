@@ -29,7 +29,21 @@ import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
 import type { FilterSpecification, GeoJSONSource, MapLayerMouseEvent } from "maplibre-gl";
 import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
-import { LAYER_COLORS } from "@/lib/layer-colors";
+import { CLUSTER_COLORS, COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
+import { markerIconImageId } from "@/lib/layer-icons";
+import {
+  MAP_CLUSTER_MAX_ZOOM,
+  MAP_DOT_MAX_ZOOM,
+  MAP_DOT_RADIUS_PX,
+  MAP_DOT_STROKE_PX,
+  MAP_ICON_MIN_ZOOM,
+  MAP_PAPER_STROKE,
+  markerRenderMode,
+  parseStackItems,
+  stackSharedCentroidDisasterEvents,
+  type StackMember,
+} from "@/lib/map-marker-chrome";
+import { registerMapChromeIcons } from "@/lib/map-symbol-images";
 import { Chip } from "@/components/ui/Chip";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { useTranslations } from "next-intl";
@@ -39,6 +53,13 @@ import {
   readCoordQuality,
   type CoordQuality,
 } from "@/lib/coord-quality";
+
+const POINT_LAYER_IDS = [
+  "marker-dots",
+  "marker-approx",
+  "marker-icons",
+  "marker-stacks",
+] as const;
 
 export { LAYER_COLORS };
 
@@ -114,7 +135,7 @@ function markerColor(layer: MarkerLayerKey, jenis: string): string {
   if (layer === "disasterEvents") {
     return DISASTER_JENIS_COLORS[jenis] ?? LAYER_COLORS.disasterEvents;
   }
-  return (LAYER_COLORS as Record<string, string>)[layer] ?? "#64748b";
+  return (LAYER_COLORS as Record<string, string>)[layer] ?? COLOR_TOKENS.ink;
 }
 
 type AreaResponse = FeatureCollection & { legend?: LegendModel };
@@ -173,7 +194,7 @@ function AreaHighlightLayers({
         {...layerProps}
         filter={filter}
         paint={{
-          "fill-color": "#f59e0b",
+          "fill-color": COLOR_TOKENS.gold,
           "fill-opacity": 0.22,
         }}
       />
@@ -183,7 +204,7 @@ function AreaHighlightLayers({
         {...layerProps}
         filter={filter}
         paint={{
-          "line-color": "#ea580c",
+          "line-color": COLOR_TOKENS.orange,
           "line-width": 2.25,
           "line-opacity": 0.95,
         }}
@@ -247,6 +268,7 @@ export function MapViewport({
     status?: string;
     layer?: MarkerLayerKey;
     coordQuality?: CoordQuality | null;
+    stackItems?: StackMember[];
   } | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
@@ -268,6 +290,24 @@ export function MapViewport({
       }),
     [basemap, preferVector, vectorFailed]
   );
+
+  const onMapLoad = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    void registerMapChromeIcons(map);
+  }, []);
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    const onStyle = () => {
+      void registerMapChromeIcons(map);
+    };
+    map.on("style.load", onStyle);
+    return () => {
+      map.off("style.load", onStyle);
+    };
+  }, [mapStyle]);
 
   const sortedKeys = useMemo(
     () => [...markerLayers].sort(),
@@ -299,7 +339,7 @@ export function MapViewport({
 
   const markerGeojson = useMemo((): FeatureCollection => {
     if (!data?.features?.length) return EMPTY_FC;
-    const features: Feature<Point>[] = [];
+    const prepared: Feature<Point>[] = [];
     for (const f of data.features) {
       if (f.geometry.type !== "Point") continue;
       const layer = (f.properties?.layer as MarkerLayerKey) || "disasterEvents";
@@ -308,9 +348,12 @@ export function MapViewport({
         continue;
       }
       const quality = readCoordQuality(f.properties as Record<string, unknown> | null);
-      features.push({
+      const point = f.geometry as Point;
+      const lon = point.coordinates[0];
+      prepared.push({
         type: "Feature",
-        geometry: f.geometry as Point,
+        id: f.id,
+        geometry: point,
         properties: {
           layer,
           title: String(f.properties?.title ?? "Titik"),
@@ -318,10 +361,37 @@ export function MapViewport({
           jenisBencana: layer === "disasterEvents" ? jenis : "",
           color: markerColor(layer, jenis),
           coordQuality: quality ?? "",
+          coord_quality: quality ?? "",
+          desa: f.properties?.desa ?? "",
+          icon: markerIconImageId(layer, layer === "disasterEvents" ? jenis : null),
+          renderMode: markerRenderMode({
+            layer,
+            lon,
+            coordQuality: quality,
+          }),
         },
       });
     }
-    return { type: "FeatureCollection", features };
+    const stacked = stackSharedCentroidDisasterEvents(prepared);
+    return {
+      type: "FeatureCollection",
+      features: stacked.map((feature) => {
+        const lon = feature.geometry.coordinates[0];
+        const mode = markerRenderMode({
+          layer: String(feature.properties?.layer ?? ""),
+          lon,
+          coordQuality: feature.properties?.coordQuality,
+          stackCount: feature.properties?.stackCount,
+        });
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            renderMode: mode,
+          },
+        };
+      }),
+    };
   }, [data, disasterJenisSet]);
 
   const { data: areaData } = useQuery({
@@ -370,17 +440,24 @@ export function MapViewport({
         return;
       }
 
-      const pointFeat = e.features?.find((f) => f.layer?.id === "marker-points");
+      const pointFeat = e.features?.find((f) =>
+        POINT_LAYER_IDS.includes(f.layer?.id as (typeof POINT_LAYER_IDS)[number])
+      );
       if (pointFeat && pointFeat.geometry.type === "Point") {
         const [lng, lat] = pointFeat.geometry.coordinates as [number, number];
         const props = pointFeat.properties ?? {};
+        const stackItems = parseStackItems(props.stackItems);
         setPopup({
           lng,
           lat,
-          title: String(props.title ?? "Titik"),
+          title:
+            stackItems.length > 1
+              ? `${stackItems.length} kejadian`
+              : String(props.title ?? "Titik"),
           status: props.status ? String(props.status) : undefined,
           layer: (props.layer as MarkerLayerKey) || "disasterEvents",
           coordQuality: readCoordQuality(props as Record<string, unknown>),
+          stackItems: stackItems.length > 1 ? stackItems : undefined,
         });
         return;
       }
@@ -420,9 +497,10 @@ export function MapViewport({
         cursor={cursor as never}
         interactiveLayerIds={[
           "marker-clusters",
-          "marker-points",
+          ...POINT_LAYER_IDS,
           ...(villageClickEnabled ? (["area-fill"] as const) : []),
         ]}
+        onLoad={onMapLoad}
         onClick={onMapClick}
         onMouseEnter={() => setCursor("pointer")}
         onMouseLeave={() => setCursor("auto")}
@@ -537,7 +615,7 @@ export function MapViewport({
             type="geojson"
             data={markerGeojson}
             cluster
-            clusterMaxZoom={12}
+            clusterMaxZoom={MAP_CLUSTER_MAX_ZOOM}
             clusterRadius={48}
           >
             <Layer
@@ -548,11 +626,9 @@ export function MapViewport({
                 "circle-color": [
                   "step",
                   ["get", "point_count"],
-                  "#38bdf8",
+                  CLUSTER_COLORS.high,
                   25,
-                  "#0ea5e9",
-                  80,
-                  "#0369a1",
+                  CLUSTER_COLORS.low,
                 ],
                 "circle-radius": [
                   "step",
@@ -563,8 +639,8 @@ export function MapViewport({
                   80,
                   26,
                 ],
-                "circle-stroke-width": 2,
-                "circle-stroke-color": "#fff",
+                "circle-stroke-width": MAP_DOT_STROKE_PX,
+                "circle-stroke-color": MAP_PAPER_STROKE,
                 "circle-opacity": 0.92,
               }}
             />
@@ -577,26 +653,103 @@ export function MapViewport({
                 "text-size": 12,
                 "text-font": ["Noto Sans Regular", "Open Sans Regular"],
               }}
-              paint={{ "text-color": "#0f172a" }}
+              paint={{
+                "text-color": [
+                  "step",
+                  ["get", "point_count"],
+                  CLUSTER_COLORS.textOnHigh,
+                  25,
+                  CLUSTER_COLORS.textOnLow,
+                ],
+              }}
             />
             <Layer
-              id="marker-points"
+              id="marker-dots"
               type="circle"
-              filter={["!", ["has", "point_count"]]}
+              maxzoom={MAP_DOT_MAX_ZOOM}
+              filter={[
+                "all",
+                ["!", ["has", "point_count"]],
+                ["!=", ["get", "renderMode"], "stack"],
+              ]}
               paint={{
-                "circle-color": ["coalesce", ["get", "color"], "#64748b"],
-                "circle-radius": [
-                  "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  6,
-                  4,
-                  12,
-                  7,
-                ],
-                "circle-stroke-width": 1.5,
-                "circle-stroke-color": "#fff",
+                "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
+                "circle-radius": MAP_DOT_RADIUS_PX,
+                "circle-stroke-width": MAP_DOT_STROKE_PX,
+                "circle-stroke-color": MAP_PAPER_STROKE,
                 "circle-opacity": 0.95,
+              }}
+            />
+            <Layer
+              id="marker-approx"
+              type="circle"
+              minzoom={MAP_ICON_MIN_ZOOM}
+              filter={[
+                "all",
+                ["!", ["has", "point_count"]],
+                ["==", ["get", "renderMode"], "approx"],
+              ]}
+              paint={{
+                "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
+                "circle-radius": MAP_DOT_RADIUS_PX,
+                "circle-stroke-width": MAP_DOT_STROKE_PX,
+                "circle-stroke-color": MAP_PAPER_STROKE,
+                "circle-opacity": 0.88,
+              }}
+            />
+            <Layer
+              id="marker-stacks"
+              type="circle"
+              filter={[
+                "all",
+                ["!", ["has", "point_count"]],
+                ["==", ["get", "renderMode"], "stack"],
+              ]}
+              paint={{
+                "circle-color": CLUSTER_COLORS.low,
+                "circle-radius": [
+                  "step",
+                  ["get", "stackCount"],
+                  14,
+                  8,
+                  18,
+                  16,
+                  22,
+                ],
+                "circle-stroke-width": MAP_DOT_STROKE_PX,
+                "circle-stroke-color": MAP_PAPER_STROKE,
+                "circle-opacity": 0.94,
+              }}
+            />
+            <Layer
+              id="marker-stack-count"
+              type="symbol"
+              filter={[
+                "all",
+                ["!", ["has", "point_count"]],
+                ["==", ["get", "renderMode"], "stack"],
+              ]}
+              layout={{
+                "text-field": ["to-string", ["get", "stackCount"]],
+                "text-size": 12,
+                "text-font": ["Noto Sans Regular", "Open Sans Regular"],
+              }}
+              paint={{ "text-color": CLUSTER_COLORS.textOnLow }}
+            />
+            <Layer
+              id="marker-icons"
+              type="symbol"
+              minzoom={MAP_ICON_MIN_ZOOM}
+              filter={[
+                "all",
+                ["!", ["has", "point_count"]],
+                ["==", ["get", "renderMode"], "pin"],
+              ]}
+              layout={{
+                "icon-image": ["get", "icon"],
+                "icon-size": 1,
+                "icon-allow-overlap": true,
+                "icon-ignore-placement": true,
               }}
             />
           </Source>
@@ -634,6 +787,16 @@ export function MapViewport({
                   {t("coordOffshore")}
                 </Chip>
               )}
+              {popup.stackItems && popup.stackItems.length > 1 ? (
+                <ul className="mt-2 max-h-40 space-y-1 overflow-auto text-[0.75rem] text-[var(--text-dim)]">
+                  {popup.stackItems.map((item) => (
+                    <li key={item.id || item.title}>
+                      {item.jenisBencana ? `${item.jenisBencana} — ` : ""}
+                      {item.title}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           </Popup>
         )}

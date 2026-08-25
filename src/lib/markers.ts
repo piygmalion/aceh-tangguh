@@ -11,6 +11,8 @@ import {
 import type { TypedSupabaseClient } from "./supabase/server";
 import type { MarkerFeatureRow } from "./supabase/types";
 import { annotatePoliceOfficeCoordQuality } from "./coord-quality";
+import { loadKejadianFixture } from "./kejadian";
+import { annotateDisasterDesa, desaByIdFromKejadian } from "./map-marker-chrome";
 import { expandMarkerLayerKeys } from "./map-url-aliases";
 import { applyStatusVocabToProperties } from "./status-vocab";
 
@@ -50,15 +52,19 @@ function asFeatureCollection(payload: unknown): FeatureCollection | null {
   return normalizeMarkerCollection(rec as unknown as FeatureCollection);
 }
 
-function normalizeMarkerCollection(fc: FeatureCollection): FeatureCollection {
+function normalizeMarkerCollection(
+  fc: FeatureCollection,
+  desaById?: ReadonlyMap<string, string>
+): FeatureCollection {
   return {
     ...fc,
-    features: fc.features.map((f) =>
-      annotatePoliceOfficeCoordQuality({
+    features: fc.features.map((f) => {
+      const annotated = annotatePoliceOfficeCoordQuality({
         ...f,
         properties: applyStatusVocabToProperties(asRecord(f.properties)),
-      })
-    ),
+      });
+      return desaById ? annotateDisasterDesa(annotated, desaById) : annotated;
+    }),
   };
 }
 
@@ -92,18 +98,25 @@ export async function loadMarkersFixture(): Promise<FeatureCollection> {
 }
 
 export async function loadMarkers(): Promise<MarkersResponse> {
-  const loaded = await trySupabaseThenFixture(
-    loadMarkersFromSupabase,
-    loadMarkersFixture,
+  const [loaded, kejadian] = await Promise.all([
+    trySupabaseThenFixture(
+      loadMarkersFromSupabase,
+      loadMarkersFixture,
+      {
+        label: "markers",
+        isEmpty: (value) => !value.features?.length,
+      }
+    ),
+    loadKejadianFixture().catch(() => null),
+  ]);
+  const desaById = kejadian ? desaByIdFromKejadian(kejadian.kejadian) : undefined;
+  const normalized = normalizeMarkerCollection(
     {
-      label: "markers",
-      isEmpty: (value) => !value.features?.length,
-    }
+      type: "FeatureCollection",
+      features: loaded.data.features ?? [],
+    },
+    desaById
   );
-  const normalized = normalizeMarkerCollection({
-    type: "FeatureCollection",
-    features: loaded.data.features ?? [],
-  });
   return {
     type: "FeatureCollection",
     features: normalized.features,

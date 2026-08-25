@@ -15,6 +15,7 @@ import type { LegendModel } from "@/lib/types";
 import { unavailableMagmaCard, type SipongiCard } from "@/lib/peringatan-dini-types";
 import { summarizeWeatherWarning } from "@/lib/peringatan-dini/weather-summary";
 import { annotatePoliceOfficeCoordQuality } from "@/lib/coord-quality";
+import { annotateDisasterDesa, desaByIdFromKejadian } from "@/lib/map-marker-chrome";
 import { expandMarkerLayerKeys } from "@/lib/map-url-aliases";
 import type { WeatherApiResponse } from "@/lib/weather-types";
 import { isStaticExport, withBasePath } from "./env";
@@ -156,9 +157,19 @@ async function resolveStaticGet(input: string): Promise<Response> {
   }
   if (path === "/api/layers/markers") {
     const fc = (await fetchJson("/fixtures/markers.geojson")) as FeatureCollection;
+    let desaById: Map<string, string> | undefined;
+    try {
+      const kejadian = (await fetchJson("/fixtures/kejadian-bencana.json")) as KejadianFixture;
+      desaById = desaByIdFromKejadian(kejadian.kejadian ?? []);
+    } catch {
+      desaById = undefined;
+    }
     const annotated: FeatureCollection = {
       ...fc,
-      features: fc.features.map((f) => annotatePoliceOfficeCoordQuality(f)),
+      features: fc.features.map((f) => {
+        const police = annotatePoliceOfficeCoordQuality(f);
+        return desaById ? annotateDisasterDesa(police, desaById) : police;
+      }),
     };
     const keysParam = searchParams.get("keys");
     const keys = keysParam

@@ -19,6 +19,9 @@ html[data-theme="light"] {
   --teal: #2F6B66;
   --awas: #B42318;
 
+  --paper: #F7F7F4;
+  --paper-warm: #F4F5F0;
+  --ink: #1A1A17;
   --bg: #F4F5F0;
   --bg-raised: #FFFFFF;
   --bg-muted: #F6F7F0;
@@ -74,6 +77,9 @@ html[data-theme="light"] {
 html[data-theme="dark"] {
   color-scheme: dark;
 
+  --paper: #F7F7F4;
+  --paper-warm: #F4F5F0;
+  --ink: #1A1A17;
   --bg: #1A1A17;
   --bg-raised: #242420;
   --bg-muted: #242420;
@@ -389,31 +395,51 @@ a:focus-visible {
   border-radius: 0.2rem;
 }
 
-.map-layer-icon {
+.map-layer-icon-disc {
   flex-shrink: 0;
-  width: 1.125rem;
-  height: 1.125rem;
-  object-fit: contain;
-  border-radius: 0.25rem;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  background: var(--ink, #1A1A17);
+  box-shadow: 0 0 0 1.5px var(--paper, #F7F7F4);
 }
 
-.map-layer-icon-sm {
-  width: 1rem;
-  height: 1rem;
+html[data-theme="dark"] .map-layer-icon-disc {
+  background: var(--paper, #F7F7F4);
+  box-shadow: 0 0 0 1.5px var(--ink, #1A1A17);
+}
+
+.map-layer-icon-disc-sm {
+  width: 24px;
+  height: 24px;
+}
+
+.map-layer-icon-glyph {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.map-layer-icon-disc-sm .map-layer-icon-glyph {
+  width: 16px;
+  height: 16px;
 }
 
 .map-marker-pin {
   display: grid;
   place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  padding: 0.125rem;
+  width: 28px;
+  height: 28px;
+  padding: 0;
   border-radius: 9999px;
-  border: 2px solid #fff;
-  background: rgba(15, 23, 42, 0.88);
+  border: 1.5px solid var(--paper, #F7F7F4);
+  background: var(--ink, #1A1A17);
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.35),
-    0 0 0 2px var(--marker-ring, rgba(255, 255, 255, 0.35));
+    0 2px 8px rgba(26, 26, 23, 0.28),
+    0 0 0 1.5px var(--marker-ring, rgba(247, 247, 244, 0.35));
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -421,13 +447,13 @@ a:focus-visible {
 .map-marker-pin:hover {
   transform: scale(1.12);
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.4),
-    0 0 0 2px var(--marker-ring, rgba(255, 255, 255, 0.45));
+    0 4px 12px rgba(26, 26, 23, 0.36),
+    0 0 0 1.5px var(--marker-ring, rgba(247, 247, 244, 0.45));
 }
 
 .map-marker-pin-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
   pointer-events: none;
 }
