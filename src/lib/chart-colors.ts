@@ -29,12 +29,25 @@ export const STATUS_FILL = {
   awas: "var(--status-awas)",
 } as const;
 
+/** Resolved HEX for MapLibre / legends (CSS vars do not interpolate in expressions). */
+export const STATUS_HEX = {
+  RENDAH: "#1F4C15",
+  SEDANG: "#C4A35A",
+  TINGGI: "#FF7722",
+  AWAS: "#B42318",
+} as const;
+
 export const KELAS_FILL: Record<string, string> = {
   RENDAH: "var(--status-aman)",
   SEDANG: "var(--status-waspada)",
   TINGGI: "var(--status-siaga)",
   AWAS: "var(--status-awas)",
 };
+
+export function kelasFill(kelas: string | undefined | null): string {
+  if (!kelas) return "var(--text)";
+  return KELAS_FILL[kelas.toUpperCase()] ?? "var(--text)";
+}
 
 /** MapLibre needs resolved HEX (CSS vars do not interpolate in expressions). */
 export const JENIS_HEX = {

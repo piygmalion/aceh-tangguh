@@ -28,7 +28,7 @@ import type {
   BreakdownView,
   KegiatanAnggaran,
 } from "@/lib/anggaran-types";
-import { CHART_SERIES } from "@/lib/chart-colors";
+import { CHART_SERIES, kelasFill } from "@/lib/chart-colors";
 
 const PHASE_ORDER = [
   "tanggap_darurat",
@@ -336,7 +336,7 @@ export function AnggaranDashboard() {
             label: t("kpi.risiko"),
             value: meta.konteks_risiko.kelas_risiko,
             sub: `IRB ${meta.konteks_risiko.irb_provinsi}`,
-            danger: meta.konteks_risiko.kelas_risiko === "TINGGI",
+            kelas: meta.konteks_risiko.kelas_risiko,
           },
         ].map((card) => (
           <GlassPanel key={card.label} className="p-4">
@@ -344,9 +344,8 @@ export function AnggaranDashboard() {
               {card.label}
             </div>
             <div
-              className={`mt-2 text-xl font-semibold tracking-tight ${
-                card.danger ? "text-[var(--danger)]" : "text-[var(--text)]"
-              }`}
+              className="mt-2 text-xl font-semibold tracking-tight text-[var(--text)]"
+              style={"kelas" in card ? { color: kelasFill(card.kelas) } : undefined}
             >
               {card.value}
             </div>
