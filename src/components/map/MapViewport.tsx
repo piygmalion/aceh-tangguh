@@ -37,7 +37,7 @@ import {
   MAP_DOT_RADIUS_PX,
   MAP_DOT_STROKE_PX,
   MAP_ICON_MIN_ZOOM,
-  MAP_PAPER_STROKE,
+  markerHaloStroke,
   markerRenderMode,
   parseStackItems,
   stackSharedCentroidDisasterEvents,
@@ -292,23 +292,25 @@ export function MapViewport({
     [basemap, preferVector, vectorFailed]
   );
 
+  const haloStroke = useMemo(() => markerHaloStroke(basemap), [basemap]);
+
   const onMapLoad = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
-    void registerMapChromeIcons(map);
-  }, []);
+    void registerMapChromeIcons(map, haloStroke);
+  }, [haloStroke]);
 
   useEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
     const onStyle = () => {
-      void registerMapChromeIcons(map);
+      void registerMapChromeIcons(map, haloStroke);
     };
     map.on("style.load", onStyle);
     return () => {
       map.off("style.load", onStyle);
     };
-  }, [mapStyle]);
+  }, [mapStyle, haloStroke]);
 
   const sortedKeys = useMemo(
     () => [...markerLayers].sort(),
@@ -642,7 +644,7 @@ export function MapViewport({
                   26,
                 ],
                 "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": MAP_PAPER_STROKE,
+                "circle-stroke-color": haloStroke,
                 "circle-opacity": 0.92,
               }}
             />
@@ -678,7 +680,7 @@ export function MapViewport({
                 "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
                 "circle-radius": MAP_DOT_RADIUS_PX,
                 "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": MAP_PAPER_STROKE,
+                "circle-stroke-color": haloStroke,
                 "circle-opacity": 0.95,
               }}
             />
@@ -695,7 +697,7 @@ export function MapViewport({
                 "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
                 "circle-radius": MAP_DOT_RADIUS_PX,
                 "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": MAP_PAPER_STROKE,
+                "circle-stroke-color": haloStroke,
                 "circle-opacity": 0.88,
               }}
             />
@@ -719,7 +721,7 @@ export function MapViewport({
                   22,
                 ],
                 "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": MAP_PAPER_STROKE,
+                "circle-stroke-color": haloStroke,
                 "circle-opacity": 0.94,
               }}
             />

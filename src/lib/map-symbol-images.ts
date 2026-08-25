@@ -8,7 +8,8 @@ const DISC = MAP_PIN_DISC_PX * PIXEL_RATIO;
 const GLYPH = MAP_PIN_GLYPH_PX * PIXEL_RATIO;
 
 function composeGlyphOnDisc(
-  image: HTMLImageElement | ImageBitmap
+  image: HTMLImageElement | ImageBitmap,
+  stroke: string
 ): ImageData {
   const canvas = document.createElement("canvas");
   canvas.width = DISC;
@@ -25,7 +26,7 @@ function composeGlyphOnDisc(
   ctx.fillStyle = COLOR_TOKENS.ink;
   ctx.fill();
   ctx.lineWidth = 1.5 * PIXEL_RATIO;
-  ctx.strokeStyle = COLOR_TOKENS.paper;
+  ctx.strokeStyle = stroke;
   ctx.stroke();
 
   const pad = (DISC - GLYPH) / 2;
@@ -52,14 +53,23 @@ async function loadStyleImage(
 }
 
 /** Compose existing flat glyphs onto 28px charcoal discs. No new PNG assets. */
-export async function registerMapChromeIcons(map: MaplibreMap): Promise<void> {
+export async function registerMapChromeIcons(
+  map: MaplibreMap,
+  stroke: string = COLOR_TOKENS.paper
+): Promise<void> {
   if (typeof document === "undefined") return;
   for (const { id, url } of listMapSymbolIcons()) {
-    if (map.hasImage(id)) continue;
+    if (map.hasImage(id)) {
+      try {
+        map.removeImage(id);
+      } catch {
+        continue;
+      }
+    }
     const image = await loadStyleImage(map, url);
     if (!image) continue;
     try {
-      map.addImage(id, composeGlyphOnDisc(image), { pixelRatio: PIXEL_RATIO });
+      map.addImage(id, composeGlyphOnDisc(image, stroke), { pixelRatio: PIXEL_RATIO });
     } catch {
       // Style may have reloaded mid-loop; next style.load retries.
     }

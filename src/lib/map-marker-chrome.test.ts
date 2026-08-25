@@ -10,19 +10,21 @@ import {
   MAP_DOT_RADIUS_PX,
   MAP_DOT_STROKE_PX,
   MAP_ICON_MIN_ZOOM,
+  MAP_LIGHT_CANVAS_STROKE,
   MAP_PAPER_STROKE,
   MAP_PIN_DISC_PX,
   MAP_PIN_GLYPH_PX,
   TOOLBAR_DISC_PX,
   TOOLBAR_GLYPH_PX,
   annotateDisasterDesa,
+  markerHaloStroke,
   desaByIdFromKejadian,
   isUnknownDesaLabel,
   markerRenderMode,
   parseStackItems,
   stackSharedCentroidDisasterEvents,
 } from "./map-marker-chrome";
-import { COLOR_TOKENS } from "./layer-colors";
+import { COLOR_TOKENS, LAYER_COLORS } from "./layer-colors";
 
 function asPointFeature(
   id: string,
@@ -45,10 +47,24 @@ describe("signed map-chrome sizes", () => {
     assert.equal(MAP_DOT_RADIUS_PX, 7);
     assert.equal(MAP_DOT_STROKE_PX, 1.5);
     assert.equal(MAP_PAPER_STROKE, COLOR_TOKENS.paper);
+    assert.equal(MAP_LIGHT_CANVAS_STROKE, COLOR_TOKENS.ink);
     assert.equal(MAP_PIN_GLYPH_PX, 24);
     assert.equal(MAP_PIN_DISC_PX, 28);
     assert.equal(TOOLBAR_GLYPH_PX, 20);
     assert.equal(TOOLBAR_DISC_PX, 32);
+  });
+});
+
+describe("basemap halo stroke", () => {
+  it("uses ink on light canvases and paper on dark/imagery", () => {
+    assert.equal(markerHaloStroke("positron"), COLOR_TOKENS.ink);
+    assert.equal(markerHaloStroke("streets"), COLOR_TOKENS.ink);
+    assert.equal(markerHaloStroke("dark"), COLOR_TOKENS.paper);
+    assert.equal(markerHaloStroke("satellite"), COLOR_TOKENS.paper);
+    assert.equal(markerHaloStroke("sentinel"), COLOR_TOKENS.paper);
+    assert.equal(LAYER_COLORS.infraRoadBridge, COLOR_TOKENS.gold);
+    assert.equal(LAYER_COLORS.facEducation, COLOR_TOKENS.sage);
+    assert.equal(LAYER_COLORS.disasterEvents, COLOR_TOKENS.orange);
   });
 });
 
