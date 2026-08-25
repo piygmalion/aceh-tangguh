@@ -76,6 +76,8 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 | `village-r3p.pmtiles` | `village` | `villageDistribution.geojson` |
 | `irbi-2025.pmtiles` | `irbi` | `irbi2025.geojson` |
 
+Village tiles carry `properties.kode_desa_kelurahan` (10-digit BPS) **only where the source GeoJSON already has it**. Slug-only leftover polygons stay without a BPS id — the rebuild does not invent codes or remap leftover names. `MapViewport` joins village clicks on that property, not on MVT feature ids. `kode_kecamatan` is kept when present. Do not use tippecanoe `--use-attribute-for-id=kode_desa_kelurahan` (string BPS codes are not valid MVT ids; numeric conversion would drop the property and can invent `0` for empty kode).
+
 Batas (dua gerbang):
 
 1. **500 KB per tile MVT** — payload satu `z/x/y` di dalam arsip (yang diunduh MapLibre). Bukan ukuran file `.pmtiles`.
