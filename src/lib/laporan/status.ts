@@ -16,6 +16,13 @@ export function isLaporanStatus(value: string): value is LaporanStatus {
   return (LAPORAN_STATUSES as readonly string[]).includes(value);
 }
 
+/** Anon PostgREST select list — never include jawaban_json / pelapor_id. */
+export const KEJADIAN_PUBLIC_COLUMNS =
+  "id, nomor_laporan, jenis_bencana, latitude, longitude, kabupaten_kota, kecamatan, desa, skor_urgensi, submitted_at";
+
+export const PENANGANAN_PUBLIC_COLUMNS =
+  "id, nomor_laporan, jenis_bencana, tipe_laporan, fase_penanganan, status_kebutuhan_sisa, tanggal_penanganan, deskripsi_penanganan, latitude, longitude, kabupaten_kota, kecamatan, desa, submitted_at";
+
 export type PublicPetaKejadian = {
   id: string;
   nomor_laporan: string;

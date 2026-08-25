@@ -48,13 +48,30 @@ revoke insert, delete, truncate
 revoke truncate on public.reports from anon;
 
 grant select on public.laporan_pelapor to authenticated;
-grant select on public.laporan_kejadian to anon, authenticated;
+grant select on public.laporan_kejadian to authenticated;
 grant update on public.laporan_kejadian to authenticated;
-grant select on public.laporan_penanganan to anon, authenticated;
+grant select on public.laporan_penanganan to authenticated;
 grant update on public.laporan_penanganan to authenticated;
 grant select on public.notifikasi_wa to authenticated;
 grant select on public.reports to anon, authenticated;
 grant update on public.reports to authenticated;
+
+-- Anon map overlays: published rows only (RLS) and no jawaban_json / pelapor_id
+-- even if someone queries PostgREST with select=*.
+revoke select on public.laporan_kejadian from anon;
+grant select (
+  id, nomor_laporan, jenis_bencana, status,
+  latitude, longitude, kabupaten_kota, kecamatan, desa, provinsi,
+  skor_urgensi, tampil_di_peta, submitted_at, created_at, updated_at
+) on public.laporan_kejadian to anon;
+
+revoke select on public.laporan_penanganan from anon;
+grant select (
+  id, nomor_laporan, jenis_bencana, tipe_laporan, fase_penanganan,
+  status_kebutuhan_sisa, tanggal_penanganan, deskripsi_penanganan,
+  status, latitude, longitude, kabupaten_kota, kecamatan, desa, provinsi,
+  tampil_di_peta, submitted_at, created_at, updated_at
+) on public.laporan_penanganan to anon;
 
 -- ---------------------------------------------------------------------------
 -- Collision-safe report numbers (service_role / definer only)
@@ -88,6 +105,8 @@ grant execute on function public.next_laporan_nomor(text) to service_role;
 
 -- ---------------------------------------------------------------------------
 -- Bounds + score CHECKs
+-- If ALTER fails on live data, fix out-of-bounds penanganan lat/lon first,
+-- then re-run these four statements. Do not drop the CHECKs to "make it apply".
 -- ---------------------------------------------------------------------------
 alter table public.laporan_penanganan
   drop constraint if exists laporan_penanganan_latitude_check;

@@ -63,7 +63,6 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | POST | `/api/laporan/kejadian` | Service role insert after Zod + rate limit |
 | POST | `/api/laporan/penanganan` | Service role insert after Zod + rate limit |
 | POST | `/api/laporan/upload` | Service role storage; magic-byte MIME; rate limit |
-| GET | `/api/laporan/peta` | Approved kejadian only (no `jawaban_json`) |
 | GET | `/api/admin/me` | Session + `admin_profiles` |
 | GET/POST/PATCH/DELETE | `/api/admin/cms/*` | Super-admin CMS |
 | GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
@@ -77,7 +76,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
 | GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
 | GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` |
-| GET | `/api/laporan/peta` | Moderated `laporan_kejadian` + `laporan_penanganan` (`status=approved` AND `tampil_di_peta`) |
+| GET | `/api/laporan/peta` | Moderated `laporan_kejadian` + `laporan_penanganan` (`status=approved` AND `tampil_di_peta`; no `jawaban_json`) |
 | GET | `/api/layers/markers/summary` | Same as markers (debug counts) |
 | GET | `/api/boundaries` | GeoJSON fixtures |
 | GET | `/api/kejadian` | `kejadian_bencana` (filter/paginate), else fixture |

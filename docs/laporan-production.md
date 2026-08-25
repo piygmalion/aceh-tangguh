@@ -9,7 +9,7 @@ Jalankan di SQL Editor (urutan):
 1. `supabase/migrations/20260825_laporan_masyarakat.sql`
 2. `supabase/migrations/20260826_laporan_production.sql`
 3. `supabase/migrations/20260829_map_layers_partisipasi.sql` — layer `laporanKejadian` / `laporanPenanganan` + SELECT publik penanganan
-4. `supabase/migrations/20260902_harden_laporan_rls.sql` — **wajib**. Cabut INSERT anon, nomor laporan via sequence, CHECK koordinat penanganan
+4. `supabase/migrations/20260902_harden_laporan_rls.sql` — **wajib**. Cabut INSERT anon, nomor laporan via sequence, CHECK koordinat penanganan, GRANT kolom anon tanpa `jawaban_json` / `pelapor_id`
 
 Pastikan `20260825_admin_auth.sql` sudah diterapkan (fungsi `is_staff()`).
 
@@ -80,7 +80,7 @@ Dua layer Partisipasi, keduanya live-query dari tabel laporan (bukan sync ke `ma
 | `laporanKejadian` | `laporan_kejadian` | `status = approved` AND `tampil_di_peta = true` AND lat/lon ada |
 | `laporanPenanganan` | `laporan_penanganan` | sama |
 
-`GET /api/laporan/peta` mengembalikan kedua set (`?tipe=kejadian|penanganan` untuk satu sisi). **Tidak** mengembalikan `jawaban_json`. `GET /api/layers/markers` menggabungkan overlay ini ke GeoJSON peta.
+`GET /api/laporan/peta` mengembalikan kedua set (`?tipe=kejadian|penanganan` untuk satu sisi). **Tidak** mengembalikan `jawaban_json`. Anon PostgREST juga tidak punya GRANT pada `jawaban_json` / `pelapor_id`. `GET /api/layers/markers` menggabungkan overlay ini ke GeoJSON peta.
 
 Key lama `citizenReports` **removed** (pola helipad): tidak ada di toolbar; `?layers=citizenReports` di-alias ke `laporanKejadian` saja. STATIC_EXPORT / tanpa data: array kosong — jangan seed titik dummy.
 

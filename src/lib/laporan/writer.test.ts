@@ -12,30 +12,37 @@ const KEYS = [
 
 const saved: Record<string, string | undefined> = {};
 
+function envBag() {
+  return process.env as unknown as Record<string, string | undefined>;
+}
+
+function setEnv(key: (typeof KEYS)[number], value: string | undefined) {
+  const env = envBag();
+  if (value === undefined) delete env[key];
+  else env[key] = value;
+}
+
 function snapshotEnv() {
   for (const k of KEYS) saved[k] = process.env[k];
 }
 
 function restoreEnv() {
-  for (const k of KEYS) {
-    if (saved[k] === undefined) delete process.env[k];
-    else process.env[k] = saved[k];
-  }
+  for (const k of KEYS) setEnv(k, saved[k]);
 }
 
 snapshotEnv();
 afterEach(restoreEnv);
 
 test("requireLaporanWriter fails when Supabase URL is set without service role", () => {
-  process.env.NODE_ENV = "development";
-  process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
-  delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+  setEnv("NODE_ENV", "development");
+  setEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.supabase.co");
+  setEnv("SUPABASE_SERVICE_ROLE_KEY", undefined);
   assert.throws(() => requireLaporanWriter(), LaporanConfigError);
 });
 
 test("requireLaporanWriter fails closed in production without PII or service role", () => {
-  process.env.NODE_ENV = "production";
-  delete process.env.NEXT_PUBLIC_SUPABASE_URL;
-  delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+  setEnv("NODE_ENV", "production");
+  setEnv("NEXT_PUBLIC_SUPABASE_URL", undefined);
+  setEnv("SUPABASE_SERVICE_ROLE_KEY", undefined);
   assert.throws(() => requireLaporanWriter(), LaporanConfigError);
 });

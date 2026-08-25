@@ -16,7 +16,12 @@ import {
   fileStoreQueueWa,
 } from "./file-store";
 import type { KejadianSubmit, PenangananSubmit } from "./schemas";
-import type { PublicPetaKejadian, PublicPetaPenanganan } from "./status";
+import {
+  KEJADIAN_PUBLIC_COLUMNS,
+  PENANGANAN_PUBLIC_COLUMNS,
+  type PublicPetaKejadian,
+  type PublicPetaPenanganan,
+} from "./status";
 import { LaporanConfigError, requireLaporanWriter } from "./writer";
 import type { Json } from "@/lib/supabase/types";
 import type { TypedSupabaseClient } from "@/lib/supabase/server";
@@ -236,12 +241,6 @@ function hasMapCoords(row: { latitude?: number | null; longitude?: number | null
     Number.isFinite(row.longitude)
   );
 }
-
-const KEJADIAN_PUBLIC_COLUMNS =
-  "id, nomor_laporan, jenis_bencana, latitude, longitude, kabupaten_kota, kecamatan, desa, skor_urgensi, submitted_at";
-
-const PENANGANAN_PUBLIC_COLUMNS =
-  "id, nomor_laporan, jenis_bencana, tipe_laporan, fase_penanganan, status_kebutuhan_sisa, tanggal_penanganan, deskripsi_penanganan, latitude, longitude, kabupaten_kota, kecamatan, desa, submitted_at";
 
 /** Moderated = `status = approved` AND `tampil_di_peta = true` AND lat/lon present. No jawaban_json. */
 export async function getPetaKejadianPublik(): Promise<PublicPetaKejadian[]> {
