@@ -24,6 +24,12 @@ tippecanoe \
   "$AREAS/r3pDistribution.geojson"
 
 echo "==> Building village-r3p.pmtiles (aggressive simplify for web)"
+# Keep BPS kode as a property only. Do not pass --use-attribute-for-id=
+# kode_desa_kelurahan: tippecanoe rejects the 10-digit string as a
+# non-numeric MVT id, and --convert-stringified-ids-to-numbers would
+# strip the property (MapViewport joins on properties.kode_desa_kelurahan)
+# and can assign 0 / empty ids for slug-only polygons that have no kode.
+# Stamp kode only from the GeoJSON; never invent codes for leftover slugs.
 tippecanoe \
   -o "$OUT/village-r3p.pmtiles" \
   --force \
@@ -37,7 +43,8 @@ tippecanoe \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \
   --coalesce-densest-as-needed \
-  -y name -y value -y bucket -y kabupaten -y kecamatan -y kode_desa_kelurahan \
+  -y name -y value -y bucket -y kabupaten -y kecamatan \
+  -y kode_desa_kelurahan -y kode_kecamatan \
   -y rumah_rr -y rumah_rs -y rumah_rb \
   "$AREAS/villageDistribution.geojson"
 
