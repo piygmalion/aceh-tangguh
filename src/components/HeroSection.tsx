@@ -112,11 +112,14 @@ export function HeroSection() {
             </BlurFade>
 
             <BlurFade delay={0.12} inView>
-              <h1 className="max-w-[46rem] text-[2.35rem] font-semibold leading-[1.12] tracking-tight sm:text-[3.4rem] lg:text-[4.4rem]">
+              <h1 className="max-w-none text-left text-[2.35rem] font-semibold leading-[1.05] tracking-tight sm:text-[3.4rem] lg:text-[4.4rem]">
                 {t.rich("title", {
                   brand: (chunks) => (
-                    <span className="text-[var(--bnpb-orange)]">{chunks}</span>
+                    <mark className="whitespace-nowrap rounded-[0.16em] bg-[var(--orange)] px-[0.28em] pb-[0.06em] pt-[0.04em] font-[inherit] text-[var(--accent-fg)] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
+                      {chunks}
+                    </mark>
                   ),
+                  br: () => <br />,
                 })}
               </h1>
             </BlurFade>
@@ -131,9 +134,9 @@ export function HeroSection() {
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link href="/peta">
                   <ShimmerButton
-                    className="shadow-2xl"
-                    background="rgba(46, 158, 78, 1)"
-                    shimmerColor="#e8ffe8"
+                    className="shadow-2xl text-[var(--primary-fg)]"
+                    background="var(--primary)"
+                    shimmerColor="#F7F7F4"
                   >
                     <span className="inline-flex items-center gap-2 text-sm font-semibold">
                       <Map size={18} />
@@ -211,9 +214,9 @@ export function HeroSection() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/peta">
                   <ShimmerButton
-                    className="shadow-2xl"
-                    background="rgba(46, 158, 78, 1)"
-                    shimmerColor="#e8ffe8"
+                    className="shadow-2xl text-[var(--primary-fg)]"
+                    background="var(--primary)"
+                    shimmerColor="#F7F7F4"
                   >
                     <span className="inline-flex items-center gap-2 text-sm font-semibold">
                       <Map size={18} />
