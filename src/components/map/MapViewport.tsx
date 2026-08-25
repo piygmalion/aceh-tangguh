@@ -626,9 +626,9 @@ export function MapViewport({
                 "circle-color": [
                   "step",
                   ["get", "point_count"],
-                  CLUSTER_COLORS.low,
-                  25,
                   CLUSTER_COLORS.high,
+                  25,
+                  CLUSTER_COLORS.low,
                 ],
                 "circle-radius": [
                   "step",
@@ -657,9 +657,9 @@ export function MapViewport({
                 "text-color": [
                   "step",
                   ["get", "point_count"],
-                  CLUSTER_COLORS.textOnLow,
-                  25,
                   CLUSTER_COLORS.textOnHigh,
+                  25,
+                  CLUSTER_COLORS.textOnLow,
                 ],
               }}
             />
