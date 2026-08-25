@@ -1,0 +1,37 @@
+name: Laporan WA cron
+
+on:
+  schedule:
+    # Weekday 08:00 WIB (Asia/Jakarta, UTC+7)
+    - cron: "0 1 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# POSTs the existing POST /api/cron/laporan-wa endpoint.
+# That route only processes existing notifikasi_wa rows with status=pending.
+# It does not insert laporan rows.
+#
+# Skip-if-unset (same pattern as weather-refresh.yml job refresh-supabase):
+# - job is skipped when vars.LAPORAN_WA_URL is empty
+# - if LAPORAN_CRON_SECRET is empty, echo a skip message and exit 0
+# No WhatsApp is sent until both are set on the repository.
+
+jobs:
+  process-pending:
+    runs-on: ubuntu-latest
+    if: ${{ vars.LAPORAN_WA_URL != '' }}
+    steps:
+      - name: POST pending WhatsApp queue
+        env:
+          LAPORAN_CRON_SECRET: ${{ secrets.LAPORAN_CRON_SECRET }}
+          LAPORAN_WA_URL: ${{ vars.LAPORAN_WA_URL }}
+        run: |
+          if [ -z "$LAPORAN_CRON_SECRET" ]; then
+            echo "LAPORAN_CRON_SECRET not set — skip laporan WA cron"
+            exit 0
+          fi
+          curl -fsS -X POST "$LAPORAN_WA_URL" \
+            -H "Authorization: Bearer $LAPORAN_CRON_SECRET" \
+            -H "Content-Type: application/json"
