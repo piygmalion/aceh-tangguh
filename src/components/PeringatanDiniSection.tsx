@@ -52,7 +52,7 @@ function CardShell({
       ? "hover:ring-[var(--danger)]/50"
       : tone === "warn"
         ? "hover:ring-[var(--warn)]/50"
-        : "hover:ring-[var(--accent)]/40";
+        : "hover:ring-[var(--primary)]/40";
   const className = `glass flex h-full min-h-[14.5rem] flex-col gap-2 rounded-2xl px-3.5 py-3 transition hover:ring-1 ${ring}`;
 
   if (external) {

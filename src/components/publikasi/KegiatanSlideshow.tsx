@@ -235,7 +235,7 @@ export function KegiatanSlideshow() {
           <div className="absolute inset-x-0 bottom-0 z-10 h-0.5 overflow-hidden bg-white/15">
             <div
               key={index}
-              className="h-full bg-[var(--accent)]"
+              className="h-full bg-[var(--primary)]"
               style={{
                 animation: `publikasi-kegiatan-progress ${intervalMs}ms linear`,
               }}
@@ -261,7 +261,7 @@ export function KegiatanSlideshow() {
               className={cn(
                 "h-2 rounded-full transition-all",
                 i === index
-                  ? "w-6 bg-[var(--accent)]"
+                  ? "w-6 bg-[var(--primary)]"
                   : "w-2 bg-[var(--text-dim)]/40 hover:bg-[var(--text-dim)]",
               )}
             />

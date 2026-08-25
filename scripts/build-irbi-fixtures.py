@@ -55,7 +55,7 @@ def main() -> int:
             props[k] = row.get(k)
         features.append({"type": "Feature", "geometry": feat["geometry"], "properties": props})
     OUT_GEO.write_text(json.dumps({"type": "FeatureCollection", "features": features, "metadata": {"source": "IRBI 2025 join onto r3pDistribution kab polygons", "matched": matched, "total_geo": len(geo["features"]), "total_irbi": len(by_name)}}, ensure_ascii=False), encoding="utf-8")
-    OUT_LEGEND.write_text(json.dumps({"title": "IRBI 2025 — kelas risiko kab/kota", "items": [{"color": "#c7f0d2", "label": "Rendah"}, {"color": "#6bcf8e", "label": "Sedang"}, {"color": "#2e9e4e", "label": "Tinggi"}]}, ensure_ascii=False, indent=2), encoding="utf-8")
+    OUT_LEGEND.write_text(json.dumps({"title": "IRBI 2025 — kelas risiko kab/kota", "items": [{"color": "#c7f0d2", "label": "Rendah"}, {"color": "#6bcf8e", "label": "Sedang"}, {"color": "#1F4C15", "label": "Tinggi"}]}, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"matched={matched}/23 unmatched={unmatched}")
     print(f"wrote {OUT_GEO}")
     print(f"wrote {OUT_LEGEND}")

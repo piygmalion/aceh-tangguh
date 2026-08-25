@@ -45,7 +45,7 @@ export function AdminShell({
           </p>
           <p className="mb-3 truncate px-2 text-sm">
             {profile.displayName || profile.email}
-            <span className="ml-2 rounded-full bg-[var(--accent-dim)] px-2 py-0.5 text-[10px] font-semibold uppercase text-[var(--accent)]">
+            <span className="ml-2 rounded-full bg-[var(--primary-dim)] px-2 py-0.5 text-[10px] font-semibold uppercase text-[var(--primary)]">
               {roleLabel}
             </span>
           </p>
@@ -59,8 +59,8 @@ export function AdminShell({
                   href={item.href}
                   className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${
                     active
-                      ? "bg-[var(--accent-dim)] font-medium text-[var(--accent)]"
-                      : "text-[var(--text-dim)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+                      ? "bg-[var(--primary-dim)] font-medium text-[var(--primary)]"
+                      : "text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
                   }`}
                 >
                   <Icon size={16} />

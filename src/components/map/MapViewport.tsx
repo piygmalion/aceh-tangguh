@@ -44,7 +44,7 @@ export { LAYER_COLORS };
 const BUCKET_FILL: Record<string, string> = {
   rendah: "#c7f0d2",
   sedang: "#6bcf8e",
-  tinggi: "#2e9e4e",
+  tinggi: "#1F4C15",
   tahap1: "#fed7aa",
   tahap2: "#fb923c",
 };

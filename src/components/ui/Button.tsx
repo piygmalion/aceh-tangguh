@@ -1,15 +1,17 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Variant = "primary" | "ghost" | "outline" | "danger";
+type Variant = "primary" | "accent" | "ghost" | "outline" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-[var(--accent)] text-white shadow-sm hover:bg-[var(--accent-hover)] hover:shadow-md active:scale-[0.98]",
+    "bg-[var(--primary)] text-[var(--primary-fg)] shadow-sm hover:bg-[var(--primary-hover)] hover:shadow-md active:scale-[0.98]",
+  accent:
+    "bg-[var(--accent)] text-[var(--accent-fg)] shadow-sm hover:bg-[var(--accent-hover)] hover:shadow-md active:scale-[0.98]",
   ghost:
-    "bg-transparent text-[var(--text)] hover:bg-[var(--accent-dim)] active:scale-[0.98]",
+    "bg-transparent text-[var(--text)] hover:bg-[var(--primary-dim)] active:scale-[0.98]",
   outline:
-    "border border-[var(--glass-border)] bg-transparent text-[var(--text)] hover:border-[var(--accent)] hover:bg-[var(--accent-dim)] active:scale-[0.98]",
+    "border border-[var(--glass-border)] bg-transparent text-[var(--text)] hover:border-[var(--primary)] hover:bg-[var(--primary-dim)] active:scale-[0.98]",
   danger:
     "bg-[var(--danger)] text-white shadow-sm hover:brightness-110 active:scale-[0.98]",
 };

@@ -29,7 +29,7 @@ import {
 } from "@/lib/dibi-types";
 import { Link } from "@/i18n/routing";
 
-const BAR_COLOR = "#2e9e4e";
+const BAR_COLOR = "var(--primary)";
 const YEAR_COLOR = "#3b82f6";
 
 const KATEGORI_COLOR: Record<string, string> = {
@@ -323,7 +323,7 @@ export function DibiDashboard() {
                         tickLine={false}
                       />
                       <Tooltip
-                        cursor={{ fill: "var(--accent-dim)" }}
+                        cursor={{ fill: "var(--primary-dim)" }}
                         content={<ChartTooltip unit={t("unit.kejadian")} />}
                       />
                       <Bar dataKey="value" radius={[0, 6, 6, 0]} maxBarSize={22}>
@@ -373,7 +373,7 @@ export function DibiDashboard() {
                         tickLine={false}
                       />
                       <Tooltip
-                        cursor={{ fill: "var(--accent-dim)" }}
+                        cursor={{ fill: "var(--primary-dim)" }}
                         content={<ChartTooltip unit={t("unit.kejadian")} />}
                       />
                       <Bar dataKey="value" radius={[0, 6, 6, 0]} maxBarSize={22}>
@@ -415,7 +415,7 @@ export function DibiDashboard() {
                       width={40}
                     />
                     <Tooltip
-                      cursor={{ fill: "var(--accent-dim)" }}
+                      cursor={{ fill: "var(--primary-dim)" }}
                       content={<ChartTooltip unit={t("unit.kejadian")} />}
                     />
                     <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={28}>
@@ -451,7 +451,7 @@ export function DibiDashboard() {
             href={data?.metadata.source_url ?? DIBI_DASHBOARD_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[var(--accent)] underline-offset-2 hover:underline"
+            className="inline-flex items-center gap-1 text-[var(--primary)] underline-offset-2 hover:underline"
           >
             {t("sourceLink")}
             <ExternalLink className="h-3 w-3" />
@@ -459,7 +459,7 @@ export function DibiDashboard() {
           {" · "}
           <Link
             href="/sumber-data"
-            className="text-[var(--accent)] underline-offset-2 hover:underline"
+            className="text-[var(--primary)] underline-offset-2 hover:underline"
           >
             {tn("sumberData")}
           </Link>

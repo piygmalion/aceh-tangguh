@@ -82,7 +82,7 @@ export function AuthMenu() {
     return (
       <Link
         href="/admin/login"
-        className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-2.5 text-sm font-medium text-[var(--text)] transition hover:border-[var(--accent)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+        className="inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-2.5 text-sm font-medium text-[var(--text)] transition hover:border-[var(--primary)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
         aria-label={t("login")}
       >
         <LogIn size={16} strokeWidth={2.2} />
@@ -105,7 +105,7 @@ export function AuthMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex h-9 max-w-[11rem] items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-2.5 text-sm font-medium transition hover:border-[var(--accent)] hover:bg-[var(--accent-dim)]"
+        className="inline-flex h-9 max-w-[11rem] items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-2.5 text-sm font-medium transition hover:border-[var(--primary)] hover:bg-[var(--primary-dim)]"
       >
         <UserRound size={16} strokeWidth={2.2} />
         <span className="hidden truncate sm:inline">
@@ -121,7 +121,7 @@ export function AuthMenu() {
             <p className="truncate text-xs text-[var(--text-dim)]">
               {me.user.email}
             </p>
-            <span className="mt-1 inline-flex rounded-full bg-[var(--accent-dim)] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--accent)]">
+            <span className="mt-1 inline-flex rounded-full bg-[var(--primary-dim)] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--primary)]">
               {roleLabel}
             </span>
           </div>
@@ -130,7 +130,7 @@ export function AuthMenu() {
               href="/admin"
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm text-[var(--text)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+              className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm text-[var(--text)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
             >
               <LayoutDashboard size={16} />
               {t("dashboard")}
@@ -140,7 +140,7 @@ export function AuthMenu() {
               href="/admin/denied"
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm text-[var(--text-dim)] hover:bg-[var(--accent-dim)]"
+              className="flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm text-[var(--text-dim)] hover:bg-[var(--primary-dim)]"
             >
               <LayoutDashboard size={16} />
               {ta("deniedShort")}

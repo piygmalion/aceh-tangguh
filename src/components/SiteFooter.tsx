@@ -22,22 +22,22 @@ export function SiteFooter() {
           </div>
           <ul className="mt-3 space-y-2 text-sm text-[var(--text-dim)]">
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/peta">
+              <Link className="transition hover:text-[var(--primary)]" href="/peta">
                 {tn("peta")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/data-bencana">
+              <Link className="transition hover:text-[var(--primary)]" href="/data-bencana">
                 {tn("dataBencana")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/anggaran-bencana">
+              <Link className="transition hover:text-[var(--primary)]" href="/anggaran-bencana">
                 {tn("anggaranBencana")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/publikasi">
+              <Link className="transition hover:text-[var(--primary)]" href="/publikasi">
                 {tn("publikasi")}
               </Link>
             </li>
@@ -52,12 +52,12 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/sumber-data">
+              <Link className="transition hover:text-[var(--primary)]" href="/sumber-data">
                 {tn("sumberData")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/metodologi">
+              <Link className="transition hover:text-[var(--primary)]" href="/metodologi">
                 {tn("metodologi")}
               </Link>
             </li>
@@ -71,7 +71,7 @@ export function SiteFooter() {
             <li>{SITE_MEDIA.heroPoster.credit}</li>
             {UI_CREDITS.map((c) => (
               <li key={c.name}>
-                <a className="hover:text-[var(--accent)]" href={c.href} target="_blank" rel="noreferrer">
+                <a className="hover:text-[var(--primary)]" href={c.href} target="_blank" rel="noreferrer">
                   {c.name} — {c.source}
                 </a>
               </li>

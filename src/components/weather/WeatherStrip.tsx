@@ -154,7 +154,7 @@ function WeatherThumb({
           <div className="flex min-w-0 items-center gap-1">
             <WeatherIcon
               code={kab.current.weather_code}
-              className="h-4 w-4 shrink-0 text-[var(--accent)]"
+              className="h-4 w-4 shrink-0 text-[var(--info)]"
             />
             <span className="text-base font-semibold tabular-nums leading-none tracking-tight">
               {Math.round(kab.current.temperature_c)}°
@@ -237,7 +237,7 @@ function WeatherThumb({
 }
 
 const controlBtnClass =
-  "inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--accent)]";
+  "inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--primary)]";
 
 export function WeatherStrip() {
   const t = useTranslations("weather");
@@ -456,7 +456,7 @@ export function WeatherStrip() {
                     role="presentation"
                   >
                     <div
-                      className="absolute inset-y-0 rounded-full bg-[var(--accent)] transition-[left,width] duration-300"
+                      className="absolute inset-y-0 rounded-full bg-[var(--primary)] transition-[left,width] duration-300"
                       style={{
                         left: `${thumbLeftPct}%`,
                         width: `${thumbWidthPct}%`,

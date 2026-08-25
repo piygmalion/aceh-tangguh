@@ -5,7 +5,7 @@ export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
   missingPersons: "#dc2626",
   tendPoints: "#0ea5e9",
   policeOffices: "#1d4ed8",
-  poskos: "#2e9e4e",
+  poskos: "#1F4C15",
   facHealth: "#e11d48",
   facEducation: "#7c3aed",
   facGov: "#475569",

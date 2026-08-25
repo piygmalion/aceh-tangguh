@@ -22,7 +22,7 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
     items: [
       { color: "#c7f0d2", label: "Rendah (≤106)" },
       { color: "#6bcf8e", label: "Sedang (≤1184)" },
-      { color: "#2e9e4e", label: "Tinggi (>1184)" },
+      { color: "#1F4C15", label: "Tinggi (>1184)" },
     ],
   },
   r3pDistribution: {
@@ -30,7 +30,7 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
     items: [
       { color: "#c7f0d2", label: "Rendah (≤1362)" },
       { color: "#6bcf8e", label: "Sedang (≤10795)" },
-      { color: "#2e9e4e", label: "Tinggi (>10795)" },
+      { color: "#1F4C15", label: "Tinggi (>10795)" },
     ],
   },
   ngoDistribution: {
@@ -38,7 +38,7 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
     items: [
       { color: "#c7f0d2", label: "Rendah" },
       { color: "#6bcf8e", label: "Sedang" },
-      { color: "#2e9e4e", label: "Tinggi" },
+      { color: "#1F4C15", label: "Tinggi" },
     ],
   },
   regencyFundAllocation: {
@@ -46,7 +46,7 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
     items: [
       { color: "#fed7aa", label: "Tahap 1" },
       { color: "#fb923c", label: "Tahap 2" },
-      { color: "#2e9e4e", label: "Tinggi" },
+      { color: "#1F4C15", label: "Tinggi" },
     ],
   },
   irbi2025: {
@@ -54,7 +54,7 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
     items: [
       { color: "#c7f0d2", label: "Rendah" },
       { color: "#6bcf8e", label: "Sedang" },
-      { color: "#2e9e4e", label: "Tinggi" },
+      { color: "#1F4C15", label: "Tinggi" },
     ],
   },
 };

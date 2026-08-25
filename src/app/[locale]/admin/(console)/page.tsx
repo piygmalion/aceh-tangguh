@@ -76,7 +76,7 @@ export default async function AdminOverviewPage() {
       <div className="grid gap-3 md:grid-cols-2">
         {cards.map((card) => (
           <Link key={card.href} href={card.href}>
-            <GlassPanel className="h-full p-5 transition hover:border-[var(--accent)]">
+            <GlassPanel className="h-full p-5 transition hover:border-[var(--primary)]">
               <h2 className="font-semibold">{card.title}</h2>
               <p className="mt-1 text-sm text-[var(--text-dim)]">{card.body}</p>
             </GlassPanel>

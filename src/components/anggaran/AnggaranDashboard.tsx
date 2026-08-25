@@ -38,7 +38,7 @@ const PHASE_ORDER = [
 ] as const;
 
 const CHART_COLORS = [
-  "#2e9e4e",
+  "var(--primary)",
   "#3b82f6",
   "#f59e0b",
   "#a855f7",
@@ -370,7 +370,7 @@ export function AnggaranDashboard() {
       <div className="grid gap-3 md:grid-cols-3">
         {insights.map((ins) => (
           <GlassPanel key={ins.id} className="p-4">
-            <div className="text-sm font-semibold text-[var(--accent)]">
+            <div className="text-sm font-semibold text-[var(--primary)]">
               {ins.title}
             </div>
             <p className="mt-2 text-sm leading-relaxed text-[var(--text-dim)]">
@@ -406,7 +406,7 @@ export function AnggaranDashboard() {
                   aria-selected={view === key}
                   className={`rounded-full px-3 py-1.5 transition ${
                     view === key
-                      ? "bg-[var(--accent-dim)] font-medium text-[var(--accent)]"
+                      ? "bg-[var(--primary-dim)] font-medium text-[var(--primary)]"
                       : "text-[var(--text-dim)] hover:text-[var(--text)]"
                   }`}
                   onClick={() => {
@@ -426,7 +426,7 @@ export function AnggaranDashboard() {
               </Chip>
               <button
                 type="button"
-                className="inline-flex items-center gap-1 text-xs text-[var(--text-dim)] hover:text-[var(--accent)]"
+                className="inline-flex items-center gap-1 text-xs text-[var(--text-dim)] hover:text-[var(--primary)]"
                 onClick={() => setSelectedKey(null)}
               >
                 <X size={12} /> {t("chart.clearSelection")}
@@ -471,7 +471,7 @@ export function AnggaranDashboard() {
                   tickLine={false}
                 />
                 <Tooltip
-                  cursor={{ fill: "var(--accent-dim)" }}
+                  cursor={{ fill: "var(--primary-dim)" }}
                   content={<ChartTooltip />}
                 />
                 <Bar
@@ -544,7 +544,7 @@ export function AnggaranDashboard() {
                 <Bar
                   dataKey="anggaran"
                   name={t("chart.anggaran")}
-                  fill="var(--accent)"
+                  fill="var(--primary)"
                   radius={[6, 6, 0, 0]}
                   maxBarSize={48}
                 />
@@ -558,9 +558,9 @@ export function AnggaranDashboard() {
                 {yoy?.kegiatan_2025 ?? "—"} {t("kpi.kegiatanSub")}
               </div>
             </div>
-            <div className="rounded-xl bg-[var(--accent-dim)] px-2 py-2">
-              <div className="text-[var(--accent)]">2026</div>
-              <div className="mt-0.5 font-semibold text-[var(--accent)]">
+            <div className="rounded-xl bg-[var(--primary-dim)] px-2 py-2">
+              <div className="text-[var(--primary)]">2026</div>
+              <div className="mt-0.5 font-semibold text-[var(--primary)]">
                 {yoy?.kegiatan_2026 ?? "—"} {t("kpi.kegiatanSub")}
               </div>
             </div>
@@ -583,7 +583,7 @@ export function AnggaranDashboard() {
             <button
               type="button"
               onClick={resetFilters}
-              className="text-xs text-[var(--text-dim)] hover:text-[var(--accent)]"
+              className="text-xs text-[var(--text-dim)] hover:text-[var(--primary)]"
             >
               {t("table.reset")}
             </button>
@@ -599,13 +599,13 @@ export function AnggaranDashboard() {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder={t("table.searchPlaceholder")}
-                className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-muted)] py-2 pl-8 pr-3 text-sm outline-none focus:border-[var(--accent)]"
+                className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-muted)] py-2 pl-8 pr-3 text-sm outline-none focus:border-[var(--ring)]"
               />
             </label>
             <select
               value={fase}
               onChange={(e) => setFase(e.target.value)}
-              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--accent)]"
+              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--ring)]"
               aria-label={t("table.fase")}
             >
               <option value="">{t("table.allFase")}</option>
@@ -618,7 +618,7 @@ export function AnggaranDashboard() {
             <select
               value={kategori}
               onChange={(e) => setKategori(e.target.value)}
-              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--accent)]"
+              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--ring)]"
               aria-label={t("table.kategori")}
             >
               <option value="">{t("table.allKategori")}</option>
@@ -631,7 +631,7 @@ export function AnggaranDashboard() {
             <select
               value={skpd}
               onChange={(e) => setSkpd(e.target.value)}
-              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--accent)]"
+              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none [color-scheme:inherit] focus:border-[var(--ring)]"
               aria-label={t("table.skpd")}
             >
               <option value="">{t("table.allSkpd")}</option>
@@ -708,7 +708,7 @@ function FragmentRow({
   return (
     <>
       <tr
-        className="cursor-pointer border-t border-[var(--glass-border)] transition hover:bg-[var(--accent-dim)]/40"
+        className="cursor-pointer border-t border-[var(--glass-border)] transition hover:bg-[var(--primary-dim)]/40"
         onClick={onToggle}
       >
         <td className="px-4 py-3">

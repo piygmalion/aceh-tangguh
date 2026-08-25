@@ -37,12 +37,12 @@ const SLIDE_IDS = [
 
 type SlideId = (typeof SLIDE_IDS)[number];
 
-const BAR_COLOR = "#2e9e4e";
+const BAR_COLOR = "var(--primary)";
 const AUTOPLAY_MS = 8000;
 const TOP_N = 10;
 
 const SEKTOR_COLORS: Record<string, string> = {
-  Infrastruktur: "#2e9e4e",
+  Infrastruktur: "var(--primary)",
   Permukiman: "#3b82f6",
   Sosial: "#f59e0b",
   Ekonomi: "#a855f7",
@@ -51,10 +51,10 @@ const SEKTOR_COLORS: Record<string, string> = {
 
 const SERIES_COLORS = {
   prrp: "#3b82f6",
-  r3p: "#2e9e4e",
+  r3p: "var(--primary)",
   bnba: "#f59e0b",
   kebutuhan: "#3b82f6",
-  terakomodasi: "#2e9e4e",
+  terakomodasi: "var(--primary)",
   kesenjangan: "#e11d48",
 } as const;
 
@@ -213,7 +213,7 @@ function HorizontalBar({
             tickLine={false}
           />
           <Tooltip
-            cursor={{ fill: "var(--accent-dim)" }}
+            cursor={{ fill: "var(--primary-dim)" }}
             content={<ChartTooltip money={money} />}
           />
           <Bar dataKey="value" radius={[0, 6, 6, 0]} maxBarSize={28}>
@@ -292,7 +292,7 @@ function GroupedBar({
             </>
           )}
           <Tooltip
-            cursor={{ fill: "var(--accent-dim)" }}
+            cursor={{ fill: "var(--primary-dim)" }}
             content={<GroupedTooltip money={money} />}
           />
           <Legend
@@ -693,7 +693,7 @@ export function R3PChartSection() {
                         onClick={() => goTo(i)}
                         className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                           i === index
-                            ? "border-[var(--accent)] bg-[var(--accent-dim)] text-[var(--accent)]"
+                            ? "border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)]"
                             : "border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text-dim)] hover:text-[var(--text)]"
                         }`}
                       >
@@ -707,7 +707,7 @@ export function R3PChartSection() {
                       type="button"
                       onClick={() => go(-1)}
                       aria-label={t("prev")}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--accent)]"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--primary)]"
                     >
                       <ChevronLeft className="h-4 w-4" />
                     </button>
@@ -716,7 +716,7 @@ export function R3PChartSection() {
                       onClick={() => setPlaying((p) => !p)}
                       aria-label={playing ? t("pause") : t("play")}
                       title={t("autoplay")}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--accent)]"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--primary)]"
                     >
                       {playing ? (
                         <Pause className="h-3.5 w-3.5" />
@@ -728,7 +728,7 @@ export function R3PChartSection() {
                       type="button"
                       onClick={() => go(1)}
                       aria-label={t("next")}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--accent)]"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--primary)]"
                     >
                       <ChevronRight className="h-4 w-4" />
                     </button>
@@ -748,7 +748,7 @@ export function R3PChartSection() {
                       onClick={() => goTo(i)}
                       className={`h-1.5 rounded-full transition ${
                         i === index
-                          ? "w-6 bg-[var(--accent)]"
+                          ? "w-6 bg-[var(--primary)]"
                           : "w-1.5 bg-[var(--border)] hover:bg-[var(--text-dim)]"
                       }`}
                     />
@@ -866,14 +866,14 @@ export function R3PChartSection() {
             <p className="mt-4 text-xs text-[var(--text-dim)]">
               <Link
                 href="/metodologi"
-                className="text-[var(--accent)] underline-offset-2 hover:underline"
+                className="text-[var(--primary)] underline-offset-2 hover:underline"
               >
                 {tn("metodologi")}
               </Link>
               {" · "}
               <Link
                 href="/sumber-data"
-                className="text-[var(--accent)] underline-offset-2 hover:underline"
+                className="text-[var(--primary)] underline-offset-2 hover:underline"
               >
                 {tn("sumberData")}
               </Link>
@@ -883,7 +883,7 @@ export function R3PChartSection() {
               <a
                 href={docHref}
                 download
-                className="inline-flex items-center gap-1 text-[var(--accent)] underline-offset-2 hover:underline"
+                className="inline-flex items-center gap-1 text-[var(--primary)] underline-offset-2 hover:underline"
               >
                 <Download className="h-3 w-3" aria-hidden />
                 {t("downloadDoc")}

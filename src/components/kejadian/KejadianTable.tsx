@@ -177,7 +177,7 @@ ${placemarks}
 }
 
 const inputClass =
-  "w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none transition [color-scheme:inherit] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
+  "w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none transition [color-scheme:inherit] focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring)]/20";
 
 export function KejadianTable() {
   const t = useTranslations("dataBencana");
@@ -579,7 +579,7 @@ export function KejadianTable() {
                   return (
                     <tr
                       key={row.id}
-                      className="border-b border-[var(--glass-border)]/70 align-top transition hover:bg-[var(--accent-dim)]/40"
+                      className="border-b border-[var(--glass-border)]/70 align-top transition hover:bg-[var(--primary-dim)]/40"
                     >
                       <td className="px-3 py-3 tabular-nums text-[var(--text-dim)]">
                         {no}
@@ -610,7 +610,7 @@ export function KejadianTable() {
                             }
                             target="_blank"
                             rel="noreferrer"
-                            className="mt-1 inline-flex items-center gap-1 text-xs text-[var(--accent)] hover:underline"
+                            className="mt-1 inline-flex items-center gap-1 text-xs text-[var(--primary)] hover:underline"
                           >
                             <MapPin size={12} />
                             {row.arah_di_peta?.latitude?.toFixed(4)},{" "}
@@ -703,7 +703,7 @@ export function KejadianTable() {
               <button
                 ref={closeBtnRef}
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] text-[var(--text-dim)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
                 aria-label={t("detail.close")}
                 onClick={() => setDetail(null)}
               >
@@ -800,7 +800,7 @@ export function KejadianTable() {
                             href={s}
                             target="_blank"
                             rel="noreferrer"
-                            className="break-all text-[var(--accent)] hover:underline"
+                            className="break-all text-[var(--primary)] hover:underline"
                           >
                             {s}
                           </a>
@@ -830,7 +830,7 @@ export function KejadianTable() {
                       }
                       target="_blank"
                       rel="noreferrer"
-                      className="text-[var(--accent)] hover:underline"
+                      className="text-[var(--primary)] hover:underline"
                     >
                       {t("detail.googleMaps")}
                     </a>
@@ -851,7 +851,7 @@ export function KejadianTable() {
                       layers: "disasterEvents",
                     },
                   }}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:brightness-110"
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-fg)] hover:bg-[var(--primary-hover)]"
                   onClick={() => setDetail(null)}
                 >
                   <MapPin size={14} />

@@ -17,15 +17,15 @@ export default async function AnggaranBencanaPage({
       <SiteNav />
       <main className="mx-auto max-w-6xl px-4 pb-16 pt-28">
         <p className="text-sm text-[var(--text-dim)]">
-          <Link href="/" className="hover:text-[var(--accent)]">
+          <Link href="/" className="hover:text-[var(--primary)]">
             {t("backHome")}
           </Link>
           {" · "}
-          <Link href="/data-bencana" className="hover:text-[var(--accent)]">
+          <Link href="/data-bencana" className="hover:text-[var(--primary)]">
             {t("seeData")}
           </Link>
           {" · "}
-          <Link href="/sumber-data" className="hover:text-[var(--accent)]">
+          <Link href="/sumber-data" className="hover:text-[var(--primary)]">
             {t("seeSumber")}
           </Link>
         </p>

@@ -40,8 +40,8 @@ export function ParticipationSection() {
           {steps.map((s, i) => (
             <BlurFade key={s.title} delay={0.08 * (i + 1)} inView>
               <li>
-                <GlassPanel className="h-full p-5 hover:border-[var(--accent)]/40">
-                  <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent-dim)] text-sm font-semibold text-[var(--accent)]">
+                <GlassPanel className="h-full p-5 hover:border-[var(--primary)]/40">
+                  <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--primary-dim)] text-sm font-semibold text-[var(--primary)]">
                     {i + 1}
                   </div>
                   <h3 className="font-semibold tracking-tight">{s.title}</h3>
@@ -56,7 +56,11 @@ export function ParticipationSection() {
         <p className="relative mt-7 max-w-2xl text-sm text-[var(--text-dim)]">{t("sla")}</p>
         <div className="relative mt-6 flex flex-wrap gap-3">
           <Link href="/lapor/kejadian">
-            <ShimmerButton background="rgba(46, 158, 78, 1)" shimmerColor="#e8ffe8">
+            <ShimmerButton
+              background="var(--accent)"
+              shimmerColor="#F7F7F4"
+              className="text-[var(--accent-fg)]"
+            >
               <span className="text-sm font-semibold">{t("ctaKejadian")}</span>
             </ShimmerButton>
           </Link>

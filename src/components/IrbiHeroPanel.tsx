@@ -88,7 +88,7 @@ function IrbTooltip({
   const row = payload[0]?.payload;
   if (!row) return null;
   return (
-    <div className="rounded-lg border border-white/15 bg-[#0b1220]/95 px-3 py-2 text-xs text-white shadow-lg backdrop-blur">
+    <div className="rounded-lg border border-white/15 bg-[#1A1A17]/95 px-3 py-2 text-xs text-[#F7F7F4] shadow-lg backdrop-blur">
       <div className="font-semibold">{row.name}</div>
       <div className="mt-0.5 text-white/70">
         {row.irb.toLocaleString(undefined, { maximumFractionDigits: 2 })} {unit}
@@ -354,7 +354,7 @@ export function IrbiHeroPanel() {
         >
           <button
             type="button"
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--primary)] px-5 text-sm font-semibold text-[var(--primary-fg)] shadow-lg transition hover:bg-[var(--primary-hover)]"
           >
             <Map size={16} />
             {t("seeMap")}

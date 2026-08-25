@@ -33,7 +33,7 @@ export function ReportFAB() {
         type="button"
         aria-label={t("reportFab")}
         onClick={() => setOpen((v) => !v)}
-        className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-3.5 text-sm font-semibold text-white shadow-[var(--shadow-elevated)] ring-2 ring-white/20 transition duration-200 hover:bg-[var(--accent-hover)] hover:shadow-[0_16px_40px_rgba(46,158,78,0.35)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)] active:scale-[0.98]"
+        className="group inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-4 py-3.5 text-sm font-semibold text-[var(--accent-fg)] shadow-[var(--shadow-elevated)] ring-2 ring-[var(--accent-dim)] transition duration-200 hover:bg-[var(--accent-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]"
       >
         <span className="grid h-6 w-6 place-items-center rounded-full bg-white/15 transition group-hover:bg-white/25">
           {open ? <ChevronDown size={16} /> : <Plus size={16} strokeWidth={2.5} />}

@@ -18,11 +18,11 @@ export default async function SumberDataPage({
       <SiteNav />
       <main className="mx-auto max-w-3xl px-4 pb-16 pt-28">
         <p className="text-sm text-[var(--text-dim)]">
-          <Link href="/" className="hover:text-[var(--accent)]">
+          <Link href="/" className="hover:text-[var(--primary)]">
             {t("backHome")}
           </Link>
           {" · "}
-          <Link href="/metodologi" className="hover:text-[var(--accent)]">
+          <Link href="/metodologi" className="hover:text-[var(--primary)]">
             {t("seeMetodologi")}
           </Link>
         </p>
@@ -62,7 +62,7 @@ export default async function SumberDataPage({
                           href={entry.href}
                           target="_blank"
                           rel="noreferrer"
-                          className="break-all text-[var(--accent)] underline-offset-2 hover:underline"
+                          className="break-all text-[var(--primary)] underline-offset-2 hover:underline"
                         >
                           {entry.href}
                         </a>

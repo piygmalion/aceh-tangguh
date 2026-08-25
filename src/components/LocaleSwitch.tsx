@@ -22,7 +22,7 @@ export function LocaleSwitch() {
           aria-pressed={locale === l}
           className={`rounded-full px-2.5 py-1.5 uppercase tracking-wide transition duration-200 ${
             locale === l
-              ? "bg-[var(--accent)] text-white shadow-sm"
+              ? "bg-[var(--primary)] text-[var(--primary-fg)] shadow-sm"
               : "text-[var(--text-dim)] hover:text-[var(--text)]"
           }`}
         >

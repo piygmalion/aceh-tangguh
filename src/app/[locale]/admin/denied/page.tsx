@@ -17,7 +17,7 @@ export default async function AdminDeniedPage() {
         ) : null}
         <Link
           href="/"
-          className="mt-6 inline-flex rounded-full bg-[var(--accent-dim)] px-4 py-2 text-sm font-medium text-[var(--accent)]"
+          className="mt-6 inline-flex rounded-full bg-[var(--primary-dim)] px-4 py-2 text-sm font-medium text-[var(--primary)]"
         >
           {t("backHome")}
         </Link>
