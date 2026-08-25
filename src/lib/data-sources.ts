@@ -278,7 +278,20 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     date: "Live vector tiles",
     format: "MapLibre style JSON + vector PBF",
     usedFor:
-      "Optional GPU vector style (`?vector=1`); falls back to Carto raster if the CDN fails",
+      "Optional GPU vector style (`?vector=1`); falls back to Carto raster if the CDN fails. Also the tile source for owned brand style presets (not the default basemap).",
+    href: "https://openfreemap.org/",
+  },
+  {
+    id: "basemap-brand-presets",
+    titleId: "Preset peta dasar merek (Light / Dark / Abu-abu minimal)",
+    titleEn: "Brand basemap presets (Light / Dark / Minimalist Grey)",
+    source:
+      "Owned MapLibre GL Style v8 (src/lib/basemap-presets.ts) over OpenFreeMap OpenMapTiles",
+    license: "OpenFreeMap terms; © OpenStreetMap contributors; Aceh Tangguh Sistem Warna tokens",
+    date: "Style JSON in-repo",
+    format: "MapLibre style JSON + OpenFreeMap vector PBF",
+    usedFor:
+      "Pengaturan → Peta dasar extras (Sederhana merek / Gelap merek / Abu-abu minimal). Carto remains the default; Carto raster is the automatic fallback if the vector source fails.",
     href: "https://openfreemap.org/",
   },
   {

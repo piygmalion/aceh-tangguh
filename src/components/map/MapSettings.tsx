@@ -6,7 +6,11 @@ import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import type { BasemapId } from "@/lib/types";
-import { BASEMAP_OPTIONS, BASEMAP_VECTOR_URLS } from "@/lib/basemap";
+import {
+  BASEMAP_OPTIONS,
+  BASEMAP_VECTOR_URLS,
+  type BasemapKind,
+} from "@/lib/basemap";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { formatSceneDate, type SentinelStatus } from "@/lib/sentinel";
 
@@ -14,6 +18,15 @@ async function fetchSentinelStatusClient(): Promise<SentinelStatus | null> {
   const res = await fetchPublicApi("/api/sentinel/status");
   if (!res.ok) return null;
   return (await res.json()) as SentinelStatus;
+}
+
+function basemapKindLabel(
+  kind: BasemapKind,
+  t: (key: string) => string
+): string {
+  if (kind === "imagery") return t("basemapKindImagery");
+  if (kind === "vector") return t("basemapKindVector");
+  return t("basemapKindRaster");
 }
 
 export function MapSettings({
@@ -78,7 +91,7 @@ export function MapSettings({
         <div
           role="dialog"
           aria-label={t("settings")}
-          className="map-chrome-elevated absolute bottom-[calc(100%+0.5rem)] left-0 w-[min(18rem,calc(100vw-1.5rem))] rounded-2xl p-3 text-sm"
+          className="map-chrome-elevated absolute bottom-[calc(100%+0.5rem)] left-0 max-h-[min(32rem,calc(100svh-8rem))] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl p-3 text-sm"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="font-semibold">{t("settings")}</div>
@@ -132,7 +145,7 @@ export function MapSettings({
               >
                 <span className="block">{t(b.labelKey)}</span>
                 <span className="mt-0.5 block text-[10px] font-normal text-[var(--text-dim)]">
-                  {b.kind === "raster" ? t("basemapKindRaster") : t("basemapKindImagery")}
+                  {basemapKindLabel(b.kind, t)}
                 </span>
               </button>
             ))}

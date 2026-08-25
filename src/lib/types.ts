@@ -1,6 +1,13 @@
 export type Locale = "id" | "en";
 export type Theme = "light" | "dark";
-export type BasemapId = "positron" | "dark" | "satellite" | "streets" | "sentinel";
+export type RasterBasemapId =
+  | "positron"
+  | "dark"
+  | "satellite"
+  | "streets"
+  | "sentinel";
+export type BrandBasemapId = "brand-light" | "brand-dark" | "brand-grey";
+export type BasemapId = RasterBasemapId | BrandBasemapId;
 
 export type HazardKind =
   | "banjir"

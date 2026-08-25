@@ -23,7 +23,7 @@ import type {
   MapViewState,
   MarkerLayerKey,
 } from "@/lib/types";
-import { getBasemapStyle } from "@/lib/basemap";
+import { getBasemapStyle, isBrandBasemapId } from "@/lib/basemap";
 import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
@@ -287,6 +287,7 @@ export function MapViewport({
     () =>
       getBasemapStyle(basemap, {
         preferVector: preferVector && !vectorFailed,
+        rasterFallback: vectorFailed,
       }),
     [basemap, preferVector, vectorFailed]
   );
@@ -507,7 +508,8 @@ export function MapViewport({
         onMoveEnd={onMoveEnd}
         onError={(e) => {
           const msg = e.error?.message ?? "";
-          if (preferVector && !vectorFailed && /style|fetch|network|failed/i.test(msg)) {
+          const allowFallback = preferVector || isBrandBasemapId(basemap);
+          if (allowFallback && !vectorFailed && /style|fetch|network|failed/i.test(msg)) {
             setVectorFailed(true);
           }
         }}
