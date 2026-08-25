@@ -12,6 +12,7 @@ import {
 } from "./basemap";
 import {
   BRAND_BASEMAP_IDS,
+  DARK_WATER,
   INK_SCALE,
   buildBrandBasemapStyle,
   collectStylePaintHex,
@@ -120,16 +121,18 @@ describe("brand MapLibre presets", () => {
     const park = style.layers.find((l) => l.id === "basemap-park");
     assert.equal(park?.paint?.["fill-color"], COLOR_TOKENS.sage);
     const water = style.layers.find((l) => l.id === "basemap-water");
-    assert.equal(water?.paint?.["fill-color"], COLOR_TOKENS.teal);
+    assert.equal(water?.paint?.["fill-color"], DARK_WATER);
+    assert.equal(DARK_WATER, "#4D807B");
   });
 
-  it("keeps Minimalist Grey on the ink scale except forest on admin boundaries", () => {
+  it("keeps Minimalist Grey on the ink scale except forest on admin and paper on water labels", () => {
     const style = buildBrandBasemapStyle("brand-grey");
     const ink = new Set(Object.values(INK_SCALE).map((h) => h.toUpperCase()));
     const forest = COLOR_TOKENS.forest.toUpperCase();
+    const paper = COLOR_TOKENS.paper.toUpperCase();
     const hex = collectStylePaintHex(style);
     for (const color of hex) {
-      const ok = ink.has(color) || color === forest;
+      const ok = ink.has(color) || color === forest || color === paper;
       assert.ok(ok, `grey preset used off-scale color ${color}`);
     }
     for (const layer of style.layers) {
@@ -149,9 +152,23 @@ describe("brand MapLibre presets", () => {
           `${layer.id} must not use forest`
         );
       }
+      if (layer.id.startsWith("basemap-water") && !layer.id.includes("label")) {
+        assert.equal(
+          layerHex.includes(forest),
+          false,
+          `${layer.id} must not use forest`
+        );
+        assert.equal(
+          layerHex.includes(INK_SCALE[500].toUpperCase()),
+          true,
+          `${layer.id} should use ink 500 water`
+        );
+      }
     }
     const water = style.layers.find((l) => l.id === "basemap-water");
-    assert.equal(water?.paint?.["fill-color"], INK_SCALE[400]);
+    const waterLabel = style.layers.find((l) => l.id === "basemap-label-water");
+    assert.equal(water?.paint?.["fill-color"], INK_SCALE[500]);
+    assert.equal(waterLabel?.paint?.["text-color"], COLOR_TOKENS.paper);
   });
 
   it("does not invent lime, map-blue, orange fills, gold land, or awas", () => {
