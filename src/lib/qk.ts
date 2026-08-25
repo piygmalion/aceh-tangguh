@@ -24,4 +24,5 @@ export const qk = {
     ["profil-desa", "desa", params] as const,
   weather: ["weather"] as const,
   dibiAceh: ["dibi", "aceh"] as const,
+  peringatanDini: ["peringatan-dini"] as const,
 };

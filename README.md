@@ -64,6 +64,9 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
 | GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
 | GET | `/api/hazards` | `hazard_status` |
+| GET | `/api/peringatan-dini` | Homepage early-warning cards (cuaca + MAGMA + Sipongi; fail independently) |
+| GET | `/api/peringatan-dini/magma` | MAGMA Indonesia Aceh gempa (live homepage feed, else `peringatan-magma.json`) |
+| GET | `/api/peringatan-dini/sipongi` | Sipongi Aceh medium/high hotspots (live GeoJSON, else `peringatan-sipongi.json`) |
 | GET | `/api/layers/catalog` | enabled `map_layers` merged with local toolbar catalog (`src/lib/map-layers-catalog.ts`) |
 | GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
 | GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
@@ -79,9 +82,12 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/prrpka/summary` | PRRPKA fixtures (`prrpka_aceh.json` + `prrpka_ringkasan.json`) |
 | GET | `/api/r3p/summary` | Same PRRPKA payload (legacy path) |
 | GET | `/api/dibi/aceh` | Live BNPB DIBI Superset (Aceh-only), else `dibi-aceh.json` |
+| GET | `/api/weather` | 23 kab/kota forecasts (BMKG / Open-Meteo + `weather-snapshot.json`) |
 | GET | `/api/profil-desa/kecamatan` | Supabase `profil_desa` kecamatan aggregate (`?kabupaten=&kecamatan=` or `?kode_kecamatan=`) |
 | GET | `/api/profil-desa/desa` | Single desa (`?kode=` or `?id=`) |
 | GET | `/api/profil-desa/kabupaten` | Optional kabupaten rollup (`?kabupaten=` or `?kode_kabupaten=`) |
+
+Homepage **Peringatan Dini** (`#status`) summarises existing weather plus live MAGMA / Sipongi feeds. Refresh snapshots with `npm run refresh:peringatan` — the script writes only what the official feeds return and never invents events.
 
 ## Screens
 

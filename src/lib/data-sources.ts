@@ -317,8 +317,36 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     date: "Live + snapshot fixture",
     format: "JSON API + weather-snapshot.json",
     usedFor:
-      "Perkiraan Cuaca page and homepage strip — 23 kabupaten/kota in Aceh",
+      "Perkiraan Cuaca page, homepage weather strip, and Peringatan Dini cuaca card — 23 kabupaten/kota in Aceh. The early-warning card only surfaces notable live conditions (heavy rain, thunderstorm, strong wind) from this same payload.",
     href: "https://open-meteo.com/",
+  },
+  {
+    id: "magma-gempa",
+    titleId: "MAGMA Indonesia — gempa Aceh",
+    titleEn: "MAGMA Indonesia — Aceh earthquakes",
+    source:
+      "MAGMA Indonesia (PVMBG / Badan Geologi ESDM) — public homepage feed at magma.esdm.go.id (markersGempa). Tagline: Bridging The Will of Nature to Society.",
+    license:
+      "Public official geohazard information — attribute MAGMA Indonesia / PVMBG ESDM. Numbers are copied from the live feed; events are never invented.",
+    date: "Live + fixture fallback (revalidate ~10 min)",
+    format: "Homepage public JSON list → GET /api/peringatan-dini/magma",
+    usedFor:
+      "Homepage Peringatan Dini card 2 — latest Aceh-relevant gempa (bbox or wilayah text). Card links to MAGMA home.",
+    href: "https://magma.esdm.go.id/",
+  },
+  {
+    id: "sipongi-hotspot",
+    titleId: "Sipongi KLHK — hotspot Aceh (kuning/merah)",
+    titleEn: "Sipongi KLHK — Aceh hotspots (yellow/red)",
+    source:
+      "SiPongi+ Kemenhut / KLHK public map GeoJSON (opsroom indoHotspot) used by https://sipongi.gakkum.kehutanan.go.id/peta. Filtered to provinsi Aceh and confidence medium/high only.",
+    license:
+      "Public Sipongi attribution required (SIPONGI KEMENHUT). Hotspots are never invented; live fetch falls back to the last snapshot.",
+    date: "Live + fixture fallback (revalidate ~10 min)",
+    format: "GeoJSON via GET /api/opsroom/indoHotspot → GET /api/peringatan-dini/sipongi",
+    usedFor:
+      "Homepage Peringatan Dini card 3 — latest 1–3 Aceh medium/high hotspots. Card links to the official Sipongi map.",
+    href: "https://sipongi.gakkum.kehutanan.go.id/peta",
   },
   {
     id: "unsplash-media",

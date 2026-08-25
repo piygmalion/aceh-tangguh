@@ -74,6 +74,12 @@ export default async function MetodologiPage({
               {t("s7.body")}
             </p>
           </section>
+          <section>
+            <h2 className="text-xl font-semibold tracking-tight">{t("s8.title")}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-[var(--text-dim)]">
+              {t("s8.body")}
+            </p>
+          </section>
         </article>
       </main>
       <SiteFooter />
