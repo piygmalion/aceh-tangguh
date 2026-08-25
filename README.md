@@ -108,20 +108,28 @@ Homepage **Peringatan Dini** (`#status`) summarises existing weather plus live M
 
 ## Rebuild PMTiles
 
-Requires [tippecanoe](https://github.com/felt/tippecanoe) (`sudo apt install tippecanoe`).
+Overlay vector tiles only (R3P / IRBI choropleth). **Carto raster stays the default basemap.**
+
+Requires [tippecanoe](https://github.com/felt/tippecanoe) (`sudo apt install tippecanoe`). CI does **not** rebuild — it only checks already-committed archives.
 
 ```
 bun run build:tiles
 # or: bash scripts/build-pmtiles.sh
 ```
 
-Outputs:
+Per-tile size cap: **500 KB** (not the `.pmtiles` file size). Second gate: `village-r3p.pmtiles` archive **under 4 MB** (~2.9 MB today is fine).
 
-- `public/tiles/r3p-kab.pmtiles` — from `fixtures/areas/r3pDistribution.geojson`
-- `public/tiles/village-r3p.pmtiles` — from `fixtures/areas/villageDistribution.geojson` (simplified)
-- `public/tiles/irbi-2025.pmtiles` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
+```
+npm run check:tiles
+```
 
-`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON.
+Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
+
+- `public/tiles/r3p-kab.pmtiles` — `r3p` — from `fixtures/areas/r3pDistribution.geojson`
+- `public/tiles/village-r3p.pmtiles` — `village` — from `fixtures/areas/villageDistribution.geojson` (simplified)
+- `public/tiles/irbi-2025.pmtiles` — `irbi` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
+
+`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS.
 
 ## Basemap (Carto raster + Sentinel)
 

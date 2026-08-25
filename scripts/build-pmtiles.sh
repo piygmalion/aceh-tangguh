@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# Rebuild vector PMTiles for R3P kab + village choropleth layers.
+# Rebuild overlay vector PMTiles for R3P kab + village choropleth layers.
 # Requires: tippecanoe (apt install tippecanoe)
+# Overlay archives only — Carto raster stays the default basemap.
+# tippecanoe --layer must stay r3p / village / irbi (MapViewport source-layer).
+# After build, check:tiles enforces 500 KB per MVT tile + village archive < 4 MB.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 AREAS="$ROOT/public/fixtures/areas"
@@ -53,4 +56,6 @@ tippecanoe \
   "$AREAS/irbi2025.geojson"
 
 ls -lh "$OUT"/*.pmtiles
+echo "==> Checking per-tile sizes (500 KB limit, not archive size)"
+node "$ROOT/scripts/check-tiles.mjs"
 echo "Done. MapViewport will prefer these when present under /tiles/."

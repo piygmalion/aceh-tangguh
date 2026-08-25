@@ -5,7 +5,7 @@ Rencana operasional untuk peta Aceh Tangguh. Bukan glosarium vendor: ini pilihan
 ## Yang sudah ada di kode
 
 - **Renderer:** MapLibre GL JS (WebGL) + react-map-gl — jalur yang dipakai tim peta FOSS 2024–2026, bukan Leaflet DOM raster.
-- **Overlay wilayah:** PMTiles (tippecanoe) untuk choropleth kab/desa/IRBI, fallback GeoJSON.
+- **Overlay wilayah:** PMTiles (tippecanoe) untuk choropleth kab/desa/IRBI, fallback GeoJSON. Geometri tetap di disk (`public/fixtures` + `public/tiles`), bukan PostGIS.
 - **Titik:** sebelumnya HTML `<Marker>` per fitur. Fasilitas pendidikan saja >3.000 titik — itu memaksa layout DOM, bukan GPU.
 - **Basemap default:** raster Carto Positron / Dark + OSM.org streets. Mudah, CORS terbuka, sudah terbukti di sandbox.
 
@@ -63,6 +63,35 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 3. Cluster radius ~48 px, `clusterMaxZoom` 12 — di atas itu titik individual.
 4. HTML pin hanya untuk popup, bukan untuk 3.000 sekolah.
 5. Attribution selalu terlihat (OSM/Carto, EOX/Copernicus, Esri).
+
+## Overlay PMTiles (bukan basemap)
+
+`public/tiles/*.pmtiles` adalah **overlay vektor** (R3P kab, village, IRBI) yang dibangun tippecanoe dari `public/fixtures/areas/*.geojson`. Geometri tetap di disk — **bukan PostGIS**. **Carto raster tetap basemap default.** Jangan ganti default ke OpenFreeMap atau self-host planet PMTiles. Keputusan yang tetap ditolak: Cesium/globe, terrain DEM, Mapbox token, TiTiler di runtime. GitHub Pages auto-deploy tetap mati; workflow overlay tidak menghidupkannya.
+
+`MapViewport` membaca `source-layer` yang sama dengan `tippecanoe --layer`:
+
+| Arsip | Source-layer | Sumber |
+|---|---|---|
+| `r3p-kab.pmtiles` | `r3p` | `r3pDistribution.geojson` |
+| `village-r3p.pmtiles` | `village` | `villageDistribution.geojson` |
+| `irbi-2025.pmtiles` | `irbi` | `irbi2025.geojson` |
+
+Batas (dua gerbang):
+
+1. **500 KB per tile MVT** — payload satu `z/x/y` di dalam arsip (yang diunduh MapLibre). Bukan ukuran file `.pmtiles`.
+2. **Anggaran arsip village** — `village-r3p.pmtiles` under 4 MB. Arsip ~2.9 MB sekarang itu wajar.
+
+Pada arsip yang ter-commit, tile terberat village ada di zoom rendah (~125 KB di z7), bukan z12 (~18 KB). `check:tiles` tetap menolak jika *satu* tile melewati 500 KB.
+
+```bash
+# Cek per-tile + anggaran arsip + source-layer (cepat; tidak rebuild)
+npm run check:tiles
+
+# Rebuild lokal — butuh tippecanoe (`sudo apt install tippecanoe`), lalu check:tiles
+npm run build:tiles
+```
+
+CI (`.github/workflows/overlay-tiles.yml`) hanya menjalankan `check:tiles` pada PMTiles yang sudah di-commit, plus probe `verify:basemap` (non-blocking). Tidak memasang tippecanoe, tidak rebuild di setiap PR, tidak deploy GitHub Pages.
 
 ## Operasi
 
