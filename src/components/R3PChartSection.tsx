@@ -25,6 +25,7 @@ import { fetchPublicApi } from "@/lib/preview/public-api";
 import { withBasePath } from "@/lib/preview/env";
 import { PRRPKA_DOC_PATH, type PrrpkaSummaryResponse } from "@/lib/prrpka-types";
 import { qk } from "@/lib/qk";
+import { CHART_SERIES } from "@/lib/chart-colors";
 
 const SLIDE_IDS = [
   "jitupasna",
@@ -37,25 +38,25 @@ const SLIDE_IDS = [
 
 type SlideId = (typeof SLIDE_IDS)[number];
 
-const BAR_COLOR = "var(--primary)";
+const BAR_COLOR = CHART_SERIES[0];
 const AUTOPLAY_MS = 8000;
 const TOP_N = 10;
 
 const SEKTOR_COLORS: Record<string, string> = {
-  Infrastruktur: "var(--primary)",
-  Permukiman: "#3b82f6",
-  Sosial: "#f59e0b",
-  Ekonomi: "#a855f7",
-  "Lintas Sektor": "#06b6d4",
+  Infrastruktur: CHART_SERIES[0],
+  Permukiman: CHART_SERIES[1],
+  Sosial: CHART_SERIES[2],
+  Ekonomi: CHART_SERIES[3],
+  "Lintas Sektor": CHART_SERIES[4],
 };
 
 const SERIES_COLORS = {
-  prrp: "#3b82f6",
-  r3p: "var(--primary)",
-  bnba: "#f59e0b",
-  kebutuhan: "#3b82f6",
-  terakomodasi: "var(--primary)",
-  kesenjangan: "#e11d48",
+  prrp: CHART_SERIES[1],
+  r3p: CHART_SERIES[0],
+  bnba: CHART_SERIES[2],
+  kebutuhan: CHART_SERIES[1],
+  terakomodasi: CHART_SERIES[0],
+  kesenjangan: CHART_SERIES[3],
 } as const;
 
 type BarTipRow = {

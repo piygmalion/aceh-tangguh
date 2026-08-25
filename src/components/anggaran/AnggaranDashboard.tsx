@@ -28,6 +28,7 @@ import type {
   BreakdownView,
   KegiatanAnggaran,
 } from "@/lib/anggaran-types";
+import { CHART_SERIES } from "@/lib/chart-colors";
 
 const PHASE_ORDER = [
   "tanggap_darurat",
@@ -37,17 +38,7 @@ const PHASE_ORDER = [
   "rehabilitasi",
 ] as const;
 
-const CHART_COLORS = [
-  "var(--primary)",
-  "#3b82f6",
-  "#f59e0b",
-  "#a855f7",
-  "#06b6d4",
-  "#e11d48",
-  "#84cc16",
-  "#f97316",
-  "#64748b",
-];
+const CHART_COLORS = [...CHART_SERIES];
 
 type ChartRow = {
   key: string;

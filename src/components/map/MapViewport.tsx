@@ -42,11 +42,11 @@ import {
 export { LAYER_COLORS };
 
 const BUCKET_FILL: Record<string, string> = {
-  rendah: "#c7f0d2",
-  sedang: "#6bcf8e",
+  rendah: "#C5D2B8",
+  sedang: "#4F7336",
   tinggi: "#1F4C15",
-  tahap1: "#fed7aa",
-  tahap2: "#fb923c",
+  tahap1: "#E6D3A0",
+  tahap2: "#FF8F42",
 };
 
 /** tippecanoe layer name + public URL for PMTiles-backed area layers */
@@ -325,7 +325,7 @@ export function MapViewport({
         properties: {
           ...f.properties,
           fillColor:
-            BUCKET_FILL[String(f.properties?.bucket ?? "")] ?? "#c7f0d2",
+            BUCKET_FILL[String(f.properties?.bucket ?? "")] ?? "#C5D2B8",
         },
       })),
     };

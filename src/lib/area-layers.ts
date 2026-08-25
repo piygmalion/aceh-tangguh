@@ -20,40 +20,40 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
   villageDistribution: {
     title: "Distribusi desa (rumah rusak RR+RS+RB)",
     items: [
-      { color: "#c7f0d2", label: "Rendah (≤106)" },
-      { color: "#6bcf8e", label: "Sedang (≤1184)" },
+      { color: "#C5D2B8", label: "Rendah (≤106)" },
+      { color: "#4F7336", label: "Sedang (≤1184)" },
       { color: "#1F4C15", label: "Tinggi (>1184)" },
     ],
   },
   r3pDistribution: {
     title: "Distribusi R3P (rumah rusak RR+RS+RB)",
     items: [
-      { color: "#c7f0d2", label: "Rendah (≤1362)" },
-      { color: "#6bcf8e", label: "Sedang (≤10795)" },
+      { color: "#C5D2B8", label: "Rendah (≤1362)" },
+      { color: "#4F7336", label: "Sedang (≤10795)" },
       { color: "#1F4C15", label: "Tinggi (>10795)" },
     ],
   },
   ngoDistribution: {
     title: "Distribusi NGO",
     items: [
-      { color: "#c7f0d2", label: "Rendah" },
-      { color: "#6bcf8e", label: "Sedang" },
+      { color: "#C5D2B8", label: "Rendah" },
+      { color: "#4F7336", label: "Sedang" },
       { color: "#1F4C15", label: "Tinggi" },
     ],
   },
   regencyFundAllocation: {
     title: "Alokasi dana kab/kota",
     items: [
-      { color: "#fed7aa", label: "Tahap 1" },
-      { color: "#fb923c", label: "Tahap 2" },
+      { color: "#E6D3A0", label: "Tahap 1" },
+      { color: "#FF8F42", label: "Tahap 2" },
       { color: "#1F4C15", label: "Tinggi" },
     ],
   },
   irbi2025: {
     title: "IRBI 2025 — kelas risiko kab/kota",
     items: [
-      { color: "#c7f0d2", label: "Rendah" },
-      { color: "#6bcf8e", label: "Sedang" },
+      { color: "#C5D2B8", label: "Rendah" },
+      { color: "#4F7336", label: "Sedang" },
       { color: "#1F4C15", label: "Tinggi" },
     ],
   },

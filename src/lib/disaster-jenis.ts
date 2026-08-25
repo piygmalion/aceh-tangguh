@@ -4,6 +4,8 @@
  * Rekapitulasi Tahunan is intentionally excluded.
  */
 
+import { JENIS_HEX } from "@/lib/chart-colors";
+
 export const DISASTER_JENIS = [
   "Kebakaran",
   "Banjir",
@@ -22,21 +24,21 @@ export const DISASTER_JENIS = [
 
 export type DisasterJenis = (typeof DISASTER_JENIS)[number];
 
-/** Distinct fill colors per jenis; LAYER_COLORS.disasterEvents (#f59e0b) is the fallback. */
+/** Distinct fill colors per jenis — Sistem Warna only (no map-blue / violet / lime). */
 export const DISASTER_JENIS_COLORS: Record<string, string> = {
-  Kebakaran: "#ef4444",
-  Banjir: "#3b82f6",
-  "Kebakaran Hutan dan Lahan": "#f97316",
-  "Angin Puting Beliung": "#8b5cf6",
-  Longsor: "#a16207",
-  "Banjir Bandang": "#2563eb",
-  "Gempa Bumi": "#dc2626",
-  "Banjir Bandang dan Tanah Longsor": "#1d4ed8",
-  Abrasi: "#06b6d4",
-  Lainnya: "#64748b",
-  "Kebakaran Pemukiman": "#e11d48",
-  "Tanah Longsor": "#92400e",
-  Kekeringan: "#ca8a04",
+  Kebakaran: JENIS_HEX.fireDeep,
+  Banjir: JENIS_HEX.water,
+  "Kebakaran Hutan dan Lahan": JENIS_HEX.fire,
+  "Angin Puting Beliung": JENIS_HEX.wind,
+  Longsor: JENIS_HEX.slide,
+  "Banjir Bandang": JENIS_HEX.water,
+  "Gempa Bumi": JENIS_HEX.quake,
+  "Banjir Bandang dan Tanah Longsor": JENIS_HEX.slideSoft,
+  Abrasi: JENIS_HEX.water,
+  Lainnya: JENIS_HEX.other,
+  "Kebakaran Pemukiman": JENIS_HEX.fireDeep,
+  "Tanah Longsor": JENIS_HEX.slideSoft,
+  Kekeringan: JENIS_HEX.drought,
 };
 
 export function encodeDisasterJenis(jenis: string[]): string | null {

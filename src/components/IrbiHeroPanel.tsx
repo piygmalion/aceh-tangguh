@@ -19,6 +19,7 @@ import { Chip } from "@/components/ui/Chip";
 import { Link } from "@/i18n/routing";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
+import { JENIS_HEX, KELAS_FILL } from "@/lib/chart-colors";
 
 export type IrbiKab = {
   kabupaten_kota: string;
@@ -46,9 +47,9 @@ export type IrbiPayload = {
 };
 
 const KELAS_COLOR: Record<string, string> = {
-  TINGGI: "#ef4444",
-  SEDANG: "#f59e0b",
-  RENDAH: "#22c55e",
+  TINGGI: KELAS_FILL.TINGGI,
+  SEDANG: KELAS_FILL.SEDANG,
+  RENDAH: KELAS_FILL.RENDAH,
 };
 
 const HAZARD_KEYS = [
@@ -61,12 +62,12 @@ const HAZARD_KEYS = [
 ] as const;
 
 const HAZARD_COLORS: Record<(typeof HAZARD_KEYS)[number], string> = {
-  ir_banjir: "#3b82f6",
-  ir_gempabumi: "#a855f7",
-  ir_tsunami: "#06b6d4",
-  ir_likuefaksi: "#f97316",
-  ir_tanah_longsor: "#84cc16",
-  ir_kebakaran_hutan_lahan: "#e11d48",
+  ir_banjir: JENIS_HEX.water,
+  ir_gempabumi: JENIS_HEX.quake,
+  ir_tsunami: JENIS_HEX.water,
+  ir_likuefaksi: JENIS_HEX.quake,
+  ir_tanah_longsor: JENIS_HEX.slide,
+  ir_kebakaran_hutan_lahan: JENIS_HEX.fire,
 };
 
 async function fetchIrbi(): Promise<IrbiPayload> {
@@ -88,12 +89,12 @@ function IrbTooltip({
   const row = payload[0]?.payload;
   if (!row) return null;
   return (
-    <div className="rounded-lg border border-white/15 bg-[#1A1A17]/95 px-3 py-2 text-xs text-[#F7F7F4] shadow-lg backdrop-blur">
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] px-3 py-2 text-xs text-[var(--text)] shadow-lg backdrop-blur">
       <div className="font-semibold">{row.name}</div>
-      <div className="mt-0.5 text-white/70">
+      <div className="mt-0.5 text-[var(--text-dim)]">
         {row.irb.toLocaleString(undefined, { maximumFractionDigits: 2 })} {unit}
       </div>
-      <div className="mt-0.5 text-white/55">{row.kelas}</div>
+      <div className="mt-0.5 text-[var(--text-dim)]">{row.kelas}</div>
     </div>
   );
 }
@@ -204,21 +205,21 @@ export function IrbiHeroPanel() {
               margin={{ top: 4, right: 12, left: 4, bottom: 4 }}
             >
               <CartesianGrid
-                stroke="rgba(255,255,255,0.08)"
+                stroke="var(--border)"
                 strokeDasharray="3 3"
                 horizontal={false}
               />
               <XAxis
                 type="number"
-                tick={{ fill: "rgba(255,255,255,0.55)", fontSize: 11 }}
-                axisLine={{ stroke: "rgba(255,255,255,0.15)" }}
+                tick={{ fill: "var(--text-dim)", fontSize: 11 }}
+                axisLine={{ stroke: "var(--border)" }}
                 tickLine={false}
               />
               <YAxis
                 type="category"
                 dataKey="name"
                 width={108}
-                tick={{ fill: "rgba(255,255,255,0.85)", fontSize: 10 }}
+                tick={{ fill: "var(--hero-fg)", fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -230,7 +231,7 @@ export function IrbiHeroPanel() {
                 {barRows.map((r) => (
                   <Cell
                     key={r.name}
-                    fill={KELAS_COLOR[r.kelas] ?? "#6bcf8e"}
+                    fill={KELAS_COLOR[r.kelas] ?? "var(--status-waspada)"}
                   />
                 ))}
               </Bar>
@@ -251,31 +252,31 @@ export function IrbiHeroPanel() {
               margin={{ top: 4, right: 12, left: 4, bottom: 4 }}
             >
               <CartesianGrid
-                stroke="rgba(255,255,255,0.08)"
+                stroke="var(--border)"
                 strokeDasharray="3 3"
                 horizontal={false}
               />
               <XAxis
                 type="number"
-                tick={{ fill: "rgba(255,255,255,0.55)", fontSize: 11 }}
-                axisLine={{ stroke: "rgba(255,255,255,0.15)" }}
+                tick={{ fill: "var(--text-dim)", fontSize: 11 }}
+                axisLine={{ stroke: "var(--border)" }}
                 tickLine={false}
               />
               <YAxis
                 type="category"
                 dataKey="name"
                 width={108}
-                tick={{ fill: "rgba(255,255,255,0.85)", fontSize: 10 }}
+                tick={{ fill: "var(--hero-fg)", fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
               />
               <Tooltip
                 contentStyle={{
-                  background: "rgba(11,18,32,0.95)",
-                  border: "1px solid rgba(255,255,255,0.15)",
+                  background: "var(--bg-raised)",
+                  border: "1px solid var(--border)",
                   borderRadius: 8,
                   fontSize: 12,
-                  color: "#fff",
+                  color: "var(--text)",
                 }}
               />
               <Legend

@@ -27,7 +27,7 @@ import type { KejadianRow } from "@/lib/kejadian-types";
 import { LAYER_COLORS } from "@/lib/layer-colors";
 import { getDisasterJenisIconPath } from "@/lib/layer-icons";
 
-const LINE_COLOR = "var(--primary)";
+const LINE_COLOR = "var(--chart-1)";
 
 type Props = {
   windowRows: KejadianRow[];
