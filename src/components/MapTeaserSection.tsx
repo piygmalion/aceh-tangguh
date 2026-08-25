@@ -9,6 +9,8 @@ import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { SITE_MEDIA } from "@/lib/media";
 import { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 const TEASER_CHIP_CLASS: Record<(typeof DEFAULT_LAYERS)[number], string> = {
   disasterEvents: "bg-amber-500/25 text-amber-100",
@@ -57,7 +59,7 @@ export function MapTeaserSection() {
                   <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
-                  <span className="ml-3 rounded-md bg-white/10 px-2.5 py-1 text-[0.7rem] tracking-wide text-white/70 backdrop-blur">
+                  <span className={cn("ml-3 rounded-md bg-white/10 px-2.5 py-1 tracking-wide text-white/70 backdrop-blur", TYPE_FLOOR_CLASS)}>
                     Aceh · z7
                   </span>
                 </div>
@@ -80,7 +82,7 @@ export function MapTeaserSection() {
             </div>
 
             <div className="relative z-[1] hidden w-56 shrink-0 border-l border-white/10 bg-black/35 p-4 text-xs text-white/70 backdrop-blur-md md:block">
-              <div className="mb-3 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-white/80">
+              <div className={cn("mb-3 text-white/80", TYPE_KICKER_CLASS)}>
                 Toolbar
               </div>
               <div className="space-y-2">

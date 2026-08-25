@@ -21,6 +21,8 @@ import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import { formatStatusLabel, normalizeStatus } from "@/lib/status-vocab";
 import type { KejadianListResult, KejadianRow } from "@/lib/kejadian-types";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 type Filters = {
   q: string;
@@ -362,7 +364,7 @@ export function KejadianTable() {
       />
 
       <GlassPanel className="p-4 md:p-5">
-        <div className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
+        <div className={cn("mb-3 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
           {t("filters")}
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
@@ -541,7 +543,7 @@ export function KejadianTable() {
         <div className="overflow-x-auto">
           <table className="min-w-[960px] w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-[var(--glass-border)] bg-[var(--bg-muted)]/40 text-[0.72rem] uppercase tracking-[0.08em] text-[var(--text-dim)]">
+              <tr className={cn("border-b border-[var(--glass-border)] bg-[var(--bg-muted)]/40 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                 <th className="px-3 py-3 font-semibold">{t("cols.no")}</th>
                 <th className="px-3 py-3 font-semibold">{t("cols.bencana")}</th>
                 <th className="px-3 py-3 font-semibold">{t("cols.waktu")}</th>
@@ -590,7 +592,7 @@ export function KejadianTable() {
                           <StatusChip
                             raw={row.penanganan?.status_proses}
                             layer="disasterEvents"
-                            className="px-2 py-0.5 text-[0.65rem]"
+                            className={cn("px-2 py-0.5", TYPE_FLOOR_CLASS)}
                           />
                         </div>
                       </td>
@@ -765,7 +767,7 @@ export function KejadianTable() {
                   <StatusChip
                     raw={detail.penanganan?.status_proses}
                     layer="disasterEvents"
-                    className="px-2 py-0.5 text-[0.65rem]"
+                    className={cn("px-2 py-0.5", TYPE_FLOOR_CLASS)}
                   />
                 </div>
               </dd>

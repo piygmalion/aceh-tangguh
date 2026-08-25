@@ -26,6 +26,8 @@ import { withBasePath } from "@/lib/preview/env";
 import { PRRPKA_DOC_PATH, type PrrpkaSummaryResponse } from "@/lib/prrpka-types";
 import { qk } from "@/lib/qk";
 import { CHART_SERIES } from "@/lib/chart-colors";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 const SLIDE_IDS = [
   "jitupasna",
@@ -765,7 +767,7 @@ export function R3PChartSection() {
                       key={kpi.label}
                       className="rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-muted)]/60 px-3.5 py-3"
                     >
-                      <div className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+                      <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                         {kpi.label}
                       </div>
                       <div className="mt-1 text-lg font-semibold tracking-tight text-[var(--text)]">

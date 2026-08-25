@@ -5,6 +5,8 @@ import { Database, FileStack, LayoutDashboard, ShieldCheck } from "lucide-react"
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
 import { isSuperAdmin, type AdminProfile } from "@/lib/auth/types";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 export function AdminShell({
   profile,
@@ -40,12 +42,12 @@ export function AdminShell({
     <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-4 px-3 pb-16 pt-24 md:flex-row md:px-4 md:pt-28">
       <aside className="md:w-56 md:shrink-0">
         <div className="glass rounded-2xl p-3 md:sticky md:top-28">
-          <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-[var(--text-dim)]">
+          <p className={cn("px-2 pb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("console")}
           </p>
           <p className="mb-3 truncate px-2 text-sm">
             {profile.displayName || profile.email}
-            <span className="ml-2 rounded-full bg-[var(--primary-dim)] px-2 py-0.5 text-[10px] font-semibold uppercase text-[var(--primary)]">
+            <span className={cn("ml-2 rounded-full bg-[var(--primary-dim)] px-2 py-0.5 font-semibold text-[var(--primary)]", TYPE_KICKER_CLASS)}>
               {roleLabel}
             </span>
           </p>

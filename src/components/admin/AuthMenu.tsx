@@ -7,6 +7,8 @@ import { Link, useRouter } from "@/i18n/routing";
 import { isStaticExport } from "@/lib/preview/env";
 import { createAuthBrowserClient } from "@/lib/supabase/ssr-browser";
 import type { AdminProfile } from "@/lib/auth/types";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 type MeResponse = {
   user: { id: string; email: string | null } | null;
@@ -121,7 +123,7 @@ export function AuthMenu() {
             <p className="truncate text-xs text-[var(--text-dim)]">
               {me.user.email}
             </p>
-            <span className="mt-1 inline-flex rounded-full bg-[var(--primary-dim)] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--primary)]">
+            <span className={cn("mt-1 inline-flex rounded-full bg-[var(--primary-dim)] px-2 py-0.5 text-[var(--primary)]", TYPE_KICKER_CLASS)}>
               {roleLabel}
             </span>
           </div>

@@ -18,6 +18,8 @@ import {
 } from "@/lib/profil-desa";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 type PanelView = "kecamatan" | "desa-list" | "desa";
 
@@ -85,7 +87,7 @@ function MetricCard({
   const isUnknown = value == null;
   return (
     <div className={`rounded-xl border px-3 py-2.5 ${CARD_TONE[tone]}`}>
-      <div className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+      <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
         {label}
       </div>
       <div
@@ -105,7 +107,7 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
   return (
     <div className="space-y-4">
       <section>
-        <h3 className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+        <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
           {t("populasi")}
         </h3>
         <div className="grid grid-cols-2 gap-2">
@@ -131,7 +133,7 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
         </div>
       </section>
       <section>
-        <h3 className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+        <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
           {t("korban")}
         </h3>
         <div className="grid grid-cols-2 gap-2">
@@ -150,7 +152,7 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
         </div>
       </section>
       <section>
-        <h3 className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+        <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
           {t("kerusakan")}
         </h3>
         <div className="grid grid-cols-2 gap-2">
@@ -178,7 +180,7 @@ function BadgeChip({ badge }: { badge: ImpactBadge }) {
         ? t("badgeTidak")
         : t("badgeUnknown");
   return (
-    <Chip tone={badgeTone(badge)} className="px-2.5 py-0.5 text-[0.7rem]">
+    <Chip tone={badgeTone(badge)} className={cn("px-2.5 py-0.5", TYPE_FLOOR_CLASS)}>
       {label}
     </Chip>
   );
@@ -295,7 +297,7 @@ export function AreaProfilPanel({
             <Home size={20} strokeWidth={2.25} />
           </span>
           <div className="min-w-0 flex-1">
-            <div className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+            <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {view === "desa-list"
                 ? t("desaListTitle")
                 : view === "desa"
@@ -311,7 +313,7 @@ export function AreaProfilPanel({
               {view !== "desa" && desaCount > 0 ? ` · ${t("desaCount", { count: desaCount })}` : ""}
             </p>
             {selection.name && view !== "desa" ? (
-              <p className="mt-0.5 truncate text-[0.7rem] text-[var(--text-dim)]">
+              <p className={cn("mt-0.5 truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                 {t("clickedHint", { name: selection.name })}
               </p>
             ) : null}
@@ -354,7 +356,7 @@ export function AreaProfilPanel({
                       >
                         <span className="min-w-0 flex-1 text-left">
                           <span className="block truncate font-medium">{item.nama}</span>
-                          <span className="block text-[0.7rem] text-[var(--text-dim)]">
+                          <span className={cn("block text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                             {item.total_rumah_rusak != null
                               ? t("damageCount", {
                                   count: formatMetricId(item.total_rumah_rusak, t("unknown")),

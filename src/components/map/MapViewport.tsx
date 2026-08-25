@@ -53,6 +53,8 @@ import {
   readCoordQuality,
   type CoordQuality,
 } from "@/lib/coord-quality";
+import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 const POINT_LAYER_IDS = [
   "marker-dots",
@@ -772,13 +774,13 @@ export function MapViewport({
                 <StatusChip
                   raw={popup.status}
                   layer={popup.layer}
-                  className="px-2 py-0.5 text-[0.65rem]"
+                  className={cn("px-2 py-0.5", TYPE_FLOOR_CLASS)}
                 />
               </div>
               {popup.coordQuality === COORD_QUALITY_TRUNCATED && (
                 <Chip
                   tone="warn"
-                  className="mt-1.5 px-2 py-0.5 text-[0.65rem]"
+                  className={cn("mt-1.5 px-2 py-0.5", TYPE_FLOOR_CLASS)}
                 >
                   {t("coordApprox")}
                 </Chip>
@@ -786,7 +788,7 @@ export function MapViewport({
               {popup.coordQuality === COORD_QUALITY_OFFSHORE && (
                 <Chip
                   tone="info"
-                  className="mt-1.5 px-2 py-0.5 text-[0.65rem]"
+                  className={cn("mt-1.5 px-2 py-0.5", TYPE_FLOOR_CLASS)}
                 >
                   {t("coordOffshore")}
                 </Chip>

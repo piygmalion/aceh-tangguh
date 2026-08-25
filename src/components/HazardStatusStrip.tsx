@@ -7,6 +7,8 @@ import { Chip } from "@/components/ui/Chip";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { HazardStatus } from "@/lib/types";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 async function fetchHazards(): Promise<HazardStatus[]> {
   const res = await fetchPublicApi("/api/hazards");
@@ -28,7 +30,7 @@ export function HazardStatusStrip() {
       className="relative z-[1] -mt-2 border-y border-[var(--glass-border)] bg-[var(--bg-raised)]/80 px-4 py-5 backdrop-blur-sm"
     >
       <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
+        <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
           {t("label")}
         </div>
         <div className="flex flex-wrap gap-2">

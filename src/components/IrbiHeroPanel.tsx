@@ -20,6 +20,8 @@ import { Link } from "@/i18n/routing";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import { JENIS_HEX, KELAS_FILL } from "@/lib/chart-colors";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 export type IrbiKab = {
   kabupaten_kota: string;
@@ -320,7 +322,7 @@ export function IrbiHeroPanel() {
               key={k.kabupaten_kota}
               className="rounded-xl border border-white/10 bg-white/5 px-3 py-3 backdrop-blur-md"
             >
-              <div className="text-[0.65rem] font-semibold uppercase tracking-wider text-white/45">
+              <div className={cn("text-white/45", TYPE_KICKER_CLASS)}>
                 #{i + 1}
               </div>
               <div className="mt-1 text-sm font-semibold text-white">
@@ -334,10 +336,10 @@ export function IrbiHeroPanel() {
                   maximumFractionDigits: 2,
                 })}
               </div>
-              <div className="mt-1 text-[0.7rem] text-white/55">
+              <div className={cn("mt-1 text-white/55", TYPE_FLOOR_CLASS)}>
                 {k.kelas_risiko}
               </div>
-              <div className="mt-2 text-[0.7rem] text-white/70">
+              <div className={cn("mt-2 text-white/70", TYPE_FLOOR_CLASS)}>
                 <span className="text-white/45">{t("topThreat")}: </span>
                 {k.ancaman_tertinggi.replace(/_/g, " ")}
               </div>
@@ -361,7 +363,7 @@ export function IrbiHeroPanel() {
             {t("seeMap")}
           </button>
         </Link>
-        <p className="text-[0.7rem] text-white/40">{t("sourceNote")}</p>
+        <p className={cn("text-white/40", TYPE_FLOOR_CLASS)}>{t("sourceNote")}</p>
       </div>
     </div>
   );

@@ -26,6 +26,8 @@ import {
 import type { KejadianRow } from "@/lib/kejadian-types";
 import { LAYER_COLORS } from "@/lib/layer-colors";
 import { getDisasterJenisIconPath } from "@/lib/layer-icons";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 const LINE_COLOR = "var(--chart-1)";
 
@@ -115,7 +117,7 @@ function ImpactCard({
     <div
       className={`rounded-xl border bg-[var(--bg-muted)]/40 px-3 py-3 ${tones[tone]}`}
     >
-      <div className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+      <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
         {label}
       </div>
       <div className={`mt-1 text-xl font-semibold tabular-nums ${values[tone]}`}>
@@ -186,7 +188,7 @@ export function KejadianAnalisis({
     <GlassPanel className="p-4 md:p-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <div className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
+          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("kicker")}
           </div>
           <h2 className="mt-1 text-xl font-semibold tracking-tight md:text-2xl">
@@ -365,7 +367,7 @@ export function KejadianAnalisis({
           </div>
 
           <div className="mt-5">
-            <div className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+            <div className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {t("impact")}
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">

@@ -23,6 +23,8 @@ import {
   FASILITAS_UMUM_LAYER_KEYS,
   MARKER_TOOLBAR_GROUPS,
 } from "@/lib/map-layers-catalog";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 async function fetchAreaLegend(key: AreaLayerKey): Promise<LegendModel | null> {
   const res = await fetchPublicApi(`/api/layers/areas/${key}`);
@@ -102,7 +104,7 @@ export function MapToolbar({
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-semibold">{t("toolbarHandle")}</span>
-          <span className="block truncate text-[0.7rem] text-[var(--text-dim)]">
+          <span className={cn("block truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {t("activeLayers", { count: activeCount })}
           </span>
         </span>
@@ -121,7 +123,7 @@ export function MapToolbar({
         </span>
         <div className="min-w-0 flex-1">
           <div className="text-sm font-semibold">{t("toolbarHandle")}</div>
-          <div className="truncate text-[0.7rem] text-[var(--text-dim)]">
+          <div className={cn("truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {t("activeLayers", { count: activeCount })}
           </div>
         </div>
@@ -159,7 +161,7 @@ export function MapToolbar({
         <div className="min-h-0 flex-1 overflow-auto px-3 py-3 text-sm">
           {tab === "distribusi" && (
             <fieldset className="space-y-1">
-              <legend className="mb-2 px-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+              <legend className={cn("mb-2 px-1 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                 {t("distribusi")}
               </legend>
               <label
@@ -205,7 +207,7 @@ export function MapToolbar({
                   key={group.groupKey}
                   className="map-chrome-inset space-y-0.5 rounded-xl p-2"
                 >
-                  <legend className="mb-1 px-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+                  <legend className={cn("mb-1 px-1 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                     {t(group.groupKey)}
                   </legend>
                   {group.options.map((opt) => {
@@ -391,7 +393,7 @@ export function MapToolbar({
             <div className="space-y-4">
               {markerLayers.length > 0 && (
                 <div className="map-chrome-inset rounded-xl p-3">
-                  <div className="mb-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+                  <div className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                     {t("lokasi")}
                   </div>
                   <ul className="space-y-2">
@@ -424,14 +426,14 @@ export function MapToolbar({
                       );
                     })}
                   </ul>
-                  <p className="mt-3 text-[0.7rem] leading-snug text-[var(--text-dim)]">
+                  <p className={cn("mt-3 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                     {t("coordApproxLegend")}
                   </p>
                 </div>
               )}
               {areaLayer && areaLegend && (
                 <div className="map-chrome-inset rounded-xl p-3">
-                  <div className="mb-2 flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+                  <div className={cn("mb-2 flex items-center gap-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                     <MapLayerIcon
                       iconSrc={getAreaLayerIconPath(areaLayer)}
                       fallbackColor="#1F4C15"

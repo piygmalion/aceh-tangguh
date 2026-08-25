@@ -29,6 +29,8 @@ import type {
   KegiatanAnggaran,
 } from "@/lib/anggaran-types";
 import { CHART_SERIES, kelasFill } from "@/lib/chart-colors";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 const PHASE_ORDER = [
   "tanggap_darurat",
@@ -340,7 +342,7 @@ export function AnggaranDashboard() {
           },
         ].map((card) => (
           <GlassPanel key={card.label} className="p-4">
-            <div className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+            <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {card.label}
             </div>
             <div className="mt-2 flex items-center gap-2 text-xl font-semibold tracking-tight text-[var(--text)]">
@@ -640,7 +642,7 @@ export function AnggaranDashboard() {
 
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="bg-[var(--bg-muted)] text-[0.7rem] uppercase tracking-[0.12em] text-[var(--text-dim)]">
+            <thead className={cn("bg-[var(--bg-muted)] text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               <tr>
                 <th className="px-4 py-3 font-semibold">{t("table.cols.nama")}</th>
                 <th className="px-3 py-3 font-semibold">{t("table.cols.fase")}</th>
@@ -731,7 +733,7 @@ function FragmentRow({
           <td colSpan={5} className="px-4 py-4">
             <div className="grid gap-3 md:grid-cols-2">
               <div>
-                <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+                <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                   {t("table.detail.program")}
                 </div>
                 <p className="mt-1 text-sm">{row.program || "—"}</p>
@@ -740,7 +742,7 @@ function FragmentRow({
                 </p>
               </div>
               <div>
-                <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+                <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                   {t("table.detail.anggaranFull")}
                 </div>
                 <p className="mt-1 text-sm tabular-nums">
@@ -751,7 +753,7 @@ function FragmentRow({
                 </p>
               </div>
               <div className="md:col-span-2">
-                <div className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+                <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                   {t("table.detail.uraian")}
                 </div>
                 <ul className="mt-1 list-inside list-disc space-y-0.5 text-sm text-[var(--text-dim)]">

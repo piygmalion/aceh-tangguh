@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import type { ReportStatus } from "@/lib/supabase/types";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 type Tab = "kejadian" | "penanganan" | "legacy";
 type LaporanStatusFilter =
@@ -383,7 +385,7 @@ export function ModerationTable() {
                       }
                     />
                     {item.tampilDiPeta ? (
-                      <div className="mt-1 text-[10px] uppercase tracking-wide text-[var(--accent)]">
+                      <div className={cn("mt-1 text-[var(--accent)]", TYPE_KICKER_CLASS)}>
                         {t("onMap")}
                       </div>
                     ) : null}

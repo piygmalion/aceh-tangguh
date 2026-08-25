@@ -12,6 +12,7 @@ import {
   type PublikasiKegiatanListResponse,
 } from "@/lib/publikasi-kegiatan-types";
 import { qk } from "@/lib/qk";
+import { TYPE_KICKER_CLASS, TYPE_STAMP_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
 async function fetchKegiatanList(): Promise<PublikasiKegiatanListResponse> {
@@ -164,14 +165,14 @@ export function KegiatanSlideshow() {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent" />
 
         <div className="absolute left-0 right-0 top-0 flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-white/75">
+          <p className={cn("text-white/75", TYPE_KICKER_CLASS)}>
             BPBA
             <span className="mx-2 text-white/35" aria-hidden>
               ·
             </span>
             {t("kegiatanLatest")}
           </p>
-          <p className="text-[0.65rem] tabular-nums text-white/70" aria-live="polite">
+          <p className={cn("text-white/70", TYPE_STAMP_CLASS)} aria-live="polite">
             {t("kegiatanSlideOf", { current: index + 1, total: items.length })}
           </p>
         </div>
