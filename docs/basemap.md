@@ -77,6 +77,8 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 | `village-r3p.pmtiles` | `village` | `villageDistribution.geojson` |
 | `irbi-2025.pmtiles` | `irbi` | `irbi2025.geojson` |
 
+`villageDistribution` uses both archives as zoom LOD (tiles only, no remount, no retile): **z<9** paints `r3p-kab` only; **z≥9** swaps to `village-r3p`. Desa outlines start at **z11**. After a kab/kec selection, village features filter on existing `kode_kecamatan` / `kode_kab` / `kode_kabupaten` / `kode_desa_kelurahan` (never kecamatan name). Leftovers without kode stay visible. Overlay fill/outline/highlight use `beforeId=basemap-label-place` when that brand layer exists; Carto raster omits `beforeId`.
+
 Village tiles carry `properties.kode_desa_kelurahan` (10-digit BPS) **only where the source GeoJSON already has it**. Slug-only leftover polygons stay without a BPS id — the rebuild does not invent codes or remap leftover names. `MapViewport` joins village clicks on that property, not on MVT feature ids. `kode_kecamatan` is kept when present. Do not use tippecanoe `--use-attribute-for-id=kode_desa_kelurahan` (string BPS codes are not valid MVT ids; numeric conversion would drop the property and can invent `0` for empty kode).
 
 Batas (dua gerbang):
