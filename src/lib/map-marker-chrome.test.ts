@@ -59,7 +59,10 @@ describe("basemap halo stroke", () => {
   it("uses ink on light canvases and paper on dark/imagery", () => {
     assert.equal(markerHaloStroke("positron"), COLOR_TOKENS.ink);
     assert.equal(markerHaloStroke("streets"), COLOR_TOKENS.ink);
+    assert.equal(markerHaloStroke("brand-light"), COLOR_TOKENS.ink);
+    assert.equal(markerHaloStroke("brand-grey"), COLOR_TOKENS.ink);
     assert.equal(markerHaloStroke("dark"), COLOR_TOKENS.paper);
+    assert.equal(markerHaloStroke("brand-dark"), COLOR_TOKENS.paper);
     assert.equal(markerHaloStroke("satellite"), COLOR_TOKENS.paper);
     assert.equal(markerHaloStroke("sentinel"), COLOR_TOKENS.paper);
     assert.equal(LAYER_COLORS.infraRoadBridge, COLOR_TOKENS.gold);
