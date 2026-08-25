@@ -35,6 +35,8 @@ describe("live_stats.posko_count is absent, not the stale 656 seed", () => {
     assert.equal(normalizePoskoCount(null), null);
     assert.equal(normalizePoskoCount("656"), null);
     assert.equal(normalizePoskoCount(Number.NaN), null);
+    assert.notEqual(normalizePoskoCount(null), 0);
+    assert.notEqual(LIVE_STATS_FALLBACK.poskoCount, 0);
     assert.equal(LIVE_STATS_FALLBACK.poskoCount, null);
     assert.equal(normalizePoskoCount(LIVE_STATS_FALLBACK.poskoCount), null);
   });
@@ -60,9 +62,19 @@ describe("live_stats.posko_count is absent, not the stale 656 seed", () => {
     assert.deepEqual(leaks, []);
 
     const clearerSql = readFileSync(clearer, "utf8");
+    assert.match(clearerSql, /alter column posko_count drop not null/i);
+    assert.match(clearerSql, /alter column posko_count drop default/i);
     assert.match(clearerSql, /set posko_count = null/i);
     assert.match(clearerSql, /where posko_count = 656/i);
     assert.equal(INSERT_POSKO_656.test(clearerSql), false);
+
+    const initSql = readFileSync(
+      path.join(ROOT, "supabase/migrations/20260823_init_aceh_tangguh_backend.sql"),
+      "utf8"
+    );
+    assert.match(initSql, /posko_count int,/);
+    assert.equal(/posko_count int not null default 0/.test(initSql), false);
+    assert.match(initSql, /values\s*\(\s*1\s*,\s*3\s*,\s*null\s*,\s*0\s*\)/i);
   });
 
   it("does not show a posko KPI sourced from live_stats on the homepage hero", () => {

@@ -1,7 +1,6 @@
--- live_stats.posko_count=656 was a stale seed, not a counted inventory.
--- Do not replace it with another invented number. Live Supabase is also
--- cleared separately by Backend. This migration only stops the repo seed
--- from surviving on already-applied databases.
+-- Match live: posko_count is nullable with no default (NULL, not 0).
+-- 656 was a stale seed, not a counted inventory — do not invent a replacement.
+-- Idempotent if live already ALTERed the column and set id=1 to NULL.
 
 alter table public.live_stats
   alter column posko_count drop not null;
