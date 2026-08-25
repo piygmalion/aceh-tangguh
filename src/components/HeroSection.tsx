@@ -53,7 +53,7 @@ export function HeroSection() {
   return (
     <section
       className={cn(
-        "relative flex flex-col overflow-hidden bg-[#03060c] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
+        "relative flex flex-col overflow-hidden bg-[var(--bg)] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
         tab === "irbi"
           ? "min-h-[100svh] justify-start pb-16"
           : "min-h-[100svh] justify-end pb-20 sm:pb-24"
@@ -112,11 +112,14 @@ export function HeroSection() {
             </BlurFade>
 
             <BlurFade delay={0.12} inView>
-              <h1 className="max-w-[46rem] text-[2.35rem] font-semibold leading-[1.12] tracking-tight sm:text-[3.4rem] lg:text-[4.4rem]">
+              <h1 className="max-w-none text-left text-[2.35rem] font-semibold leading-[1.05] tracking-tight sm:text-[3.4rem] lg:text-[4.4rem]">
                 {t.rich("title", {
                   brand: (chunks) => (
-                    <span className="text-[var(--bnpb-orange)]">{chunks}</span>
+                    <mark className="whitespace-nowrap rounded-[0.16em] bg-[var(--orange)] px-[0.28em] pb-[0.06em] pt-[0.04em] font-[inherit] text-[var(--accent-fg)] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
+                      {chunks}
+                    </mark>
                   ),
+                  br: () => <br />,
                 })}
               </h1>
             </BlurFade>
@@ -131,9 +134,9 @@ export function HeroSection() {
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link href="/peta">
                   <ShimmerButton
-                    className="shadow-2xl"
-                    background="rgba(46, 158, 78, 1)"
-                    shimmerColor="#e8ffe8"
+                    className="shadow-2xl text-[var(--primary-fg)]"
+                    background="var(--primary)"
+                    shimmerColor="#F7F7F4"
                   >
                     <span className="inline-flex items-center gap-2 text-sm font-semibold">
                       <Map size={18} />
@@ -193,7 +196,7 @@ export function HeroSection() {
               </div>
             </BlurFade>
 
-            <p className="mt-6 text-[10px] text-white/40">
+            <p className="mt-6 text-xs text-white/60">
               {SITE_MEDIA.heroPoster.credit}
             </p>
           </div>
@@ -211,9 +214,9 @@ export function HeroSection() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/peta">
                   <ShimmerButton
-                    className="shadow-2xl"
-                    background="rgba(46, 158, 78, 1)"
-                    shimmerColor="#e8ffe8"
+                    className="shadow-2xl text-[var(--primary-fg)]"
+                    background="var(--primary)"
+                    shimmerColor="#F7F7F4"
                   >
                     <span className="inline-flex items-center gap-2 text-sm font-semibold">
                       <Map size={18} />
