@@ -13,7 +13,16 @@ import { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 const TEASER_CHIP_CLASS: Record<(typeof DEFAULT_LAYERS)[number], string> = {
   disasterEvents: "bg-amber-500/25 text-amber-100",
   facHealth: "bg-rose-500/25 text-rose-100",
-  laporanKejadian: "bg-orange-500/25 text-orange-100",
+  laporanKejadian: "bg-emerald-500/25 text-emerald-100",
+};
+
+const TEASER_CHIP_LABEL: Record<
+  (typeof DEFAULT_LAYERS)[number],
+  "chipKejadian" | "chipFaskes" | "chipLaporan"
+> = {
+  disasterEvents: "chipKejadian",
+  facHealth: "chipFaskes",
+  laporanKejadian: "chipLaporan",
 };
 
 export function MapTeaserSection() {
@@ -59,12 +68,13 @@ export function MapTeaserSection() {
 
               <div className="relative z-[1] mt-10 inline-flex flex-wrap gap-2">
                 {DEFAULT_LAYERS.map((key) => (
-                  <span
+                  <Link
                     key={key}
+                    href={{ pathname: "/peta", query: { layers: key } }}
                     className={`rounded-full px-3 py-1 text-xs backdrop-blur ${TEASER_CHIP_CLASS[key]}`}
                   >
-                    {tm(key)}
-                  </span>
+                    {t(TEASER_CHIP_LABEL[key])}
+                  </Link>
                 ))}
               </div>
             </div>
