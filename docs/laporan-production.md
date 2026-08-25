@@ -10,6 +10,7 @@ Jalankan di SQL Editor (urutan):
 2. `supabase/migrations/20260826_laporan_production.sql`
 3. `supabase/migrations/20260829_map_layers_partisipasi.sql` — layer `laporanKejadian` / `laporanPenanganan` + SELECT publik penanganan
 4. `supabase/migrations/20260902_harden_laporan_rls.sql` — **wajib**. Cabut INSERT anon, nomor laporan via sequence, CHECK koordinat penanganan, GRANT kolom anon tanpa `jawaban_json` / `pelapor_id`
+5. `supabase/migrations/20260904_harden_laporan_auth_select.sql` — **wajib** setelah 20260902. Samakan GRANT SELECT `authenticated` dengan daftar kolom anon (tanpa `jawaban_json` / `pelapor_id`)
 
 Pastikan `20260825_admin_auth.sql` sudah diterapkan (fungsi `is_staff()`).
 
@@ -38,7 +39,7 @@ Produksi **gagal submit** jika kunci/salt belum di-set. Development tanpa Supaba
 
 Insert laporan, pelapor, antrean WA, dan upload media memakai `SUPABASE_SERVICE_ROLE_KEY` di server saja. Anon key **tidak** boleh INSERT ke `laporan_*` / `notifikasi_wa` / `reports`.
 
-Admin UI (moderasi/CMS) tetap anon + JWT staf.
+Sesi staf tetap JWT (`requireStaffApi`). `/api/admin/laporan` membaca/mengubah `laporan_*` lewat service role setelah cek itu — Postgres GRANT berlaku per role, bukan per `is_staff()`, jadi JWT tidak boleh punya kolom PII.
 
 ## 4. Antrean WhatsApp
 
@@ -80,7 +81,7 @@ Dua layer Partisipasi, keduanya live-query dari tabel laporan (bukan sync ke `ma
 | `laporanKejadian` | `laporan_kejadian` | `status = approved` AND `tampil_di_peta = true` AND lat/lon ada |
 | `laporanPenanganan` | `laporan_penanganan` | sama |
 
-`GET /api/laporan/peta` mengembalikan kedua set (`?tipe=kejadian|penanganan` untuk satu sisi). **Tidak** mengembalikan `jawaban_json`. Anon PostgREST juga tidak punya GRANT pada `jawaban_json` / `pelapor_id`. `GET /api/layers/markers` menggabungkan overlay ini ke GeoJSON peta.
+`GET /api/laporan/peta` mengembalikan kedua set (`?tipe=kejadian|penanganan` untuk satu sisi). **Tidak** mengembalikan `jawaban_json`. Anon **dan** authenticated PostgREST memakai daftar kolom overlay yang sama — tidak ada GRANT pada `jawaban_json` / `pelapor_id`. Overlay published (`status = approved` AND `tampil_di_peta`) tetap SELECT-able. `GET /api/layers/markers` menggabungkan overlay ini ke GeoJSON peta.
 
 Key lama `citizenReports` **removed** (pola helipad): tidak ada di toolbar; `?layers=citizenReports` di-alias ke `laporanKejadian` saja. STATIC_EXPORT / tanpa data: array kosong — jangan seed titik dummy.
 
