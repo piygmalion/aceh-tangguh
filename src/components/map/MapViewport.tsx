@@ -32,6 +32,21 @@ import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
 import { CLUSTER_COLORS, COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
 import { markerIconImageId } from "@/lib/layer-icons";
 import {
+  PMTILES_KAB,
+  PMTILES_VILLAGE,
+  VILLAGE_OUTLINE_MIN_ZOOM,
+  areaOutlinePaint,
+  geometryBounds,
+  isKabAreaFeature,
+  isVillageLodZoom,
+  mergeVillageLodFocus,
+  overlayBeforeId,
+  readKabLodFocus,
+  unionBounds,
+  villageLayerFilter,
+  type VillageLodFocus,
+} from "@/lib/village-distribution-lod";
+import {
   MAP_CLUSTER_MAX_ZOOM,
   MAP_DOT_MAX_ZOOM,
   MAP_DOT_RADIUS_PX,
@@ -182,18 +197,22 @@ function highlightFilter(sel: VillageClickSelection | null): FilterSpecification
 function AreaHighlightLayers({
   sourceLayer,
   selection,
+  beforeId,
 }: {
   sourceLayer?: string;
   selection: VillageClickSelection | null;
+  beforeId?: string;
 }) {
   const filter = highlightFilter(selection);
   const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
+  const before = beforeId ? { beforeId } : {};
   return (
     <>
       <Layer
         id="area-highlight-fill"
         type="fill"
         {...layerProps}
+        {...before}
         filter={filter}
         paint={{
           "fill-color": COLOR_TOKENS.gold,
@@ -204,6 +223,7 @@ function AreaHighlightLayers({
         id="area-highlight-line"
         type="line"
         {...layerProps}
+        {...before}
         filter={filter}
         paint={{
           "line-color": COLOR_TOKENS.orange,
@@ -211,6 +231,81 @@ function AreaHighlightLayers({
           "line-opacity": 0.95,
         }}
       />
+    </>
+  );
+}
+
+function AreaOverlayLayers({
+  sourceLayer,
+  areaLayer,
+  outlineKind,
+  filter,
+  beforeId,
+  villageSelection,
+  villageClickEnabled,
+}: {
+  sourceLayer?: string;
+  areaLayer: AreaLayerKey | null;
+  outlineKind: "kab" | "village";
+  filter?: FilterSpecification;
+  beforeId?: string;
+  villageSelection: VillageClickSelection | null;
+  villageClickEnabled: boolean;
+}) {
+  const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
+  const before = beforeId ? { beforeId } : {};
+  const filterProp = filter ? { filter } : {};
+  const fillPaint = sourceLayer
+    ? {
+        "fill-color": fillColorExpr(areaLayer) as never,
+        "fill-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          6,
+          0.35,
+          10,
+          0.5,
+        ],
+      }
+    : {
+        "fill-color": ["get", "fillColor"],
+        "fill-opacity": [
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          6,
+          0.35,
+          10,
+          0.5,
+        ],
+      };
+  return (
+    <>
+      <Layer
+        id="area-fill"
+        type="fill"
+        {...layerProps}
+        {...before}
+        {...filterProp}
+        paint={fillPaint as never}
+      />
+      <Layer
+        id="area-outline"
+        type="line"
+        {...layerProps}
+        {...before}
+        {...filterProp}
+        minzoom={outlineKind === "village" ? VILLAGE_OUTLINE_MIN_ZOOM : 0}
+        paint={areaOutlinePaint(outlineKind) as never}
+      />
+      {villageClickEnabled && (
+        <AreaHighlightLayers
+          sourceLayer={sourceLayer}
+          selection={villageSelection}
+          beforeId={beforeId}
+        />
+      )}
     </>
   );
 }
@@ -274,8 +369,25 @@ export function MapViewport({
   } | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
+  const [useVillageTiles, setUseVillageTiles] = useState(() =>
+    isVillageLodZoom(view.zoom)
+  );
+  const [kabFocus, setKabFocus] = useState<VillageLodFocus | null>(null);
+  const [labelBeforeId, setLabelBeforeId] = useState<string | undefined>();
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const villageClickEnabled = areaLayer === "villageDistribution";
+
+  const applyZoomLod = useCallback((zoom: number) => {
+    const next = isVillageLodZoom(zoom);
+    setUseVillageTiles((prev) => (prev === next ? prev : next));
+  }, []);
+
+  const syncOverlayBeforeId = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    setLabelBeforeId(
+      overlayBeforeId((id) => Boolean(map?.getLayer(id)))
+    );
+  }, []);
 
   useEffect(() => {
     ensurePmtilesProtocol();
@@ -300,19 +412,30 @@ export function MapViewport({
     const map = mapRef.current?.getMap();
     if (!map) return;
     void registerMapChromeIcons(map, haloStroke);
-  }, [haloStroke]);
+    syncOverlayBeforeId();
+    applyZoomLod(map.getZoom());
+  }, [haloStroke, syncOverlayBeforeId, applyZoomLod]);
 
   useEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
     const onStyle = () => {
       void registerMapChromeIcons(map, haloStroke);
+      syncOverlayBeforeId();
     };
     map.on("style.load", onStyle);
     return () => {
       map.off("style.load", onStyle);
     };
-  }, [mapStyle, haloStroke]);
+  }, [mapStyle, haloStroke, syncOverlayBeforeId]);
+
+  useEffect(() => {
+    applyZoomLod(view.zoom);
+  }, [view.zoom, applyZoomLod]);
+
+  useEffect(() => {
+    setKabFocus(null);
+  }, [areaLayer]);
 
   const sortedKeys = useMemo(
     () => [...markerLayers].sort(),
@@ -324,7 +447,31 @@ export function MapViewport({
     return new Set(disasterJenis);
   }, [disasterJenis]);
 
-  const pmtilesMeta = areaLayer ? PMTILES_AREA[areaLayer] : undefined;
+  const pmtilesMeta = useMemo(() => {
+    if (areaLayer === "villageDistribution") {
+      return useVillageTiles ? PMTILES_VILLAGE : PMTILES_KAB;
+    }
+    return areaLayer ? PMTILES_AREA[areaLayer] : undefined;
+  }, [areaLayer, useVillageTiles]);
+
+  const lodFocus = useMemo(
+    () => mergeVillageLodFocus(kabFocus, villageSelection),
+    [kabFocus, villageSelection]
+  );
+
+  const villageFilter = useMemo(
+    () =>
+      areaLayer === "villageDistribution" && useVillageTiles
+        ? villageLayerFilter(lodFocus)
+        : undefined,
+    [areaLayer, useVillageTiles, lodFocus]
+  );
+
+  const outlineKind =
+    areaLayer === "villageDistribution" && useVillageTiles ? "village" : "kab";
+
+  const skipVillageGeojsonFallback =
+    areaLayer === "villageDistribution" && !useVillageTiles;
 
   const { data: pmtilesAvailable } = useQuery({
     queryKey: ["pmtiles-exists", pmtilesMeta?.url ?? "none"],
@@ -405,6 +552,7 @@ export function MapViewport({
     // Wait for PMTiles HEAD; only fall back to GeoJSON API when tiles are missing
     enabled:
       areaLayer != null &&
+      !skipVillageGeojsonFallback &&
       (pmtilesMeta ? pmtilesAvailable === false : true),
   });
 
@@ -467,19 +615,62 @@ export function MapViewport({
         return;
       }
 
-      if (!villageClickEnabled || !onVillageClick) return;
+      if (!villageClickEnabled) return;
       const feature = e.features?.find((f) => f.layer?.id === "area-fill");
       if (!feature) return;
-      const sel = readVillageSelection(
-        feature.properties as Record<string, unknown> | null
-      );
+      const props = feature.properties as Record<string, unknown> | null;
+      if (isKabAreaFeature(props, useVillageTiles)) {
+        const nextFocus = readKabLodFocus(props);
+        if (nextFocus) setKabFocus(nextFocus);
+        const map = mapRef.current?.getMap();
+        if (map) {
+          const kode = String(props?.kode_kab ?? props?.kode_kabupaten ?? "");
+          const name = String(props?.name ?? props?.kabupaten ?? "");
+          const siblings = map
+            .queryRenderedFeatures(undefined, { layers: ["area-fill"] })
+            .filter((f) => {
+              const p = f.properties ?? {};
+              return (
+                (kode &&
+                  (String(p.kode_kab ?? "") === kode ||
+                    String(p.kode_kabupaten ?? "") === kode)) ||
+                (name &&
+                  (String(p.name ?? "") === name ||
+                    String(p.kabupaten ?? "") === name))
+              );
+            });
+          const bounds = unionBounds(
+            (siblings.length ? siblings : [feature]).map((f) =>
+              geometryBounds(f.geometry as never)
+            )
+          );
+          if (bounds) {
+            map.fitBounds(bounds, {
+              padding: 48,
+              duration: 600,
+              maxZoom: 10,
+            });
+          }
+        }
+        return;
+      }
+      if (!onVillageClick) return;
+      const sel = readVillageSelection(props);
       if (sel) onVillageClick(sel);
     },
-    [villageClickEnabled, onVillageClick]
+    [villageClickEnabled, onVillageClick, useVillageTiles]
+  );
+
+  const onMove = useCallback(
+    (e: ViewStateChangeEvent) => {
+      applyZoomLod(e.viewState.zoom);
+    },
+    [applyZoomLod]
   );
 
   const onMoveEnd = useCallback(
     (e: ViewStateChangeEvent) => {
+      applyZoomLod(e.viewState.zoom);
       if (moveTimer.current) clearTimeout(moveTimer.current);
       moveTimer.current = setTimeout(() => {
         onViewChange({
@@ -489,7 +680,7 @@ export function MapViewport({
         });
       }, 250);
     },
-    [onViewChange]
+    [onViewChange, applyZoomLod]
   );
 
   return (
@@ -509,6 +700,7 @@ export function MapViewport({
         onClick={onMapClick}
         onMouseEnter={() => setCursor("pointer")}
         onMouseLeave={() => setCursor("auto")}
+        onMove={onMove}
         onMoveEnd={onMoveEnd}
         onError={(e) => {
           const msg = e.error?.message ?? "";
@@ -527,92 +719,31 @@ export function MapViewport({
         {pmtilesUrl && pmtilesMeta && (
           <Source
             id="area-layer-pmtiles"
+            key={pmtilesMeta.url}
             type="vector"
             url={pmtilesUrl}
           >
-            <Layer
-              id="area-fill"
-              type="fill"
-              source-layer={pmtilesMeta.sourceLayer}
-              paint={{
-                "fill-color": fillColorExpr(areaLayer) as never,
-                "fill-opacity": [
-                  "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  6,
-                  0.35,
-                  10,
-                  0.5,
-                ],
-              }}
+            <AreaOverlayLayers
+              sourceLayer={pmtilesMeta.sourceLayer}
+              areaLayer={areaLayer}
+              outlineKind={outlineKind}
+              filter={villageFilter}
+              beforeId={labelBeforeId}
+              villageSelection={villageSelection}
+              villageClickEnabled={villageClickEnabled && useVillageTiles}
             />
-            <Layer
-              id="area-outline"
-              type="line"
-              source-layer={pmtilesMeta.sourceLayer}
-              minzoom={areaLayer === "villageDistribution" ? 8 : 0}
-              paint={{
-                "line-color": "#14532d",
-                "line-width": [
-                  "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  7,
-                  0.4,
-                  11,
-                  1.1,
-                ],
-                "line-opacity": 0.75,
-              }}
-            />
-            {villageClickEnabled && (
-              <AreaHighlightLayers
-                sourceLayer={pmtilesMeta.sourceLayer}
-                selection={villageSelection}
-              />
-            )}
           </Source>
         )}
         {!usePmtiles && areaGeojson && (
           <Source id="area-layer" type="geojson" data={areaGeojson} generateId>
-            <Layer
-              id="area-fill"
-              type="fill"
-              paint={{
-                "fill-color": ["get", "fillColor"],
-                "fill-opacity": [
-                  "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  6,
-                  0.35,
-                  10,
-                  0.5,
-                ],
-              }}
+            <AreaOverlayLayers
+              areaLayer={areaLayer}
+              outlineKind={outlineKind}
+              filter={villageFilter}
+              beforeId={labelBeforeId}
+              villageSelection={villageSelection}
+              villageClickEnabled={villageClickEnabled && useVillageTiles}
             />
-            <Layer
-              id="area-outline"
-              type="line"
-              minzoom={areaLayer === "villageDistribution" ? 8 : 0}
-              paint={{
-                "line-color": "#14532d",
-                "line-width": [
-                  "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  7,
-                  0.4,
-                  11,
-                  1.1,
-                ],
-                "line-opacity": 0.75,
-              }}
-            />
-            {villageClickEnabled && (
-              <AreaHighlightLayers selection={villageSelection} />
-            )}
           </Source>
         )}
         {sortedKeys.length > 0 && (
