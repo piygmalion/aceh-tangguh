@@ -13,7 +13,14 @@ export type ReportStatus = "queued" | "published" | "rejected";
 
 export type AdminRole = "super_admin" | "admin";
 
-export type HazardKind = "banjir" | "longsor" | "gempa" | "kebakaran" | "lainnya";
+export type HazardKind =
+  | "banjir"
+  | "longsor"
+  | "gempa"
+  | "kebakaran"
+  | "karhutla"
+  | "puting_beliung"
+  | "lainnya";
 export type HazardSeverity = "low" | "med" | "high";
 
 export type MapLayerKind = "area" | "marker" | "boundary";

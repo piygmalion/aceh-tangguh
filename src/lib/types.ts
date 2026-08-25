@@ -2,7 +2,14 @@ export type Locale = "id" | "en";
 export type Theme = "light" | "dark";
 export type BasemapId = "positron" | "dark" | "satellite" | "streets" | "sentinel";
 
-export type HazardKind = "banjir" | "longsor" | "gempa" | "kebakaran" | "lainnya";
+export type HazardKind =
+  | "banjir"
+  | "longsor"
+  | "gempa"
+  | "kebakaran"
+  | "karhutla"
+  | "puting_beliung"
+  | "lainnya";
 export type ClusterId =
   | "sar"
   | "logistik"

@@ -10,6 +10,7 @@ import {
 } from "./supabase/fallback";
 import type { TypedSupabaseClient } from "./supabase/server";
 import type { MarkerFeatureRow } from "./supabase/types";
+import { annotatePoliceOfficeCoordQuality } from "./coord-quality";
 import { expandMarkerLayerKeys } from "./map-url-aliases";
 import { applyStatusVocabToProperties } from "./status-vocab";
 
@@ -52,10 +53,12 @@ function asFeatureCollection(payload: unknown): FeatureCollection | null {
 function normalizeMarkerCollection(fc: FeatureCollection): FeatureCollection {
   return {
     ...fc,
-    features: fc.features.map((f) => ({
-      ...f,
-      properties: applyStatusVocabToProperties(asRecord(f.properties)),
-    })),
+    features: fc.features.map((f) =>
+      annotatePoliceOfficeCoordQuality({
+        ...f,
+        properties: applyStatusVocabToProperties(asRecord(f.properties)),
+      })
+    ),
   };
 }
 

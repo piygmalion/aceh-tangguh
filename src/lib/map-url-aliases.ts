@@ -53,6 +53,8 @@ const HAZARD_KINDS: readonly HazardKind[] = [
   "longsor",
   "gempa",
   "kebakaran",
+  "karhutla",
+  "puting_beliung",
   "lainnya",
 ];
 
@@ -93,8 +95,10 @@ export const HAZARD_TO_DISASTER_JENIS: Record<HazardKind, string[]> = {
   banjir: ["Banjir", "Banjir Bandang", "Banjir Bandang dan Tanah Longsor"],
   longsor: ["Longsor", "Tanah Longsor", "Banjir Bandang dan Tanah Longsor"],
   gempa: ["Gempa Bumi"],
-  kebakaran: ["Kebakaran", "Kebakaran Hutan dan Lahan", "Kebakaran Pemukiman"],
-  lainnya: ["Lainnya", "Angin Puting Beliung", "Abrasi", "Kekeringan"],
+  kebakaran: ["Kebakaran", "Kebakaran Pemukiman"],
+  karhutla: ["Kebakaran Hutan dan Lahan"],
+  puting_beliung: ["Angin Puting Beliung"],
+  lainnya: ["Lainnya", "Abrasi", "Kekeringan"],
 };
 
 export function parseClusterId(raw: string | null | undefined): ClusterId | undefined {

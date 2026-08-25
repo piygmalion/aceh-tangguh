@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test src/lib/security/*.test.ts src/lib/laporan/*.test.ts src/lib/peringatan-dini/magma.test.ts",
+    "test": "node --import tsx --test src/lib/*.test.ts src/lib/**/*.test.ts",
     "build:tiles": "bash scripts/build-pmtiles.sh",
     "refresh:sentinel": "node scripts/refresh-sentinel-status.mjs",
     "verify:basemap": "node scripts/verify-basemap.mjs",

@@ -14,4 +14,6 @@ export const HAZARD_STATUS_FALLBACK: HazardStatus[] = [
   { kind: "longsor", label: "Longsor", count: 1, severity: "high" },
   { kind: "gempa", label: "Gempa", count: 0, severity: "low" },
   { kind: "kebakaran", label: "Kebakaran", count: 0, severity: "low" },
+  { kind: "karhutla", label: "Karhutla", count: 85, severity: "med" },
+  { kind: "puting_beliung", label: "Puting Beliung", count: 44, severity: "med" },
 ];
