@@ -72,6 +72,12 @@ html[data-theme="light"] {
   /* OPT aliases */
   --bnpb-orange: var(--orange);
   --primary-dim: color-mix(in srgb, var(--primary) 14%, transparent);
+
+  /* Signed type floor — 12px / 0.75rem for product chrome */
+  --type-floor: 0.75rem;
+  --type-kicker-tracking: 0.08em;
+  --type-hero-display-max: 3.5rem;
+  --type-hero-leading: 1.2;
 }
 
 html[data-theme="dark"] {
@@ -126,6 +132,11 @@ html[data-theme="dark"] {
   /* OPT aliases */
   --bnpb-orange: var(--orange);
   --primary-dim: color-mix(in srgb, var(--primary) 18%, transparent);
+
+  --type-floor: 0.75rem;
+  --type-kicker-tracking: 0.08em;
+  --type-hero-display-max: 3.5rem;
+  --type-hero-leading: 1.2;
 }
 
 *,
@@ -151,6 +162,30 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* Product chrome type — 12px floor, 0.08em kicker tracking, 3.5rem hero cap */
+.type-floor {
+  font-size: var(--type-floor);
+}
+
+.type-kicker {
+  font-size: var(--type-floor);
+  font-weight: 600;
+  letter-spacing: var(--type-kicker-tracking);
+  text-transform: uppercase;
+}
+
+.type-stamp {
+  font-size: var(--type-floor);
+  font-variant-numeric: tabular-nums;
+}
+
+.type-hero-display {
+  font-size: clamp(2.35rem, 6.4vw, var(--type-hero-display-max));
+  font-weight: 600;
+  line-height: var(--type-hero-leading);
+  letter-spacing: -0.025em;
 }
 
 a {

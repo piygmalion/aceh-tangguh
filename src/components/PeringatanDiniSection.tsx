@@ -14,6 +14,12 @@ import type {
   PeringatanTone,
   SipongiCard,
 } from "@/lib/peringatan-dini-types";
+import {
+  TYPE_FLOOR_CLASS,
+  TYPE_KICKER_CLASS,
+  TYPE_STAMP_CLASS,
+} from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 async function fetchPeringatanDini(): Promise<PeringatanDiniResponse> {
   const res = await fetchPublicApi("/api/peringatan-dini");
@@ -94,22 +100,22 @@ function CardHeader({
     <div className="flex items-start justify-between gap-2">
       <div className="flex min-w-0 items-center gap-1.5">
         {icon}
-        <span className="truncate text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+        <span className={cn("truncate text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
           {source}
         </span>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
         <Chip
           tone={tone === "danger" ? "danger" : tone === "warn" ? "warn" : "neutral"}
-          className="gap-1 px-1.5 py-0.5 text-[0.58rem] leading-none"
+          className={cn("gap-1 px-1.5 py-0.5 leading-none", TYPE_FLOOR_CLASS)}
         >
           {t(`tone.${tone}`)}
         </Chip>
         {stamp ? (
-          <span className="text-[0.58rem] tabular-nums text-[var(--text-dim)]">{stamp}</span>
+          <span className={cn("text-[var(--text-dim)]", TYPE_STAMP_CLASS)}>{stamp}</span>
         ) : null}
         {stale ? (
-          <span className="text-[0.58rem] font-medium text-[var(--warn)]">{t("stale")}</span>
+          <span className={cn("font-medium text-[var(--warn)]", TYPE_FLOOR_CLASS)}>{t("stale")}</span>
         ) : null}
       </div>
     </div>
@@ -118,7 +124,7 @@ function CardHeader({
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <p className="text-[0.72rem] leading-snug">
+    <p className={cn("leading-snug", TYPE_FLOOR_CLASS)}>
       <span className="text-[var(--text-dim)]">{label}</span>
       <span className="text-[var(--text-dim)]"> : </span>
       <span className="text-[var(--text)]">{value}</span>
@@ -161,7 +167,7 @@ function CuacaCard({ card }: { card: CuacaWarningCard }) {
             </div>
           ))}
           {card.extra_count > 0 ? (
-            <p className="text-[0.68rem] text-[var(--text-dim)]">
+            <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
               {t("cuaca.more", { n: card.extra_count })}
             </p>
           ) : null}
@@ -265,7 +271,7 @@ export function PeringatanDiniSection() {
     >
       <div className="mx-auto max-w-6xl">
         <div>
-          <h2 className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
+          <h2 className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("title")}
           </h2>
           <p className="mt-1 text-xs text-[var(--text-dim)]">{t("subtitle")}</p>

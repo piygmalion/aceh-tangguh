@@ -3,6 +3,8 @@ import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Link } from "@/i18n/routing";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 export async function StaticPreviewNotice({
   kind = "generic",
@@ -15,7 +17,7 @@ export async function StaticPreviewNotice({
   const body = (
     <main className="mx-auto flex min-h-[70vh] max-w-lg items-center px-4 pb-16 pt-28">
       <GlassPanel className="w-full p-6 sm:p-8">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
+        <p className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
           {t("kicker")}
         </p>
         <h1 className="mt-2 text-xl font-semibold">

@@ -13,6 +13,8 @@ import {
 } from "@/lib/basemap";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { formatSceneDate, type SentinelStatus } from "@/lib/sentinel";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 async function fetchSentinelStatusClient(): Promise<SentinelStatus | null> {
   const res = await fetchPublicApi("/api/sentinel/status");
@@ -105,7 +107,7 @@ export function MapSettings({
             </button>
           </div>
 
-          <div className="mb-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+          <div className={cn("mb-1.5 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("theme")}
           </div>
           <div className="mb-3 grid grid-cols-2 gap-1.5">
@@ -128,7 +130,7 @@ export function MapSettings({
             ))}
           </div>
 
-          <div className="mb-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-dim)]">
+          <div className={cn("mb-1.5 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("basemap")}
           </div>
           <div className="grid grid-cols-2 gap-1.5">
@@ -144,14 +146,14 @@ export function MapSettings({
                 }`}
               >
                 <span className="block">{t(b.labelKey)}</span>
-                <span className="mt-0.5 block text-[10px] font-normal text-[var(--text-dim)]">
+                <span className={cn("mt-0.5 block font-normal text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                   {basemapKindLabel(b.kind, t)}
                 </span>
               </button>
             ))}
           </div>
           {onPreferVectorChange && BASEMAP_VECTOR_URLS[basemap] ? (
-            <label className="mt-2.5 flex cursor-pointer items-start gap-2 text-[10px] leading-snug text-[var(--text-dim)]">
+            <label className={cn("mt-2.5 flex cursor-pointer items-start gap-2 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
               <input
                 type="checkbox"
                 className="mt-0.5"
@@ -161,11 +163,11 @@ export function MapSettings({
               <span>{t("basemapVectorOptional")}</span>
             </label>
           ) : null}
-          <p className="mt-2.5 text-[10px] leading-snug text-[var(--text-dim)]">
+          <p className={cn("mt-2.5 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {t("basemapHint")}
           </p>
           {basemap === "sentinel" && sentinel?.latestScene && (
-            <p className="mt-1.5 text-[10px] leading-snug text-[var(--text-dim)]">
+            <p className={cn("mt-1.5 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
               {t("sentinelFreshness", {
                 year: sentinel.mosaic.year,
                 date: formatSceneDate(sentinel.latestScene.datetime, locale),

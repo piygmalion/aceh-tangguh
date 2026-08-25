@@ -19,6 +19,8 @@ import type {
   PublikasiListItem,
   PublikasiListResponse,
 } from "@/lib/publikasi";
+import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 async function fetchPublikasiList(): Promise<PublikasiListResponse> {
   const res = await fetchPublicApi("/api/publikasi");
@@ -221,13 +223,13 @@ export function PublikasiCatalog() {
                       {item.tags.slice(0, 4).map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] px-2 py-0.5 text-[0.65rem] text-[var(--text-dim)]"
+                          className={cn("rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] px-2 py-0.5 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}
                         >
                           {tag}
                         </span>
                       ))}
                       {item.tags.length > 4 ? (
-                        <span className="px-1 text-[0.65rem] text-[var(--text-dim)]">
+                        <span className={cn("px-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                           +{item.tags.length - 4}
                         </span>
                       ) : null}

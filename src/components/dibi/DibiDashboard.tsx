@@ -31,6 +31,8 @@ import { Link } from "@/i18n/routing";
 
 import { CHART_SERIES, JENIS_HEX } from "@/lib/chart-colors";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 const BAR_COLOR = CHART_SERIES[0];
 const YEAR_COLOR = CHART_SERIES[1];
@@ -112,7 +114,7 @@ function KpiCard({
 }) {
   return (
     <div className="rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-muted)]/60 px-3.5 py-3">
-      <div className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+      <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
         {label}
       </div>
       <div className="mt-1 text-lg font-semibold tracking-tight text-[var(--text)] tabular-nums">
@@ -219,7 +221,7 @@ export function DibiDashboard() {
             ))}
           </div>
           {data ? (
-            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--text-dim)]">
+            <span className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {t("provinceBadge")}
             </span>
           ) : null}

@@ -16,6 +16,7 @@ import { SITE_MEDIA } from "@/lib/media";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { LiveStats } from "@/lib/types";
+import { TYPE_HERO_DISPLAY_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
 type HeroTab = "utama" | "peta" | "irbi";
@@ -105,14 +106,14 @@ export function HeroSection() {
           <div>
             <BlurFade delay={0.05} inView>
               <div className="mb-5 inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 backdrop-blur-md">
-                <AnimatedShinyText className="mx-0 max-w-none text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--accent-soft)] dark:text-[var(--accent-soft)]">
+                <AnimatedShinyText className={cn("mx-0 max-w-none text-[var(--accent-soft)] dark:text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
                   Aceh Tangguh · Observatorium
                 </AnimatedShinyText>
               </div>
             </BlurFade>
 
             <BlurFade delay={0.12} inView>
-              <h1 className="max-w-none text-left text-[2.35rem] font-semibold leading-[1.05] tracking-tight sm:text-[3.4rem] lg:text-[4.4rem]">
+              <h1 className={cn("max-w-none text-left", TYPE_HERO_DISPLAY_CLASS)}>
                 {t.rich("title", {
                   brand: (chunks) => (
                     <mark className="whitespace-nowrap rounded-[0.16em] bg-[var(--orange)] px-[0.28em] pb-[0.06em] pt-[0.04em] font-[inherit] text-[var(--accent-fg)] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">

@@ -18,6 +18,8 @@ import type {
   WeatherForecastKab,
   WeatherSource,
 } from "@/lib/weather-types";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS, TYPE_STAMP_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 import { WeatherIcon } from "./WeatherIcon";
 
 const AUTOPLAY_MS = 4500;
@@ -88,7 +90,7 @@ function riskTone(kelas?: string): "danger" | "warn" | "neutral" {
   return "neutral";
 }
 
-const compactChipClass = "gap-1 px-1.5 py-0.5 text-[0.58rem] leading-none";
+const compactChipClass = cn("gap-1 px-1.5 py-0.5 leading-none", TYPE_FLOOR_CLASS);
 
 /**
  * Label the provider honestly.
@@ -160,7 +162,7 @@ function WeatherThumb({
               {Math.round(kab.current.temperature_c)}°
             </span>
             {today ? (
-              <span className="truncate text-[0.62rem] tabular-nums text-[var(--text-dim)]">
+              <span className={cn("truncate text-[var(--text-dim)]", TYPE_STAMP_CLASS)}>
                 {t("tempMinMax", {
                   min: Math.round(today.temp_min_c),
                   max: Math.round(today.temp_max_c),
@@ -169,20 +171,20 @@ function WeatherThumb({
             ) : null}
           </div>
           {provider ? (
-            <span className="shrink-0 text-[0.58rem] font-semibold uppercase tracking-wide text-[var(--text-dim)]">
+            <span className={cn("shrink-0 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {provider === "bmkg" ? t("sourceBmkg") : t("sourceOpenMeteo")}
             </span>
           ) : null}
         </div>
 
-        <span className="truncate text-[0.65rem] leading-tight text-[var(--text-dim)]">
+        <span className={cn("truncate leading-tight text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
           {desc}
         </span>
         <span className="truncate text-xs font-medium leading-tight text-[var(--text)]">
           {kab.kabupaten_kota}
         </span>
 
-        <p className="truncate text-[0.62rem] tabular-nums leading-tight text-[var(--text-dim)]">
+        <p className={cn("truncate leading-tight text-[var(--text-dim)]", TYPE_STAMP_CLASS)}>
           <span>{t("humidityValue", { value: Math.round(kab.current.humidity_pct) })}</span>
           <span aria-hidden> · </span>
           <span>
@@ -205,12 +207,12 @@ function WeatherThumb({
               {kelas}
             </Chip>
           ) : (
-            <span className="text-[0.62rem] text-[var(--text-dim)]">
+            <span className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
               {t("irbiMissing")}
             </span>
           )}
           <span
-            className="text-[0.68rem] font-semibold tabular-nums leading-none"
+            className={cn("font-semibold leading-none", TYPE_STAMP_CLASS)}
             aria-label={t("irbiScoreAria", { score: score ?? t("irbiMissing") })}
           >
             {score ?? t("irbiMissing")}
@@ -223,12 +225,12 @@ function WeatherThumb({
         </div>
 
         {threatLabel ? (
-          <span className="truncate text-[0.58rem] capitalize leading-tight text-[var(--text-dim)]">
+          <span className={cn("truncate capitalize leading-tight text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {threatLabel}
           </span>
         ) : null}
 
-        <span className="truncate text-[0.52rem] uppercase tracking-[0.08em] text-[var(--text-dim)]">
+        <span className={cn("truncate text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
           {t("irbiAttr")}
         </span>
       </div>
@@ -347,7 +349,7 @@ export function WeatherStrip() {
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
+            <h2 className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {t("stripTitle")}
             </h2>
             <p className="mt-1 text-xs text-[var(--text-dim)]">

@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { SITE_MEDIA, UI_CREDITS } from "@/lib/media";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 export function SiteFooter() {
   const t = useTranslations("footer");
@@ -17,7 +19,7 @@ export function SiteFooter() {
           </p>
         </div>
         <div>
-          <div className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
+          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("jelajah")}
           </div>
           <ul className="mt-3 space-y-2 text-sm text-[var(--text-dim)]">
@@ -64,7 +66,7 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <div className="text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-dim)]">
+          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             Kredit visual
           </div>
           <ul className="mt-3 space-y-2 text-xs leading-relaxed text-[var(--text-dim)]">
