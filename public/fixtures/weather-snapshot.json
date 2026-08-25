@@ -1,7 +1,7 @@
 {
   "metadata": {
     "total_kabupaten_kota": 23,
-    "fetched_at": "2026-08-25T15:50:35.065Z",
+    "fetched_at": "2026-08-25T18:48:24.764Z",
     "source": "fixture",
     "providers": [
       "bmkg"
@@ -18,25 +18,17 @@
       "adm4": "11.01.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 25,
-        "humidity_pct": 89,
-        "weather_code": 61,
-        "weather_desc_id": "Hujan Ringan",
-        "weather_desc_en": "Light Rain",
-        "wind_speed_kmh": 11.6,
-        "wind_direction_deg": 353,
-        "precipitation_mm": 1.7,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/hujan ringan-pm.svg"
+        "temperature_c": 24,
+        "humidity_pct": 91,
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 9.6,
+        "wind_direction_deg": 12,
+        "precipitation_mm": 0.2,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 1.7,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 24,
@@ -164,18 +156,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
         }
       ],
       "daily": [
-        {
-          "date": "2026-08-25",
-          "temp_min_c": 25,
-          "temp_max_c": 25,
-          "precipitation_mm": 1.7,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -193,10 +192,19 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:00.854Z",
+      "fetched_at": "2026-08-25T18:47:48.825Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 8.8,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -211,25 +219,17 @@
       "adm4": "11.02.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 21,
-        "humidity_pct": 99,
+        "temperature_c": 20,
+        "humidity_pct": 98,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 2.1,
-        "wind_direction_deg": 50,
-        "precipitation_mm": 0.2,
+        "wind_speed_kmh": 1.4,
+        "wind_direction_deg": 40,
+        "precipitation_mm": 0.3,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 21,
-          "precipitation_mm": 0.2,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 20,
@@ -357,18 +357,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 21,
-          "temp_max_c": 21,
-          "precipitation_mm": 0.2,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 20,
+          "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 19,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 20,
@@ -386,10 +393,19 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 19,
+          "temp_max_c": 20,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:02.329Z",
+      "fetched_at": "2026-08-25T18:47:50.235Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 6.91,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -404,25 +420,17 @@
       "adm4": "11.03.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 26,
-        "humidity_pct": 93,
+        "temperature_c": 25,
+        "humidity_pct": 96,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 5.5,
-        "wind_direction_deg": 183,
+        "wind_speed_kmh": 6.8,
+        "wind_direction_deg": 176,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 25,
@@ -550,18 +558,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 26,
-          "temp_max_c": 26,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        },
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 25,
@@ -579,10 +594,19 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:03.813Z",
+      "fetched_at": "2026-08-25T18:47:51.656Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 7.94,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -597,25 +621,17 @@
       "adm4": "11.04.01.2003",
       "is_kota": false,
       "current": {
-        "temperature_c": 20,
+        "temperature_c": 19,
         "humidity_pct": 97,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 0.9,
-        "wind_direction_deg": 124,
-        "precipitation_mm": 0.1,
+        "wind_speed_kmh": 2.1,
+        "wind_direction_deg": 140,
+        "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 20,
-          "precipitation_mm": 0.1,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 19,
@@ -743,18 +759,25 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 20,
-          "temp_max_c": 20,
-          "precipitation_mm": 0.1,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 18,
+          "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 19,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 18,
@@ -772,10 +795,19 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 18,
+          "temp_max_c": 19,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:05.289Z",
+      "fetched_at": "2026-08-25T18:47:53.667Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 7.78,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -791,24 +823,16 @@
       "is_kota": false,
       "current": {
         "temperature_c": 26,
-        "humidity_pct": 92,
+        "humidity_pct": 88,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 7.2,
-        "wind_direction_deg": 47,
-        "precipitation_mm": 0.1,
+        "wind_speed_kmh": 7.6,
+        "wind_direction_deg": 38,
+        "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0.1,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 26,
@@ -936,18 +960,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 26,
-          "temp_max_c": 26,
-          "precipitation_mm": 0.1,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 26,
+          "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 26,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 25,
@@ -965,10 +996,19 @@
           "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 26,
+          "temp_max_c": 26,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:06.760Z",
+      "fetched_at": "2026-08-25T18:47:55.075Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 5.26,
       "kelas_cuaca_ekstrem": "RENDAH"
@@ -984,24 +1024,16 @@
       "is_kota": false,
       "current": {
         "temperature_c": 25,
-        "humidity_pct": 82,
-        "weather_code": 2,
-        "weather_desc_id": "Cerah Berawan",
-        "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 14.3,
-        "wind_direction_deg": 167,
+        "humidity_pct": 79,
+        "weather_code": 3,
+        "weather_desc_id": "Berawan",
+        "weather_desc_en": "Mostly Cloudy",
+        "wind_speed_kmh": 14.2,
+        "wind_direction_deg": 164,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 25,
@@ -1129,18 +1161,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 25,
-          "temp_max_c": 25,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 25,
@@ -1158,10 +1197,19 @@
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 25,
+          "temp_max_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:08.234Z",
+      "fetched_at": "2026-08-25T18:47:56.495Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 7.57,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -1176,25 +1224,17 @@
       "adm4": "11.07.03.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 26,
-        "humidity_pct": 81,
+        "temperature_c": 24,
+        "humidity_pct": 83,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 6.3,
-        "wind_direction_deg": 250,
+        "wind_speed_kmh": 7,
+        "wind_direction_deg": 249,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 24,
@@ -1322,18 +1362,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "daily": [
-        {
-          "date": "2026-08-25",
-          "temp_min_c": 26,
-          "temp_max_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -1351,10 +1398,19 @@
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:09.712Z",
+      "fetched_at": "2026-08-25T18:47:57.915Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 7.3,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -1369,25 +1425,17 @@
       "adm4": "11.08.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 26,
+        "temperature_c": 25,
         "humidity_pct": 97,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 5.8,
-        "wind_direction_deg": 136,
+        "wind_speed_kmh": 4.6,
+        "wind_direction_deg": 143,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 25,
@@ -1515,18 +1563,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 26,
-          "temp_max_c": 26,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        },
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -1544,10 +1599,19 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:11.187Z",
+      "fetched_at": "2026-08-25T18:48:00.507Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 8.21,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -1563,24 +1627,16 @@
       "is_kota": false,
       "current": {
         "temperature_c": 26,
-        "humidity_pct": 85,
+        "humidity_pct": 94,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 5.7,
-        "wind_direction_deg": 21,
+        "wind_speed_kmh": 7.3,
+        "wind_direction_deg": 25,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 26,
@@ -1708,18 +1764,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 26,
-          "temp_max_c": 26,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 26,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        },
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 25,
@@ -1737,10 +1800,19 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 25,
+          "temp_max_c": 26,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:13.129Z",
+      "fetched_at": "2026-08-25T18:48:02.438Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 16.61,
       "kelas_cuaca_ekstrem": "TINGGI"
@@ -1756,24 +1828,16 @@
       "is_kota": false,
       "current": {
         "temperature_c": 27,
-        "humidity_pct": 80,
+        "humidity_pct": 78,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 10.3,
-        "wind_direction_deg": 353,
-        "precipitation_mm": 0.6,
+        "wind_speed_kmh": 16.7,
+        "wind_direction_deg": 342,
+        "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 27,
-          "precipitation_mm": 0.6,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 27,
@@ -1901,18 +1965,25 @@
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 27,
-          "temp_max_c": 27,
-          "precipitation_mm": 0.6,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 28,
+          "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 27,
@@ -1930,10 +2001,19 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 28,
+          "temp_max_c": 29,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:14.610Z",
+      "fetched_at": "2026-08-25T18:48:05.104Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 8.8,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -1948,25 +2028,17 @@
       "adm4": "11.11.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 27,
-        "humidity_pct": 78,
+        "temperature_c": 26,
+        "humidity_pct": 79,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 3.7,
-        "wind_direction_deg": 165,
+        "wind_speed_kmh": 4.6,
+        "wind_direction_deg": 199,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 27,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 26,
@@ -2094,18 +2166,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 27,
-          "temp_max_c": 27,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -2123,10 +2202,19 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:16.088Z",
+      "fetched_at": "2026-08-25T18:48:06.525Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 7.17,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2141,25 +2229,17 @@
       "adm4": "11.12.01.2006",
       "is_kota": false,
       "current": {
-        "temperature_c": 25,
-        "humidity_pct": 87,
+        "temperature_c": 24,
+        "humidity_pct": 90,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 5.5,
-        "wind_direction_deg": 273,
+        "wind_speed_kmh": 4.3,
+        "wind_direction_deg": 347,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 24,
@@ -2287,18 +2367,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 25,
-          "temp_max_c": 25,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 23,
@@ -2316,10 +2403,19 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 25,
+          "temp_max_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:17.573Z",
+      "fetched_at": "2026-08-25T18:48:07.943Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 8.8,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2335,24 +2431,16 @@
       "is_kota": false,
       "current": {
         "temperature_c": 18,
-        "humidity_pct": 95,
+        "humidity_pct": 96,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 2,
-        "wind_direction_deg": 297,
+        "wind_speed_kmh": 1.6,
+        "wind_direction_deg": 320,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 18,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 18,
@@ -2480,18 +2568,25 @@
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 18,
-          "temp_max_c": 18,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 16,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 15,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        },
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 16,
@@ -2509,10 +2604,19 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 15,
+          "temp_max_c": 16,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:19.058Z",
+      "fetched_at": "2026-08-25T18:48:09.365Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 8.8,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2532,20 +2636,12 @@
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 6,
+        "wind_speed_kmh": 9.1,
         "wind_direction_deg": 80,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 24,
@@ -2673,18 +2769,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 24,
-          "temp_max_c": 24,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -2702,10 +2805,19 @@
           "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:20.539Z",
+      "fetched_at": "2026-08-25T18:48:10.790Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 7.09,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2721,24 +2833,16 @@
       "is_kota": false,
       "current": {
         "temperature_c": 24,
-        "humidity_pct": 97,
+        "humidity_pct": 96,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 5.4,
-        "wind_direction_deg": 25,
+        "wind_speed_kmh": 6.2,
+        "wind_direction_deg": 41,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 24,
@@ -2866,18 +2970,25 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 24,
-          "temp_max_c": 24,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 23,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -2895,10 +3006,19 @@
           "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 23,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:22.021Z",
+      "fetched_at": "2026-08-25T18:48:12.213Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 6.93,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2914,24 +3034,16 @@
       "is_kota": false,
       "current": {
         "temperature_c": 24,
-        "humidity_pct": 97,
+        "humidity_pct": 98,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 3,
-        "wind_direction_deg": 239,
+        "wind_speed_kmh": 1.4,
+        "wind_direction_deg": 208,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 24,
@@ -3059,18 +3171,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "daily": [
-        {
-          "date": "2026-08-25",
-          "temp_min_c": 24,
-          "temp_max_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -3088,10 +3207,19 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:23.492Z",
+      "fetched_at": "2026-08-25T18:48:13.632Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 5.92,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -3111,20 +3239,12 @@
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 12,
-        "wind_direction_deg": 172,
+        "wind_speed_kmh": 12.3,
+        "wind_direction_deg": 170,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 20,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 20,
@@ -3252,18 +3372,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 20,
-          "temp_max_c": 20,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 20,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 20,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 19,
@@ -3281,10 +3408,19 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 20,
+          "temp_max_c": 20,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:24.974Z",
+      "fetched_at": "2026-08-25T18:48:15.053Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 6.52,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -3299,25 +3435,17 @@
       "adm4": "11.18.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 27,
-        "humidity_pct": 79,
-        "weather_code": 2,
-        "weather_desc_id": "Cerah Berawan",
-        "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 2,
-        "wind_direction_deg": 184,
+        "temperature_c": 25,
+        "humidity_pct": 84,
+        "weather_code": 3,
+        "weather_desc_id": "Berawan",
+        "weather_desc_en": "Mostly Cloudy",
+        "wind_speed_kmh": 4.6,
+        "wind_direction_deg": 199,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 27,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 25,
@@ -3445,18 +3573,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 27,
-          "temp_max_c": 27,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        },
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -3474,10 +3609,19 @@
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:26.460Z",
+      "fetched_at": "2026-08-25T18:48:16.467Z",
       "analysis_date": "2026-08-25T12:00:00",
       "ir_cuaca_ekstrem": 17.6,
       "kelas_cuaca_ekstrem": "TINGGI"
@@ -3492,25 +3636,17 @@
       "adm4": "11.71.01.2006",
       "is_kota": true,
       "current": {
-        "temperature_c": 28,
+        "temperature_c": 27,
         "humidity_pct": 71,
-        "weather_code": 2,
-        "weather_desc_id": "Cerah Berawan",
-        "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 12.4,
-        "wind_direction_deg": 206,
+        "weather_code": 3,
+        "weather_desc_id": "Berawan",
+        "weather_desc_en": "Mostly Cloudy",
+        "wind_speed_kmh": 12.2,
+        "wind_direction_deg": 204,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 28,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 27,
@@ -3638,18 +3774,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 28,
-          "temp_max_c": 28,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 27,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 27,
@@ -3667,10 +3810,19 @@
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 27,
+          "temp_max_c": 28,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:27.944Z",
+      "fetched_at": "2026-08-25T18:48:17.891Z",
       "analysis_date": "2026-08-25T12:00:00"
     },
     {
@@ -3684,24 +3836,16 @@
       "is_kota": true,
       "current": {
         "temperature_c": 28,
-        "humidity_pct": 77,
-        "weather_code": 1,
-        "weather_desc_id": "Cerah",
-        "weather_desc_en": "Sunny",
-        "wind_speed_kmh": 26.5,
-        "wind_direction_deg": 211,
+        "humidity_pct": 76,
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 27.2,
+        "wind_direction_deg": 213,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 28,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 28,
@@ -3829,18 +3973,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 28,
+          "precipitation_mm": 0.1,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "daily": [
-        {
-          "date": "2026-08-25",
-          "temp_min_c": 28,
-          "temp_max_c": 28,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
         {
           "date": "2026-08-26",
           "temp_min_c": 28,
@@ -3858,10 +4009,19 @@
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 28,
+          "temp_max_c": 29,
+          "precipitation_mm": 0.1,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:29.420Z",
+      "fetched_at": "2026-08-25T18:48:19.308Z",
       "analysis_date": "2026-08-25T12:00:00"
     },
     {
@@ -3874,25 +4034,17 @@
       "adm4": "11.73.01.2002",
       "is_kota": true,
       "current": {
-        "temperature_c": 26,
-        "humidity_pct": 94,
+        "temperature_c": 25,
+        "humidity_pct": 96,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 3.2,
-        "wind_direction_deg": 116,
+        "wind_speed_kmh": 1.8,
+        "wind_direction_deg": 141,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 25,
@@ -4020,18 +4172,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 26,
-          "temp_max_c": 26,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 25,
@@ -4049,10 +4208,19 @@
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:30.908Z",
+      "fetched_at": "2026-08-25T18:48:20.725Z",
       "analysis_date": "2026-08-25T12:00:00"
     },
     {
@@ -4065,25 +4233,17 @@
       "adm4": "11.74.01.2007",
       "is_kota": true,
       "current": {
-        "temperature_c": 25,
-        "humidity_pct": 98,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 0.7,
-        "wind_direction_deg": 295,
+        "temperature_c": 24,
+        "humidity_pct": 99,
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 0.3,
+        "wind_direction_deg": 307,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 24,
@@ -4211,18 +4371,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "daily": [
-        {
-          "date": "2026-08-25",
-          "temp_min_c": 25,
-          "temp_max_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
         {
           "date": "2026-08-26",
           "temp_min_c": 24,
@@ -4240,10 +4407,19 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 24,
+          "temp_max_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:32.387Z",
+      "fetched_at": "2026-08-25T18:48:22.144Z",
       "analysis_date": "2026-08-25T12:00:00"
     },
     {
@@ -4257,24 +4433,16 @@
       "is_kota": true,
       "current": {
         "temperature_c": 23,
-        "humidity_pct": 94,
-        "weather_code": 2,
-        "weather_desc_id": "Cerah Berawan",
-        "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 3.6,
-        "wind_direction_deg": 18,
-        "precipitation_mm": 0.3,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
+        "humidity_pct": 95,
+        "weather_code": 61,
+        "weather_desc_id": "Hujan Ringan",
+        "weather_desc_en": "Light Rain",
+        "wind_speed_kmh": 5.9,
+        "wind_direction_deg": 54,
+        "precipitation_mm": 1.2,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/hujan ringan-pm.svg"
       },
       "hourly": [
-        {
-          "datetime_local": "2026-08-25 23:00:00",
-          "temperature_c": 23,
-          "precipitation_mm": 0.3,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
         {
           "datetime_local": "2026-08-26 02:00:00",
           "temperature_c": 23,
@@ -4402,18 +4570,25 @@
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
-        }
-      ],
-      "daily": [
+        },
         {
-          "date": "2026-08-25",
-          "temp_min_c": 23,
-          "temp_max_c": 23,
-          "precipitation_mm": 0.3,
+          "datetime_local": "2026-08-28 02:00:00",
+          "temperature_c": 22,
+          "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
+        {
+          "datetime_local": "2026-08-28 05:00:00",
+          "temperature_c": 22,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        }
+      ],
+      "daily": [
         {
           "date": "2026-08-26",
           "temp_min_c": 22,
@@ -4431,10 +4606,19 @@
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "date": "2026-08-28",
+          "temp_min_c": 22,
+          "temp_max_c": 22,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-08-25T15:50:33.865Z",
+      "fetched_at": "2026-08-25T18:48:23.564Z",
       "analysis_date": "2026-08-25T12:00:00"
     }
   ]
