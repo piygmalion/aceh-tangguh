@@ -89,12 +89,15 @@ const LIGHT: Palette = {
   waterLabel: COLOR_TOKENS.paper,
 };
 
+/** Teal #2F6B66 mixed with 15% paper #F7F7F4 — dark water only. 3.89:1 vs ink canvas. */
+export const DARK_WATER = "#4D807B";
+
 const DARK: Palette = {
   background: COLOR_TOKENS.ink,
   landSecondary: INK_SCALE[800],
   landcover: COLOR_TOKENS.sage,
   landcoverOpacity: 0.32,
-  water: COLOR_TOKENS.teal,
+  water: DARK_WATER,
   roadMinor: INK_SCALE[600],
   roadMajor: INK_SCALE[500],
   roadCasing: INK_SCALE[800],
@@ -112,7 +115,7 @@ const GREY: Palette = {
   landSecondary: INK_SCALE[100],
   landcover: INK_SCALE[200],
   landcoverOpacity: 0.55,
-  water: INK_SCALE[400],
+  water: INK_SCALE[500],
   roadMinor: INK_SCALE[200],
   roadMajor: INK_SCALE[300],
   roadCasing: INK_SCALE[100],
@@ -122,7 +125,7 @@ const GREY: Palette = {
   boundaryLocal: INK_SCALE[500],
   label: INK_SCALE[900],
   labelHalo: INK_SCALE[50],
-  waterLabel: INK_SCALE[800],
+  waterLabel: COLOR_TOKENS.paper,
 };
 
 const PALETTES: Record<BrandBasemapId, Palette> = {
