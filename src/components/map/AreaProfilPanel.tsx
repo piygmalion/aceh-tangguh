@@ -130,6 +130,50 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
             unknown={unknown}
             tone="warn"
           />
+          <MetricCard
+            label={t("kkLaki")}
+            value={metrics.kk_laki_laki}
+            unknown={unknown}
+            tone="info"
+          />
+          <MetricCard
+            label={t("kkPerempuan")}
+            value={metrics.kk_perempuan}
+            unknown={unknown}
+            tone="info"
+          />
+          <MetricCard label={t("bayi")} value={metrics.bayi_0_1} unknown={unknown} tone="info" />
+          <MetricCard
+            label={t("balita")}
+            value={metrics.balita_1_4}
+            unknown={unknown}
+            tone="info"
+          />
+          <MetricCard label={t("anak")} value={metrics.anak_5_12} unknown={unknown} tone="info" />
+          <MetricCard
+            label={t("remaja")}
+            value={metrics.remaja_13_17}
+            unknown={unknown}
+            tone="info"
+          />
+          <MetricCard
+            label={t("dewasa")}
+            value={metrics.dewasa_18_59}
+            unknown={unknown}
+            tone="info"
+          />
+          <MetricCard
+            label={t("lansia")}
+            value={metrics.lansia_60_plus}
+            unknown={unknown}
+            tone="info"
+          />
+          <MetricCard
+            label={t("disabilitas")}
+            value={metrics.penyandang_disabilitas}
+            unknown={unknown}
+            tone="info"
+          />
         </div>
       </section>
       <section>

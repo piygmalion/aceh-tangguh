@@ -17,6 +17,7 @@
     "verify:basemap": "node scripts/verify-basemap.mjs",
     "seed:area-meta": "bun scripts/seed-area-meta-from-fixtures.mjs",
     "seed:village-area-meta": "node scripts/seed-village-area-meta.mjs",
+    "update:profil-sheet": "node scripts/update-profil-from-sheet.mjs",
     "build:weather": "node scripts/build-weather-snapshot.mjs",
     "build:dibi": "node scripts/fetch-dibi-aceh.mjs",
     "resolve:adm4": "node scripts/resolve-adm4-codes.mjs",

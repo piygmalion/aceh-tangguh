@@ -16,6 +16,15 @@ export type VillageClickSelection = {
 export type MetricBundle = {
   kk: NullableCount;
   populasi: NullableCount;
+  kk_laki_laki: NullableCount;
+  kk_perempuan: NullableCount;
+  bayi_0_1: NullableCount;
+  balita_1_4: NullableCount;
+  anak_5_12: NullableCount;
+  remaja_13_17: NullableCount;
+  dewasa_18_59: NullableCount;
+  lansia_60_plus: NullableCount;
+  penyandang_disabilitas: NullableCount;
   kk_terdampak: NullableCount;
   populasi_terdampak: NullableCount;
   korban_meninggal: NullableCount;
@@ -24,6 +33,33 @@ export type MetricBundle = {
   rumah_rs: NullableCount;
   rumah_rb: NullableCount;
   total_rumah_rusak: NullableCount;
+};
+
+export type MetricKey = keyof MetricBundle;
+
+const DEMO_PAYLOAD_KEY: Partial<Record<MetricKey, string>> = {
+  kk: "jumlah_kk",
+  populasi: "jumlah_populasi",
+  kk_laki_laki: "kk_laki_laki",
+  kk_perempuan: "kk_perempuan",
+  bayi_0_1: "bayi_0_1",
+  balita_1_4: "balita_1_4",
+  anak_5_12: "anak_5_12",
+  remaja_13_17: "remaja_13_17",
+  dewasa_18_59: "dewasa_18_59",
+  lansia_60_plus: "lansia_60_plus",
+  penyandang_disabilitas: "penyandang_disabilitas",
+};
+
+const DAMPAK_PAYLOAD_KEY: Partial<Record<MetricKey, string>> = {
+  kk_terdampak: "jumlah_kk_terdampak",
+  populasi_terdampak: "populasi_terdampak",
+  korban_meninggal: "korban_meninggal",
+  korban_hilang: "korban_hilang",
+  rumah_rr: "rumah_rusak_ringan",
+  rumah_rs: "rumah_rusak_sedang",
+  rumah_rb: "rumah_rusak_berat",
+  total_rumah_rusak: "total_rumah_rusak",
 };
 
 export type DesaListItem = {
@@ -107,27 +143,27 @@ function payloadRecord(payload: Json | null | undefined): Record<string, unknown
   return payload as Record<string, unknown>;
 }
 
-export function fieldNumber(
-  row: ProfilDesaRow,
-  key: keyof Pick<
-    ProfilDesaRow,
-    | "kk"
-    | "populasi"
-    | "kk_terdampak"
-    | "populasi_terdampak"
-    | "korban_meninggal"
-    | "korban_hilang"
-    | "rumah_rr"
-    | "rumah_rs"
-    | "rumah_rb"
-    | "total_rumah_rusak"
-  >
+function nestedNumber(
+  payload: Record<string, unknown>,
+  group: string,
+  key: string | undefined
 ): NullableCount {
+  if (!key) return null;
+  const nested = payload[group];
+  if (!nested || typeof nested !== "object" || Array.isArray(nested)) return null;
+  return asNumber((nested as Record<string, unknown>)[key]);
+}
+
+export function fieldNumber(row: ProfilDesaRow, key: MetricKey): NullableCount {
   const direct = asNumber(row[key]);
   if (direct != null) return direct;
   const payload = payloadRecord(row.payload);
   if (!payload) return null;
-  return asNumber(payload[key]);
+  const top = asNumber(payload[key]);
+  if (top != null) return top;
+  const demo = nestedNumber(payload, "demografi", DEMO_PAYLOAD_KEY[key]);
+  if (demo != null) return demo;
+  return nestedNumber(payload, "dampak_bencana", DAMPAK_PAYLOAD_KEY[key]);
 }
 
 export function fieldString(
@@ -207,6 +243,17 @@ export function metricsFromRows(rows: ProfilDesaRow[]): MetricBundle {
   return {
     kk: aggregateNullable(rows.map((r) => fieldNumber(r, "kk"))),
     populasi: aggregateNullable(rows.map((r) => fieldNumber(r, "populasi"))),
+    kk_laki_laki: aggregateNullable(rows.map((r) => fieldNumber(r, "kk_laki_laki"))),
+    kk_perempuan: aggregateNullable(rows.map((r) => fieldNumber(r, "kk_perempuan"))),
+    bayi_0_1: aggregateNullable(rows.map((r) => fieldNumber(r, "bayi_0_1"))),
+    balita_1_4: aggregateNullable(rows.map((r) => fieldNumber(r, "balita_1_4"))),
+    anak_5_12: aggregateNullable(rows.map((r) => fieldNumber(r, "anak_5_12"))),
+    remaja_13_17: aggregateNullable(rows.map((r) => fieldNumber(r, "remaja_13_17"))),
+    dewasa_18_59: aggregateNullable(rows.map((r) => fieldNumber(r, "dewasa_18_59"))),
+    lansia_60_plus: aggregateNullable(rows.map((r) => fieldNumber(r, "lansia_60_plus"))),
+    penyandang_disabilitas: aggregateNullable(
+      rows.map((r) => fieldNumber(r, "penyandang_disabilitas"))
+    ),
     kk_terdampak: aggregateNullable(rows.map((r) => fieldNumber(r, "kk_terdampak"))),
     populasi_terdampak: aggregateNullable(
       rows.map((r) => fieldNumber(r, "populasi_terdampak"))
