@@ -1,0 +1,58 @@
+name: Sipongi refresh
+
+on:
+  schedule:
+    # Weekday 09:30 WIB (Asia/Jakarta, UTC+7)
+    - cron: "30 2 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Refresh Sipongi Aceh fixture
+        run: npm run refresh:sipongi
+
+      - name: Validate and commit fixture if changed
+        run: |
+          FILE=public/fixtures/peringatan-sipongi.json
+          node --input-type=module -e '
+            import { readFileSync } from "fs";
+            const file = process.env.FILE;
+            const payload = JSON.parse(readFileSync(file, "utf8"));
+            const points = payload?.points;
+            const ok =
+              payload?.kind === "sipongi" &&
+              payload?.example !== true &&
+              Array.isArray(points) &&
+              payload.empty === (points.length === 0) &&
+              points.every((p) => {
+                const level = String(p?.confidence_level ?? "").toLowerCase();
+                return level === "medium" || level === "high";
+              });
+            if (!ok) {
+              console.error("Sipongi payload invalid — will not commit");
+              process.exit(1);
+            }
+            console.log(`Sipongi payload valid (${points.length} Aceh medium/high points)`);
+          '
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- "$FILE"
+          if git diff --staged --quiet; then
+            echo "No Sipongi changes to commit"
+          else
+            git commit -m "chore(sipongi): refresh Aceh hotspot fixture [automated]"
+            git push
+          fi
+        env:
+          FILE: public/fixtures/peringatan-sipongi.json

@@ -21,6 +21,7 @@
     "resolve:adm4": "node scripts/resolve-adm4-codes.mjs",
     "refresh:weather": "node scripts/refresh-weather-cache.mjs",
     "refresh:peringatan": "node scripts/refresh-peringatan.mjs",
+    "refresh:sipongi": "node scripts/refresh-peringatan.mjs --sipongi-only",
     "verify:weather": "node scripts/verify-weather-setup.mjs",
     "flag:coords": "node scripts/flag-truncated-coords.js",
     "normalize:status": "node scripts/normalize-status.js",

@@ -1,0 +1,63 @@
+name: DIBI refresh
+
+on:
+  schedule:
+    # Weekday 09:00 WIB (Asia/Jakarta, UTC+7) — not midnight
+    - cron: "0 2 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build DIBI Aceh fixture
+        run: npm run build:dibi
+
+      - name: Validate and commit fixture if changed
+        run: |
+          FILE=public/fixtures/dibi-aceh.json
+          node --input-type=module -e '
+            import { readFileSync } from "fs";
+            const file = process.env.FILE;
+            const payload = JSON.parse(readFileSync(file, "utf8"));
+            const totals = payload?.totals;
+            const byKab = payload?.by_kabupaten;
+            const byTahun = payload?.by_tahun;
+            const meta = payload?.metadata;
+            const ok =
+              meta &&
+              meta.provinsi === "Aceh" &&
+              typeof meta.source_url === "string" &&
+              meta.source_url.includes("dibi.bnpb.go.id") &&
+              totals &&
+              typeof totals.kejadian === "number" &&
+              Array.isArray(byKab) &&
+              byKab.length > 0 &&
+              Array.isArray(byTahun) &&
+              byTahun.length > 0;
+            if (!ok) {
+              console.error("DIBI payload invalid or empty — will not commit");
+              process.exit(1);
+            }
+            console.log(`DIBI payload valid (${byKab.length} kab, ${byTahun.length} years, ${totals.kejadian} events)`);
+          '
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- "$FILE"
+          if git diff --staged --quiet; then
+            echo "No DIBI changes to commit"
+          else
+            git commit -m "chore(dibi): refresh Aceh fixture [automated]"
+            git push
+          fi
+        env:
+          FILE: public/fixtures/dibi-aceh.json
