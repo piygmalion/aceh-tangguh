@@ -9,6 +9,7 @@
  * Usage:
  *   node scripts/check-tiles.mjs
  *   node scripts/check-tiles.mjs public/tiles/village-r3p.pmtiles
+ *   node scripts/check-tiles.mjs --limit=512000
  */
 import { open, readdir, stat } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
@@ -17,8 +18,7 @@ import { PMTiles, TileType, tileIdToZxy } from "pmtiles";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 const DEFAULT_DIR = join(ROOT, "public", "tiles");
-const LIMIT_BYTES = 500 * 1024;
-const WARN_BYTES = 400 * 1024;
+const DEFAULT_LIMIT_BYTES = 500 * 1024;
 
 class NodeFileSource {
   /**
@@ -127,9 +127,38 @@ async function inspectArchive(filePath) {
 /**
  * @param {string[]} argv
  */
-async function resolveTargets(argv) {
-  if (argv.length > 0) {
-    return argv.map((p) => resolve(process.cwd(), p));
+function parseArgs(argv) {
+  let limitBytes = DEFAULT_LIMIT_BYTES;
+  const paths = [];
+  for (const arg of argv) {
+    if (arg.startsWith("--limit=")) {
+      const n = Number(arg.slice("--limit=".length));
+      if (!Number.isFinite(n) || n <= 0) {
+        console.error(`Invalid --limit (bytes): ${arg}`);
+        process.exit(2);
+      }
+      limitBytes = n;
+      continue;
+    }
+    if (arg === "--help" || arg === "-h") {
+      console.log("Usage: node scripts/check-tiles.mjs [--limit=512000] [file.pmtiles ...]");
+      process.exit(0);
+    }
+    if (arg.startsWith("-")) {
+      console.error(`Unknown flag: ${arg}`);
+      process.exit(2);
+    }
+    paths.push(arg);
+  }
+  return { limitBytes, paths, warnBytes: Math.floor(limitBytes * 0.8) };
+}
+
+/**
+ * @param {string[]} paths
+ */
+async function resolveTargets(paths) {
+  if (paths.length > 0) {
+    return paths.map((p) => resolve(process.cwd(), p));
   }
   let names = [];
   try {
@@ -148,7 +177,10 @@ async function resolveTargets(argv) {
     .map((name) => join(DEFAULT_DIR, name));
 }
 
-const files = await resolveTargets(process.argv.slice(2));
+const { limitBytes: LIMIT_BYTES, warnBytes: WARN_BYTES, paths: cliPaths } = parseArgs(
+  process.argv.slice(2),
+);
+const files = await resolveTargets(cliPaths);
 if (files.length === 0) {
   console.error("No .pmtiles archives to check (expected public/tiles/*.pmtiles).");
   process.exit(1);
@@ -163,7 +195,18 @@ let warned = 0;
 
 for (const filePath of files) {
   const label = relative(process.cwd(), filePath);
-  const { header, tiles, fileBytes } = await inspectArchive(filePath);
+  let header;
+  let tiles;
+  let fileBytes;
+  try {
+    ({ header, tiles, fileBytes } = await inspectArchive(filePath));
+  } catch (err) {
+    failed += 1;
+    const msg = err instanceof Error ? err.message : String(err);
+    console.log(`==> ${label}`);
+    console.log(`    FAIL  ${msg}\n`);
+    continue;
+  }
   const max = tiles.reduce(
     (best, tile) => (tile.bytes > best.bytes ? tile : best),
     { z: 0, x: 0, y: 0, bytes: 0 },
@@ -213,10 +256,10 @@ for (const filePath of files) {
 }
 
 if (failed) {
-  console.error(`${failed} archive(s) have tiles over ${formatBytes(LIMIT_BYTES)}`);
+  console.error(`${failed} archive(s) failed the overlay tile check`);
   process.exit(1);
 }
-console.log("All overlay PMTiles are within the 500 KB per-tile limit.");
+console.log(`All overlay PMTiles are within the ${formatBytes(LIMIT_BYTES)} per-tile limit.`);
 if (warned) {
   console.log(`${warned} warning(s) — see above.`);
 }
