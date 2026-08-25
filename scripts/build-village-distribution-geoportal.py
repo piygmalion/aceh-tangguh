@@ -372,7 +372,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     p.add_argument("--page-size", type=int, default=500)
     p.add_argument("--simplify", type=float, default=0.00025)
     p.add_argument("--max-bytes", type=int, default=11_000_000)
-    p.add_argument("--skip-fetch", action="store_true")
     return p.parse_args(argv)
 
 
