@@ -325,13 +325,13 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleId: "MAGMA Indonesia — gempa Aceh",
     titleEn: "MAGMA Indonesia — Aceh earthquakes",
     source:
-      "MAGMA Indonesia (PVMBG / Badan Geologi ESDM) — public homepage feed at magma.esdm.go.id (markersGempa). Tagline: Bridging The Will of Nature to Society.",
+      "MAGMA Indonesia (PVMBG / Badan Geologi ESDM) — public homepage feed at magma.esdm.go.id (markersGempa), then magma.vsi.esdm.go.id if the primary host fails. Tagline: Bridging The Will of Nature to Society.",
     license:
       "Public official geohazard information — attribute MAGMA Indonesia / PVMBG ESDM. Numbers are copied from the live feed; events are never invented.",
-    date: "Live + fixture fallback (revalidate ~10 min)",
+    date: "Live official homepage; fail-closed empty card if blocked (revalidate ~10 min)",
     format: "Homepage public JSON list → GET /api/peringatan-dini/magma",
     usedFor:
-      "Homepage Peringatan Dini card 2 — latest Aceh-relevant gempa (bbox or wilayah text). Card links to MAGMA home.",
+      "Homepage Peringatan Dini card 2 — latest Aceh-relevant gempa (bbox or wilayah text). If live MAGMA is unreachable or unreadable, the card is empty and marked delayed — a last-known fixture event is not shown as current. Card links to MAGMA home.",
     href: "https://magma.esdm.go.id/",
   },
   {

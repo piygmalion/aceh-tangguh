@@ -1,5 +1,5 @@
 export type PeringatanTone = "neutral" | "warn" | "danger";
-export type PeringatanSource = "live" | "fixture";
+export type PeringatanSource = "live" | "fixture" | "unavailable";
 
 export type CuacaHighlight = {
   kabupaten: string;
@@ -80,3 +80,20 @@ export const MAGMA_VSI_HOME = "https://magma.vsi.esdm.go.id/";
 export const SIPONGI_PETA = "https://sipongi.gakkum.kehutanan.go.id/peta";
 export const SIPONGI_OPSROOM = "https://opsroom.sipongidata.my.id";
 export const CUACA_HREF = "#cuaca";
+
+/** Official MAGMA homepages that expose (or may expose) `var markersGempa`. */
+export const MAGMA_HOMES = [MAGMA_HOME, MAGMA_VSI_HOME] as const;
+
+/** Fail-closed gempa card when live MAGMA cannot be read. Never copies a last-known event. */
+export function unavailableMagmaCard(fetchedAt = new Date().toISOString()): MagmaCard {
+  return {
+    kind: "magma",
+    tone: "neutral",
+    empty: true,
+    event: null,
+    fetched_at: fetchedAt,
+    href: MAGMA_HOME,
+    stale: true,
+    source: "unavailable",
+  };
+}
