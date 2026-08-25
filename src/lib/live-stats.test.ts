@@ -22,8 +22,8 @@ function walkFiles(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
-/** Seed / fixture / UI assignments of the stale 656 — not comments or the clearer. */
-const SEEDED_POSKO_656 = /(?:poskoCount|posko_count)\s*[:=]\s*656\b/;
+/** Seed / fixture / UI assignments of the stale 656 — not a WHERE used to clear it. */
+const SEEDED_POSKO_656 = /(?:poskoCount|posko_count)\s*:\s*656\b/;
 const INSERT_POSKO_656 = /values\s*\(\s*1\s*,\s*3\s*,\s*656\b/i;
 const UI_POSKO_CHIP = /chipPosko|t\(["']chipPosko["']\)|data\?\.poskoCount/;
 
@@ -40,10 +40,14 @@ describe("live_stats.posko_count is absent, not the stale 656 seed", () => {
   });
 
   it("does not seed posko_count=656 in SQL or live-stats fallbacks", () => {
+    const clearer = path.join(
+      ROOT,
+      "supabase/migrations/20260905_live_stats_clear_stale_posko.sql"
+    );
     const files = [
       path.join(ROOT, "src/lib/preview/fallbacks.ts"),
-      ...walkFiles(path.join(ROOT, "supabase/migrations")).filter((f) =>
-        f.endsWith(".sql")
+      ...walkFiles(path.join(ROOT, "supabase/migrations")).filter(
+        (f) => f.endsWith(".sql") && f !== clearer
       ),
     ];
     const leaks: string[] = [];
@@ -54,6 +58,11 @@ describe("live_stats.posko_count is absent, not the stale 656 seed", () => {
       }
     }
     assert.deepEqual(leaks, []);
+
+    const clearerSql = readFileSync(clearer, "utf8");
+    assert.match(clearerSql, /set posko_count = null/i);
+    assert.match(clearerSql, /where posko_count = 656/i);
+    assert.equal(INSERT_POSKO_656.test(clearerSql), false);
   });
 
   it("does not show a posko KPI sourced from live_stats on the homepage hero", () => {
