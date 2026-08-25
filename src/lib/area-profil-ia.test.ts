@@ -7,14 +7,17 @@ import {
   AREA_PROFIL_INITIAL_VIEW,
   AREA_PROFIL_ROUTES,
   AREA_PROFIL_VIEWS,
+  NULL_KODE_DESA_NAMES,
   PROFIL_FORBIDDEN_QUERY_KEYS,
   PROFIL_QUERY_KEYS,
   areaProfilBack,
   areaProfilBreadcrumbLevels,
   areaProfilBreadcrumbTarget,
   areaProfilViewOnOpen,
+  hasKabupatenQuery,
   kabupatenNameFromSelection,
   profilDesaApiPath,
+  profilDesaLookupParams,
   profilDesaSearchParams,
   profilKabupatenSearchParams,
   profilKecamatanSearchParams,
@@ -205,6 +208,70 @@ describe("signed Distribusi area panel IA", () => {
       assert.equal(kab.has(forbidden), false);
       assert.equal(kecByName.has(forbidden), false);
     }
+
+    assert.deepEqual(Object.keys(AREA_PROFIL_ROUTES), [
+      "kabupaten",
+      "kecamatan",
+      "desa",
+    ]);
+    assert.equal(
+      Object.values(AREA_PROFIL_ROUTES).some((path) => /list|all/i.test(path)),
+      false
+    );
+  });
+
+  it("looks up coded desa with ?kode= and the four null-kode rows with ?id=", () => {
+    assert.deepEqual(NULL_KODE_DESA_NAMES, [
+      "Lawe Sarap",
+      "Perapat Tinggi",
+      "Ise-ise",
+      "Meunasah Cut",
+    ]);
+
+    const coded = profilDesaLookupParams({
+      id: "PDESA-000001",
+      kode: "1101012001",
+      nama: "Keude Bakongan",
+    });
+    assert.deepEqual(Array.from(coded.keys()), ["kode"]);
+    assert.equal(coded.get("kode"), "1101012001");
+    assert.equal(coded.has("id"), false);
+
+    for (const nama of NULL_KODE_DESA_NAMES) {
+      const params = profilDesaLookupParams({
+        id: `profil-null-${nama}`,
+        kode: null,
+        nama,
+        kabupaten: "Aceh Tenggara",
+      });
+      assert.deepEqual(Array.from(params.keys()), ["id"]);
+      assert.equal(params.get("id"), `profil-null-${nama}`);
+      assert.equal(params.has("kode"), false);
+      assert.equal(params.has("kode_desa_kelurahan"), false);
+      assert.match(
+        profilDesaApiPath("desa", params),
+        /^\/api\/profil-desa\/desa\?id=/
+      );
+    }
+
+    const byNama = profilDesaLookupParams({
+      nama: "Keude Bakongan",
+      kabupaten: "Aceh Selatan",
+      kecamatan: "Bakongan",
+    });
+    assert.equal(byNama.get("nama"), "Keude Bakongan");
+    assert.equal(byNama.has("kode"), false);
+    assert.equal(byNama.has("id"), false);
+  });
+
+  it("does not list all kabupaten — query needs kabupaten or kode_kabupaten", () => {
+    const empty = profilKabupatenSearchParams(sel({ name: "" }));
+    assert.equal(hasKabupatenQuery(empty), false);
+    assert.equal(empty.toString(), "");
+    const named = profilKabupatenSearchParams(
+      sel({ name: "Keude Bakongan", kabupaten: "Aceh Selatan" })
+    );
+    assert.equal(hasKabupatenQuery(named), true);
   });
 
   it("resolves kabupaten polygons that only stamp name + level", () => {
@@ -298,7 +365,9 @@ describe("AreaProfilPanel source lock", () => {
 
     assert.match(panel, /profilKabupatenSearchParams/);
     assert.match(panel, /profilKecamatanSearchParams/);
-    assert.match(panel, /profilDesaSearchParams/);
+    assert.match(panel, /profilDesaLookupParams/);
+    assert.match(panel, /hasKabupatenQuery/);
     assert.equal(/params\.set\("kode_desa_kelurahan"/.test(panel), false);
+    assert.equal(/\/api\/profil-desa\/(?!kabupaten|kecamatan|desa)/.test(panel), false);
   });
 });

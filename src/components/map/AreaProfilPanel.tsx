@@ -11,8 +11,9 @@ import {
   areaProfilBreadcrumbTarget,
   areaProfilViewOnOpen,
   kabupatenNameFromSelection,
+  hasKabupatenQuery,
   profilDesaApiPath,
-  profilDesaSearchParams,
+  profilDesaLookupParams,
   profilKabupatenSearchParams,
   profilKecamatanSearchParams,
   type AreaProfilView,
@@ -61,12 +62,12 @@ async function fetchKecamatan(opts: {
 
 async function fetchDesa(opts: {
   id?: string;
-  kode?: string;
+  kode?: string | null;
   nama?: string;
   kabupaten?: string;
   kecamatan?: string;
 }): Promise<DesaProfilResponse | null> {
-  const params = profilDesaSearchParams(opts);
+  const params = profilDesaLookupParams(opts);
   const res = await fetchPublicApi(profilDesaApiPath("desa", params));
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("desa fetch failed");
@@ -371,7 +372,7 @@ export function AreaProfilPanel({
       kodeKabupaten: selection.kodeKabupaten,
     }),
     queryFn: () => fetchKabupaten(selection),
-    enabled: Boolean(kabName || selection.kodeKabupaten),
+    enabled: hasKabupatenQuery(profilKabupatenSearchParams(selection)),
   });
 
   const kecamatanName = activeKecamatan?.kecamatan || selection.kecamatan;

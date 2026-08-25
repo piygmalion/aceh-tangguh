@@ -145,6 +145,44 @@ export function profilDesaSearchParams(opts: {
   return params;
 }
 
+/**
+ * Four profil_desa rows have null kode. Look them up by id.
+ * Do not invent kodes.
+ */
+export const NULL_KODE_DESA_NAMES = [
+  "Lawe Sarap",
+  "Perapat Tinggi",
+  "Ise-ise",
+  "Meunasah Cut",
+] as const;
+
+/**
+ * Exclusive desa lookup: ?kode= if present, else ?id= (null-kode rows),
+ * else ?nama= (+ kabupaten/kecamatan). Never kode_desa_kelurahan.
+ */
+export function profilDesaLookupParams(opts: {
+  id?: string | null;
+  kode?: string | null;
+  nama?: string | null;
+  kabupaten?: string | null;
+  kecamatan?: string | null;
+}): URLSearchParams {
+  const kode = opts.kode?.trim() || "";
+  const id = opts.id?.trim() || "";
+  const nama = opts.nama?.trim() || "";
+  if (kode) return profilDesaSearchParams({ kode });
+  if (id) return profilDesaSearchParams({ id });
+  return profilDesaSearchParams({
+    nama,
+    kabupaten: opts.kabupaten,
+    kecamatan: opts.kecamatan,
+  });
+}
+
+export function hasKabupatenQuery(params: URLSearchParams): boolean {
+  return params.has("kabupaten") || params.has("kode_kabupaten");
+}
+
 export function profilDesaApiPath(
   level: AreaProfilView,
   params: URLSearchParams
