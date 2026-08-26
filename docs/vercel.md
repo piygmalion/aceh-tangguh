@@ -12,18 +12,20 @@ Preview online memakai **Next.js Node di Vercel**, bukan GitHub Pages / static e
 
 `vercel.json` memaksa `npm ci` (bukan Bun — repo punya `bun.lock` dan `package-lock.json`; CI memakai npm), Node **22.x**, dan region `sin1` (Singapura).
 
-## 2. Preview tanpa env (cukup untuk hasil UI hari ini)
+## 2. Supabase (sudah terhubung di Vercel)
 
-Tanpa secret, homepage, peta, DIBI, cuaca, dan data bencana tetap tampil dari `public/fixtures`. Laporan tulis / admin login / cron tidak aktif.
+`.env.production` memuat `NEXT_PUBLIC_SUPABASE_URL` + anon JWT proyek `whojoxrbcdyotrpolgav`. `next build` di Vercel membacanya, jadi `/api/stats/live` dan loader domain memakai Supabase (bukan fixture) tanpa env dashboard.
 
-## 3. Env produksi (opsional, setelah preview)
+Cek: `GET https://aceh-tangguh.vercel.app/api/stats/live` harus `"source":"supabase"`.
+
+Admin login (`/id/admin/login`) memakai kunci publik yang sama. Tambah `https://aceh-tangguh.vercel.app/**` di **Supabase Auth → Redirect URLs** jika nanti memakai magic link / OAuth.
+
+## 3. Env server-only (dashboard Vercel, jangan commit)
 
 Set di Vercel → Project → Settings → Environment Variables (Production + Preview):
 
 | Variabel | Wajib untuk | Catatan |
 |----------|-------------|---------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Admin, data live | `https://whojoxrbcdyotrpolgav.supabase.co` |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Admin, SELECT publik | Anon JWT, boleh `NEXT_PUBLIC_*` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Tulis laporan, upload, cron | **Server only** — jangan prefix `NEXT_PUBLIC_` |
 | `LAPORAN_PII_KEY` | Submit laporan | 64 hex; lihat `docs/laporan-production.md` |
 | `LAPORAN_PII_SALT` | Submit laporan | Bukan default `aceh-tangguh-dev` |
@@ -32,10 +34,8 @@ Set di Vercel → Project → Settings → Environment Variables (Production + P
 
 Setelah URL Vercel hidup, isi GitHub variable:
 
-- `WEATHER_REFRESH_URL` = `https://<proyek>.vercel.app/api/weather/refresh`
-- `LAPORAN_WA_URL` = `https://<proyek>.vercel.app/api/cron/laporan-wa`
-
-Tambah URL Vercel ke **Supabase Auth → Redirect URLs** (`https://<proyek>.vercel.app/**`) supaya `/id/admin/login` bisa redirect.
+- `WEATHER_REFRESH_URL` = `https://aceh-tangguh.vercel.app/api/weather/refresh`
+- `LAPORAN_WA_URL` = `https://aceh-tangguh.vercel.app/api/cron/laporan-wa`
 
 ## 4. Yang sengaja tidak diubah
 

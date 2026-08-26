@@ -47,4 +47,15 @@ describe("Vercel Node preview (not static export)", () => {
     assert.ok(match, "weather refresh must set maxDuration");
     assert.ok(Number(match[1]) <= 60, `maxDuration ${match[1]} exceeds Vercel Hobby`);
   });
+
+  it("ships public Supabase keys for the Vercel host, never the service role", () => {
+    const env = read(".env.production");
+    const assigned = env
+      .split("\n")
+      .filter((line) => line && !line.startsWith("#"))
+      .join("\n");
+    assert.match(assigned, /NEXT_PUBLIC_SUPABASE_URL=https:\/\/whojoxrbcdyotrpolgav\.supabase\.co/);
+    assert.match(assigned, /NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ/);
+    assert.doesNotMatch(assigned, /SERVICE_ROLE|LAPORAN_PII|LAPORAN_CRON|WEATHER_CRON/);
+  });
 });

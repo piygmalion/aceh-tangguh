@@ -45,6 +45,7 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
 1. Copy `.env.example` → `.env.local` and set:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (legacy anon JWT for `@supabase/supabase-js`)
+   Vercel production already reads these from `.env.production` (project `whojoxrbcdyotrpolgav`).
 2. Install & build:
    ```
    bun install
