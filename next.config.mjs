@@ -15,6 +15,14 @@ const pagesBase = (
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ["react-map-gl", "maplibre-gl"],
+  // Vercel Functions do not serve `public/` via fs. Trace fixtures so API
+  // fallbacks (`path.join(process.cwd(), "public/fixtures/...")`) keep working.
+  experimental: {
+    outputFileTracingIncludes: {
+      "/api/**/*": ["./public/fixtures/**/*"],
+      "/[locale]/**/*": ["./public/fixtures/**/*"],
+    },
+  },
   webpack: (config) => {
     config.resolve.alias = { ...config.resolve.alias, "mapbox-gl": "maplibre-gl" };
     return config;

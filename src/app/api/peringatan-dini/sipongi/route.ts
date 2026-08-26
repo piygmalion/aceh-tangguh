@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSipongiPeringatan } from "@/lib/peringatan-dini/sipongi";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 30;
 
 export async function GET() {
   const data = await getSipongiPeringatan();

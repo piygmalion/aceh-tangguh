@@ -12,9 +12,15 @@ Inspired-by only. Does **not** copy AGPL Mandum source — patterns only, own im
 - MapLibre + react-map-gl + PMTiles
 - TanStack Query + Zod + lucide-react + Recharts
 
-## Run (preview lokal)
+## Preview online (Vercel)
 
-Objek preview saat ini adalah **lokal**, bukan GitHub Pages.
+Objek preview publik adalah **Vercel** (Next.js Node + API routes), bukan GitHub Pages.
+
+Import repo di [vercel.com/new](https://vercel.com/new/import?s=https://github.com/piygmalion/aceh-tangguh) — langkah, env, dan URL cron: `docs/vercel.md`.
+
+Jangan set `STATIC_EXPORT` / `GITHUB_PAGES` / `NEXT_PUBLIC_BASE_PATH` di Vercel.
+
+## Run (preview lokal)
 
 ```
 npm install
@@ -39,13 +45,14 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
 1. Copy `.env.example` → `.env.local` and set:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (legacy anon JWT for `@supabase/supabase-js`)
+   Vercel production already reads these from `.env.production` (project `whojoxrbcdyotrpolgav`).
 2. Install & build:
    ```
    bun install
    bun run build
    ```
 3. Schema documentation: `supabase/migrations/20260823_init_aceh_tangguh_backend.sql`
-4. Staff admin (`/id/admin`): apply `supabase/migrations/20260825_admin_auth.sql` then create the first `super_admin` manually — see `docs/admin-setup.md`. Laporan writes (not the admin UI) need `SUPABASE_SERVICE_ROLE_KEY` on the Node server — never on GitHub Pages.
+4. Staff admin (`/id/admin`): apply `supabase/migrations/20260825_admin_auth.sql` then create the first `super_admin` manually — see `docs/admin-setup.md`. Laporan writes (not the admin UI) need `SUPABASE_SERVICE_ROLE_KEY` on the Node server (Vercel env, never `NEXT_PUBLIC_*` and never GitHub Pages).
 5. Seed area feature metadata from fixtures (needs service role or SQL admin; anon is SELECT-only on `area_feature_meta`):
    ```
    bun run seed:area-meta
