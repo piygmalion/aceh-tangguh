@@ -9,7 +9,7 @@ This PR does **not** seed any Auth user or password.
 In the Supabase SQL editor (project `whojoxrbcdyotrpolgav`), paste and run:
 
 1. `supabase/migrations/20260825_admin_auth.sql` — `admin_profiles`, staff helpers, RLS
-2. `supabase/migrations/20260906_cms_domain_tables.sql` — CREATE TABLE for CMS domains (`kejadian_bencana`, `marker_features`, `publikasi`, `anggaran_*`, `irbi_documents`, `data_documents`, `r3p_summary`) if they do not exist yet
+2. `supabase/migrations/20260906_cms_domain_tables.sql` — CREATE TABLE for CMS domains (`kejadian_bencana`, `marker_features`, `publikasi`, `publikasi_kegiatan`, `anggaran_*`, `irbi_documents`, `data_documents`, `r3p_summary`) if they do not exist yet
 
 That creates `public.admin_profiles`, staff/super-admin helpers, tightens `reports` RLS (public reads published + consent only; staff can read/update all), and adds super-admin write policies on CMS/domain tables.
 

@@ -6,7 +6,7 @@ import { guardPublicPost } from "@/lib/security/public-post";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const blocked = guardPublicPost(req, "laporan-kejadian", 8);
+  const blocked = await guardPublicPost(req, "laporan-kejadian", 8);
   if (blocked) return blocked;
 
   let json: unknown;

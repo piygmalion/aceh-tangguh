@@ -7,16 +7,22 @@ import {
 import type { JenisBencana } from "./definitions";
 import { getKejadianFields, inAcehBounds } from "./definitions";
 
-const PII_SALT = process.env.LAPORAN_PII_SALT ?? "aceh-tangguh-dev";
-const PII_KEY_HEX = process.env.LAPORAN_PII_KEY?.trim();
+function piiSalt(): string {
+  return process.env.LAPORAN_PII_SALT ?? "aceh-tangguh-dev";
+}
+
+function piiKeyHex(): string | undefined {
+  return process.env.LAPORAN_PII_KEY?.trim();
+}
 
 function encryptionKey(): Buffer | null {
-  if (!PII_KEY_HEX || PII_KEY_HEX.length !== 64) return null;
-  return Buffer.from(PII_KEY_HEX, "hex");
+  const keyHex = piiKeyHex();
+  if (!keyHex || keyHex.length !== 64) return null;
+  return Buffer.from(keyHex, "hex");
 }
 
 export function isProductionPiiConfigured(): boolean {
-  return encryptionKey() != null && PII_SALT !== "aceh-tangguh-dev";
+  return encryptionKey() != null && piiSalt() !== "aceh-tangguh-dev";
 }
 
 export function assertProductionPii(): void {
@@ -28,14 +34,14 @@ export function assertProductionPii(): void {
 }
 
 export function hashPii(value: string): string {
-  return createHash("sha256").update(`${PII_SALT}:${value}`).digest("hex");
+  return createHash("sha256").update(`${piiSalt()}:${value}`).digest("hex");
 }
 
 /** AES-256-GCM when LAPORAN_PII_KEY is set; dev fallback is deterministic hash. */
 export function encryptPii(value: string): string {
   const key = encryptionKey();
   if (!key) {
-    return createHash("sha256").update(`${PII_SALT}:enc:${value}`).digest("hex");
+    return createHash("sha256").update(`${piiSalt()}:enc:${value}`).digest("hex");
   }
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", key, iv);

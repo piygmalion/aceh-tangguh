@@ -24,14 +24,14 @@ Script ini juga mengecek RLS (anon INSERT diblokir) dan kolom GRANT (`jawaban_js
 
 ## 2. Rate limit terdistribusi (Upstash)
 
-Produksi **wajib** Upstash Redis agar rate limit berlaku di semua instance server:
+Jika Supabase / laporan masyarakat diaktifkan, produksi **wajib** Upstash Redis agar rate limit berlaku di semua instance server:
 
 | Variabel | Deskripsi |
 |----------|-----------|
 | `UPSTASH_REDIS_REST_URL` | REST URL dari database Upstash |
 | `UPSTASH_REDIS_REST_TOKEN` | Token REST |
 
-Buat database gratis di [upstash.com](https://upstash.com). Tanpa env ini, POST publik (`/api/laporan/*`, `/api/reports`) mengembalikan **503** di produksi.
+Buat database gratis di [upstash.com](https://upstash.com). Tanpa env ini (saat Supabase dikonfigurasi), POST publik `/api/laporan/*` mengembalikan **503** di produksi. Deploy tanpa Supabase tidak memerlukan Upstash.
 
 ## 3. Enkripsi PII
 

@@ -2,6 +2,9 @@
 -- These were historically created outside the repo; commit DDL for reproducible staging.
 -- Apply after 20260825_admin_auth.sql (is_staff / is_super_admin).
 -- Geometry stays in fixtures + PMTiles — do not store polygon GeoJSON here.
+--
+-- publikasi_kegiatan: also created by 20260831_publikasi_kegiatan.sql (CREATE IF NOT
+-- EXISTS here keeps a single CMS bootstrap path; this migration adds super_admin writes).
 
 -- ---------------------------------------------------------------------------
 -- kejadian_bencana
@@ -91,6 +94,35 @@ create index if not exists publikasi_published_at_idx
   on public.publikasi (published_at desc);
 
 -- ---------------------------------------------------------------------------
+-- publikasi_kegiatan — BPBA kegiatan slideshow (/publikasi)
+-- Schema aligned with 20260831_publikasi_kegiatan.sql (idempotent).
+-- ---------------------------------------------------------------------------
+create table if not exists public.publikasi_kegiatan (
+  id text primary key,
+  slug text,
+  judul text not null,
+  ringkasan text,
+  tanggal_publikasi date,
+  penulis text,
+  kategori text,
+  jenis_kegiatan text,
+  jenis_bencana text,
+  fase text,
+  lokasi_teks text,
+  url text,
+  foto_sampul_url text,
+  foto_sampul_thumbnail_url text,
+  jumlah_foto integer default 0,
+  kabupaten jsonb default '[]'::jsonb,
+  photos jsonb default '[]'::jsonb,
+  sumber text,
+  updated_at timestamptz default now()
+);
+
+create index if not exists publikasi_kegiatan_tanggal_idx
+  on public.publikasi_kegiatan (tanggal_publikasi desc);
+
+-- ---------------------------------------------------------------------------
 -- Document snapshots (IRBI / generic JSON payloads)
 -- ---------------------------------------------------------------------------
 create table if not exists public.irbi_documents (
@@ -124,6 +156,7 @@ declare
     'anggaran_kegiatan',
     'publikasi_meta',
     'publikasi',
+    'publikasi_kegiatan',
     'irbi_documents',
     'data_documents',
     'r3p_summary'

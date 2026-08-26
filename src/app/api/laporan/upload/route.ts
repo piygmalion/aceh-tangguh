@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 const MAX_BYTES = 10 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
-  const blocked = guardPublicPost(req, "laporan-upload", 20);
+  const blocked = await guardPublicPost(req, "laporan-upload", 20);
   if (blocked) return blocked;
 
   const supabase = createServiceClient();
