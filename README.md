@@ -74,7 +74,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 
 | Method | Path | Source |
 |--------|------|--------|
-| GET/POST | `/api/reports` | Legacy `reports` (POST = service role; GET = published + consent) |
+| GET/POST | `/api/reports` | **410 Gone** — use `/api/laporan/*`; staff legacy rows via `/api/admin/reports` |
 | GET/PATCH | `/api/admin/reports` | Staff JWT — legacy `reports` |
 | GET/PATCH | `/api/admin/laporan` | Staff JWT — `laporan_kejadian` / `laporan_penanganan` |
 | POST | `/api/laporan/kejadian` | Service role insert after Zod + rate limit |

@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { StaticPreviewBanner } from "@/components/preview/StaticPreviewBanner";
+import { FixtureDataBanner } from "@/components/preview/FixtureDataBanner";
 import { isStaticExport } from "@/lib/preview/env";
 import { routing } from "@/i18n/routing";
 
@@ -30,7 +31,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
             <ThemeProvider>
-              {isStaticExport() ? <StaticPreviewBanner /> : null}
+              {isStaticExport() ? <StaticPreviewBanner /> : <FixtureDataBanner />}
               {children}
             </ThemeProvider>
           </QueryProvider>

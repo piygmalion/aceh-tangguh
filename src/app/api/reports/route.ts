@@ -1,110 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { createServerClient, createServiceClient } from "@/lib/supabase/server";
-import type { ReportRow } from "@/lib/supabase/types";
-import { guardPublicPost } from "@/lib/security/public-post";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const bodySchema = z.object({
-  topic: z.enum([
-    "banjir",
-    "longsor",
-    "hunian",
-    "perlindungan",
-    "logistik",
-    "kesehatan",
-    "lainnya",
-  ]),
-  description: z.string().min(10).max(2000),
-  longitude: z.number().min(94).max(99),
-  latitude: z.number().min(2).max(6),
-  placeName: z.string().optional(),
-  consentMapDisplay: z.boolean(),
-});
+const GONE = {
+  error: "gone",
+  message:
+    "Legacy /api/reports is retired. Use POST /api/laporan/kejadian or /api/laporan/penanganan. Staff: GET/PATCH /api/admin/reports for archived rows.",
+  replacements: {
+    submitKejadian: "/api/laporan/kejadian",
+    submitPenanganan: "/api/laporan/penanganan",
+    adminLegacy: "/api/admin/reports",
+  },
+};
 
-function toApiItem(row: ReportRow) {
-  return {
-    id: row.id,
-    topic: row.topic,
-    description: row.description,
-    longitude: row.longitude,
-    latitude: row.latitude,
-    placeName: row.place_name ?? undefined,
-    consentMapDisplay: row.consent_map_display,
-    status: row.status,
-    createdAt: row.created_at,
-  };
-}
-
+/** Legacy citizen reports API — permanently removed from the public contract. */
 export async function GET() {
-  const supabase = createServerClient();
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("reports")
-      .select("*")
-      .eq("status", "published")
-      .eq("consent_map_display", true)
-      .order("created_at", { ascending: false });
-
-    if (!error && data) {
-      return NextResponse.json({ items: data.map(toApiItem), source: "supabase" });
-    }
-  }
-
-  return NextResponse.json({ items: [], source: "fallback" });
+  return NextResponse.json(GONE, { status: 410 });
 }
 
-export async function POST(req: NextRequest) {
-  const blocked = guardPublicPost(req, "reports", 8);
-  if (blocked) return blocked;
-
-  let json: unknown;
-  try {
-    json = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-
-  const parsed = bodySchema.safeParse(json);
-  if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
-  }
-  if (!parsed.data.consentMapDisplay) {
-    return NextResponse.json({ error: "Consent required" }, { status: 400 });
-  }
-
-  const supabase = createServiceClient();
-  if (!supabase) {
-    return NextResponse.json(
-      { error: "Supabase is not configured" },
-      { status: 503 }
-    );
-  }
-
-  const { data, error } = await supabase
-    .from("reports")
-    .insert({
-      topic: parsed.data.topic,
-      description: parsed.data.description,
-      longitude: parsed.data.longitude,
-      latitude: parsed.data.latitude,
-      place_name: parsed.data.placeName ?? null,
-      consent_map_display: parsed.data.consentMapDisplay,
-      status: "queued",
-    })
-    .select("id, status")
-    .single();
-
-  if (error || !data) {
-    return NextResponse.json(
-      { error: error?.message ?? "Insert failed" },
-      { status: 502 }
-    );
-  }
-
-  return NextResponse.json(
-    { id: data.id, status: data.status },
-    { status: 201 }
-  );
+export async function POST() {
+  return NextResponse.json(GONE, { status: 410 });
 }

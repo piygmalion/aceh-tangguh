@@ -1,0 +1,31 @@
+name: Laporan media GC
+
+on:
+  schedule:
+    # Daily 03:00 WIB (Asia/Jakarta, UTC+7)
+    - cron: "0 20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Deletes unreferenced laporan-media objects older than 48h.
+# Skip when vars.LAPORAN_MEDIA_GC_URL or secrets.LAPORAN_CRON_SECRET unset.
+
+jobs:
+  garbage-collect:
+    runs-on: ubuntu-latest
+    if: ${{ vars.LAPORAN_MEDIA_GC_URL != '' }}
+    steps:
+      - name: POST laporan media GC
+        env:
+          LAPORAN_CRON_SECRET: ${{ secrets.LAPORAN_CRON_SECRET }}
+          LAPORAN_MEDIA_GC_URL: ${{ vars.LAPORAN_MEDIA_GC_URL }}
+        run: |
+          if [ -z "$LAPORAN_CRON_SECRET" ]; then
+            echo "LAPORAN_CRON_SECRET not set — skip laporan media GC"
+            exit 0
+          fi
+          curl -fsS -X POST "$LAPORAN_MEDIA_GC_URL" \
+            -H "Authorization: Bearer $LAPORAN_CRON_SECRET" \
+            -H "Content-Type: application/json"

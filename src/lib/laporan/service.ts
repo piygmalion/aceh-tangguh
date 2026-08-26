@@ -2,7 +2,6 @@ import { randomUUID } from "crypto";
 import {
   computeUrgency,
   encryptPii,
-  generateNomor,
   hashPii,
   validateAcehLocation,
 } from "./crypto";
@@ -27,11 +26,26 @@ import type { Json } from "@/lib/supabase/types";
 import type { TypedSupabaseClient } from "@/lib/supabase/server";
 import { createServerClient } from "@/lib/supabase/server";
 
-async function nextNomor(client: TypedSupabaseClient, prefix: "KJD" | "PNG") {
+/**
+ * Allocate a collision-safe report number via Postgres sequence RPC.
+ * Fail closed — never invent numbers from wall-clock (collision risk).
+ */
+export async function allocateNomorLaporan(
+  client: TypedSupabaseClient,
+  prefix: "KJD" | "PNG"
+): Promise<string> {
   const { data, error } = await client.rpc("next_laporan_nomor", { prefix });
-  if (!error && typeof data === "string" && data.length > 0) return data;
-  const fallbackSeq = Date.now() % 10_000;
-  return generateNomor(prefix, fallbackSeq);
+  if (error) {
+    throw new LaporanConfigError(
+      `next_laporan_nomor failed: ${error.message}. Apply 20260902_harden_laporan_rls.sql`
+    );
+  }
+  if (typeof data !== "string" || data.length === 0) {
+    throw new LaporanConfigError(
+      "next_laporan_nomor returned empty — check laporan nomor sequences"
+    );
+  }
+  return data;
 }
 
 async function insertPelapor(
@@ -105,7 +119,7 @@ export async function submitKejadian(body: KejadianSubmit) {
   let nomor: string;
 
   if (writer.kind === "supabase") {
-    nomor = await nextNomor(writer.client, "KJD");
+    nomor = await allocateNomorLaporan(writer.client, "KJD");
     const { error } = await writer.client.from("laporan_kejadian").insert({
       id,
       nomor_laporan: nomor,
@@ -166,7 +180,7 @@ export async function submitPenanganan(body: PenangananSubmit) {
   let nomor: string;
 
   if (writer.kind === "supabase") {
-    nomor = await nextNomor(writer.client, "PNG");
+    nomor = await allocateNomorLaporan(writer.client, "PNG");
     const { error } = await writer.client.from("laporan_penanganan").insert({
       id,
       nomor_laporan: nomor,
