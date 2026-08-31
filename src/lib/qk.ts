@@ -29,4 +29,6 @@ export const qk = {
   weather: ["weather"] as const,
   dibiAceh: ["dibi", "aceh"] as const,
   peringatanDini: ["peringatan-dini"] as const,
+  sikStats: (year: string, kabupaten: string, jenis: string) =>
+    ["sik", "stats", year, kabupaten, jenis] as const,
 };

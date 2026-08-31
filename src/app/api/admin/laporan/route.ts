@@ -69,6 +69,7 @@ function toKejadianItem(row: {
   jawaban_json: Json;
   addendum: string | null;
   submitted_at: string;
+  kejadian_id?: string | null;
 }) {
   return {
     id: row.id,
@@ -85,6 +86,7 @@ function toKejadianItem(row: {
     tampilDiPeta: row.tampil_di_peta,
     ringkasan: ringkasanFromJawaban(row.jawaban_json, row.addendum ?? ""),
     submittedAt: row.submitted_at,
+    kejadianId: row.kejadian_id ?? null,
   };
 }
 

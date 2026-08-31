@@ -7,6 +7,7 @@ import {
 } from "@/lib/supabase/ssr";
 import type { AdminProfileRow } from "@/lib/supabase/types";
 import { isSuperAdmin, type AdminProfile } from "@/lib/auth/types";
+import { canAccessModule } from "@/lib/sik/roles";
 
 export type { AdminProfile } from "@/lib/auth/types";
 export { isSuperAdmin, isStaff } from "@/lib/auth/types";
@@ -28,6 +29,12 @@ function toProfile(
     role: row.role,
     displayName: row.display_name,
     createdAt: row.created_at,
+    kodeKabupaten: row.kode_kabupaten,
+    kabupaten: row.kabupaten,
+    kodeKecamatan: row.kode_kecamatan,
+    kecamatan: row.kecamatan,
+    kodeDesaKelurahan: row.kode_desa_kelurahan,
+    desa: row.desa,
   };
 }
 
@@ -52,7 +59,9 @@ export async function getAuthContext(): Promise<AuthContext> {
 
   const { data: row } = await supabase
     .from("admin_profiles")
-    .select("user_id, role, display_name, created_at")
+    .select(
+      "user_id, role, display_name, created_at, kode_kabupaten, kabupaten, kode_kecamatan, kecamatan, kode_desa_kelurahan, desa"
+    )
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -125,6 +134,18 @@ export async function requireSuperAdminApi(): Promise<ApiOk | ApiErr> {
   const staff = await requireStaffApi();
   if (!staff.ok) return staff;
   if (!isSuperAdmin(staff.profile)) {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: "forbidden" }, { status: 403 }),
+    };
+  }
+  return staff;
+}
+
+export async function requireOpsApi(): Promise<ApiOk | ApiErr> {
+  const staff = await requireStaffApi();
+  if (!staff.ok) return staff;
+  if (!canAccessModule(staff.profile, "kejadian")) {
     return {
       ok: false,
       response: NextResponse.json({ error: "forbidden" }, { status: 403 }),

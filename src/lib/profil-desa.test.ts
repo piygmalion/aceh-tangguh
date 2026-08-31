@@ -32,6 +32,9 @@ function row(partial: Partial<ProfilDesaRow>): ProfilDesaRow {
     rumah_rs: 1,
     rumah_rb: 0,
     total_rumah_rusak: 59,
+    destana_level: null,
+    destana_indeks: null,
+    destana_tahun: null,
     payload: {
       demografi: {
         jumlah_kk: 387,

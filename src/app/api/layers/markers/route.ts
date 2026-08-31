@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { mergeLaporanOverlays } from "@/lib/laporan/peta-features";
+import { mergeOperasiDisasterEvents, mergePengungsianOverlays } from "@/lib/sik/public";
 import { expandMarkerLayerKeys } from "@/lib/map-url-aliases";
 import { filterMarkersByKeys, loadMarkers } from "@/lib/markers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
-  const fc = await mergeLaporanOverlays(await loadMarkers());
+  const withLaporan = await mergeLaporanOverlays(await loadMarkers());
+  const withOps = await mergeOperasiDisasterEvents(withLaporan);
+  const fc = await mergePengungsianOverlays(withOps);
   const keysParam = req.nextUrl.searchParams.get("keys");
   if (!keysParam) return NextResponse.json(fc);
 

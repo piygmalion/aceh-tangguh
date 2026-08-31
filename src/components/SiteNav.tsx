@@ -19,10 +19,12 @@ export function SiteNav() {
   const items = [
     { key: "peta", href: "/peta" as const, label: t("peta") },
     { key: "dataBencana", href: "/data-bencana" as const, label: t("dataBencana") },
+    { key: "destana", href: "/destana" as const, label: t("destana") },
     { key: "anggaranBencana", href: "/anggaran-bencana" as const, label: t("anggaranBencana") },
     { key: "publikasi", href: "/publikasi" as const, label: t("publikasi") },
-    { key: "sumberData", href: "/sumber-data" as const, label: t("sumberData") },
-    { key: "metodologi", href: "/metodologi" as const, label: t("metodologi") },
+    { key: "nomorPenting", href: "/nomor-penting" as const, label: t("nomorPenting") },
+    { key: "pelatihan", href: "/pelatihan" as const, label: t("pelatihan") },
+    { key: "mitra", href: "/mitra" as const, label: t("mitra") },
   ];
 
   const laporActive =

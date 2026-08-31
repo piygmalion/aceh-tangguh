@@ -39,6 +39,32 @@ export const routing = defineRouting({
     "/admin/cms/publikasi": "/admin/cms/publikasi",
     "/admin/cms/kejadian": "/admin/cms/kejadian",
     "/admin/database": "/admin/database",
+    "/admin/sik/kejadian": "/admin/sik/kejadian",
+    "/admin/sik/kejadian/baru": "/admin/sik/kejadian/baru",
+    "/admin/sik/kejadian/[id]": "/admin/sik/kejadian/[id]",
+    "/admin/sik/kejadian/[id]/cetak": "/admin/sik/kejadian/[id]/cetak",
+    "/admin/sik/master": "/admin/sik/master",
+    "/admin/sik/logistik": "/admin/sik/logistik",
+    "/admin/sik/destana": "/admin/sik/destana",
+    "/admin/sik/rehab": "/admin/sik/rehab",
+    "/admin/sik/disabilitas": "/admin/sik/disabilitas",
+    "/admin/sik/publik": "/admin/sik/publik",
+    "/destana": {
+      id: "/destana",
+      en: "/destana",
+    },
+    "/nomor-penting": {
+      id: "/nomor-penting",
+      en: "/emergency-contacts",
+    },
+    "/pelatihan": {
+      id: "/pelatihan",
+      en: "/training",
+    },
+    "/mitra": {
+      id: "/mitra",
+      en: "/partners",
+    },
   },
 });
 

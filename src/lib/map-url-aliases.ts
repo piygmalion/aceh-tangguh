@@ -68,7 +68,7 @@ export type ClusterLayerPreset = {
 /**
  * Homepage `?cluster=` aliases → marker layers.
  *
- * Posko / tendPoints were removed from the toolbar — do not map clusters
+ * Posko stayed retired; tendPoints is live again from SIK tempat_pengungsian.
  * back onto those keys.
  *
  * - sar / pemulihan → disaster events + laporan kejadian
@@ -81,7 +81,7 @@ export const CLUSTER_TO_LAYERS: Record<ClusterId, ClusterLayerPreset> = {
   sar: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   pemulihan: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   logistik: { markerLayers: ["disasterEvents", "infraRoadBridge"] },
-  pengungsian: { markerLayers: ["disasterEvents", "laporanKejadian"] },
+  pengungsian: { markerLayers: ["disasterEvents", "tendPoints", "laporanKejadian"] },
   kesehatan: { markerLayers: ["facHealth"] },
   pendidikan: { markerLayers: ["facEducation"] },
 };

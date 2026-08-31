@@ -18,7 +18,9 @@ export function LocaleSwitch() {
         <button
           key={l}
           type="button"
-          onClick={() => router.replace(pathname, { locale: l })}
+          onClick={() =>
+            router.replace(pathname as Parameters<typeof router.replace>[0], { locale: l })
+          }
           aria-pressed={locale === l}
           className={`rounded-full px-2.5 py-1.5 uppercase tracking-wide transition duration-200 ${
             locale === l

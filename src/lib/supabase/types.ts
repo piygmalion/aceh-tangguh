@@ -1,5 +1,10 @@
 /** Lightweight Database types mirroring public tables in Aceh Tangguh Supabase. */
 
+import type { SikTables } from "@/lib/sik/db-tables";
+import type { Json as JsonValue } from "./json";
+
+export type Json = JsonValue;
+
 export type ReportTopic =
   | "banjir"
   | "longsor"
@@ -11,7 +16,14 @@ export type ReportTopic =
 
 export type ReportStatus = "queued" | "published" | "rejected";
 
-export type AdminRole = "super_admin" | "admin";
+export type AdminRole =
+  | "super_admin"
+  | "admin"
+  | "admin_provinsi"
+  | "admin_kabkota"
+  | "admin_desa"
+  | "penilai_pkd"
+  | "admin_rr";
 
 export type HazardKind =
   | "banjir"
@@ -25,14 +37,6 @@ export type HazardSeverity = "low" | "med" | "high";
 
 export type MapLayerKind = "area" | "marker" | "boundary";
 export type MapLayerSourceType = "geojson" | "pmtiles" | "api" | "mixed";
-
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
 
 type EmptyRelationships = [];
 
@@ -81,18 +85,36 @@ export interface Database {
           role: AdminRole;
           display_name: string | null;
           created_at: string;
+          kode_kabupaten: string | null;
+          kabupaten: string | null;
+          kode_kecamatan: string | null;
+          kecamatan: string | null;
+          kode_desa_kelurahan: string | null;
+          desa: string | null;
         };
         Insert: {
           user_id: string;
           role: AdminRole;
           display_name?: string | null;
           created_at?: string;
+          kode_kabupaten?: string | null;
+          kabupaten?: string | null;
+          kode_kecamatan?: string | null;
+          kecamatan?: string | null;
+          kode_desa_kelurahan?: string | null;
+          desa?: string | null;
         };
         Update: {
           user_id?: string;
           role?: AdminRole;
           display_name?: string | null;
           created_at?: string;
+          kode_kabupaten?: string | null;
+          kabupaten?: string | null;
+          kode_kecamatan?: string | null;
+          kecamatan?: string | null;
+          kode_desa_kelurahan?: string | null;
+          desa?: string | null;
         };
         Relationships: EmptyRelationships;
       };
@@ -204,6 +226,7 @@ export interface Database {
           submitted_at: string;
           created_at: string;
           updated_at: string;
+          kejadian_id: string | null;
         };
         Insert: {
           id?: string;
@@ -228,6 +251,7 @@ export interface Database {
           submitted_at?: string;
           created_at?: string;
           updated_at?: string;
+          kejadian_id?: string | null;
         };
         Update: {
           id?: string;
@@ -252,6 +276,7 @@ export interface Database {
           submitted_at?: string;
           created_at?: string;
           updated_at?: string;
+          kejadian_id?: string | null;
         };
         Relationships: EmptyRelationships;
       };
@@ -785,6 +810,9 @@ export interface Database {
           rumah_rb: number | null;
           total_rumah_rusak: number | null;
           payload: Json | null;
+          destana_level: string | null;
+          destana_indeks: number | null;
+          destana_tahun: number | null;
           updated_at: string;
         };
         Insert: {
@@ -816,6 +844,9 @@ export interface Database {
           rumah_rb?: number | null;
           total_rumah_rusak?: number | null;
           payload?: Json | null;
+          destana_level?: string | null;
+          destana_indeks?: number | null;
+          destana_tahun?: number | null;
           updated_at?: string;
         };
         Update: {
@@ -847,6 +878,9 @@ export interface Database {
           rumah_rb?: number | null;
           total_rumah_rusak?: number | null;
           payload?: Json | null;
+          destana_level?: string | null;
+          destana_indeks?: number | null;
+          destana_tahun?: number | null;
           updated_at?: string;
         };
         Relationships: EmptyRelationships;
@@ -881,12 +915,20 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
-    };
+    } & SikTables;
     Views: Record<string, never>;
     Functions: {
       next_laporan_nomor: {
         Args: { prefix: string };
         Returns: string;
+      };
+      next_kejadian_nomor: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+      is_ops: {
+        Args: Record<string, never>;
+        Returns: boolean;
       };
     };
     Enums: Record<string, never>;

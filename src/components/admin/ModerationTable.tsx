@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { StatusBadge } from "@/components/admin/StatusBadge";
@@ -34,6 +35,7 @@ type LaporanItem = {
   tampilDiPeta: boolean;
   ringkasan: string;
   submittedAt: string;
+  kejadianId?: string | null;
 };
 
 type LegacyItem = {
@@ -65,6 +67,7 @@ const LEGACY_FILTERS: Array<ReportStatus | "all"> = [
 
 export function ModerationTable() {
   const t = useTranslations("admin");
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("kejadian");
   const [laporanStatus, setLaporanStatus] = useState<LaporanStatusFilter>("submitted");
   const [legacyStatus, setLegacyStatus] = useState<ReportStatus | "all">("queued");
@@ -184,6 +187,26 @@ export function ModerationTable() {
       return;
     }
     await load();
+  }
+
+  async function verifyAsIncident(id: string, existingId?: string | null) {
+    if (existingId) {
+      router.push({ pathname: "/admin/sik/kejadian/[id]", params: { id: existingId } });
+      return;
+    }
+    setPendingId(id);
+    const res = await fetch("/api/sik/verifikasi", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ laporan_id: id }),
+    });
+    const data = (await res.json().catch(() => null)) as { kejadian_id?: string } | null;
+    setPendingId(null);
+    if (!res.ok || !data?.kejadian_id) {
+      setError(t("updateError"));
+      return;
+    }
+    router.push({ pathname: "/admin/sik/kejadian/[id]", params: { id: data.kejadian_id } });
   }
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
@@ -412,6 +435,25 @@ export function ModerationTable() {
                   </td>
                   <td className="px-2 py-3">
                     <div className="flex flex-col gap-1">
+                      {item.tipe === "kejadian" ? (
+                        item.kejadianId ? (
+                          <Link
+                            href={{ pathname: "/admin/sik/kejadian/[id]", params: { id: item.kejadianId } }}
+                            className="text-xs text-[var(--primary)] hover:underline"
+                          >
+                            {t("navKejadianOps")}
+                          </Link>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={pendingId === item.id}
+                            onClick={() => void verifyAsIncident(item.id, item.kejadianId)}
+                          >
+                            {t("actionVerifyIncident")}
+                          </Button>
+                        )
+                      ) : null}
                       {item.status !== "approved" ? (
                         <Button
                           size="sm"
