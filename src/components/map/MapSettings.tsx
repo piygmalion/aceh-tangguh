@@ -146,9 +146,11 @@ export function MapSettings({
                 }`}
               >
                 <span className="block">{t(b.labelKey)}</span>
-                <span className={cn("mt-0.5 block font-normal text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                  {basemapKindLabel(b.kind, t)}
-                </span>
+                {b.kind !== "raster" ? (
+                  <span className={cn("mt-0.5 block font-normal text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                    {basemapKindLabel(b.kind, t)}
+                  </span>
+                ) : null}
               </button>
             ))}
           </div>

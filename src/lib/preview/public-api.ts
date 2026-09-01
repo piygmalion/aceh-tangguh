@@ -21,6 +21,7 @@ import type { WeatherApiResponse } from "@/lib/weather-types";
 import { isStaticExport, withBasePath } from "./env";
 import { ensureExistingHazardKindBuckets } from "@/lib/hazard-kinds";
 import { HAZARD_STATUS_FALLBACK, LIVE_STATS_FALLBACK } from "./fallbacks";
+import { filterKrb, type KrbPayload } from "@/lib/krb-filter";
 
 const STATIC_UNAVAILABLE = {
   error: "not_available_on_static_preview",
@@ -148,6 +149,15 @@ async function resolveStaticGet(input: string): Promise<Response> {
       unknown
     >;
     return jsonResponse({ ...data, source: "fixture" });
+  }
+  if (path === "/api/krb") {
+    const data = (await fetchJson("/fixtures/krb-aceh.json")) as KrbPayload;
+    const filtered = filterKrb(data, {
+      jenis: searchParams.get("jenis") ?? undefined,
+      kabupaten: searchParams.get("kabupaten") ?? undefined,
+      kelas: searchParams.get("kelas") ?? undefined,
+    });
+    return jsonResponse({ ...filtered, source: "fixture" });
   }
   if (path === "/api/laporan/peta") {
     return jsonResponse({

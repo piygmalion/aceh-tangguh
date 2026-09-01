@@ -6,6 +6,7 @@ export const qk = {
   markers: (keys: MarkerLayerKey[]) => ["layers", "markers", ...keys] as const,
   area: (key: AreaLayerKey) => ["layers", "area", key] as const,
   irbi: ["irbi", "2025"] as const,
+  krb: ["krb", "aceh"] as const,
   kejadian: (params: Record<string, string | number | undefined>) =>
     ["kejadian", params] as const,
   kejadianAnalisis: (params: Record<string, string | number | undefined>) =>

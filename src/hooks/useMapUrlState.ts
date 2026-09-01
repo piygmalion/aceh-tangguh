@@ -19,6 +19,7 @@ import {
   resolveMapUrlAliases,
 } from "@/lib/map-url-aliases";
 import { FASILITAS_UMUM_LAYER_KEYS } from "@/lib/map-layers-catalog";
+import { parseKrbJenis } from "@/lib/krb-by-kab";
 
 export { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 
@@ -58,6 +59,7 @@ export function useMapUrlState() {
       hazard: parseHazardKind(searchParams.get("hazard")),
       cluster: parseClusterId(searchParams.get("cluster")),
       selectedId: searchParams.get("selected") || undefined,
+      krbJenis: parseKrbJenis(searchParams.get("krbJenis")),
     };
   }, [resolved, searchParams]);
 
@@ -92,7 +94,13 @@ export function useMapUrlState() {
   );
 
   const setAreaLayer = useCallback(
-    (k: AreaLayerKey | null) => push({ area: k }),
+    (k: AreaLayerKey | null) =>
+      push({ area: k, krbJenis: k === "irbi2025" ? state.krbJenis ?? null : null }),
+    [push, state.krbJenis]
+  );
+
+  const setKrbJenis = useCallback(
+    (jenis: string | null) => push({ krbJenis: jenis }),
     [push]
   );
 
@@ -180,6 +188,7 @@ export function useMapUrlState() {
     setBasemap,
     setPreferVector,
     setAreaLayer,
+    setKrbJenis,
     toggleMarkerLayer,
     toggleDisasterJenis,
     toggleFasilitasUmum,

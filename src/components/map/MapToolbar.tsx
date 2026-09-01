@@ -23,6 +23,8 @@ import {
   FASILITAS_UMUM_LAYER_KEYS,
   MARKER_TOOLBAR_GROUPS,
 } from "@/lib/map-layers-catalog";
+import { KRB_JENIS_KODE } from "@/lib/krb-by-kab";
+import { STATUS_HEX } from "@/lib/chart-colors";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +44,8 @@ function activeDisasterJenisList(disasterJenis: string[]): string[] {
 
 export function MapToolbar({
   areaLayer,
+  krbJenis = null,
+  onKrbJenisChange,
   onAreaLayerChange,
   markerLayers,
   onToggleMarker,
@@ -50,6 +54,8 @@ export function MapToolbar({
   onToggleFasilitasUmum,
 }: {
   areaLayer: AreaLayerKey | null;
+  krbJenis?: string | null;
+  onKrbJenisChange?: (jenis: string | null) => void;
   onAreaLayerChange: (k: AreaLayerKey | null) => void;
   markerLayers: MarkerLayerKey[];
   onToggleMarker: (k: MarkerLayerKey) => void;
@@ -197,6 +203,28 @@ export function MapToolbar({
                   <span>{t(opt.labelKey)}</span>
                 </label>
               ))}
+              {areaLayer === "irbi2025" && onKrbJenisChange ? (
+                <label className="mt-3 flex flex-col gap-1 px-1 text-sm">
+                  <span className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                    {t("krbJenis")}
+                  </span>
+                  <select
+                    value={krbJenis ?? ""}
+                    onChange={(e) => onKrbJenisChange(e.target.value || null)}
+                    className="rounded-xl border border-[var(--glass-border)] bg-[var(--bg)] px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-[var(--ring)]"
+                  >
+                    <option value="">{t("krbJenisAll")}</option>
+                    {KRB_JENIS_KODE.map((kode) => (
+                      <option key={kode} value={kode}>
+                        {kode.replace(/_/g, " ")}
+                      </option>
+                    ))}
+                  </select>
+                  <span className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                    {t("krbDisclaimer")}
+                  </span>
+                </label>
+              ) : null}
             </fieldset>
           )}
 
@@ -431,7 +459,32 @@ export function MapToolbar({
                   </p>
                 </div>
               )}
-              {areaLayer && areaLegend && (
+              {areaLayer === "irbi2025" && krbJenis ? (
+                <div className="map-chrome-inset rounded-xl p-3">
+                  <div className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                    {t("krbLegendTitle")}
+                  </div>
+                  <ul className="space-y-2">
+                    {[
+                      { color: STATUS_HEX.RENDAH, label: t("krbRendah") },
+                      { color: STATUS_HEX.SEDANG, label: t("krbSedang") },
+                      { color: STATUS_HEX.TINGGI, label: t("krbTinggi") },
+                    ].map((item) => (
+                      <li key={item.label} className="flex items-center gap-2.5">
+                        <span
+                          className="map-swatch map-swatch-sq"
+                          style={{ background: item.color }}
+                        />
+                        <span>{item.label}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className={cn("mt-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                    {t("krbDisclaimer")}
+                  </p>
+                </div>
+              ) : null}
+              {areaLayer && areaLegend && !krbJenis && (
                 <div className="map-chrome-inset rounded-xl p-3">
                   <div className={cn("mb-2 flex items-center gap-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                     <MapLayerIcon

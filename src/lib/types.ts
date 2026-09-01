@@ -100,6 +100,8 @@ export interface MapUrlState {
   hazard?: HazardKind;
   cluster?: ClusterId;
   selectedId?: FeatureId;
+  /** IRBI hazard overlay when area=irbi2025. Empty = overall kab class. */
+  krbJenis: string | null;
 }
 
 export interface CreateReportBody {

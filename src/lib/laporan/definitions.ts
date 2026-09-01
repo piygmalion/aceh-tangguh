@@ -1,6 +1,7 @@
 import formDefinitions from "@/data/laporan/form_definitions.json";
+import { LAPORAN_JENIS_SLUGS, type LaporanJenisSlug } from "@/lib/sik/juklak";
 
-export type JenisBencana = "banjir" | "longsor" | "gempa" | "tsunami" | "gunung_meletus";
+export type JenisBencana = LaporanJenisSlug;
 
 export type FormOption = {
   value: string;
@@ -30,12 +31,14 @@ export function getKejadianJenisList() {
 }
 
 export function getKejadianFields(jenis: JenisBencana): FormFieldDef[] {
+  const byJenis = formDefinitions.kejadian.fields_by_jenis as Record<string, FormFieldDef[]>;
+  const spesifik = byJenis[jenis] ?? formDefinitions.kejadian.fields_generic;
   const shared = [
     ...formDefinitions.shared_demografi.fields,
     ...(jenis === "tsunami"
       ? formDefinitions.kejadian.fields_by_jenis.tsunami.filter((f) => f.field_key === "ada_korban")
       : formDefinitions.shared_korban.fields),
-    ...formDefinitions.kejadian.fields_by_jenis[jenis],
+    ...spesifik,
     ...formDefinitions.shared_infrastruktur.fields,
     ...formDefinitions.shared_penutup.fields,
   ];
@@ -65,3 +68,5 @@ export function inAcehBounds(lat: number, lon: number): boolean {
     lon <= ACEH_BOUNDS.lonMax
   );
 }
+
+export { LAPORAN_JENIS_SLUGS };

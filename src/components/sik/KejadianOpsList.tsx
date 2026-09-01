@@ -89,6 +89,7 @@ export function KejadianOpsList() {
           <thead className="text-[var(--text-dim)]">
             <tr>
               <th className="px-2 py-2 font-medium">{t("colNomor")}</th>
+              <th className="px-2 py-2 font-medium">KIB</th>
               <th className="px-2 py-2 font-medium">{t("colJenis")}</th>
               <th className="px-2 py-2 font-medium">{t("colPlace")}</th>
               <th className="px-2 py-2 font-medium">{t("colDate")}</th>
@@ -98,13 +99,13 @@ export function KejadianOpsList() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="px-2 py-8 text-center text-[var(--text-dim)]">
+                <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
                   {t("loading")}
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-2 py-8 text-center text-[var(--text-dim)]">
+                <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
                   {t("empty")}
                 </td>
               </tr>
@@ -117,6 +118,7 @@ export function KejadianOpsList() {
                     </Link>
                     <div className="text-xs text-[var(--text-dim)]">{row.nama_kejadian}</div>
                   </td>
+                  <td className="px-2 py-3 font-mono text-xs">{row.kib ?? "—"}</td>
                   <td className="px-2 py-3">{row.jenis_bencana}</td>
                   <td className="px-2 py-3 text-[var(--text-dim)]">
                     {[row.desa_ringkas, row.kecamatan, row.kabupaten].filter(Boolean).join(", ") || "—"}
@@ -124,7 +126,13 @@ export function KejadianOpsList() {
                   <td className="whitespace-nowrap px-2 py-3 text-[var(--text-dim)]">
                     {new Date(row.waktu_kejadian).toLocaleString("id-ID")}
                   </td>
-                  <td className="px-2 py-3 capitalize">{row.status}</td>
+                  <td className="px-2 py-3">
+                    <span className="capitalize">{row.status}</span>
+                    <div className="text-xs text-[var(--text-dim)]">
+                      {row.fase_data}
+                      {row.is_bencana ? " · bencana" : ""}
+                    </div>
+                  </td>
                 </tr>
               ))
             )}

@@ -4,31 +4,31 @@ import { useEffect, useState } from "react";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { KrbContextCard } from "@/components/sik/KrbContextCard";
 import { SikResourceManager } from "@/components/sik/SikResourceManager";
+import {
+  DampakJuklakForm,
+  dampakFormToPayload,
+  emptyDampakForm,
+  type DampakFormState,
+} from "@/components/sik/DampakJuklakForm";
+import { normalizeKorbanTerpilah } from "@/lib/sik/juklak";
 import type { KejadianDampakRow, KejadianLokasiRow, KejadianOperasiRow } from "@/lib/sik/db-tables";
 
-const inputClass =
-  "w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 text-sm outline-none";
-
-export function KejadianOpsDetail({ id }: { id: string }) {
+export function KejadianOpsDetail({
+  id,
+  canLockStatis = false,
+}: {
+  id: string;
+  canLockStatis?: boolean;
+}) {
   const [item, setItem] = useState<KejadianOperasiRow | null>(null);
   const [lokasi, setLokasi] = useState<KejadianLokasiRow[]>([]);
   const [dampak, setDampak] = useState<KejadianDampakRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({
-    tanggal: new Date().toISOString().slice(0, 10),
-    meninggal: 0,
-    luka_berat: 0,
-    luka_ringan: 0,
-    hilang: 0,
-    mengungsi: 0,
-    menderita: 0,
-    rumah_rb: 0,
-    rumah_rs: 0,
-    rumah_rr: 0,
-    rumah_terendam: 0,
-  });
+  const [faseBusy, setFaseBusy] = useState(false);
+  const [form, setForm] = useState<DampakFormState>(emptyDampakForm);
 
   async function load() {
     const res = await fetch(`/api/sik/kejadian/${id}`, { cache: "no-store" });
@@ -53,12 +53,36 @@ export function KejadianOpsDetail({ id }: { id: string }) {
 
   async function saveDampak() {
     setBusy(true);
-    await fetch(`/api/sik/kejadian/${id}/dampak`, {
+    setError(null);
+    const res = await fetch(`/api/sik/kejadian/${id}/dampak`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(dampakFormToPayload(form)),
     });
     setBusy(false);
+    if (!res.ok) {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      setError(typeof body?.error === "string" ? body.error : "Gagal menyimpan dampak");
+      return;
+    }
+    setForm((f) => ({ ...emptyDampakForm(), tanggal: f.tanggal, korban_terpilah: normalizeKorbanTerpilah(null) }));
+    await load();
+  }
+
+  async function setFase(fase_data: "dinamis" | "diajukan" | "statis") {
+    setFaseBusy(true);
+    setError(null);
+    const res = await fetch(`/api/sik/kejadian/${id}/fase`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fase_data }),
+    });
+    setFaseBusy(false);
+    if (!res.ok) {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      setError(typeof body?.error === "string" ? body.error : "Gagal mengubah fase data");
+      return;
+    }
     await load();
   }
 
@@ -67,29 +91,63 @@ export function KejadianOpsDetail({ id }: { id: string }) {
   }
 
   const latest = dampak[0];
+  const locked = item.fase_data === "statis";
 
   return (
     <div className="flex flex-col gap-4">
       <GlassPanel className="p-5">
         <div className="flex flex-wrap justify-between gap-3">
           <div>
-            <p className="text-xs text-[var(--text-dim)]">{item.nomor}</p>
+            <p className="text-xs text-[var(--text-dim)]">
+              {item.kib ?? item.nomor} · fase {item.fase_data}
+              {item.is_bencana ? " · bencana" : " · di bawah ambang"}
+            </p>
             <h1 className="text-xl font-semibold">{item.nama_kejadian}</h1>
             <p className="mt-1 text-sm text-[var(--text-dim)]">
-              {item.jenis_bencana} · {new Date(item.waktu_kejadian).toLocaleString("id-ID")} · {item.status}
+              {item.jenis_bencana} · {item.tarikh ?? new Date(item.waktu_kejadian).toLocaleString("id-ID")} · {item.status}
             </p>
           </div>
-          <Link href={{ pathname: "/admin/sik/kejadian/[id]/cetak", params: { id } }}>
-            <Button variant="outline" size="sm">
-              Cetak laporan
-            </Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            {item.fase_data === "dinamis" ? (
+              <Button size="sm" variant="outline" disabled={faseBusy} onClick={() => void setFase("diajukan")}>
+                Ajukan verifikasi
+              </Button>
+            ) : null}
+            {item.fase_data === "diajukan" && canLockStatis ? (
+              <Button size="sm" disabled={faseBusy} onClick={() => void setFase("statis")}>
+                Kunci data statis
+              </Button>
+            ) : null}
+            {locked && canLockStatis ? (
+              <Button size="sm" variant="outline" disabled={faseBusy} onClick={() => void setFase("dinamis")}>
+                Buka kunci
+              </Button>
+            ) : null}
+            <Link href={{ pathname: "/admin/sik/kejadian/[id]/cetak", params: { id } }}>
+              <Button variant="outline" size="sm">
+                Cetak Lampiran I
+              </Button>
+            </Link>
+          </div>
         </div>
+        {error ? <p className="mt-2 text-sm text-[var(--danger)]">{error}</p> : null}
         <p className="mt-3 text-sm">{item.kronologi || item.deskripsi || "—"}</p>
         <p className="mt-2 text-sm text-[var(--text-dim)]">
           {[item.desa_ringkas, item.kecamatan, item.kabupaten].filter(Boolean).join(", ")}
         </p>
+        {item.kondisi_mutakhir ? (
+          <p className="mt-2 text-sm">
+            <span className="text-[var(--text-dim)]">Kondisi mutakhir: </span>
+            {item.kondisi_mutakhir}
+          </p>
+        ) : null}
       </GlassPanel>
+
+      <KrbContextCard
+        kodeKabupaten={item.kode_kabupaten}
+        kodeJenis={item.kode_jenis}
+        namaKejadian={item.nama_kejadian}
+      />
 
       {latest ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -108,68 +166,14 @@ export function KejadianOpsDetail({ id }: { id: string }) {
       ) : null}
 
       <GlassPanel className="p-5">
-        <h2 className="font-semibold">Update kaji cepat</h2>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {(
-            [
-              ["tanggal", "Tanggal"],
-              ["meninggal", "Meninggal"],
-              ["luka_berat", "Luka berat"],
-              ["luka_ringan", "Luka ringan"],
-              ["hilang", "Hilang"],
-              ["mengungsi", "Mengungsi"],
-              ["menderita", "Menderita"],
-              ["rumah_rb", "Rumah RB"],
-              ["rumah_rs", "Rumah RS"],
-              ["rumah_rr", "Rumah RR"],
-              ["rumah_terendam", "Terendam"],
-            ] as const
-          ).map(([key, label]) => (
-            <label key={key} className="text-sm">
-              <span className="text-[var(--text-dim)]">{label}</span>
-              <input
-                className={inputClass}
-                type={key === "tanggal" ? "date" : "number"}
-                value={form[key]}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    [key]: key === "tanggal" ? e.target.value : Number(e.target.value),
-                  }))
-                }
-              />
-            </label>
-          ))}
-        </div>
-        <Button className="mt-3" size="sm" disabled={busy} onClick={() => void saveDampak()}>
-          Simpan dampak
-        </Button>
-        {dampak.length > 0 ? (
-          <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full text-left text-sm">
-              <thead className="text-[var(--text-dim)]">
-                <tr>
-                  <th className="px-2 py-2">Tanggal</th>
-                  <th className="px-2 py-2">Meninggal</th>
-                  <th className="px-2 py-2">Mengungsi</th>
-                  <th className="px-2 py-2">Rumah RB/RS/RR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dampak.map((row) => (
-                  <tr key={row.id} className="border-t border-[var(--border)]">
-                    <td className="px-2 py-2">{row.tanggal}</td>
-                    <td className="px-2 py-2">{row.meninggal}</td>
-                    <td className="px-2 py-2">{row.mengungsi}</td>
-                    <td className="px-2 py-2">
-                      {row.rumah_rb}/{row.rumah_rs}/{row.rumah_rr}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : null}
+        <DampakJuklakForm
+          form={form}
+          setForm={setForm}
+          busy={busy}
+          locked={locked}
+          onSave={() => void saveDampak()}
+          history={dampak}
+        />
       </GlassPanel>
 
       <GlassPanel className="p-5">
@@ -186,7 +190,7 @@ export function KejadianOpsDetail({ id }: { id: string }) {
 
       <SikResourceManager
         resource="korban"
-        title="Korban"
+        title="Korban (mikrodata)"
         fields={["nama_enc", "kondisi", "desa", "ahli_waris", "keterangan"]}
         extra={{ kejadian_id: id }}
         staffOnlyNote="Nama tersimpan terenkripsi (kolom nama_enc). Jangan isi NIK mentah."

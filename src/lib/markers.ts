@@ -22,9 +22,9 @@ export type MarkersResponse = FeatureCollection & {
 
 let cache: FeatureCollection | null = null;
 
-function featureFromRow(row: MarkerFeatureRow): Feature<Point> {
+export function featureFromRow(row: MarkerFeatureRow): Feature<Point> {
   const properties = { ...asRecord(row.properties) };
-  if (properties.layer == null) properties.layer = row.layer;
+  properties.layer = row.layer;
   if (row.title != null && properties.title == null) properties.title = row.title;
   if (row.status != null && properties.status == null) {
     properties.status = row.status;

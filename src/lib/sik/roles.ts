@@ -42,6 +42,11 @@ export function isProvinsiOps(profile: AdminProfile | null): boolean {
   return role === "super_admin" || role === "admin_provinsi";
 }
 
+/** Kunci / buka data statis Juklak (walidata daerah). */
+export function canLockStatis(profile: AdminProfile | null): boolean {
+  return isProvinsiOps(profile);
+}
+
 export function isKabScoped(profile: AdminProfile | null): boolean {
   return normalizedRole(profile?.role) === "admin_kabkota";
 }

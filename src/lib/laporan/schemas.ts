@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { LAPORAN_JENIS_SLUGS } from "@/lib/sik/juklak";
 
 export const pelaporSchema = z.object({
   nama: z.string().min(2).max(120),
@@ -19,7 +20,7 @@ export const lokasiSchema = z.object({
 });
 
 export const kejadianSubmitSchema = z.object({
-  jenis_bencana: z.enum(["banjir", "longsor", "gempa", "tsunami", "gunung_meletus"]),
+  jenis_bencana: z.enum(LAPORAN_JENIS_SLUGS),
   lokasi: lokasiSchema,
   pelapor: pelaporSchema,
   jawaban: z.record(z.unknown()).default({}),
@@ -28,7 +29,7 @@ export const kejadianSubmitSchema = z.object({
 });
 
 export const penangananSubmitSchema = z.object({
-  jenis_bencana: z.enum(["banjir", "longsor", "gempa", "tsunami", "gunung_meletus"]),
+  jenis_bencana: z.enum(LAPORAN_JENIS_SLUGS),
   tipe_laporan: z.enum([
     "bantuan_diterima",
     "bantuan_belum_diterima",

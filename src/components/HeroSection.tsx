@@ -12,6 +12,7 @@ import { MediaBackdrop } from "@/components/ui/MediaBackdrop";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { IrbiHeroPanel } from "@/components/IrbiHeroPanel";
+import { KrbHeroPanel } from "@/components/KrbHeroPanel";
 import { SITE_MEDIA } from "@/lib/media";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
@@ -19,7 +20,7 @@ import type { LiveStats } from "@/lib/types";
 import { TYPE_HERO_DISPLAY_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
-type HeroTab = "utama" | "peta" | "irbi";
+type HeroTab = "utama" | "peta" | "irbi" | "krb";
 
 async function fetchLiveStats(): Promise<LiveStats> {
   const res = await fetchPublicApi("/api/stats/live");
@@ -49,13 +50,14 @@ export function HeroSection() {
     { key: "utama", label: t("tabs.utama") },
     { key: "peta", label: t("tabs.peta") },
     { key: "irbi", label: t("tabs.irbi") },
+    { key: "krb", label: t("tabs.krb") },
   ];
 
   return (
     <section
       className={cn(
         "relative flex flex-col overflow-hidden bg-[var(--bg)] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
-        tab === "irbi"
+        tab === "irbi" || tab === "krb"
           ? "min-h-[100svh] justify-start pb-16"
           : "min-h-[100svh] justify-end pb-20 sm:pb-24"
       )}
@@ -71,7 +73,7 @@ export function HeroSection() {
         paused={hovering}
         showDots
         overlayClassName={
-          tab === "irbi"
+          tab === "irbi" || tab === "krb"
             ? "from-black/85 via-black/75 to-[var(--bg)]"
             : "from-black/78 via-black/62 to-[var(--bg)]"
         }
@@ -246,6 +248,12 @@ export function HeroSection() {
         {tab === "irbi" && (
           <BlurFade delay={0.04} inView>
             <IrbiHeroPanel />
+          </BlurFade>
+        )}
+
+        {tab === "krb" && (
+          <BlurFade delay={0.04} inView>
+            <KrbHeroPanel />
           </BlurFade>
         )}
       </div>

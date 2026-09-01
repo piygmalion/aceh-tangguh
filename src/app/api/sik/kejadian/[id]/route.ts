@@ -56,7 +56,21 @@ export async function PATCH(
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  const { lokasi, ...header } = parsed.data;
+  const { lokasi, fase_data: _fase, is_bencana: _flag, ...header } = parsed.data;
+  const { data: existing } = await auth.supabase
+    .from("kejadian_operasi")
+    .select("*")
+    .eq("id", params.id)
+    .maybeSingle();
+  if (!existing) return NextResponse.json({ error: "not found" }, { status: 404 });
+  const current = existing as KejadianOperasiRow;
+  if (!matchesKabScope(auth.profile, current)) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+  if (current.fase_data === "statis") {
+    return NextResponse.json({ error: "Data statis terkunci. Buka kunci lewat walidata." }, { status: 409 });
+  }
+
   const { data, error } = await auth.supabase
     .from("kejadian_operasi")
     .update({ ...header, updated_at: new Date().toISOString() })

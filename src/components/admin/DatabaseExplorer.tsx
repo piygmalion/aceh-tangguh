@@ -25,6 +25,7 @@ export function DatabaseExplorer() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Row | null>(null);
+  const [creating, setCreating] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const pageSize = 20;
@@ -66,6 +67,7 @@ export function DatabaseExplorer() {
   }, [table, page]);
 
   function openEdit(row: Row) {
+    setCreating(false);
     setEditing(row);
     const next: Record<string, string> = {};
     for (const col of config.columns) {
@@ -76,16 +78,39 @@ export function DatabaseExplorer() {
     setDraft(next);
   }
 
+  function openCreate() {
+    setEditing(null);
+    setCreating(true);
+    const next: Record<string, string> = {};
+    for (const col of config.columns) {
+      if (col.key === "updated_at") continue;
+      if (col.type === "boolean") next[col.key] = "false";
+      else if (col.type === "json") next[col.key] = col.key === "tags" ? "[]" : "[]";
+      else next[col.key] = "";
+    }
+    setDraft(next);
+  }
+
+  function closeForm() {
+    setEditing(null);
+    setCreating(false);
+  }
+
+  function columnWritable(col: AdminColumn): boolean {
+    if (creating) return col.key !== "updated_at";
+    return col.editable;
+  }
+
   async function save() {
-    if (!editing) return;
+    if (!creating && !editing) return;
     setBusy(true);
     setError(null);
-    const patch: Record<string, unknown> = {};
+    const payload: Record<string, unknown> = {};
     for (const col of config.columns) {
-      if (!col.editable) continue;
+      if (!columnWritable(col)) continue;
       const raw = draft[col.key] ?? "";
       try {
-        patch[col.key] = parseColumn(col, raw);
+        payload[col.key] = parseColumn(col, raw);
       } catch {
         setError(t("invalidJson"));
         setBusy(false);
@@ -93,20 +118,42 @@ export function DatabaseExplorer() {
       }
     }
     const res = await fetch("/api/admin/database", {
-      method: "PATCH",
+      method: creating ? "POST" : "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        table,
-        id: String(editing[config.pk]),
-        patch,
-      }),
+      body: JSON.stringify(
+        creating
+          ? { table, row: payload }
+          : {
+              table,
+              id: String(editing![config.pk]),
+              patch: payload,
+            }
+      ),
     });
     setBusy(false);
     if (!res.ok) {
       setError(t("updateError"));
       return;
     }
-    setEditing(null);
+    closeForm();
+    await load();
+  }
+
+  async function removeRow(row: Row) {
+    if (!config.allowDelete) return;
+    if (!window.confirm(t("confirmDelete"))) return;
+    setBusy(true);
+    setError(null);
+    const res = await fetch("/api/admin/database", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ table, id: String(row[config.pk]) }),
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setError(t("updateError"));
+      return;
+    }
     await load();
   }
 
@@ -129,6 +176,7 @@ export function DatabaseExplorer() {
               setTable(e.target.value as AdminTableKey);
               setPage(1);
               setEditing(null);
+              setCreating(false);
             }}
             className="rounded-full border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
           >
@@ -156,6 +204,11 @@ export function DatabaseExplorer() {
           <Button type="submit" size="sm" variant="outline">
             {t("search")}
           </Button>
+          {config.allowInsert ? (
+            <Button type="button" size="sm" onClick={openCreate}>
+              {t("create")}
+            </Button>
+          ) : null}
         </form>
       </div>
 
@@ -205,9 +258,21 @@ export function DatabaseExplorer() {
                     </td>
                   ))}
                   <td className="px-2 py-2">
-                    <Button size="sm" variant="outline" onClick={() => openEdit(row)}>
-                      {t("edit")}
-                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" variant="outline" onClick={() => openEdit(row)}>
+                        {t("edit")}
+                      </Button>
+                      {config.allowDelete ? (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={busy}
+                          onClick={() => void removeRow(row)}
+                        >
+                          {t("delete")}
+                        </Button>
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               ))
@@ -239,23 +304,25 @@ export function DatabaseExplorer() {
         </div>
       </div>
 
-      {editing ? (
+      {editing || creating ? (
         <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-3 sm:items-center">
           <div className="glass max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl p-5">
-            <h2 className="text-lg font-semibold">{t("edit")}</h2>
-            <p className="mt-1 font-mono text-xs text-[var(--text-dim)]">
-              {config.pk}: {String(editing[config.pk])}
-            </p>
+            <h2 className="text-lg font-semibold">{creating ? t("create") : t("edit")}</h2>
+            {!creating && editing ? (
+              <p className="mt-1 font-mono text-xs text-[var(--text-dim)]">
+                {config.pk}: {String(editing[config.pk])}
+              </p>
+            ) : null}
             <div className="mt-4 flex flex-col gap-3">
               {config.columns.map((col) => (
                 <label key={col.key} className="flex flex-col gap-1 text-sm">
                   <span className="text-xs text-[var(--text-dim)]">
                     {col.label}
-                    {!col.editable ? ` · ${t("readOnly")}` : ""}
+                    {!columnWritable(col) ? ` · ${t("readOnly")}` : ""}
                   </span>
                   {col.type === "select" && col.options ? (
                     <select
-                      disabled={!col.editable}
+                      disabled={!columnWritable(col)}
                       value={draft[col.key] ?? ""}
                       onChange={(e) =>
                         setDraft((d) => ({ ...d, [col.key]: e.target.value }))
@@ -271,7 +338,7 @@ export function DatabaseExplorer() {
                   ) : col.type === "boolean" ? (
                     <input
                       type="checkbox"
-                      disabled={!col.editable}
+                      disabled={!columnWritable(col)}
                       checked={draft[col.key] === "true"}
                       onChange={(e) =>
                         setDraft((d) => ({
@@ -283,7 +350,7 @@ export function DatabaseExplorer() {
                   ) : col.type === "json" ? (
                     <textarea
                       rows={6}
-                      disabled={!col.editable}
+                      disabled={!columnWritable(col)}
                       value={draft[col.key] ?? ""}
                       onChange={(e) =>
                         setDraft((d) => ({ ...d, [col.key]: e.target.value }))
@@ -292,7 +359,7 @@ export function DatabaseExplorer() {
                     />
                   ) : (
                     <input
-                      disabled={!col.editable}
+                      disabled={!columnWritable(col)}
                       value={draft[col.key] ?? ""}
                       onChange={(e) =>
                         setDraft((d) => ({ ...d, [col.key]: e.target.value }))
@@ -304,7 +371,7 @@ export function DatabaseExplorer() {
               ))}
             </div>
             <div className="mt-4 flex justify-end gap-2">
-              <Button variant="ghost" onClick={() => setEditing(null)}>
+              <Button variant="ghost" onClick={closeForm}>
                 {t("cancel")}
               </Button>
               <Button disabled={busy} onClick={() => void save()}>

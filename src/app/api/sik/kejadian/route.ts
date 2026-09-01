@@ -3,6 +3,8 @@ import { requireOpsApi } from "@/lib/auth/admin";
 import { matchesKabScope, scopeKabupaten } from "@/lib/sik/roles";
 import { kejadianWizardSchema } from "@/lib/sik/schemas";
 import { rejectCrossOrigin } from "@/lib/security/origin";
+import { allocateKib, resolveTarikh } from "@/lib/sik/kejadian-write";
+import { findKabupaten, memenuhiAmbangBatas } from "@/lib/sik/juklak";
 import type { KejadianDampakRow, KejadianOperasiRow } from "@/lib/sik/db-tables";
 
 export const dynamic = "force-dynamic";
@@ -58,14 +60,50 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { lokasi, ...header } = parsed.data;
+  const { lokasi, fase_data: _fase, is_bencana: _flag, ...header } = parsed.data;
   const kabScope = scopeKabupaten(auth.profile);
   if (kabScope && !header.kode_kabupaten) header.kode_kabupaten = kabScope;
+
+  const kab = findKabupaten(header.kode_kabupaten ?? header.kabupaten ?? "");
+  if (kab) {
+    header.kode_kabupaten = kab.kode;
+    header.kabupaten = kab.nama;
+  }
+
+  const tarikh = resolveTarikh(header.waktu_kejadian, header.tarikh);
+  let kib: string | null = null;
+  let kibIndex: number | null = null;
+  try {
+    const allocated = await allocateKib(auth.supabase, {
+      kodeKabupaten: header.kode_kabupaten,
+      kodeJenis: header.kode_jenis,
+      tarikh,
+    });
+    if (allocated) {
+      kib = allocated.kib;
+      kibIndex = allocated.kib_index;
+    }
+  } catch {
+    kib = null;
+    kibIndex = null;
+  }
+
+  const isBencana = memenuhiAmbangBatas({
+    statusDarurat: header.status_darurat ?? false,
+    permintaanBantuanNasional: header.permintaan_bantuan_nasional ?? false,
+    dampak: null,
+  });
 
   const { data, error } = await auth.supabase
     .from("kejadian_operasi")
     .insert({
       ...header,
+      tarikh,
+      kib,
+      kib_index: kibIndex,
+      kode_provinsi: "11",
+      fase_data: "dinamis",
+      is_bencana: isBencana,
       created_by: auth.profile.userId,
       status: header.status ?? "aktif",
     })

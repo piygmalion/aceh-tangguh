@@ -168,6 +168,20 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: undefined,
   },
   {
+    id: "krb-aceh",
+    titleId: "Kawasan Rawan Bencana (KRB) Aceh",
+    titleEn: "Aceh disaster-prone areas (KRB)",
+    source:
+      "BNPB IRBI 2025 + InaRISK; BPBA Kajian Risiko Bencana Aceh 2016–2020 / 2021–2025; PVMBG peta KRB gunung api (Bur Ni Telong 2025, Seulawah Agam 2007, Peut Sague 2008); OpenData Aceh IRBI kab/kota 2024. Poligon resmi tetap di InaRISK/PVMBG — database ini adalah katalog administratif + kawasan bernama.",
+    license:
+      "Public official statistics and maps — attribute BNPB, BPBA, PVMBG/Badan Geologi, Pemerintah Aceh",
+    date: "Compiled 2026-08-31 (IRBI 2025; KRB gunung api 2007–2025)",
+    format: "Supabase krb_* tables + JSON fixture krb-aceh.json → GET /api/krb",
+    usedFor:
+      "Database KRB Aceh: 23 kab/kota × 11 jenis ancaman (kelas IRBI), kawasan bernama (gunung api, sesar, pesisir), dan katalog dokumen sumber",
+    href: "https://inarisk.bnpb.go.id/webgis/",
+  },
+  {
     id: "analisis-anggaran-2026",
     titleId: "Analisis anggaran penanganan bencana APBA 2026",
     titleEn: "APBA 2026 disaster handling budget analysis",

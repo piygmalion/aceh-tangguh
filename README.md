@@ -91,6 +91,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/layers/catalog` | enabled `map_layers` merged with local toolbar catalog (`src/lib/map-layers-catalog.ts`) |
 | GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
 | GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
+| GET | `/api/krb` | Kawasan Rawan Bencana Aceh (`krb_*` tables, else `krb-aceh.json`); filter `?jenis=` `?kabupaten=` `?kelas=` |
 | GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
 | GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` |
 | GET | `/api/laporan/peta` | Moderated `laporan_kejadian` + `laporan_penanganan` (`status=approved` AND `tampil_di_peta`; no `jawaban_json`) |

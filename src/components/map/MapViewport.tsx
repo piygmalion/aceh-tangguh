@@ -16,6 +16,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { withBasePath } from "@/lib/preview/env";
 import { qk } from "@/lib/qk";
+import { fetchKrb, joinKelasOntoIrbiFeatures, kawasanPoints } from "@/lib/krb-by-kab";
 import type {
   AreaLayerKey,
   BasemapId,
@@ -32,11 +33,14 @@ import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
 import { CLUSTER_COLORS, COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
 import { markerIconImageId } from "@/lib/layer-icons";
 import {
+  AREA_FILL_LAYER_IDS,
   PMTILES_KAB,
   PMTILES_VILLAGE,
+  VILLAGE_LOD_MIN_ZOOM,
   VILLAGE_OUTLINE_MIN_ZOOM,
   areaOutlinePaint,
   geometryBounds,
+  isAreaFillLayerId,
   isKabAreaFeature,
   isVillageLodZoom,
   mergeVillageLodFocus,
@@ -172,11 +176,20 @@ async function fetchArea(key: AreaLayerKey): Promise<AreaResponse> {
 
 async function pmtilesExists(path: string): Promise<boolean> {
   try {
-    const res = await fetch(withBasePath(path), { method: "HEAD", cache: "force-cache" });
+    const res = await fetch(withBasePath(path), { method: "HEAD", cache: "no-store" });
     return res.ok;
   } catch {
     return false;
   }
+}
+
+function pmtilesProtocolUrl(path: string): string | null {
+  if (typeof window === "undefined") return null;
+  return `pmtiles://${new URL(withBasePath(path), window.location.origin).href}`;
+}
+
+function overlayLayerId(base: string, prefix?: string): string {
+  return prefix ? `${base}-${prefix}` : base;
 }
 
 function highlightFilter(sel: VillageClickSelection | null): FilterSpecification {
@@ -236,25 +249,35 @@ function AreaHighlightLayers({
 }
 
 function AreaOverlayLayers({
+  idPrefix,
   sourceLayer,
   areaLayer,
   outlineKind,
   filter,
   beforeId,
+  minzoom,
+  maxzoom,
   villageSelection,
   villageClickEnabled,
 }: {
+  idPrefix?: string;
   sourceLayer?: string;
   areaLayer: AreaLayerKey | null;
   outlineKind: "kab" | "village";
   filter?: FilterSpecification;
   beforeId?: string;
+  minzoom?: number;
+  maxzoom?: number;
   villageSelection: VillageClickSelection | null;
   villageClickEnabled: boolean;
 }) {
   const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
   const before = beforeId ? { beforeId } : {};
   const filterProp = filter ? { filter } : {};
+  const zoomRange = {
+    ...(minzoom != null ? { minzoom } : {}),
+    ...(maxzoom != null ? { maxzoom } : {}),
+  };
   const fillPaint = sourceLayer
     ? {
         "fill-color": fillColorExpr(areaLayer) as never,
@@ -283,20 +306,26 @@ function AreaOverlayLayers({
   return (
     <>
       <Layer
-        id="area-fill"
+        id={overlayLayerId("area-fill", idPrefix)}
         type="fill"
         {...layerProps}
         {...before}
         {...filterProp}
+        {...zoomRange}
         paint={fillPaint as never}
       />
       <Layer
-        id="area-outline"
+        id={overlayLayerId("area-outline", idPrefix)}
         type="line"
         {...layerProps}
         {...before}
         {...filterProp}
-        minzoom={outlineKind === "village" ? VILLAGE_OUTLINE_MIN_ZOOM : 0}
+        minzoom={
+          outlineKind === "village"
+            ? Math.max(minzoom ?? 0, VILLAGE_OUTLINE_MIN_ZOOM)
+            : (minzoom ?? 0)
+        }
+        {...(maxzoom != null ? { maxzoom } : {})}
         paint={areaOutlinePaint(outlineKind) as never}
       />
       {villageClickEnabled && (
@@ -345,6 +374,7 @@ export function MapViewport({
   preferVector = false,
   markerLayers,
   areaLayer,
+  krbJenis = null,
   disasterJenis = [],
   villageSelection = null,
   onVillageClick,
@@ -356,6 +386,7 @@ export function MapViewport({
   preferVector?: boolean;
   markerLayers: MarkerLayerKey[];
   areaLayer: AreaLayerKey | null;
+  krbJenis?: string | null;
   disasterJenis?: string[];
   villageSelection?: VillageClickSelection | null;
   onVillageClick?: (sel: VillageClickSelection) => void;
@@ -368,16 +399,19 @@ export function MapViewport({
     title: string;
     status?: string;
     layer?: MarkerLayerKey;
+    href?: string;
+    subtitle?: string;
     coordQuality?: CoordQuality | null;
     stackItems?: StackMember[];
   } | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
+  const [chromeIconsReady, setChromeIconsReady] = useState(false);
   const [useVillageTiles, setUseVillageTiles] = useState(() =>
     isVillageLodZoom(view.zoom)
   );
   const [kabFocus, setKabFocus] = useState<VillageLodFocus | null>(null);
-  const [labelBeforeId, setLabelBeforeId] = useState<string | undefined>();
+  const [overlaySlot, setOverlaySlot] = useState<string | undefined>();
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const villageClickEnabled = areaLayer === "villageDistribution";
 
@@ -388,7 +422,7 @@ export function MapViewport({
 
   const syncOverlayBeforeId = useCallback(() => {
     const map = mapRef.current?.getMap();
-    setLabelBeforeId(
+    setOverlaySlot(
       overlayBeforeId((id) => Boolean(map?.getLayer(id)))
     );
   }, []);
@@ -412,26 +446,33 @@ export function MapViewport({
 
   const haloStroke = useMemo(() => markerHaloStroke(basemap), [basemap]);
 
+  const loadChromeIcons = useCallback(async () => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+    setChromeIconsReady(false);
+    const ready = await registerMapChromeIcons(map, haloStroke);
+    setChromeIconsReady(ready);
+    syncOverlayBeforeId();
+  }, [haloStroke, syncOverlayBeforeId]);
+
   const onMapLoad = useCallback(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
-    void registerMapChromeIcons(map, haloStroke);
-    syncOverlayBeforeId();
+    void loadChromeIcons();
     applyZoomLod(map.getZoom());
-  }, [haloStroke, syncOverlayBeforeId, applyZoomLod]);
+  }, [loadChromeIcons, applyZoomLod]);
 
   useEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map) return;
     const onStyle = () => {
-      void registerMapChromeIcons(map, haloStroke);
-      syncOverlayBeforeId();
+      void loadChromeIcons();
     };
     map.on("style.load", onStyle);
     return () => {
       map.off("style.load", onStyle);
     };
-  }, [mapStyle, haloStroke, syncOverlayBeforeId]);
+  }, [mapStyle, loadChromeIcons]);
 
   useEffect(() => {
     applyZoomLod(view.zoom);
@@ -451,13 +492,6 @@ export function MapViewport({
     return new Set(disasterJenis);
   }, [disasterJenis]);
 
-  const pmtilesMeta = useMemo(() => {
-    if (areaLayer === "villageDistribution") {
-      return useVillageTiles ? PMTILES_VILLAGE : PMTILES_KAB;
-    }
-    return areaLayer ? PMTILES_AREA[areaLayer] : undefined;
-  }, [areaLayer, useVillageTiles]);
-
   const lodFocus = useMemo(
     () => mergeVillageLodFocus(kabFocus, villageSelection),
     [kabFocus, villageSelection]
@@ -465,27 +499,63 @@ export function MapViewport({
 
   const villageFilter = useMemo(
     () =>
-      areaLayer === "villageDistribution" && useVillageTiles
+      areaLayer === "villageDistribution"
         ? villageLayerFilter(lodFocus)
         : undefined,
-    [areaLayer, useVillageTiles, lodFocus]
+    [areaLayer, lodFocus]
   );
 
-  const outlineKind =
-    areaLayer === "villageDistribution" && useVillageTiles ? "village" : "kab";
+  const villageLod = areaLayer === "villageDistribution";
+  const otherPmtilesMeta =
+    areaLayer && areaLayer !== "villageDistribution"
+      ? PMTILES_AREA[areaLayer]
+      : undefined;
 
-  const skipVillageGeojsonFallback =
-    areaLayer === "villageDistribution" && !useVillageTiles;
+  const krbRecolor = areaLayer === "irbi2025" && Boolean(krbJenis);
 
-  const { data: pmtilesAvailable } = useQuery({
-    queryKey: ["pmtiles-exists", pmtilesMeta?.url ?? "none"],
-    queryFn: () =>
-      pmtilesMeta ? pmtilesExists(pmtilesMeta.url) : Promise.resolve(false),
-    enabled: !!pmtilesMeta,
+  const { data: krbData } = useQuery({
+    queryKey: qk.krb,
+    queryFn: () => fetchKrb(),
+    enabled: areaLayer === "irbi2025",
     staleTime: 60_000,
   });
 
-  const usePmtiles = Boolean(pmtilesMeta && pmtilesAvailable);
+  const { data: kabPmtilesOk } = useQuery({
+    queryKey: ["pmtiles-exists", PMTILES_KAB.url],
+    queryFn: () => pmtilesExists(PMTILES_KAB.url),
+    enabled: villageLod && !krbRecolor,
+    staleTime: 60_000,
+  });
+
+  const { data: villagePmtilesOk } = useQuery({
+    queryKey: ["pmtiles-exists", PMTILES_VILLAGE.url],
+    queryFn: () => pmtilesExists(PMTILES_VILLAGE.url),
+    enabled: villageLod && !krbRecolor,
+    staleTime: 60_000,
+  });
+
+  const { data: otherPmtilesOk } = useQuery({
+    queryKey: ["pmtiles-exists", otherPmtilesMeta?.url ?? "none"],
+    queryFn: () =>
+      otherPmtilesMeta ? pmtilesExists(otherPmtilesMeta.url) : Promise.resolve(false),
+    enabled: Boolean(otherPmtilesMeta) && !krbRecolor,
+    staleTime: 60_000,
+  });
+
+  const useKabPmtiles = Boolean(villageLod && kabPmtilesOk && !krbRecolor);
+  const useVillagePmtiles = Boolean(villageLod && villagePmtilesOk && !krbRecolor);
+  const useOtherPmtiles = Boolean(otherPmtilesMeta && otherPmtilesOk && !krbRecolor);
+
+  const needAreaGeojson =
+    areaLayer != null &&
+    (krbRecolor ||
+      (villageLod
+        ? useVillageTiles
+          ? villagePmtilesOk === false
+          : kabPmtilesOk === false
+        : otherPmtilesMeta
+          ? otherPmtilesOk === false
+          : true));
 
   const { data } = useQuery({
     queryKey: qk.markers(sortedKeys),
@@ -553,18 +623,18 @@ export function MapViewport({
   const { data: areaData } = useQuery({
     queryKey: qk.area(areaLayer ?? "villageDistribution"),
     queryFn: () => fetchArea(areaLayer!),
-    // Wait for PMTiles HEAD; only fall back to GeoJSON API when tiles are missing
-    enabled:
-      areaLayer != null &&
-      !skipVillageGeojsonFallback &&
-      (pmtilesMeta ? pmtilesAvailable === false : true),
+    enabled: needAreaGeojson,
   });
 
   const areaGeojson = useMemo(() => {
     if (!areaData?.features) return null;
+    const joined =
+      krbRecolor && krbJenis && krbData?.wilayah
+        ? joinKelasOntoIrbiFeatures(areaData.features, krbData.wilayah, krbJenis)
+        : areaData.features;
     return {
       type: "FeatureCollection" as const,
-      features: areaData.features.map((f) => ({
+      features: joined.map((f) => ({
         ...f,
         properties: {
           ...f.properties,
@@ -574,13 +644,33 @@ export function MapViewport({
         },
       })),
     };
-  }, [areaData, areaLayer]);
+  }, [areaData, areaLayer, krbRecolor, krbJenis, krbData]);
 
-  const pmtilesUrl = useMemo(() => {
-    if (!usePmtiles || !pmtilesMeta || typeof window === "undefined") return null;
-    const abs = new URL(withBasePath(pmtilesMeta.url), window.location.origin).href;
-    return `pmtiles://${abs}`;
-  }, [usePmtiles, pmtilesMeta]);
+  const kawasanGeojson = useMemo(() => {
+    if (areaLayer !== "irbi2025" || !krbData?.kawasan?.length) return null;
+    const fc = kawasanPoints(krbData.kawasan);
+    return fc.features.length ? fc : null;
+  }, [areaLayer, krbData]);
+
+  const kabPmtilesUrl = useMemo(
+    () => (useKabPmtiles ? pmtilesProtocolUrl(PMTILES_KAB.url) : null),
+    [useKabPmtiles]
+  );
+  const villagePmtilesUrl = useMemo(
+    () => (useVillagePmtiles ? pmtilesProtocolUrl(PMTILES_VILLAGE.url) : null),
+    [useVillagePmtiles]
+  );
+  const otherPmtilesUrl = useMemo(
+    () =>
+      useOtherPmtiles && otherPmtilesMeta
+        ? pmtilesProtocolUrl(otherPmtilesMeta.url)
+        : null,
+    [useOtherPmtiles, otherPmtilesMeta]
+  );
+
+  useEffect(() => {
+    syncOverlayBeforeId();
+  }, [sortedKeys, areaLayer, useKabPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
 
   const onMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -619,9 +709,25 @@ export function MapViewport({
         return;
       }
 
+      const kawasanFeat = e.features?.find((f) => f.layer?.id === "krb-kawasan-circles");
+      if (kawasanFeat && kawasanFeat.geometry.type === "Point") {
+        const [lng, lat] = kawasanFeat.geometry.coordinates as [number, number];
+        const props = kawasanFeat.properties ?? {};
+        setPopup({
+          lng,
+          lat,
+          title: String(props.title ?? t("krbKawasan")),
+          status: props.zona ? String(props.zona) : undefined,
+          subtitle: [props.jenis_bahaya, props.kabupaten].filter(Boolean).join(" · "),
+          href: props.sumber_url ? String(props.sumber_url) : undefined,
+        });
+        return;
+      }
+
       if (!villageClickEnabled) return;
-      const feature = e.features?.find((f) => f.layer?.id === "area-fill");
+      const feature = e.features?.find((f) => isAreaFillLayerId(f.layer?.id));
       if (!feature) return;
+      const fillLayerId = feature.layer?.id ?? "area-fill";
       const props = feature.properties as Record<string, unknown> | null;
       if (isKabAreaFeature(props, useVillageTiles)) {
         const nextFocus = readKabLodFocus(props);
@@ -630,8 +736,9 @@ export function MapViewport({
         if (map) {
           const kode = String(props?.kode_kab ?? props?.kode_kabupaten ?? "");
           const name = String(props?.name ?? props?.kabupaten ?? "");
+          const queryLayers = map.getLayer(fillLayerId) ? [fillLayerId] : [...AREA_FILL_LAYER_IDS];
           const siblings = map
-            .queryRenderedFeatures(undefined, { layers: ["area-fill"] })
+            .queryRenderedFeatures(undefined, { layers: queryLayers })
             .filter((f) => {
               const p = f.properties ?? {};
               return (
@@ -662,7 +769,7 @@ export function MapViewport({
       const sel = readVillageSelection(props);
       if (sel) onVillageClick(sel);
     },
-    [villageClickEnabled, onVillageClick, useVillageTiles]
+    [villageClickEnabled, onVillageClick, useVillageTiles, t]
   );
 
   const onMove = useCallback(
@@ -698,7 +805,8 @@ export function MapViewport({
         interactiveLayerIds={[
           "marker-clusters",
           ...POINT_LAYER_IDS,
-          ...(villageClickEnabled ? (["area-fill"] as const) : []),
+          "krb-kawasan-circles",
+          ...(villageClickEnabled ? [...AREA_FILL_LAYER_IDS] : []),
         ]}
         onLoad={onMapLoad}
         onClick={onMapClick}
@@ -720,41 +828,12 @@ export function MapViewport({
         maxPitch={0}
       >
         <NavigationControl position="top-left" />
-        {pmtilesUrl && pmtilesMeta && (
-          <Source
-            id="area-layer-pmtiles"
-            key={pmtilesMeta.url}
-            type="vector"
-            url={pmtilesUrl}
-          >
-            <AreaOverlayLayers
-              sourceLayer={pmtilesMeta.sourceLayer}
-              areaLayer={areaLayer}
-              outlineKind={outlineKind}
-              filter={villageFilter}
-              beforeId={labelBeforeId}
-              villageSelection={villageSelection}
-              villageClickEnabled={villageClickEnabled && useVillageTiles}
-            />
-          </Source>
-        )}
-        {!usePmtiles && areaGeojson && (
-          <Source id="area-layer" type="geojson" data={areaGeojson} generateId>
-            <AreaOverlayLayers
-              areaLayer={areaLayer}
-              outlineKind={outlineKind}
-              filter={villageFilter}
-              beforeId={labelBeforeId}
-              villageSelection={villageSelection}
-              villageClickEnabled={villageClickEnabled && useVillageTiles}
-            />
-          </Source>
-        )}
         {sortedKeys.length > 0 && (
           <Source
             id="markers"
             type="geojson"
             data={markerGeojson}
+            generateId
             cluster
             clusterMaxZoom={MAP_CLUSTER_MAX_ZOOM}
             clusterRadius={48}
@@ -807,7 +886,7 @@ export function MapViewport({
             <Layer
               id="marker-dots"
               type="circle"
-              maxzoom={MAP_DOT_MAX_ZOOM}
+              {...(chromeIconsReady ? { maxzoom: MAP_DOT_MAX_ZOOM } : {})}
               filter={[
                 "all",
                 ["!", ["has", "point_count"]],
@@ -895,6 +974,75 @@ export function MapViewport({
             />
           </Source>
         )}
+        {kawasanGeojson && (
+          <Source id="krb-kawasan" type="geojson" data={kawasanGeojson}>
+            <Layer
+              id="krb-kawasan-circles"
+              type="circle"
+              {...(overlaySlot ? { beforeId: overlaySlot } : {})}
+              paint={{
+                "circle-radius": 7,
+                "circle-color": STATUS_HEX.TINGGI,
+                "circle-stroke-width": 2,
+                "circle-stroke-color": haloStroke,
+                "circle-opacity": 0.92,
+              }}
+            />
+          </Source>
+        )}
+        {kabPmtilesUrl && (
+          <Source id="area-layer-kab" type="vector" url={kabPmtilesUrl}>
+            <AreaOverlayLayers
+              idPrefix="kab"
+              sourceLayer={PMTILES_KAB.sourceLayer}
+              areaLayer={areaLayer}
+              outlineKind="kab"
+              beforeId={overlaySlot}
+              maxzoom={VILLAGE_LOD_MIN_ZOOM}
+              villageSelection={villageSelection}
+              villageClickEnabled={villageClickEnabled && !useVillageTiles}
+            />
+          </Source>
+        )}
+        {villagePmtilesUrl && (
+          <Source id="area-layer-village" type="vector" url={villagePmtilesUrl}>
+            <AreaOverlayLayers
+              idPrefix="village"
+              sourceLayer={PMTILES_VILLAGE.sourceLayer}
+              areaLayer={areaLayer}
+              outlineKind="village"
+              filter={villageFilter}
+              beforeId={overlaySlot}
+              minzoom={VILLAGE_LOD_MIN_ZOOM}
+              villageSelection={villageSelection}
+              villageClickEnabled={villageClickEnabled && useVillageTiles}
+            />
+          </Source>
+        )}
+        {otherPmtilesUrl && otherPmtilesMeta && (
+          <Source id="area-layer-pmtiles" type="vector" url={otherPmtilesUrl}>
+            <AreaOverlayLayers
+              sourceLayer={otherPmtilesMeta.sourceLayer}
+              areaLayer={areaLayer}
+              outlineKind="kab"
+              beforeId={overlaySlot}
+              villageSelection={villageSelection}
+              villageClickEnabled={false}
+            />
+          </Source>
+        )}
+        {needAreaGeojson && areaGeojson && (
+          <Source id="area-layer" type="geojson" data={areaGeojson} generateId>
+            <AreaOverlayLayers
+              areaLayer={areaLayer}
+              outlineKind={villageLod && useVillageTiles ? "village" : "kab"}
+              filter={villageLod && useVillageTiles ? villageFilter : undefined}
+              beforeId={overlaySlot}
+              villageSelection={villageSelection}
+              villageClickEnabled={villageClickEnabled && useVillageTiles}
+            />
+          </Source>
+        )}
         {popup && (
           <Popup
             longitude={popup.lng}
@@ -905,6 +1053,21 @@ export function MapViewport({
           >
             <div className="text-sm">
               <div className="font-semibold text-[var(--text)]">{popup.title}</div>
+              {popup.subtitle ? (
+                <div className={cn("mt-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                  {popup.subtitle}
+                </div>
+              ) : null}
+              {popup.href ? (
+                <a
+                  href={popup.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1.5 inline-block text-xs text-[var(--primary)] underline"
+                >
+                  {popup.href}
+                </a>
+              ) : null}
               <div className="mt-1.5">
                 <StatusChip
                   raw={popup.status}

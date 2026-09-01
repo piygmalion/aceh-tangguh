@@ -17,6 +17,7 @@ function MapWorkspaceInner() {
     setBasemap,
     setPreferVector,
     setAreaLayer,
+    setKrbJenis,
     toggleMarkerLayer,
     toggleDisasterJenis,
     toggleFasilitasUmum,
@@ -39,6 +40,7 @@ function MapWorkspaceInner() {
         preferVector={state.preferVector}
         markerLayers={state.markerLayers}
         areaLayer={state.areaLayer}
+        krbJenis={state.krbJenis ?? null}
         disasterJenis={state.disasterJenis}
         villageSelection={villageSelection}
         onVillageClick={setVillageSelection}
@@ -52,6 +54,8 @@ function MapWorkspaceInner() {
       <SiteNav />
       <MapToolbar
         areaLayer={state.areaLayer}
+        krbJenis={state.krbJenis ?? null}
+        onKrbJenisChange={setKrbJenis}
         onAreaLayerChange={setAreaLayer}
         markerLayers={state.markerLayers}
         onToggleMarker={toggleMarkerLayer}

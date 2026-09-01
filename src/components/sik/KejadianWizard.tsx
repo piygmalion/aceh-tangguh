@@ -5,13 +5,22 @@ import { useRouter } from "@/i18n/routing";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { JENIS_BENCANA_JUKLAK } from "@/lib/sik/jenis-bencana";
+import { KrbContextCard } from "@/components/sik/KrbContextCard";
+import {
+  ACEH_KABUPATEN,
+  deskripsiPlaceholder,
+  findKabupaten,
+  formatKib,
+  kibPrefix,
+} from "@/lib/sik/juklak";
 
 type Draft = {
   kode_jenis: number | "";
   jenis_bencana: string;
   nama_kejadian: string;
   slug_nama: string;
-  waktu_kejadian: string;
+  tarikh: string;
+  jam: string;
   penyebab: string;
   kronologi: string;
   deskripsi: string;
@@ -25,18 +34,36 @@ type Draft = {
   cuaca: string;
   sumber_informasi: string;
   status_darurat: boolean;
+  permintaan_bantuan_nasional: boolean;
   nomor_sk: string;
   sebaran_dampak: string;
   himbauan: string;
   personil_terlibat: string;
 };
 
+function todayTarikh() {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta" }).format(new Date());
+}
+
+function nowJam() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Jakarta",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date());
+  const h = parts.find((p) => p.type === "hour")?.value ?? "00";
+  const m = parts.find((p) => p.type === "minute")?.value ?? "00";
+  return `${h}:${m}`;
+}
+
 const empty: Draft = {
   kode_jenis: "",
   jenis_bencana: "",
   nama_kejadian: "",
   slug_nama: "",
-  waktu_kejadian: new Date().toISOString().slice(0, 16),
+  tarikh: todayTarikh(),
+  jam: nowJam(),
   penyebab: "",
   kronologi: "",
   deskripsi: "",
@@ -50,6 +77,7 @@ const empty: Draft = {
   cuaca: "",
   sumber_informasi: "",
   status_darurat: false,
+  permintaan_bantuan_nasional: false,
   nomor_sk: "",
   sebaran_dampak: "",
   himbauan: "",
@@ -112,15 +140,33 @@ export function KejadianWizard({
     });
   }
 
+  const kibPreview = useMemo(() => {
+    if (!draft.kode_kabupaten || !draft.kode_jenis || !draft.tarikh) return null;
+    try {
+      return formatKib(
+        kibPrefix({
+          kodeKabupaten: draft.kode_kabupaten,
+          kodeJenis: Number(draft.kode_jenis),
+          tarikh: draft.tarikh,
+        }),
+        1
+      );
+    } catch {
+      return null;
+    }
+  }, [draft.kode_kabupaten, draft.kode_jenis, draft.tarikh]);
+
   async function submit() {
     setBusy(true);
     setError(null);
+    const waktu = `${draft.tarikh}T${draft.jam || "00:00"}:00+07:00`;
     const payload = {
       kode_jenis: draft.kode_jenis === "" ? null : Number(draft.kode_jenis),
       jenis_bencana: draft.jenis_bencana,
       nama_kejadian: draft.nama_kejadian,
       slug_nama: draft.slug_nama || null,
-      waktu_kejadian: new Date(draft.waktu_kejadian).toISOString(),
+      waktu_kejadian: new Date(waktu).toISOString(),
+      tarikh: draft.tarikh,
       penyebab: draft.penyebab || null,
       kronologi: draft.kronologi || null,
       deskripsi: draft.deskripsi || null,
@@ -129,11 +175,12 @@ export function KejadianWizard({
       kode_kabupaten: draft.kode_kabupaten || null,
       kecamatan: draft.kecamatan || null,
       desa_ringkas: draft.desa_ringkas || null,
-      latitude: draft.latitude ? Number(draft.latitude) : null,
-      longitude: draft.longitude ? Number(draft.longitude) : null,
+      latitude: draft.latitude ? Number(Number(draft.latitude).toFixed(6)) : null,
+      longitude: draft.longitude ? Number(Number(draft.longitude).toFixed(6)) : null,
       cuaca: draft.cuaca || null,
       sumber_informasi: draft.sumber_informasi || null,
       status_darurat: draft.status_darurat,
+      permintaan_bantuan_nasional: draft.permintaan_bantuan_nasional,
       nomor_sk: draft.nomor_sk || null,
       sebaran_dampak: draft.sebaran_dampak || null,
       himbauan: draft.himbauan || null,
@@ -168,7 +215,7 @@ export function KejadianWizard({
 
   return (
     <GlassPanel className="p-5">
-      <p className="text-xs uppercase tracking-wide text-[var(--text-dim)]">Langkah {step} / 3</p>
+      <p className="text-xs uppercase tracking-wide text-[var(--text-dim)]">Langkah {step} / 3 · Juklak 7/2023</p>
       <h1 className="mt-1 text-xl font-semibold">Kejadian baru</h1>
       {error ? <p className="mt-2 text-sm text-[var(--danger)]">{error}</p> : null}
 
@@ -210,13 +257,11 @@ export function KejadianWizard({
           <Field label="Atau ketik nama kejadian">
             <input className={inputClass} value={draft.nama_kejadian} onChange={(e) => set("nama_kejadian", e.target.value)} />
           </Field>
-          <Field label="Waktu kejadian">
-            <input
-              type="datetime-local"
-              className={inputClass}
-              value={draft.waktu_kejadian}
-              onChange={(e) => set("waktu_kejadian", e.target.value)}
-            />
+          <Field label="Tarikh (tanggal)">
+            <input type="date" className={inputClass} value={draft.tarikh} onChange={(e) => set("tarikh", e.target.value)} />
+          </Field>
+          <Field label="Waktu kejadian (jam)">
+            <input type="time" className={inputClass} value={draft.jam} onChange={(e) => set("jam", e.target.value)} />
           </Field>
           <Field label="Penyebab">
             <textarea className={inputClass} rows={2} value={draft.penyebab} onChange={(e) => set("penyebab", e.target.value)} />
@@ -226,7 +271,13 @@ export function KejadianWizard({
           </Field>
           <div className="md:col-span-2">
             <Field label="Deskripsi">
-              <textarea className={inputClass} rows={3} value={draft.deskripsi} onChange={(e) => set("deskripsi", e.target.value)} />
+              <textarea
+                className={inputClass}
+                rows={3}
+                placeholder={deskripsiPlaceholder(draft.kode_jenis === "" ? null : Number(draft.kode_jenis))}
+                value={draft.deskripsi}
+                onChange={(e) => set("deskripsi", e.target.value)}
+              />
             </Field>
           </div>
         </div>
@@ -243,10 +294,23 @@ export function KejadianWizard({
             </select>
           </Field>
           <Field label="Kabupaten/Kota">
-            <input className={inputClass} value={draft.kabupaten} onChange={(e) => set("kabupaten", e.target.value)} />
-          </Field>
-          <Field label="Kode kabupaten">
-            <input className={inputClass} value={draft.kode_kabupaten} onChange={(e) => set("kode_kabupaten", e.target.value)} />
+            <select
+              className={inputClass}
+              value={draft.kode_kabupaten}
+              onChange={(e) => {
+                const kode = e.target.value;
+                const kab = findKabupaten(kode);
+                set("kode_kabupaten", kode);
+                set("kabupaten", kab?.nama ?? "");
+              }}
+            >
+              <option value="">Pilih kabupaten/kota</option>
+              {ACEH_KABUPATEN.map((k) => (
+                <option key={k.kode} value={k.kode}>
+                  {k.kode} · {k.nama}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field label="Kecamatan">
             <input className={inputClass} value={draft.kecamatan} onChange={(e) => set("kecamatan", e.target.value)} />
@@ -254,11 +318,11 @@ export function KejadianWizard({
           <Field label="Desa terdampak">
             <input className={inputClass} value={draft.desa_ringkas} onChange={(e) => set("desa_ringkas", e.target.value)} />
           </Field>
-          <div className="flex items-end gap-2">
-            <Field label="Latitude">
+          <div className="flex items-end gap-2 md:col-span-2">
+            <Field label="Latitude (min. 6 desimal)">
               <input className={inputClass} value={draft.latitude} onChange={(e) => set("latitude", e.target.value)} />
             </Field>
-            <Field label="Longitude">
+            <Field label="Longitude (min. 6 desimal)">
               <input className={inputClass} value={draft.longitude} onChange={(e) => set("longitude", e.target.value)} />
             </Field>
             <Button type="button" variant="outline" size="sm" onClick={captureGps}>
@@ -287,6 +351,23 @@ export function KejadianWizard({
             />
             Status keadaan darurat
           </label>
+          <label className="flex items-center gap-2 text-sm md:col-span-2">
+            <input
+              type="checkbox"
+              checked={draft.permintaan_bantuan_nasional}
+              onChange={(e) => set("permintaan_bantuan_nasional", e.target.checked)}
+            />
+            Permintaan bantuan nasional
+          </label>
+          {kibPreview ? (
+            <p className="md:col-span-2 text-sm text-[var(--text-dim)]">
+              Pratinjau KIB (index akhir ditetapkan server): <span className="font-mono">{kibPreview}</span>
+            </p>
+          ) : (
+            <p className="md:col-span-2 text-sm text-[var(--text-dim)]">
+              Isi jenis dan kabupaten agar KIB 16 digit bisa dibentuk.
+            </p>
+          )}
           <div className="md:col-span-2">
             <Field label="Sebaran dampak">
               <input className={inputClass} value={draft.sebaran_dampak} onChange={(e) => set("sebaran_dampak", e.target.value)} />
@@ -305,12 +386,26 @@ export function KejadianWizard({
         </div>
       ) : null}
 
+      {draft.kode_kabupaten && draft.kode_jenis !== "" ? (
+        <div className="mt-4">
+          <KrbContextCard
+            kodeKabupaten={draft.kode_kabupaten}
+            kodeJenis={Number(draft.kode_jenis)}
+            namaKejadian={draft.nama_kejadian}
+          />
+        </div>
+      ) : null}
+
       <div className="mt-5 flex justify-between">
         <Button type="button" variant="outline" disabled={step === 1} onClick={() => setStep((s) => s - 1)}>
           Kembali
         </Button>
         {step < 3 ? (
-          <Button type="button" onClick={() => setStep((s) => s + 1)} disabled={step === 1 && !draft.nama_kejadian}>
+          <Button
+            type="button"
+            onClick={() => setStep((s) => s + 1)}
+            disabled={step === 1 && !draft.nama_kejadian}
+          >
             Lanjut
           </Button>
         ) : (

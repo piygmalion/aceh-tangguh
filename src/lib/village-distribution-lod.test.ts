@@ -5,12 +5,14 @@ import {
   AREA_OUTLINE_COLOR,
   BASEMAP_LABEL_PLACE_LAYER,
   KAB_OUTLINE_PAINT,
+  MARKER_CLUSTERS_LAYER,
   PMTILES_KAB,
   PMTILES_VILLAGE,
   VILLAGE_LOD_MIN_ZOOM,
   VILLAGE_OUTLINE_MIN_ZOOM,
   VILLAGE_OUTLINE_PAINT,
   geometryBounds,
+  isAreaFillLayerId,
   isKabAreaFeature,
   isVillageLodZoom,
   mergeVillageLodFocus,
@@ -76,28 +78,39 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(villageDistributionTiles(11).sourceLayer, "village");
   });
 
-  it("starts desa outlines at z11 and uses a forest token, not #14532d", () => {
-    assert.equal(VILLAGE_OUTLINE_MIN_ZOOM, 11);
+  it("starts desa outlines at z9 and uses a forest token, not #14532d", () => {
+    assert.equal(VILLAGE_OUTLINE_MIN_ZOOM, 9);
     assert.equal(AREA_OUTLINE_COLOR, COLOR_TOKENS.forest);
     assert.notEqual(AREA_OUTLINE_COLOR, "#14532d");
     assert.equal(KAB_OUTLINE_PAINT["line-color"], COLOR_TOKENS.forest);
     assert.equal(VILLAGE_OUTLINE_PAINT["line-color"], COLOR_TOKENS.forest);
     const opacity = VILLAGE_OUTLINE_PAINT["line-opacity"];
-    assert.equal(opacity[3], 11);
-    assert.equal(opacity[4], 0);
+    assert.equal(opacity[3], 9);
+    assert.equal(opacity[4], 0.3);
     assert.equal(opacity[5], 13);
-    assert.equal(opacity[6], 0.4);
+    assert.equal(opacity[6], 0.45);
   });
 });
 
 describe("overlay beforeId", () => {
-  it("uses basemap-label-place only when that layer exists", () => {
+  it("prefers marker-clusters so fill stays under points", () => {
+    assert.equal(
+      overlayBeforeId((id) => id === MARKER_CLUSTERS_LAYER || id === BASEMAP_LABEL_PLACE_LAYER),
+      MARKER_CLUSTERS_LAYER
+    );
     assert.equal(
       overlayBeforeId((id) => id === BASEMAP_LABEL_PLACE_LAYER),
-      "basemap-label-place"
+      BASEMAP_LABEL_PLACE_LAYER
     );
     assert.equal(overlayBeforeId(() => false), undefined);
     assert.equal(overlayBeforeId(null), undefined);
+  });
+
+  it("recognizes kab and village fill layer ids", () => {
+    assert.equal(isAreaFillLayerId("area-fill"), true);
+    assert.equal(isAreaFillLayerId("area-fill-kab"), true);
+    assert.equal(isAreaFillLayerId("area-fill-village"), true);
+    assert.equal(isAreaFillLayerId("marker-clusters"), false);
   });
 });
 
@@ -138,20 +151,20 @@ describe("village LOD focus + kode filter", () => {
     assert.equal(merged && "kecamatan" in merged, false);
   });
 
-  it("keeps leftovers without kode and does not filter on kecamatan name", () => {
+  it("hides leftovers without kode or kabupaten name when focus is set", () => {
     const kabFocus = { kodeKab: "1107", kabupaten: "Aceh Barat" };
     assert.equal(villageFeatureVisible(CODED_DESA, kabFocus), true);
     assert.equal(villageFeatureVisible(LEFTOVER_SAME_KAB, kabFocus), true);
     assert.equal(villageFeatureVisible(LEFTOVER_OTHER_KAB, kabFocus), false);
     assert.equal(
       villageFeatureVisible({ name: "orphan" }, kabFocus),
-      true
+      false
     );
 
     const kecFocus = { ...kabFocus, kodeKecamatan: "110701" };
     assert.equal(villageFeatureVisible(CODED_DESA, kecFocus), true);
     assert.equal(villageFeatureVisible(OTHER_KEC_SAME_KAB, kecFocus), false);
-    assert.equal(villageFeatureVisible(LEFTOVER_SAME_KAB, kecFocus), true);
+    assert.equal(villageFeatureVisible(LEFTOVER_SAME_KAB, kecFocus), false);
     assert.equal(
       villageFeatureVisible(
         {

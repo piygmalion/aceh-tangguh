@@ -56,8 +56,9 @@ async function loadStyleImage(
 export async function registerMapChromeIcons(
   map: MaplibreMap,
   stroke: string = COLOR_TOKENS.paper
-): Promise<void> {
-  if (typeof document === "undefined") return;
+): Promise<boolean> {
+  if (typeof document === "undefined") return false;
+  let added = 0;
   for (const { id, url } of listMapSymbolIcons()) {
     if (map.hasImage(id)) {
       try {
@@ -70,8 +71,10 @@ export async function registerMapChromeIcons(
     if (!image) continue;
     try {
       map.addImage(id, composeGlyphOnDisc(image, stroke), { pixelRatio: PIXEL_RATIO });
+      added += 1;
     } catch {
       // Style may have reloaded mid-loop; next style.load retries.
     }
   }
+  return added > 0;
 }

@@ -4,6 +4,8 @@ import { verifikasiSchema } from "@/lib/sik/schemas";
 import { rejectCrossOrigin } from "@/lib/security/origin";
 import { createServiceClient } from "@/lib/supabase/server";
 import { toDisasterJenisLabel } from "@/lib/sik/jenis-bencana";
+import { findKabupaten, mapLaporanSlugToJenis } from "@/lib/sik/juklak";
+import { allocateKib, resolveTarikh } from "@/lib/sik/kejadian-write";
 import type { Json } from "@/lib/supabase/types";
 
 export const dynamic = "force-dynamic";
@@ -46,17 +48,46 @@ export async function POST(req: NextRequest) {
     typeof jawaban.deskripsi_kejadian === "string"
       ? jawaban.deskripsi_kejadian
       : laporan.addendum;
-  const jenisLabel = toDisasterJenisLabel({ jenis: laporan.jenis_bencana });
+  const mapped = mapLaporanSlugToJenis(laporan.jenis_bencana);
+  const jenisLabel = mapped?.jenis ?? toDisasterJenisLabel({ jenis: laporan.jenis_bencana });
+  const kab = findKabupaten(laporan.kabupaten_kota);
+  const waktu = laporan.submitted_at;
+  const tarikh = resolveTarikh(waktu);
+  let kib: string | null = null;
+  let kibIndex: number | null = null;
+  try {
+    const allocated = await allocateKib(auth.supabase, {
+      kodeKabupaten: kab?.kode ?? null,
+      kodeJenis: mapped?.kode ?? null,
+      tarikh,
+    });
+    if (allocated) {
+      kib = allocated.kib;
+      kibIndex = allocated.kib_index;
+    }
+  } catch {
+    kib = null;
+  }
 
   const { data: kejadian, error: insertErr } = await auth.supabase
     .from("kejadian_operasi")
     .insert({
+      kode_jenis: mapped?.kode ?? null,
       jenis_bencana: jenisLabel,
-      nama_kejadian: `${jenisLabel} ${laporan.desa ?? laporan.kabupaten_kota}`,
-      waktu_kejadian: laporan.submitted_at,
+      nama_kejadian: mapped?.nama
+        ? `${mapped.nama} ${laporan.desa ?? laporan.kabupaten_kota}`
+        : `${jenisLabel} ${laporan.desa ?? laporan.kabupaten_kota}`,
+      slug_nama: mapped?.slugNama ?? null,
+      waktu_kejadian: waktu,
+      tarikh,
+      kib,
+      kib_index: kibIndex,
+      kode_provinsi: "11",
+      fase_data: "dinamis",
       deskripsi: deskripsi ?? null,
       kronologi: deskripsi ?? null,
-      kabupaten: laporan.kabupaten_kota,
+      kabupaten: kab?.nama ?? laporan.kabupaten_kota,
+      kode_kabupaten: kab?.kode ?? null,
       kecamatan: laporan.kecamatan,
       desa_ringkas: laporan.desa,
       latitude: laporan.latitude,
