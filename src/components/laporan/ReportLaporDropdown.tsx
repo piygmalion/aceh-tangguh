@@ -14,7 +14,7 @@ export function ReportLaporDropdown({ className = "" }: { className?: string }) 
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1 rounded-full bg-[var(--accent-dim)] px-3.5 py-2 text-sm font-medium text-[var(--accent)] transition hover:bg-[var(--accent)] hover:text-white"
+        className="inline-flex items-center gap-1 rounded-full bg-[var(--accent)] px-3.5 py-2 text-sm font-semibold text-white transition hover:bg-[var(--accent-hover)]"
       >
         {t("lapor")}
         <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />

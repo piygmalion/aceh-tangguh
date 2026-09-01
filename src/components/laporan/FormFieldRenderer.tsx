@@ -35,7 +35,7 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
                 required={field.wajib}
                 value={String(val ?? "")}
                 onChange={(e) => onChange(field.field_key, e.target.value)}
-                className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+                className="field-input"
               >
                 <option value="">—</option>
                 {field.opsi?.map((o) => (
@@ -90,7 +90,7 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
                 max={field.validasi?.max as number | undefined}
                 value={val != null ? String(val) : ""}
                 onChange={(e) => onChange(field.field_key, e.target.value ? Number(e.target.value) : undefined)}
-                className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+                className="field-input"
               />
             </label>
           );
@@ -105,7 +105,7 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
                 required={field.wajib}
                 value={String(val ?? "")}
                 onChange={(e) => onChange(field.field_key, e.target.value)}
-                className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+                className="field-input"
               />
             </label>
           );
@@ -123,7 +123,7 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
                 maxLength={maxLen}
                 value={text}
                 onChange={(e) => onChange(field.field_key, e.target.value)}
-                className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+                className="field-textarea"
               />
               {Boolean(field.validasi?.show_counter) && (
                 <span className="mt-1 block text-xs text-[var(--text-dim)]">{text.length}/{maxLen}</span>
@@ -194,7 +194,7 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
               maxLength={field.validasi?.max_length as number | undefined}
               value={String(val ?? "")}
               onChange={(e) => onChange(field.field_key, e.target.value)}
-              className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+              className="field-input"
             />
           </label>
         );

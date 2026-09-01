@@ -72,7 +72,7 @@ export function GpsCapture({ value, onChange }: Props) {
             required
             value={value.latitude}
             onChange={(e) => onChange({ ...value, latitude: Number(e.target.value) })}
-            className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+            className="field-input"
           />
         </label>
         <label className="block text-sm">
@@ -83,7 +83,7 @@ export function GpsCapture({ value, onChange }: Props) {
             required
             value={value.longitude}
             onChange={(e) => onChange({ ...value, longitude: Number(e.target.value) })}
-            className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+            className="field-input"
           />
         </label>
         <label className="block text-sm sm:col-span-2">
@@ -92,7 +92,7 @@ export function GpsCapture({ value, onChange }: Props) {
             required
             value={value.kabupaten_kota}
             onChange={(e) => onChange({ ...value, kabupaten_kota: e.target.value })}
-            className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+            className="field-input"
           />
         </label>
         <label className="block text-sm">
@@ -100,7 +100,7 @@ export function GpsCapture({ value, onChange }: Props) {
           <input
             value={value.kecamatan}
             onChange={(e) => onChange({ ...value, kecamatan: e.target.value })}
-            className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+            className="field-input"
           />
         </label>
         <label className="block text-sm">
@@ -108,7 +108,7 @@ export function GpsCapture({ value, onChange }: Props) {
           <input
             value={value.desa}
             onChange={(e) => onChange({ ...value, desa: e.target.value })}
-            className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+            className="field-input"
           />
         </label>
       </div>

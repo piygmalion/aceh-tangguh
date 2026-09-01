@@ -6,7 +6,6 @@ import { Link } from "@/i18n/routing";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { GlassPanel } from "@/components/ui/GlassPanel";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { SITE_MEDIA } from "@/lib/media";
 import { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
@@ -31,10 +30,11 @@ export function MapTeaserSection() {
   const t = useTranslations("mapTeaser");
   const tm = useTranslations("map");
   return (
-    <section className="section-shell reveal mt-16 md:mt-24">
+    <section className="section-shell reveal py-20 md:py-28">
       <BlurFade inView>
         <div className="max-w-2xl">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+          <p className="type-kicker mb-2 text-[var(--accent-soft)]">{t("kicker")}</p>
+          <h2 className="section-h2">
             {t("heading")}
           </h2>
           <p className="mt-3 text-[var(--text-dim)]">{t("lead")}</p>
@@ -105,10 +105,11 @@ export function MapTeaserSection() {
       </BlurFade>
 
       <div className="mt-7">
-        <Link href="/peta">
-          <ShimmerButton background="rgba(46, 158, 78, 1)" shimmerColor="#e8ffe8">
-            <span className="text-sm font-semibold">{t("cta")}</span>
-          </ShimmerButton>
+        <Link
+          href="/peta"
+          className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--primary)] px-6 text-sm font-semibold text-white transition hover:opacity-90"
+        >
+          {t("cta")}
         </Link>
       </div>
     </section>

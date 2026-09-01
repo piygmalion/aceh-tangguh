@@ -7,7 +7,7 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-[var(--primary)] text-[var(--primary-fg)] shadow-sm hover:bg-[var(--primary-hover)] hover:shadow-md active:scale-[0.98]",
   accent:
-    "bg-[var(--accent)] text-[var(--accent-fg)] shadow-sm hover:bg-[var(--accent-hover)] hover:shadow-md active:scale-[0.98]",
+    "bg-[var(--accent)] text-white shadow-sm hover:bg-[var(--accent-hover)] hover:shadow-md active:scale-[0.98]",
   ghost:
     "bg-transparent text-[var(--text)] hover:bg-[var(--primary-dim)] active:scale-[0.98]",
   outline:
@@ -17,9 +17,9 @@ const variants: Record<Variant, string> = {
 };
 
 const sizes: Record<Size, string> = {
-  sm: "px-3 py-1.5 text-sm",
-  md: "px-4 py-2 text-sm",
-  lg: "px-6 py-3 text-base",
+  sm: "h-9 px-3 text-sm",
+  md: "h-11 px-6 text-sm font-semibold",
+  lg: "h-12 px-6 text-base font-semibold",
 };
 
 export function Button({

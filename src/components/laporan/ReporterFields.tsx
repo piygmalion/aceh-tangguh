@@ -28,7 +28,7 @@ export function ReporterFields({ value, onChange }: Props) {
           required
           value={value.nama}
           onChange={(e) => onChange({ ...value, nama: e.target.value })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+          className="field-input"
         />
       </label>
       <label className="block text-sm">
@@ -39,7 +39,7 @@ export function ReporterFields({ value, onChange }: Props) {
           maxLength={16}
           value={value.nik}
           onChange={(e) => onChange({ ...value, nik: e.target.value.replace(/\D/g, "") })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+          className="field-input"
         />
       </label>
       <label className="block text-sm">
@@ -47,7 +47,7 @@ export function ReporterFields({ value, onChange }: Props) {
         <input
           value={value.telepon}
           onChange={(e) => onChange({ ...value, telepon: e.target.value })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+          className="field-input"
           placeholder="628..."
         />
       </label>
@@ -57,7 +57,7 @@ export function ReporterFields({ value, onChange }: Props) {
           type="email"
           value={value.email}
           onChange={(e) => onChange({ ...value, email: e.target.value })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+          className="field-input"
         />
       </label>
       <label className="block text-sm">
@@ -65,7 +65,7 @@ export function ReporterFields({ value, onChange }: Props) {
         <input
           value={value.kontak_darurat}
           onChange={(e) => onChange({ ...value, kontak_darurat: e.target.value })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+          className="field-input"
         />
       </label>
     </div>

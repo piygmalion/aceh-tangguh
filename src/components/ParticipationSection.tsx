@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { GlassPanel } from "@/components/ui/GlassPanel";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { SITE_MEDIA } from "@/lib/media";
 
 export function ParticipationSection() {
@@ -16,7 +15,7 @@ export function ParticipationSection() {
     { title: t("step3.title"), body: t("step3.body") },
   ];
   return (
-    <section className="reveal relative mt-16 overflow-hidden border-y border-[var(--glass-border)] px-4 py-16 md:mt-24 md:py-20">
+    <section className="reveal relative overflow-hidden border-y border-[var(--glass-border)] px-4 py-20 md:py-28">
       <div className="absolute inset-0" aria-hidden>
         <Image
           src={SITE_MEDIA.community.src}
@@ -31,7 +30,8 @@ export function ParticipationSection() {
       <div className="relative mx-auto max-w-6xl">
         <BlurFade inView>
           <div className="max-w-2xl">
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            <p className="type-kicker mb-2 text-[var(--accent-soft)]">{t("kicker")}</p>
+            <h2 className="section-h2">
               {t("heading")}
             </h2>
           </div>
@@ -55,19 +55,17 @@ export function ParticipationSection() {
         </ol>
         <p className="relative mt-7 max-w-2xl text-sm text-[var(--text-dim)]">{t("sla")}</p>
         <div className="relative mt-6 flex flex-wrap gap-3">
-          <Link href="/lapor/kejadian">
-            <ShimmerButton
-              background="var(--accent)"
-              shimmerColor="#F7F7F4"
-              className="text-[var(--accent-fg)]"
-            >
-              <span className="text-sm font-semibold">{t("ctaKejadian")}</span>
-            </ShimmerButton>
+          <Link
+            href="/lapor/kejadian"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--accent)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--accent-hover)]"
+          >
+            {t("ctaKejadian")}
           </Link>
-          <Link href="/lapor/penanganan">
-            <span className="inline-flex h-11 items-center rounded-full border border-white/30 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-md transition hover:border-white/50 hover:bg-white/15">
-              {t("ctaPenanganan")}
-            </span>
+          <Link
+            href="/lapor/penanganan"
+            className="inline-flex h-11 items-center rounded-full border border-white/30 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-md transition hover:border-white/50 hover:bg-white/15"
+          >
+            {t("ctaPenanganan")}
           </Link>
         </div>
       </div>

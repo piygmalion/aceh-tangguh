@@ -344,7 +344,7 @@ export function WeatherStrip() {
   return (
     <section
       id="cuaca"
-      className="border-y border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-4 py-5 backdrop-blur-sm"
+      className="border-y border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-4 py-8 backdrop-blur-sm"
     >
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

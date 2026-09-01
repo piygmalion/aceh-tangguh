@@ -106,8 +106,8 @@ export function MediaBackdrop({
       ) : null}
       <div
         className={cn(
-          "absolute inset-0 bg-gradient-to-b from-black/65 via-black/55 to-[var(--bg)]",
-          overlayClassName
+          "absolute inset-0",
+          overlayClassName ?? "bg-gradient-to-b from-black/65 via-black/55 to-[var(--bg)]"
         )}
       />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/45 via-black/15 to-transparent" />

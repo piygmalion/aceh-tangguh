@@ -1092,7 +1092,7 @@ export function MapViewport({
                 </Chip>
               )}
               {popup.stackItems && popup.stackItems.length > 1 ? (
-                <ul className="mt-2 max-h-40 space-y-1 overflow-auto text-[0.75rem] text-[var(--text-dim)]">
+                <ul className="mt-2 max-h-40 space-y-1 overflow-auto text-[0.8125rem] text-[var(--text-dim)]">
                   {popup.stackItems.map((item) => (
                     <li key={item.id || item.title}>
                       {item.jenisBencana ? `${item.jenisBencana} — ` : ""}

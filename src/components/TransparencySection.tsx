@@ -34,7 +34,7 @@ export function TransparencySection() {
     },
   ];
   return (
-    <section className="section-shell reveal relative mt-16 overflow-hidden md:mt-24" id="transparansi">
+    <section className="section-shell reveal relative overflow-hidden py-20 md:py-28" id="transparansi">
       <div className="pointer-events-none absolute inset-y-0 right-0 w-full max-w-xl opacity-25 md:opacity-40" aria-hidden>
         <Image
           src={SITE_MEDIA.forest.src}
@@ -48,7 +48,8 @@ export function TransparencySection() {
 
       <BlurFade inView>
         <div className="relative max-w-2xl">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+          <p className="type-kicker mb-2 text-[var(--accent-soft)]">{t("kicker")}</p>
+          <h2 className="section-h2">
             {t("heading")}
           </h2>
         </div>

@@ -648,10 +648,11 @@ export function R3PChartSection() {
   );
 
   return (
-    <section className="section-shell reveal mt-16 md:mt-24" id="prrpka">
+    <section className="section-shell reveal py-20 md:py-28" id="prrpka">
       <BlurFade inView>
         <div className="max-w-3xl">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+          <p className="type-kicker mb-2 text-[var(--accent-soft)]">{t("kicker")}</p>
+          <h2 className="section-h2">
             {t("heading")}
           </h2>
           <p className="mt-3 text-base leading-relaxed text-[var(--text-dim)]">

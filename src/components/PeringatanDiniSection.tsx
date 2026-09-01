@@ -59,7 +59,7 @@ function CardShell({
       : tone === "warn"
         ? "hover:ring-[var(--warn)]/50"
         : "hover:ring-[var(--primary)]/40";
-  const className = `glass flex h-full min-h-[14.5rem] flex-col gap-2 rounded-2xl px-3.5 py-3 transition hover:ring-1 ${ring}`;
+  const className = `glass flex h-full min-h-[16rem] flex-col gap-2 rounded-2xl p-6 transition hover:ring-1 ${ring}`;
 
   if (external) {
     return (
@@ -265,32 +265,41 @@ export function PeringatanDiniSection() {
   });
 
   return (
-    <section
-      id="status"
-      className="relative z-[1] -mt-2 border-y border-[var(--glass-border)] bg-[var(--bg-raised)]/80 px-4 py-5 backdrop-blur-sm"
-    >
+    <section id="status" className="relative z-[1] px-4 py-20 md:py-28">
       <div className="mx-auto max-w-6xl">
-        <div>
-          <h2 className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
-            {t("title")}
-          </h2>
-          <p className="mt-1 text-xs text-[var(--text-dim)]">{t("subtitle")}</p>
+        <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className={cn("mb-2 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
+              {t("kicker")}
+            </p>
+            <h2 className="section-h2">{t("title")}</h2>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--text-dim)]">
+              {t("subtitle")}
+            </p>
+          </div>
+          <a
+            href="#cuaca"
+            className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--accent-soft)] transition-colors hover:text-[var(--text)]"
+          >
+            {t("archiveLink")}
+            <span aria-hidden>→</span>
+          </a>
         </div>
 
         {isLoading ? (
-          <div className="mt-4 grid gap-3 md:grid-cols-3" aria-hidden>
+          <div className="grid gap-6 md:grid-cols-3" aria-hidden>
             {Array.from({ length: 3 }).map((_, i) => (
-              <span key={i} className="skeleton h-[14.5rem] rounded-2xl" />
+              <span key={i} className="skeleton h-[16rem] rounded-2xl" />
             ))}
           </div>
         ) : null}
 
         {isError ? (
-          <p className="mt-4 text-sm text-[var(--text-dim)]">{t("error")}</p>
+          <p className="text-sm text-[var(--text-dim)]">{t("error")}</p>
         ) : null}
 
         {data ? (
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             <CuacaCard card={data.cuaca} />
             <MagmaCardView card={data.magma} />
             <SipongiCardView card={data.sipongi} />
