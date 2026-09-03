@@ -84,8 +84,9 @@ describe("live_stats.posko_count is absent, not the stale 656 seed", () => {
     );
     assert.equal(UI_POSKO_CHIP.test(hero), false);
     assert.equal(hero.includes("poskoCount"), false);
-    assert.match(hero, /chipIncidents/);
-    assert.match(hero, /chipReports/);
+    assert.equal(hero.includes("/api/stats/live"), false);
+    assert.match(hero, /peringatanDini/);
+    assert.match(hero, /HeroStatusPanel/);
 
     for (const locale of ["id.json", "en.json"]) {
       const messages = JSON.parse(
