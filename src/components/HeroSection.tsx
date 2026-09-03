@@ -78,6 +78,17 @@ function HeroStatusPanel() {
             : data.sipongi.points[0]?.kabkota ?? tp("sipongi.source"),
           tone: data.sipongi.tone,
         },
+        ...(data.tatonas
+          ? [
+              {
+                key: "tatonas",
+                place: data.tatonas.empty
+                  ? tp("tatonas.empty")
+                  : data.tatonas.highlights[0]?.pos_name ?? tp("tatonas.source"),
+                tone: data.tatonas.tone,
+              },
+            ]
+          : []),
       ]
     : [];
 
@@ -91,7 +102,7 @@ function HeroStatusPanel() {
       </div>
       <div className="space-y-3">
         {isLoading
-          ? Array.from({ length: 3 }).map((_, i) => (
+          ? Array.from({ length: 4 }).map((_, i) => (
               <span key={i} className="skeleton block h-8 rounded-lg" aria-hidden />
             ))
           : rows.map((row) => {
@@ -138,8 +149,9 @@ export function HeroSection() {
 
   return (
     <section
+      id="hero"
       className={cn(
-        "relative flex flex-col overflow-hidden bg-[var(--bg)] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
+        "relative flex scroll-mt-28 flex-col overflow-hidden bg-[var(--bg)] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
         tab === "irbi" || tab === "krb"
           ? "min-h-[100svh] justify-start pb-16"
           : "min-h-[100svh] justify-end pb-16"

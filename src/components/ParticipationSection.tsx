@@ -15,7 +15,7 @@ export function ParticipationSection() {
     { title: t("step3.title"), body: t("step3.body") },
   ];
   return (
-    <section className="reveal relative overflow-hidden border-y border-[var(--glass-border)] px-4 py-20 md:py-28">
+    <section id="partisipasi" className="reveal relative scroll-mt-28 overflow-hidden border-y border-[var(--glass-border)] px-4 py-20 md:py-28">
       <div className="absolute inset-0" aria-hidden>
         <Image
           src={SITE_MEDIA.community.src}

@@ -17,6 +17,7 @@ export const LAYER_ICON_FILES: Record<MarkerLayerKey, string> = {
   infraRoadBridge: "icon-jalan-jembatan.png",
   laporanKejadian: "icon-laporan-warga.png",
   laporanPenanganan: "icon-posko.png",
+  tatonasStations: "icon-banjir.png",
 };
 
 export const AREA_LAYER_ICON_FILES: Record<AreaLayerKey, string> = {

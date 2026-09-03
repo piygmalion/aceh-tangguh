@@ -12,7 +12,8 @@ import {
   buildPrrpkaSummary,
 } from "@/lib/prrpka-types";
 import type { LegendModel } from "@/lib/types";
-import { unavailableMagmaCard, type SipongiCard } from "@/lib/peringatan-dini-types";
+import { unavailableMagmaCard, type SipongiCard, type TatonasCard } from "@/lib/peringatan-dini-types";
+import { emptyTatonasCard } from "@/lib/tatonas/parse";
 import { summarizeWeatherWarning } from "@/lib/peringatan-dini/weather-summary";
 import { annotatePoliceOfficeCoordQuality } from "@/lib/coord-quality";
 import { annotateDisasterDesa, desaByIdFromKejadian } from "@/lib/map-marker-chrome";
@@ -117,14 +118,16 @@ async function resolveStaticGet(input: string): Promise<Response> {
     return jsonResponse(await fetchJson("/fixtures/weather-snapshot.json"));
   }
   if (path === "/api/peringatan-dini") {
-    const [weather, sipongi] = await Promise.all([
+    const [weather, sipongi, tatonas] = await Promise.all([
       fetchJson("/fixtures/weather-snapshot.json") as Promise<WeatherApiResponse>,
       fetchJson("/fixtures/peringatan-sipongi.json") as Promise<SipongiCard>,
+      fetchJson("/fixtures/peringatan-tatonas.json") as Promise<TatonasCard>,
     ]);
     return jsonResponse({
       cuaca: summarizeWeatherWarning(weather),
       magma: unavailableMagmaCard(),
       sipongi: { ...sipongi, stale: true, source: "fixture" },
+      tatonas: { ...tatonas, stale: true, source: "fixture", tone: "neutral" },
     });
   }
   if (path === "/api/peringatan-dini/magma") {
@@ -135,6 +138,16 @@ async function resolveStaticGet(input: string): Promise<Response> {
       "/fixtures/peringatan-sipongi.json",
     )) as SipongiCard;
     return jsonResponse({ ...sipongi, stale: true, source: "fixture" });
+  }
+  if (path === "/api/peringatan-dini/tatonas") {
+    try {
+      const tatonas = (await fetchJson(
+        "/fixtures/peringatan-tatonas.json",
+      )) as TatonasCard;
+      return jsonResponse({ ...tatonas, stale: true, source: "fixture", tone: "neutral" });
+    } catch {
+      return jsonResponse(emptyTatonasCard({ source: "fixture", example: true }));
+    }
   }
   if (path === "/api/sentinel/status") {
     const data = (await fetchJson("/fixtures/sentinel-status.json")) as Record<

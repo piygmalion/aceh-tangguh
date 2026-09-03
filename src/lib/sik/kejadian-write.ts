@@ -7,9 +7,11 @@ import {
   memenuhiAmbangBatas,
   nextKibIndex,
   normalizeKorbanTerpilah,
+  normalizeKerugianRinci,
   rekapStatis,
   tarikhFromWaktu,
   type DampakSnapshot,
+  type RekapStatis,
 } from "@/lib/sik/juklak";
 
 export async function allocateKib(
@@ -71,6 +73,58 @@ export function snapshotFromDampak(row: KejadianDampakRow): DampakSnapshot {
     korban_terpilah: row.korban_terpilah
       ? normalizeKorbanTerpilah(row.korban_terpilah)
       : null,
+    kerugian_rinci: normalizeKerugianRinci(row.kerugian_rinci),
+    kebutuhan_dana_juta: row.kebutuhan_dana_juta,
+    kebutuhan_sdm: row.kebutuhan_sdm,
+    kebutuhan_sapras: row.kebutuhan_sapras,
+    kebutuhan_logistik: row.kebutuhan_logistik,
+    kebutuhan_peralatan: row.kebutuhan_peralatan,
+    aset_kedaruratan: row.aset_kedaruratan,
+    kondisi_mutakhir: row.kondisi_mutakhir,
+    upaya_penanganan: row.upaya_penanganan,
+    sawah_ha: row.sawah_ha,
+    kebun_ha: row.kebun_ha,
+    hutan_ha: row.hutan_ha,
+    kolam_ha: row.kolam_ha,
+    pendidikan_rb: row.pendidikan_rb,
+    pendidikan_rs: row.pendidikan_rs,
+    pendidikan_rr: row.pendidikan_rr,
+    pendidikan_terendam: row.pendidikan_terendam,
+    ibadah_rb: row.ibadah_rb,
+    ibadah_rs: row.ibadah_rs,
+    ibadah_rr: row.ibadah_rr,
+    ibadah_terendam: row.ibadah_terendam,
+    faskes_rb: row.faskes_rb,
+    faskes_rs: row.faskes_rs,
+    faskes_rr: row.faskes_rr,
+    faskes_terendam: row.faskes_terendam,
+    kantor_rb: row.kantor_rb,
+    kantor_rs: row.kantor_rs,
+    kantor_rr: row.kantor_rr,
+    kantor_terendam: row.kantor_terendam,
+    pasar_rb: row.pasar_rb,
+    pasar_rs: row.pasar_rs,
+    pasar_rr: row.pasar_rr,
+    pasar_terendam: row.pasar_terendam,
+    toko_rb: row.toko_rb,
+    toko_rs: row.toko_rs,
+    toko_rr: row.toko_rr,
+    toko_terendam: row.toko_terendam,
+    pabrik_rb: row.pabrik_rb,
+    pabrik_rs: row.pabrik_rs,
+    pabrik_rr: row.pabrik_rr,
+    pabrik_terendam: row.pabrik_terendam,
+    jembatan_rb: row.jembatan_rb,
+    jembatan_rs: row.jembatan_rs,
+    jembatan_rr: row.jembatan_rr,
+    jembatan_terendam: row.jembatan_terendam,
+    jalan_km: row.jalan_km,
+    air_jaringan: row.air_jaringan,
+    listrik_jaringan: row.listrik_jaringan,
+    telekom_jaringan: row.telekom_jaringan,
+    irigasi_jaringan: row.irigasi_jaringan,
+    transportasi_jaringan: row.transportasi_jaringan,
+    spbu_jaringan: row.spbu_jaringan,
   };
 }
 
@@ -106,7 +160,7 @@ export async function loadDampakSnapshots(
 export async function buildRekapStatis(
   supabase: AuthSupabaseClient,
   kejadianId: string
-): Promise<Record<string, number | null> | null> {
+): Promise<RekapStatis | null> {
   const rows = await loadDampakSnapshots(supabase, kejadianId);
   return rekapStatis(rows);
 }

@@ -472,6 +472,13 @@ a:focus-visible {
   animation: bounce-cue 1.8s ease-in-out infinite;
 }
 
+.panduan-tour-highlight {
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 6px;
+  border-radius: 1rem;
+  transition: outline-color 0.3s ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -480,6 +487,9 @@ a:focus-visible {
   .scroll-cue,
   .skeleton {
     animation: none !important;
+  }
+  .panduan-tour-highlight {
+    transition: none;
   }
 }
 

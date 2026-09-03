@@ -376,6 +376,21 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: "https://sipongi.gakkum.kehutanan.go.id/peta",
   },
   {
+    id: "tatonas-monitoring",
+    titleId: "Tatonas — pos hidrologi Aceh",
+    titleEn: "Tatonas — Aceh hydrology stations",
+    source:
+      "Tatonas Web Monitoring public dashboard (tatonas.co.id/monitoring). Live JSON via the same dt_data XHR the dashboard uses (HMAC from the public page + /api/server-time). Filtered to Aceh bbox (95–98.3E / 2–6.15N); camera loggers omitted. Typical Aceh project: BWS Aceh.",
+    license:
+      "Vendor cloud dashboard — attribute Tatonas. Schema may change without notice. Not an official government API.",
+    date: "Live + stale fixture fallback (revalidate ~10 min; readings older than 15 min marked delayed)",
+    format:
+      "JSON GET /api/dt_data → GET /api/peringatan-dini/tatonas and map overlay tatonasStations",
+    usedFor:
+      "Homepage Peringatan Dini card 4 and optional map layer Pos hidrologi (Tatonas). Alarm tone is fail-closed: stale snapshots never display as “Aman”. Coordinates are never invented. Does not create kejadian_operasi.",
+    href: "https://tatonas.co.id/monitoring/",
+  },
+  {
     id: "unsplash-media",
     titleId: "Media visual (Unsplash / stock)",
     titleEn: "Visual media (Unsplash / stock)",

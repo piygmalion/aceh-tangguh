@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
-import { CloudRain, Flame, Mountain } from "lucide-react";
+import { CloudRain, Droplets, Flame, Mountain } from "lucide-react";
 import { Chip } from "@/components/ui/Chip";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
@@ -13,6 +13,7 @@ import type {
   PeringatanDiniResponse,
   PeringatanTone,
   SipongiCard,
+  TatonasCard,
 } from "@/lib/peringatan-dini-types";
 import {
   TYPE_FLOOR_CLASS,
@@ -255,6 +256,56 @@ function SipongiCardView({ card }: { card: SipongiCard }) {
   );
 }
 
+function TatonasCardView({ card }: { card: TatonasCard }) {
+  const t = useTranslations("peringatanDini");
+  const locale = useLocale();
+  const stamp = formatStamp(card.fetched_at, locale);
+
+  return (
+    <CardShell
+      href={card.href}
+      external
+      tone={card.tone}
+      ariaLabel={t("tatonas.aria")}
+    >
+      <CardHeader
+        icon={<Droplets className="h-3.5 w-3.5 shrink-0 text-[var(--info)]" />}
+        source={t("tatonas.source")}
+        tone={card.tone}
+        stamp={stamp}
+        stale={card.stale}
+      />
+      {card.empty ? (
+        <p className="mt-2 text-sm leading-relaxed text-[var(--text)]">{t("tatonas.empty")}</p>
+      ) : (
+        <div className="mt-1 flex flex-col gap-2">
+          {card.highlights.map((h) => (
+            <div key={`${h.uid}-${h.pos_name}`} className="space-y-0.5">
+              <Field label={t("tatonas.pos")} value={h.pos_name} />
+              <Field label={t("tatonas.jenis")} value={t(`tatonas.kind.${h.logger_kind}`)} />
+              <Field
+                label={t("tatonas.nilai")}
+                value={
+                  h.value == null
+                    ? "—"
+                    : `${h.value} ${h.satuan}`.trim()
+                }
+              />
+              <Field label={t("tatonas.level")} value={h.level} />
+              {h.time_local ? <Field label={t("tatonas.waktu")} value={h.time_local} /> : null}
+            </div>
+          ))}
+          {card.extra_count > 0 ? (
+            <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+              {t("tatonas.more", { n: card.extra_count })}
+            </p>
+          ) : null}
+        </div>
+      )}
+    </CardShell>
+  );
+}
+
 export function PeringatanDiniSection() {
   const t = useTranslations("peringatanDini");
   const { data, isLoading, isError } = useQuery({
@@ -265,7 +316,7 @@ export function PeringatanDiniSection() {
   });
 
   return (
-    <section id="status" className="relative z-[1] px-4 py-20 md:py-28">
+    <section id="status" className="relative z-[1] scroll-mt-28 px-4 py-20 md:py-28">
       <div className="mx-auto max-w-6xl">
         <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
@@ -287,8 +338,8 @@ export function PeringatanDiniSection() {
         </div>
 
         {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-3" aria-hidden>
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4" aria-hidden>
+            {Array.from({ length: 4 }).map((_, i) => (
               <span key={i} className="skeleton h-[16rem] rounded-2xl" />
             ))}
           </div>
@@ -299,10 +350,11 @@ export function PeringatanDiniSection() {
         ) : null}
 
         {data ? (
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             <CuacaCard card={data.cuaca} />
             <MagmaCardView card={data.magma} />
             <SipongiCardView card={data.sipongi} />
+            {data.tatonas ? <TatonasCardView card={data.tatonas} /> : null}
           </div>
         ) : null}
       </div>

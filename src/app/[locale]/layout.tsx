@@ -7,6 +7,7 @@ import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { StaticPreviewBanner } from "@/components/preview/StaticPreviewBanner";
 import { FixtureDataBanner } from "@/components/preview/FixtureDataBanner";
+import { GuideBot } from "@/components/panduan/GuideBot";
 import { isStaticExport } from "@/lib/preview/env";
 import { routing } from "@/i18n/routing";
 
@@ -41,6 +42,7 @@ export default async function LocaleLayout({
             <ThemeProvider>
               {isStaticExport() ? <StaticPreviewBanner /> : <FixtureDataBanner />}
               {children}
+              <GuideBot />
             </ThemeProvider>
           </QueryProvider>
         </NextIntlClientProvider>

@@ -7,7 +7,7 @@ import { DibiDashboard } from "@/components/dibi/DibiDashboard";
 export function ClusterGrid() {
   const t = useTranslations("clusters");
   return (
-    <section className="section-shell reveal py-20 md:py-28" id="dibi">
+    <section className="section-shell reveal scroll-mt-28 py-20 md:py-28" id="dibi">
       <BlurFade inView>
         <div className="max-w-2xl">
           <p className="type-kicker mb-2 text-[var(--accent-soft)]">{t("kicker")}</p>

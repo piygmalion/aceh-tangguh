@@ -85,15 +85,16 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
 | GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
 | GET | `/api/hazards` | `hazard_status` |
-| GET | `/api/peringatan-dini` | Homepage early-warning cards (cuaca + MAGMA + Sipongi; fail independently) |
+| GET | `/api/peringatan-dini` | Homepage early-warning cards (cuaca + MAGMA + Sipongi + Tatonas; fail independently) |
 | GET | `/api/peringatan-dini/magma` | MAGMA Indonesia Aceh gempa (live homepage / VSI homepage; empty+stale if both fail) |
 | GET | `/api/peringatan-dini/sipongi` | Sipongi Aceh medium/high hotspots (live GeoJSON, else `peringatan-sipongi.json`) |
+| GET | `/api/peringatan-dini/tatonas` | Tatonas Aceh hydrology stations (live dt_data XHR, else stale `peringatan-tatonas.json`) |
 | GET | `/api/layers/catalog` | enabled `map_layers` merged with local toolbar catalog (`src/lib/map-layers-catalog.ts`) |
 | GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
 | GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
 | GET | `/api/krb` | Kawasan Rawan Bencana Aceh (`krb_*` tables, else `krb-aceh.json`); filter `?jenis=` `?kabupaten=` `?kelas=` |
 | GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
-| GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` |
+| GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` / `tatonasStations` |
 | GET | `/api/laporan/peta` | Moderated `laporan_kejadian` + `laporan_penanganan` (`status=approved` AND `tampil_di_peta`; no `jawaban_json`) |
 | GET | `/api/layers/markers/summary` | Same as markers (debug counts) |
 | GET | `/api/boundaries` | GeoJSON fixtures |

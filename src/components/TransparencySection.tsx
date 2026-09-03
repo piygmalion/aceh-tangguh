@@ -34,7 +34,7 @@ export function TransparencySection() {
     },
   ];
   return (
-    <section className="section-shell reveal relative overflow-hidden py-20 md:py-28" id="transparansi">
+    <section className="section-shell reveal relative scroll-mt-28 overflow-hidden py-20 md:py-28" id="transparansi">
       <div className="pointer-events-none absolute inset-y-0 right-0 w-full max-w-xl opacity-25 md:opacity-40" aria-hidden>
         <Image
           src={SITE_MEDIA.forest.src}

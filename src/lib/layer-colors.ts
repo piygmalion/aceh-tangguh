@@ -33,6 +33,7 @@ export const LAYER_COLORS: Record<MarkerLayerKey, string> = {
   infraRoadBridge: COLOR_TOKENS.gold,
   laporanKejadian: COLOR_TOKENS.orange,
   laporanPenanganan: COLOR_TOKENS.teal,
+  tatonasStations: COLOR_TOKENS.teal,
 };
 
 export const CLUSTER_COLORS = {

@@ -30,7 +30,7 @@ export function MapTeaserSection() {
   const t = useTranslations("mapTeaser");
   const tm = useTranslations("map");
   return (
-    <section className="section-shell reveal py-20 md:py-28">
+    <section id="peta-teaser" className="section-shell reveal scroll-mt-28 py-20 md:py-28">
       <BlurFade inView>
         <div className="max-w-2xl">
           <p className="type-kicker mb-2 text-[var(--accent-soft)]">{t("kicker")}</p>

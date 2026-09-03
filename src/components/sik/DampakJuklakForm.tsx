@@ -3,10 +3,17 @@
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import {
+  DEFINISI_KERUSAKAN,
   KELOMPOK_UMUR,
+  KERUGIAN_RINCI_LABEL,
   KATEGORI_KORBAN,
+  emptyKerugianRinci,
   emptyKorbanTerpilah,
+  normalizeKerugianRinci,
   normalizeKorbanTerpilah,
+  rollupKerugian,
+  type KerugianRinci,
+  type KerugianRinciKey,
   type KorbanTerpilah,
   type KategoriKorban,
   type KelompokUmur,
@@ -96,6 +103,7 @@ export type DampakFormState = {
   jembatan_terendam: number;
   transportasi_jaringan: string;
   spbu_jaringan: string;
+  kerugian_rinci: KerugianRinci;
 };
 
 export function emptyDampakForm(): DampakFormState {
@@ -166,6 +174,7 @@ export function emptyDampakForm(): DampakFormState {
     jembatan_terendam: 0,
     transportasi_jaringan: "",
     spbu_jaringan: "",
+    kerugian_rinci: emptyKerugianRinci(),
   };
 }
 
@@ -188,6 +197,7 @@ export function dampakFormToPayload(form: DampakFormState) {
     hutan_ha: numOrNull(form.hutan_ha),
     kolam_ha: numOrNull(form.kolam_ha),
     jalan_km: numOrNull(form.jalan_km),
+    kerugian_rinci: normalizeKerugianRinci(form.kerugian_rinci),
   };
 }
 
@@ -234,6 +244,33 @@ function DecInput({
       value={value}
       onChange={(e) => onChange(e.target.value === "" ? "" : Number(e.target.value))}
     />
+  );
+}
+
+function DefinisiKerusakan() {
+  return (
+    <p className="text-xs text-[var(--text-dim)]" title={`${DEFINISI_KERUSAKAN.rb} ${DEFINISI_KERUSAKAN.rs} ${DEFINISI_KERUSAKAN.rr} ${DEFINISI_KERUSAKAN.terendam}`}>
+      {DEFINISI_KERUSAKAN.rb} {DEFINISI_KERUSAKAN.rs} {DEFINISI_KERUSAKAN.rr} {DEFINISI_KERUSAKAN.terendam}
+    </p>
+  );
+}
+
+function KerugianInput({
+  field,
+  value,
+  onChange,
+}: {
+  field: KerugianRinciKey;
+  value: number | null;
+  onChange: (n: number | null) => void;
+}) {
+  return (
+    <Field label={`${KERUGIAN_RINCI_LABEL[field]} (Rp juta)`}>
+      <DecInput
+        value={value ?? ""}
+        onChange={(n) => onChange(n === "" ? null : n)}
+      />
+    </Field>
   );
 }
 
@@ -299,6 +336,20 @@ export function DampakJuklakForm({
       const next = normalizeKorbanTerpilah(f.korban_terpilah);
       next[kat][umur][sex] = value;
       return { ...f, korban_terpilah: next };
+    });
+  }
+
+  function setKerugian(key: KerugianRinciKey, value: number | null) {
+    setForm((f) => {
+      const next = { ...normalizeKerugianRinci(f.kerugian_rinci), [key]: value };
+      const rolled = rollupKerugian(next);
+      return {
+        ...f,
+        kerugian_rinci: next,
+        kerugian_ekonomi_rp: rolled.kerugian_ekonomi_rp || "",
+        kerugian_sapras_rp: rolled.kerugian_sapras_rp || "",
+        kerugian_pelayanan_rp: rolled.kerugian_pelayanan_rp || "",
+      };
     });
   }
 
@@ -494,13 +545,18 @@ export function DampakJuklakForm({
             <Field label="Kolam (Ha)">
               <DecInput value={form.kolam_ha} onChange={(n) => setForm((f) => ({ ...f, kolam_ha: n }))} />
             </Field>
-            <Field label="Kerugian ekonomi (Rp juta)">
-              <DecInput
-                value={form.kerugian_ekonomi_rp}
-                onChange={(n) => setForm((f) => ({ ...f, kerugian_ekonomi_rp: n }))}
-              />
-            </Field>
+            <KerugianInput field="sawah" value={form.kerugian_rinci.sawah} onChange={(n) => setKerugian("sawah", n)} />
+            <KerugianInput field="lahan" value={form.kerugian_rinci.lahan} onChange={(n) => setKerugian("lahan", n)} />
+            <KerugianInput field="kebun" value={form.kerugian_rinci.kebun} onChange={(n) => setKerugian("kebun", n)} />
+            <KerugianInput field="hutan" value={form.kerugian_rinci.hutan} onChange={(n) => setKerugian("hutan", n)} />
+            <KerugianInput field="kolam" value={form.kerugian_rinci.kolam} onChange={(n) => setKerugian("kolam", n)} />
+            <KerugianInput field="toko" value={form.kerugian_rinci.toko} onChange={(n) => setKerugian("toko", n)} />
+            <KerugianInput field="pabrik" value={form.kerugian_rinci.pabrik} onChange={(n) => setKerugian("pabrik", n)} />
+            <p className="md:col-span-2 text-xs text-[var(--text-dim)]">
+              Agregat ekonomi (otomatis): {form.kerugian_ekonomi_rp || 0} juta
+            </p>
             <div className="md:col-span-2 space-y-2">
+              <DefinisiKerusakan />
               <div className="grid grid-cols-5 gap-2 text-xs text-[var(--text-dim)]">
                 <span />
                 <span>RB</span>
@@ -546,6 +602,7 @@ export function DampakJuklakForm({
 
         {tab === "sapras" ? (
           <div className="grid gap-3">
+            <DefinisiKerusakan />
             <Field label="Jaringan air bersih/minum">
               <input
                 className={inputClass}
@@ -614,17 +671,27 @@ export function DampakJuklakForm({
                 onChange={(e) => setForm((f) => ({ ...f, spbu_jaringan: e.target.value }))}
               />
             </Field>
-            <Field label="Kerugian sapras (Rp juta)">
-              <DecInput
-                value={form.kerugian_sapras_rp}
-                onChange={(n) => setForm((f) => ({ ...f, kerugian_sapras_rp: n }))}
-              />
-            </Field>
+            <div className="grid gap-3 md:grid-cols-2">
+              {(["air", "listrik", "telekom", "irigasi", "jalan", "jembatan", "transportasi", "spbu"] as const).map(
+                (key) => (
+                  <KerugianInput
+                    key={key}
+                    field={key}
+                    value={form.kerugian_rinci[key]}
+                    onChange={(n) => setKerugian(key, n)}
+                  />
+                )
+              )}
+            </div>
+            <p className="text-xs text-[var(--text-dim)]">
+              Agregat sapras (otomatis): {form.kerugian_sapras_rp || 0} juta
+            </p>
           </div>
         ) : null}
 
         {tab === "rumah" ? (
           <div className="grid gap-3">
+            <DefinisiKerusakan />
             <div className="grid grid-cols-5 gap-2 text-xs text-[var(--text-dim)]">
               <span />
               <span>RB</span>
@@ -659,6 +726,7 @@ export function DampakJuklakForm({
 
         {tab === "pelayanan" ? (
           <div className="grid gap-3">
+            <DefinisiKerusakan />
             <div className="grid grid-cols-5 gap-2 text-xs text-[var(--text-dim)]">
               <span />
               <span>RB</span>
@@ -746,12 +814,19 @@ export function DampakJuklakForm({
                 }))
               }
             />
-            <Field label="Kerugian pelayanan dasar (Rp juta)">
-              <DecInput
-                value={form.kerugian_pelayanan_rp}
-                onChange={(n) => setForm((f) => ({ ...f, kerugian_pelayanan_rp: n }))}
-              />
-            </Field>
+            <div className="grid gap-3 md:grid-cols-2">
+              {(["pendidikan", "ibadah", "faskes", "kantor", "pasar"] as const).map((key) => (
+                <KerugianInput
+                  key={key}
+                  field={key}
+                  value={form.kerugian_rinci[key]}
+                  onChange={(n) => setKerugian(key, n)}
+                />
+              ))}
+            </div>
+            <p className="text-xs text-[var(--text-dim)]">
+              Agregat pelayanan (otomatis): {form.kerugian_pelayanan_rp || 0} juta
+            </p>
           </div>
         ) : null}
 
