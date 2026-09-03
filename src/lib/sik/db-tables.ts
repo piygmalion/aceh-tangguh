@@ -23,6 +23,11 @@ export type KejadianOperasiRow = {
   cakupan: string | null;
   kabupaten: string | null;
   kode_kabupaten: string | null;
+  kode_kecamatan: string | null;
+  kode_desa_kelurahan: string | null;
+  kode_kabupaten_kib: string | null;
+  kib_sumber: string;
+  kib_catatan: string | null;
   kecamatan: string | null;
   desa_ringkas: string | null;
   latitude: number | null;
@@ -57,6 +62,7 @@ export type KejadianLokasiRow = {
   desa: string | null;
   kecamatan: string | null;
   kabupaten: string | null;
+  kode_kecamatan: string | null;
   kode_desa_kelurahan: string | null;
   alamat: string | null;
   deskripsi: string | null;
@@ -94,6 +100,7 @@ export type KejadianDampakRow = {
   toko: number;
   pabrik: number;
   kerugian_ekonomi_rp: number | null;
+  kerugian_rinci: Json;
   catatan: string | null;
   korban_terpilah: Json;
   kondisi_mutakhir: string | null;
@@ -152,6 +159,20 @@ export type KejadianDampakRow = {
   created_at: string;
 };
 
+export type PengungsianKajiRow = {
+  id: string;
+  kejadian_id: string;
+  tempat_pengungsian_id: string;
+  tanggal: string;
+  jumlah_kk: number;
+  jiwa: Json;
+  rentan: Json;
+  air_sanitasi: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 /** Staff CRUD rows: UUID is DB-generated, so Insert does not require `id`. */
 export type LooseRow = {
   id: string;
@@ -192,6 +213,11 @@ export type SikTables = {
     KejadianDampakRow,
     Partial<KejadianDampakRow> & { kejadian_id: string },
     Partial<KejadianDampakRow>
+  >;
+  pengungsian_kaji: Table<
+    PengungsianKajiRow,
+    Partial<PengungsianKajiRow> & { kejadian_id: string; tempat_pengungsian_id: string },
+    Partial<PengungsianKajiRow>
   >;
   kejadian_korban: LooseTable;
   pengungsi_terpilah: LooseTable;
