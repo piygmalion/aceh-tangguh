@@ -40,18 +40,26 @@ describe("LAYER_COLORS tokens", () => {
     assert.equal("tatonasStations" in LAYER_COLORS, false);
   });
 
-  it("tokenizes leftover marker/area colors in public/icons/flat/index.json", () => {
+  it("tokenizes leftover marker/area/jenis colors in public/icons/flat/index.json", () => {
     const file = path.join(process.cwd(), "public/icons/flat/index.json");
     const catalog = JSON.parse(readFileSync(file, "utf8")) as {
       markerLayers: { id: string; color: string }[];
       areaLayers: { id: string; color: string }[];
+      disasterJenis: { id: string; color: string }[];
     };
-    for (const row of [...catalog.markerLayers, ...catalog.areaLayers]) {
+    const rows = [
+      ...catalog.markerLayers,
+      ...catalog.areaLayers,
+      ...catalog.disasterJenis,
+    ];
+    assert.ok(catalog.disasterJenis.length > 0, "missing disasterJenis color map");
+    for (const row of rows) {
       assert.ok(
         OFFICIAL_COLOR_HEX.has(row.color),
         `${row.id} catalog color ${row.color} is not an official token`
       );
       assert.equal(LEFTOVER_RAINBOW.includes(row.color.toLowerCase()), false);
+      assert.equal(row.color === "#C7460C" || row.color === "#52524B", false);
     }
   });
 });
