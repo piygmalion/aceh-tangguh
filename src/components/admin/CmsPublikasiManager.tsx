@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import type { PublikasiRow } from "@/lib/supabase/types";
 
 const emptyForm = {
@@ -117,7 +121,7 @@ export function CmsPublikasiManager() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-xl font-semibold">{t("cmsPublikasiTitle")}</h1>
-            <p className="mt-1 text-sm text-[var(--text-dim)]">{t("cmsPublikasiLead")}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("cmsPublikasiLead")}</p>
           </div>
           <form
             className="flex gap-2"
@@ -126,25 +130,21 @@ export function CmsPublikasiManager() {
               void load();
             }}
           >
-            <input
+            <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="w-44 rounded-full border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--ring)]"
+              className="w-44"
             />
             <Button type="submit" size="sm" variant="outline">
               {t("search")}
             </Button>
           </form>
         </div>
-        {error ? (
-          <p className="mt-3 text-sm text-[var(--danger)]" role="alert">
-            {error}
-          </p>
-        ) : null}
+        {error ? <FieldError className="mt-3">{error}</FieldError> : null}
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="text-[var(--text-dim)]">
+            <thead className="text-muted-foreground">
               <tr>
                 <th className="px-2 py-2 font-medium">Slug</th>
                 <th className="px-2 py-2 font-medium">{t("colTitle")}</th>
@@ -155,22 +155,22 @@ export function CmsPublikasiManager() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={4} className="px-2 py-8 text-center text-[var(--text-dim)]">
+                  <td colSpan={4} className="px-2 py-8 text-center text-muted-foreground">
                     {t("loading")}
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-2 py-8 text-center text-[var(--text-dim)]">
+                  <td colSpan={4} className="px-2 py-8 text-center text-muted-foreground">
                     {t("empty")}
                   </td>
                 </tr>
               ) : (
                 items.map((row) => (
-                  <tr key={row.slug} className="border-t border-[var(--border)]">
-                    <td className="px-2 py-2 font-mono text-xs">{row.slug}</td>
+                  <tr key={row.slug} className="border-t border-border">
+                    <td className="px-2 py-2 font-mono text-sm">{row.slug}</td>
                     <td className="px-2 py-2">{row.title}</td>
-                    <td className="px-2 py-2 text-[var(--text-dim)]">
+                    <td className="px-2 py-2 text-muted-foreground">
                       {row.published_at
                         ? new Date(row.published_at).toLocaleDateString()
                         : "—"}
@@ -180,7 +180,7 @@ export function CmsPublikasiManager() {
                         <Button size="sm" variant="outline" onClick={() => startEdit(row)}>
                           {t("edit")}
                         </Button>
-                        <Button size="sm" variant="danger" onClick={() => void remove(row.slug)}>
+                        <Button size="sm" variant="destructive" onClick={() => void remove(row.slug)}>
                           {t("delete")}
                         </Button>
                       </div>
@@ -195,35 +195,41 @@ export function CmsPublikasiManager() {
 
       <GlassPanel className="h-fit p-4 sm:p-5">
         <h2 className="font-semibold">{editing ? t("edit") : t("create")}</h2>
-        <div className="mt-3 flex flex-col gap-3 text-sm">
-          <Field
+        <FieldGroup className="mt-3 gap-3">
+          <CmsField
+            id="cms-publikasi-slug"
             label="Slug"
             value={form.slug}
             disabled={editing}
             onChange={(v) => setForm((f) => ({ ...f, slug: v }))}
           />
-          <Field
+          <CmsField
+            id="cms-publikasi-title"
             label={t("colTitle")}
             value={form.title}
             onChange={(v) => setForm((f) => ({ ...f, title: v }))}
           />
-          <Field
+          <CmsField
+            id="cms-publikasi-description"
             label={t("colDescription")}
             value={form.description}
             onChange={(v) => setForm((f) => ({ ...f, description: v }))}
             multiline
           />
-          <Field
+          <CmsField
+            id="cms-publikasi-published"
             label={t("colPublished")}
             value={form.published_at}
             onChange={(v) => setForm((f) => ({ ...f, published_at: v }))}
           />
-          <Field
+          <CmsField
+            id="cms-publikasi-tags"
             label="Tags"
             value={form.tags}
             onChange={(v) => setForm((f) => ({ ...f, tags: v }))}
           />
-          <Field
+          <CmsField
+            id="cms-publikasi-payload"
             label="Payload JSON"
             value={form.payload}
             onChange={(v) => setForm((f) => ({ ...f, payload: v }))}
@@ -231,20 +237,22 @@ export function CmsPublikasiManager() {
             mono
           />
           <div className="flex gap-2">
-            <Button disabled={busy} onClick={() => void save()}>
+            <Button disabled={busy} onClick={() => void save()} data-icon={busy ? "inline-start" : undefined}>
+              {busy ? <Spinner /> : null}
               {t("save")}
             </Button>
             <Button variant="ghost" onClick={startCreate}>
               {t("reset")}
             </Button>
           </div>
-        </div>
+        </FieldGroup>
       </GlassPanel>
     </div>
   );
 }
 
-function Field({
+function CmsField({
+  id,
   label,
   value,
   onChange,
@@ -252,6 +260,7 @@ function Field({
   multiline,
   mono,
 }: {
+  id: string;
   label: string;
   value: string;
   onChange: (v: string) => void;
@@ -259,28 +268,27 @@ function Field({
   multiline?: boolean;
   mono?: boolean;
 }) {
-  const cls = `w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)] ${
-    mono ? "font-mono text-xs" : ""
-  }`;
   return (
-    <label className="flex flex-col gap-1">
-      <span className="text-xs font-medium text-[var(--text-dim)]">{label}</span>
+    <Field>
+      <FieldLabel htmlFor={id}>{label}</FieldLabel>
       {multiline ? (
-        <textarea
+        <Textarea
+          id={id}
           rows={6}
           disabled={disabled}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={cls}
+          className={mono ? "font-mono" : undefined}
         />
       ) : (
-        <input
+        <Input
+          id={id}
           disabled={disabled}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={cls}
+          className={mono ? "font-mono" : undefined}
         />
       )}
-    </label>
+    </Field>
   );
 }
