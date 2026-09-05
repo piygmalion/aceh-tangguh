@@ -73,6 +73,11 @@ export function isVillageLodZoom(zoom: number): boolean {
   return villageLodBand(zoom) === "village";
 }
 
+/** AreaProfilPanel opens only on the desa mesh, not kab/kecamatan choropleth. */
+export function villagePanelClickEnabled(band: VillageLodBand): boolean {
+  return band === "village";
+}
+
 export function villageDistributionTiles(zoom: number): PmtilesAreaMeta {
   const band = villageLodBand(zoom);
   if (band === "kab") return PMTILES_KAB;

@@ -52,6 +52,7 @@ import {
   unionBounds,
   villageLayerFilter,
   villageLodBand,
+  villagePanelClickEnabled,
   type VillageLodBand,
   type VillageLodFocus,
 } from "@/lib/village-distribution-lod";
@@ -808,6 +809,7 @@ export function MapViewport({
         }
         return;
       }
+      if (!villagePanelClickEnabled(lodBand)) return;
       if (!onVillageClick) return;
       const sel = readVillageSelection(props);
       if (sel) onVillageClick(sel);
