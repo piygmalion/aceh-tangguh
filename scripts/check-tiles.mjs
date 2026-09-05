@@ -410,7 +410,7 @@ if (failed) {
   process.exit(1);
 }
 console.log(
-  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; village/kecamatan archive budgets and source-layers ok).`,
+  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; required archives including r3p-kab present; village/kecamatan archive budgets and source-layers ok).`,
 );
 if (warned) {
   console.log(`${warned} warning(s) — see above.`);
