@@ -14,7 +14,7 @@ export function SiteFooter() {
 
   return (
     <footer className="reveal mb-6 mt-16 border-t border-[var(--glass-border)] px-4 pb-10 pt-14 md:mt-20 md:pt-16">
-      <div className="mx-auto grid max-w-[1080px] gap-10 md:grid-cols-4">
+      <div className="mx-auto grid max-w-[1080px] gap-10 md:grid-cols-3">
         <div>
           <div className="text-base font-semibold tracking-tight">Aceh Tangguh</div>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-[var(--text-dim)]">
@@ -88,7 +88,7 @@ export function SiteFooter() {
             </li>
           </ul>
         </div>
-        <div className="md:col-start-4" data-footer-sumber>
+        <div data-footer-sumber>
           <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("sumberData")}
           </div>

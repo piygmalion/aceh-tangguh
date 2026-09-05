@@ -52,11 +52,13 @@ describe("footer sumber column", () => {
     }
   });
 
-  it("renders Sumber data as the fourth column at the 13px type floor", () => {
+  it("renders Sumber data as the third column at the 13px type floor", () => {
     const footer = read("src/components/SiteFooter.tsx");
     assert.match(footer, /FOOTER_SUMBER/);
     assert.match(footer, /TYPE_FLOOR_CLASS/);
-    assert.match(footer, /md:grid-cols-4/);
+    assert.match(footer, /md:grid-cols-3/);
+    assert.equal(/md:grid-cols-4/.test(footer), false);
+    assert.equal(/col-start-4/.test(footer), false);
     assert.match(footer, /t\("sumberData"\)|tn\("sumberData"\)/);
     assert.equal(/Kredit visual/.test(footer), false);
     assert.match(footer, /SITE_MEDIA\.heroPoster\.credit|UI_CREDITS/);
