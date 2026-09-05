@@ -40,6 +40,19 @@ export const DATA_SOURCES: DataSourceEntry[] = [
       "Data Utama — map layer Kejadian bencana (427 points). ACEH-2023-0005 (Gempa Bumi, Aceh Singkil, lat 1.91 / lon 97.83) is included with coord_quality=offshore_or_out_of_bbox and approx=true — the map does not clamp an Aceh bbox, so the epicentre stays visible if you pan south. Rekapitulasi Tahunan excluded. Integer lon/lat (if any) are flagged truncated_integer; decimals are not invented.",
   },
   {
+    id: "sik-aceh",
+    titleId: "SIK Aceh — master SQLite (pengayaan)",
+    titleEn: "SIK Aceh — master SQLite (enrichment)",
+    source:
+      "Local master sik_aceh.db (operator path: data bencana aceh/database/master). Copied to data/sik/sik_aceh.db (gitignored). Not a public dump.",
+    license:
+      "Operational BPBA / SIK Aceh compilation — do not republish the raw SQLite",
+    date: "Imported on demand via python3 scripts/import-sik-aceh.py (dry-run default)",
+    format: "SQLite → kejadian_bencana payload + disasterEvents GeoJSON",
+    usedFor:
+      "Enrich the existing 427-event bencana layer and /data-bencana table. Join desa only on 10-digit kode_desa_kelurahan. New events use SIK- ids. Does not seed laporan_*, does not write polygons to Postgres, does not invent GPS.",
+  },
+  {
     id: "fasyankes",
     titleId: "Fasilitas kesehatan (fasyankes terdampak)",
     titleEn: "Health facilities (affected fasyankes)",

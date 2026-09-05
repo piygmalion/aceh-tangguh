@@ -57,6 +57,13 @@ strix_runs/
 # overlay ETL scratch (unfiltered national dumps)
 public/fixtures/overlays/_raw*
 
+# local SIK master SQLite (do not commit operational dumps)
+data/sik/*
+!data/sik/README.md
+*.db
+*.sqlite
+*.sqlite3
+
 # local artifacts
 screenshots/
 _refs/
