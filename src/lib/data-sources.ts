@@ -480,3 +480,59 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: "https://unsplash.com/license",
   },
 ];
+
+/**
+ * Footer “Sumber data” column — Data + Designer lock.
+ * Five DB-backed catalog rows first. DIBI / MAGMA / Sipongi / Geoportal
+ * exist in DATA_SOURCES but are not listed here (optional extras only).
+ * Do not invent sources or URLs; hashes match existing `/sumber-data#id`.
+ */
+export const FOOTER_SUMBER_IDS = [
+  "irbi-2025",
+  "compiled-r3p",
+  "publikasi-kegiatan",
+  "publikasi-btt",
+  "analisis-anggaran-2026",
+] as const;
+
+export type FooterSumberId = (typeof FOOTER_SUMBER_IDS)[number];
+
+export type FooterSumberLink = {
+  id: FooterSumberId;
+  labelId: string;
+  labelEn: string;
+  hash: string;
+};
+
+export const FOOTER_SUMBER: FooterSumberLink[] = [
+  {
+    id: "irbi-2025",
+    labelId: "BNPB IRBI",
+    labelEn: "BNPB IRBI",
+    hash: "irbi-2025",
+  },
+  {
+    id: "compiled-r3p",
+    labelId: "Spreadsheet R3P",
+    labelEn: "R3P spreadsheet",
+    hash: "compiled-r3p",
+  },
+  {
+    id: "publikasi-kegiatan",
+    labelId: "BPBA",
+    labelEn: "BPBA",
+    hash: "publikasi-kegiatan",
+  },
+  {
+    id: "publikasi-btt",
+    labelId: "Tanggapi",
+    labelEn: "Tanggapi",
+    hash: "publikasi-btt",
+  },
+  {
+    id: "analisis-anggaran-2026",
+    labelId: "PERGUB APBA",
+    labelEn: "PERGUB APBA",
+    hash: "analisis-anggaran-2026",
+  },
+];
