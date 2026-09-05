@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "@/i18n/routing";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { JENIS_BENCANA_JUKLAK } from "@/lib/sik/jenis-bencana";
 import { KrbContextCard } from "@/components/sik/KrbContextCard";

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { FormFieldRenderer } from "@/components/laporan/FormFieldRenderer";
 import { GpsCapture, type LokasiValue } from "@/components/laporan/GpsCapture";
 import { ReporterFields, type ReporterValue } from "@/components/laporan/ReporterFields";

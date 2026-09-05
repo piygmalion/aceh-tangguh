@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import {
   PENGUNGSI_BAND,
   PENGUNGSI_BAND_LABEL,

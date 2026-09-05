@@ -3,7 +3,7 @@
 import { Send, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { Chip } from "@/components/ui/Chip";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { GuideChipKey } from "@/lib/panduan/page-context";

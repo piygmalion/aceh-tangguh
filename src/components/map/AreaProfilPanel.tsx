@@ -33,7 +33,7 @@ import {
   sortKecamatanListItems,
   type VillageClickSelection,
 } from "@/lib/profil-desa";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { Chip } from "@/components/ui/Chip";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";

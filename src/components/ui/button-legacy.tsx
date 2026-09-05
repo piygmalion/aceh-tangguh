@@ -1,3 +1,4 @@
+/** Legacy Aceh Button — kept as `button-legacy.tsx` so Windows can also hold shadcn `button.tsx`. */
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type Variant = "primary" | "accent" | "ghost" | "outline" | "danger";
