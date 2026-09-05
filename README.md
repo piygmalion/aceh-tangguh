@@ -197,6 +197,19 @@ bun run flag:coords
 
 After fixture changes, re-seed Supabase `marker_features` via the existing `upsert_marker_features` RPC (coordinator; requires `service_role`).
 
+### SIK Aceh master (`sik_aceh.db`)
+
+Optional enrichment of `kejadian_bencana` / `disasterEvents` from the local SIK SQLite. Geometry stays on disk; the `.db` is gitignored (`data/sik/sik_aceh.db`). Dry-run default. `--write-fixtures` is refused when GPS points disagree by more than ~100 m.
+
+```
+python3 scripts/import-sik-aceh.py
+python3 scripts/import-sik-aceh.py --write-fixtures
+node scripts/seed-sik-supabase.mjs          # dry-run
+node scripts/seed-sik-supabase.mjs --apply  # coordinator only
+```
+
+Mapping and conflict rules: `scripts/sik/SCHEMA.md`. Do not run `--apply` against production until the coordinator reviews.
+
 Rebuild (does not run in CI; inputs under `/workspace/drive-aceh-data/`):
 
 ```
