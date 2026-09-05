@@ -5,7 +5,7 @@
  * Checks Mapbox vector tiles *inside* committed archives under public/tiles/.
  * Per-tile limit: 500 KB (Mapbox vector tile payload). Archive size is not that
  * limit — village-r3p.pmtiles ~2.9 MB is fine. Second gate: that archive < 4 MB.
- * Known overlays must keep MapViewport source-layers: r3p, village, irbi.
+ * Known overlays must keep MapViewport source-layers: r3p, kecamatan, village, irbi.
  * Carto raster remains the default basemap. Geometry stays on disk, not PostGIS.
  *
  * Usage:
@@ -25,6 +25,10 @@ const DEFAULT_LIMIT_BYTES = 500 * 1024;
 /** @type {Record<string, { sourceLayer: string, maxArchiveBytes?: number }>} */
 const EXPECTED_OVERLAYS = {
   "r3p-kab.pmtiles": { sourceLayer: "r3p" },
+  "kecamatan-r3p.pmtiles": {
+    sourceLayer: "kecamatan",
+    maxArchiveBytes: 2 * 1024 * 1024,
+  },
   "village-r3p.pmtiles": {
     sourceLayer: "village",
     maxArchiveBytes: 4 * 1024 * 1024,
@@ -316,7 +320,7 @@ if (failed) {
   process.exit(1);
 }
 console.log(
-  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; village archive budget and source-layers ok).`,
+  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; village/kecamatan archive budgets and source-layers ok).`,
 );
 if (warned) {
   console.log(`${warned} warning(s) — see above.`);

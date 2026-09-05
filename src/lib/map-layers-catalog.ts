@@ -103,7 +103,7 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     kind: "area",
     title_id: "Distribusi desa",
     title_en: "Village distribution",
-    description: "Choropleth desa / gampong (R3P rumah rusak).",
+    description: "Choropleth desa / gampong (R3P rumah rusak) with kab → kecamatan → desa zoom LOD.",
     source_path: "/fixtures/areas/villageDistribution.geojson",
     source_type: "pmtiles",
     pmtiles_path: "/tiles/village-r3p.pmtiles",
