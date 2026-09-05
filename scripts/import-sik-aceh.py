@@ -57,7 +57,14 @@ KEJADIAN_TABLES = (
 
 COLUMN_ALIASES = {
     "sik_id": ["id", "id_kejadian", "kejadian_id", "kode", "kode_kejadian", "no"],
-    "jenis_bencana": ["jenis_bencana", "jenis", "tipe_bencana", "nama_bencana", "bencana"],
+    "jenis_bencana": [
+        "jenis_bencana",
+        "jenis_bencana_teks",
+        "jenis",
+        "tipe_bencana",
+        "nama_bencana",
+        "bencana",
+    ],
     "hari_tanggal": ["hari_tanggal", "tanggal", "tgl", "date", "waktu", "datetime"],
     "latitude": ["latitude", "lat", "y", "koordinat_y"],
     "longitude": ["longitude", "lon", "lng", "long", "x", "koordinat_x"],

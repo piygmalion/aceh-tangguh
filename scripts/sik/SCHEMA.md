@@ -11,6 +11,8 @@ python3 scripts/import-sik-aceh.py --db data/sik/sik_aceh.db
 
 That command prints `.tables`, resolved mapping, and row counts. It writes
 `scripts/_/sik-inspect.json` + `scripts/_/sik-extracted.json` (also gitignored).
+Cloud/CI checkouts usually omit `sik_aceh.db`; Data/Backend re-runs this dry-run
+locally after pulling. Do not invent GPS or codes to compensate.
 
 ## What is imported
 
@@ -30,7 +32,7 @@ The extractor picks the first present name (case-insensitive):
 | Field | Aliases |
 |---|---|
 | `sik_id` | `id`, `id_kejadian`, `kejadian_id`, `kode`, `kode_kejadian`, `no` |
-| `jenis_bencana` | `jenis_bencana`, `jenis`, `tipe_bencana`, `nama_bencana` |
+| `jenis_bencana` | `jenis_bencana`, `jenis_bencana_teks`, `jenis`, `tipe_bencana`, `nama_bencana`, `bencana` |
 | `hari_tanggal` | `hari_tanggal`, `tanggal`, `tgl`, `date`, `waktu` |
 | `latitude` | `latitude`, `lat`, `y`, `koordinat_y` |
 | `longitude` | `longitude`, `lon`, `lng`, `long`, `x`, `koordinat_x` |
