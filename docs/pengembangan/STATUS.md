@@ -164,17 +164,17 @@ Rencana menyebut BE-14; ID itu sudah overlay. Tiket ini BE-15. DATA-4 tetap tert
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
-| BE-15 | backend | Validator 1–10, sitasi judul, method-irbi, timeout 15d | jurnal/BE-15.md | siap-kode |
+| BE-15 | backend | Validator 1–10, sitasi judul, method-irbi, timeout 15d | jurnal/BE-15.md | selesai |
 
 ## Gelombang 14 — loop overlay di git produksi
 
-Tutup loop overlay di pohon git: `POST /api/cron/overlay-live` menulis, `GET /api/overlay/{key}` membaca ledger. Secret dan workflow sudah ada; rute belum di `origin/main` (404). DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menulis nilai `OVERLAY_CRON_SECRET`. Jangan menyelaraskan seluruh tumpukan lokal.
+Koordinator menaruh POST cron + GET ledger overlay ke `origin/main` (`c5ed644`). Production Ready. Satu `workflow_dispatch` sukses (bukan skip / 404 / 503 not configured). `GET /api/overlay/bmkgQuakes` 200 setelah refresh. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menulis nilai `OVERLAY_CRON_SECRET`. Jangan menyelaraskan seluruh tumpukan lokal.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
 | BE-14 | backend | Landasikan tulis + baca overlay live | jurnal/BE-14.md | selesai |
-| AN-18 | analis | Naskah penerimaan loop overlay | jurnal/AN-18.md | draf |
-| KOORD-G14 | koordinator | Bacaan ulang + commit daftar | jurnal/KOORD-G14.md | draf |
+| AN-18 | analis | Naskah penerimaan loop overlay | jurnal/AN-18.md | selesai |
+| KOORD-G14 | koordinator | Bacaan ulang + commit daftar | jurnal/KOORD-G14.md | selesai |
 
 ## Gelombang kemudian
 
