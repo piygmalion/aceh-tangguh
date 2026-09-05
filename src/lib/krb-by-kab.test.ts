@@ -62,6 +62,18 @@ describe("lookupKrbKabupaten", () => {
     assert.equal(byCode?.kode_kabupaten, "11.18");
     assert.equal(byName?.kode_kabupaten, "11.18");
   });
+
+  it("joins SIK 1114 to Aceh Tamiang not Aceh Jaya", () => {
+    const tamiang = lookupKrbKabupaten(fixture.kabupaten, { kode: "1114" });
+    const jaya = lookupKrbKabupaten(fixture.kabupaten, { kode: "1116" });
+    const langsa = lookupKrbKabupaten(fixture.kabupaten, { kode: "1173" });
+    const lhok = lookupKrbKabupaten(fixture.kabupaten, { kode: "1174" });
+    assert.equal(tamiang?.kabupaten, "Aceh Tamiang");
+    assert.equal(tamiang?.kode_kabupaten, "11.16");
+    assert.equal(jaya?.kabupaten, "Aceh Jaya");
+    assert.equal(langsa?.kabupaten, "Langsa");
+    assert.equal(lhok?.kabupaten, "Lhokseumawe");
+  });
 });
 
 describe("joinKelasOntoIrbiFeatures", () => {

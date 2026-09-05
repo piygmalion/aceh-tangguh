@@ -3,6 +3,7 @@
  * KIB, ambang batas, rekap dinamis/statis, katalog wilayah Aceh.
  */
 
+import { ACEH_KABUPATEN_REGISTRY } from "@/lib/aceh-kabupaten";
 import { findJenisByKode, type JenisBencanaKode } from "@/lib/sik/jenis-bencana";
 
 export const KODE_PROVINSI_ACEH = "11";
@@ -104,31 +105,13 @@ export type KorbanCell = { L: number; P: number };
 export type KorbanUmur = Record<KelompokUmur, KorbanCell>;
 export type KorbanTerpilah = Record<KategoriKorban, KorbanUmur>;
 
-export const ACEH_KABUPATEN = [
-  { kode: "1101", nama: "Aceh Selatan" },
-  { kode: "1102", nama: "Aceh Tenggara" },
-  { kode: "1103", nama: "Aceh Timur" },
-  { kode: "1104", nama: "Aceh Tengah" },
-  { kode: "1105", nama: "Aceh Barat" },
-  { kode: "1106", nama: "Aceh Besar" },
-  { kode: "1107", nama: "Pidie" },
-  { kode: "1108", nama: "Aceh Utara" },
-  { kode: "1109", nama: "Simeulue" },
-  { kode: "1110", nama: "Aceh Singkil" },
-  { kode: "1111", nama: "Bireuen" },
-  { kode: "1112", nama: "Aceh Barat Daya" },
-  { kode: "1113", nama: "Gayo Lues" },
-  { kode: "1114", nama: "Aceh Tamiang" },
-  { kode: "1115", nama: "Nagan Raya" },
-  { kode: "1116", nama: "Aceh Jaya" },
-  { kode: "1117", nama: "Bener Meriah" },
-  { kode: "1118", nama: "Pidie Jaya" },
-  { kode: "1171", nama: "Banda Aceh" },
-  { kode: "1172", nama: "Sabang" },
-  { kode: "1173", nama: "Langsa" },
-  { kode: "1174", nama: "Lhokseumawe" },
-  { kode: "1175", nama: "Subulussalam" },
-] as const;
+export const ACEH_KABUPATEN = ACEH_KABUPATEN_REGISTRY.map((row) => ({
+  kode: row.kode_sik,
+  nama: row.nama,
+})) as unknown as readonly {
+  readonly kode: (typeof ACEH_KABUPATEN_REGISTRY)[number]["kode_sik"];
+  readonly nama: (typeof ACEH_KABUPATEN_REGISTRY)[number]["nama"];
+}[];
 
 export type AcehKabKode = (typeof ACEH_KABUPATEN)[number]["kode"];
 

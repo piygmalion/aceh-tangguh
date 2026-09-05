@@ -9,6 +9,7 @@
 import { writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { ACEH_BBOX } from "./lib/aceh-scope.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
@@ -18,7 +19,6 @@ const UA =
 const MAGMA_HOME = "https://magma.esdm.go.id/";
 const SIPONGI_PETA = "https://sipongi.gakkum.kehutanan.go.id/peta";
 const SIPONGI_OPSROOM = "https://opsroom.sipongidata.my.id";
-const ACEH_BBOX = [95.0, 2.0, 98.3, 6.15];
 const ACEH_TERMS = [
   "aceh",
   "banda aceh",

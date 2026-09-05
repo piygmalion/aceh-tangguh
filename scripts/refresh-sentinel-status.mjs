@@ -9,8 +9,7 @@
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-
-const ACEH_BBOX = [95.0, 2.0, 98.3, 6.15];
+import { ACEH_BBOX } from "./lib/aceh-scope.mjs";
 const STAC_SEARCH = "https://earth-search.aws.element84.com/v1/search";
 const OUT = join(
   dirname(fileURLToPath(import.meta.url)),

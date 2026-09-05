@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 import type { AdminProfile } from "../auth/types";
 import type { AdminRole } from "../supabase/types";
+import { kabScopeEqualsRow } from "./kab-scope";
 import {
   authorizeDampakRead,
   authorizeKejadianDelete,
@@ -96,6 +97,22 @@ describe("AN-1 authorization matrix", () => {
     assert.equal(denied.ok, false);
     if (!denied.ok) assert.equal(denied.status, 403);
     assert.equal(matchesKabScope(staff("admin_provinsi"), rowA), true);
+  });
+
+  it("kab helper is exact match only — 1114 does not equal 11.16", () => {
+    assert.equal(
+      kabScopeEqualsRow("1114", { kode_kabupaten: "1114", kabupaten: "Aceh Tamiang" }),
+      true,
+    );
+    assert.equal(
+      kabScopeEqualsRow("1114", { kode_kabupaten: "11.16", kabupaten: "Aceh Tamiang" }),
+      false,
+    );
+    const actor = staff("admin_kabkota", { kode: "1114", nama: "Aceh Tamiang" });
+    assert.equal(
+      matchesKabScope(actor, { kode_kabupaten: "11.16", kabupaten: "Aceh Tamiang" }),
+      false,
+    );
   });
 
   it("denies moderasi (GET laporan PII) to admin_desa and penilai_pkd", () => {

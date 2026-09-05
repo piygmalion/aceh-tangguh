@@ -243,6 +243,7 @@ const controlBtnClass =
 
 export function WeatherStrip() {
   const t = useTranslations("weather");
+  const locale = useLocale();
   const { data, isLoading, isError } = useQuery({
     queryKey: qk.weather,
     queryFn: fetchWeather,
@@ -356,7 +357,9 @@ export function WeatherStrip() {
               {data?.metadata.fetched_at ? (
                 <>
                   {t("updated", {
-                    time: new Date(data.metadata.fetched_at).toLocaleString(),
+                    time: new Date(data.metadata.fetched_at).toLocaleString(
+                      locale === "en" ? "en-US" : "id-ID",
+                    ),
                   })}
                   <span aria-hidden> · </span>
                 </>

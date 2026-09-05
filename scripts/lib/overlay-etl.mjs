@@ -4,8 +4,9 @@
  */
 
 import { createHash } from "node:crypto";
+import { ACEH_BBOX } from "./aceh-scope.mjs";
 
-export const ACEH_BBOX = [95.0, 2.0, 98.3, 6.15];
+export { ACEH_BBOX };
 
 /** Fail the scrape when a layer drops by more than this fraction versus the previous manifest. */
 export const OVERLAY_ETL_DROP_THRESHOLD = 0.4;

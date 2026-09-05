@@ -2,7 +2,6 @@ import type { AreaLayerKey, MarkerLayerKey, OverlayLayerKey } from "./types";
 
 export const qk = {
   liveStats: ["stats", "live"] as const,
-  hazards: ["hazards"] as const,
   markers: (keys: MarkerLayerKey[]) => ["layers", "markers", ...keys] as const,
   area: (key: AreaLayerKey) => ["layers", "area", key] as const,
   irbi: ["irbi", "2025"] as const,
@@ -28,6 +27,7 @@ export const qk = {
   profilDesa: (params: { kode?: string; id?: string; nama?: string }) =>
     ["profil-desa", "desa", params] as const,
   weather: ["weather"] as const,
+  weatherInovasi: ["weather", "inovasi"] as const,
   dibiAceh: ["dibi", "aceh"] as const,
   peringatanDini: ["peringatan-dini"] as const,
   sikStats: (year: string, kabupaten: string, jenis: string) =>

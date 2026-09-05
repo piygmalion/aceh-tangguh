@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isOverlayLayerKey } from "@/lib/overlay-layers";
+import { overlayVectorApiPath } from "@/lib/overlay-paths";
 import {
   isOverlayLiveRefreshKey,
   loadOverlayLive,
@@ -19,7 +20,18 @@ export async function GET(
 ) {
   const key = params.key;
   if (!isOverlayLayerKey(key) || !isOverlayLiveRefreshKey(key)) {
-    return NextResponse.json({ error: "Unknown overlay" }, { status: 404 });
+    let hint: string | undefined;
+    if (isOverlayLayerKey(key)) {
+      try {
+        hint = overlayVectorApiPath(key);
+      } catch {
+        hint = undefined;
+      }
+    }
+    return NextResponse.json(
+      hint ? { error: "Unknown overlay", hint } : { error: "Unknown overlay" },
+      { status: 404 },
+    );
   }
   try {
     const result = await loadOverlayLive(key);

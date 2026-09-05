@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Download, MapPin, Search, X } from "lucide-react";
 import { KejadianAnalisis } from "@/components/kejadian/KejadianAnalisis";
 import { Button } from "@/components/ui/Button";
@@ -76,9 +76,9 @@ function truncate(text: string | undefined, max = 120): string {
   return `${t.slice(0, max).trimEnd()}…`;
 }
 
-function formatNumber(n: number | null | undefined): string {
+function formatNumber(n: number | null | undefined, locale: string): string {
   if (n == null || Number.isNaN(n)) return "—";
-  return n.toLocaleString("id-ID");
+  return n.toLocaleString(locale === "en" ? "en-US" : "id-ID");
 }
 
 function hasCoords(row: KejadianRow): boolean {
@@ -184,6 +184,7 @@ const inputClass =
 export function KejadianTable() {
   const t = useTranslations("dataBencana");
   const tStatus = useTranslations("statusVocab");
+  const locale = useLocale();
   const titleId = useId();
   const [draft, setDraft] = useState<Filters>(DEFAULT_FILTERS);
   const [applied, setApplied] = useState<Filters>(DEFAULT_FILTERS);
@@ -627,7 +628,7 @@ export function KejadianTable() {
                         {truncate(row.kronologi, 120)}
                       </td>
                       <td className="px-3 py-3 tabular-nums">
-                        {formatNumber(row.pengungsi)}
+                        {formatNumber(row.pengungsi, locale)}
                       </td>
                       <td className="px-3 py-3">
                         {fotoUrl ? (
@@ -739,23 +740,23 @@ export function KejadianTable() {
 
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.korban")}</dt>
               <dd>
-                {t("detail.meninggal")}: {formatNumber(detail.jumlah_korban?.meninggal)}
+                {t("detail.meninggal")}: {formatNumber(detail.jumlah_korban?.meninggal, locale)}
                 {" · "}
-                {t("detail.hilang")}: {formatNumber(detail.jumlah_korban?.hilang)}
+                {t("detail.hilang")}: {formatNumber(detail.jumlah_korban?.hilang, locale)}
                 {" · "}
-                {t("detail.lukaBerat")}: {formatNumber(detail.jumlah_korban?.luka_berat)}
+                {t("detail.lukaBerat")}: {formatNumber(detail.jumlah_korban?.luka_berat, locale)}
                 {" · "}
-                {t("detail.lukaRingan")}: {formatNumber(detail.jumlah_korban?.luka_ringan)}
+                {t("detail.lukaRingan")}: {formatNumber(detail.jumlah_korban?.luka_ringan, locale)}
               </dd>
 
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.pengungsi")}</dt>
-              <dd>{formatNumber(detail.pengungsi)}</dd>
+              <dd>{formatNumber(detail.pengungsi, locale)}</dd>
 
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.jiwa")}</dt>
-              <dd>{formatNumber(detail.jiwa_terdampak)}</dd>
+              <dd>{formatNumber(detail.jiwa_terdampak, locale)}</dd>
 
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.kk")}</dt>
-              <dd>{formatNumber(detail.kk_terdampak)}</dd>
+              <dd>{formatNumber(detail.kk_terdampak, locale)}</dd>
 
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.penanganan")}</dt>
               <dd className="leading-relaxed">

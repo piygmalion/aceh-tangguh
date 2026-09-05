@@ -36,6 +36,22 @@ describe("AN-19 overlay vector paths", () => {
     assert.throws(() => overlayVectorApiPath("inariskBahayaGempa"));
   });
 
+  it("404 /api/overlay/{static-key} hints the AN-19 path", () => {
+    const src = readFileSync(join(ROOT, "src/app/api/overlay/[key]/route.ts"), "utf8");
+    assert.match(src, /overlayVectorApiPath/);
+    assert.match(src, /hint/);
+  });
+
+  it("weather cron aliases re-export the existing handlers", () => {
+    const weather = readFileSync(join(ROOT, "src/app/api/cron/weather/route.ts"), "utf8");
+    const inovasi = readFileSync(
+      join(ROOT, "src/app/api/cron/weather-inovasi/route.ts"),
+      "utf8",
+    );
+    assert.match(weather, /api\/weather\/refresh\/route/);
+    assert.match(inovasi, /api\/weather\/inovasi\/refresh\/route/);
+  });
+
   it("POST cron overlay memanggil refresh maritim tanpa nilai secret", () => {
     const cron = readFileSync(join(ROOT, "src/app/api/cron/overlay-live/route.ts"), "utf8");
     assert.match(cron, /refreshMaritimeForecasts/);

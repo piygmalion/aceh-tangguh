@@ -251,8 +251,8 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     title_id: "Jembatan",
     title_en: "Bridges",
     description:
-      "Inventarisasi jembatan Aceh (OSM + dokumen resmi). 7547 titik, 23 kabupaten/kota.",
-    source_path: "/fixtures/jembatan.json",
+      "Layer toolbar Jembatan. Titik dari markers.geojson / marker_features — jangan mengarang inventaris terpisah.",
+    source_path: "/fixtures/markers.geojson",
     source_type: "geojson",
     pmtiles_path: null,
     enabled: true,

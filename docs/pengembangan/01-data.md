@@ -93,6 +93,26 @@ Migrasi baru `20260920_revoke_definer_write_rpcs.sql`: REVOKE `next_laporan_nomo
 
 Jurnal: `jurnal/DATA-11.md`. Gelombang 15. Dump `pg_get_functiondef` dari produksi ke migrasi baru. Jangan apply. Jangan mengarang `CREATE`. Jangan DATA-4. Jangan merevoke fungsi peran.
 
+### DATA-12 — unik satu `admin_kabkota` per kode
+
+Jurnal: `jurnal/DATA-12.md`. Gelombang 18. Migrasi baru unique parsial. Jangan apply dari tiket. Jangan merevoke `is_staff` / `is_ops`. Jangan DATA-4.
+
+### DATA-13 — ingest WeatherNext 3 inovasi
+
+Jurnal: `jurnal/DATA-13.md`. Gelombang 19. Jangan dikode sebelum AN-24. Skrip baru; jangan sunting `build-weather-snapshot.mjs`. Tanpa allowlist EE: fixture `unconfigured` + `kabupaten_kota: []`, bukan suhu karangan. Migrasi baru jika perlu cache. Jangan DATA-4.
+
+## Tiket gelombang ECC-S — kerapian
+
+Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4.
+
+### DATA-18 — fixture yatim (S1)
+
+Jurnal: `jurnal/DATA-18.md`. Hapus atau dokumentasikan `boundaries-aceh-stub.geojson`. Pulihkan atau cabut `/fixtures/jembatan.json` dari `map-layers-catalog.ts`. Jangan seed overlay. Jangan apply `20260923`.
+
+### DATA-14 / DATA-15 — registri kab + ruang Aceh (S2)
+
+Kontrak: [jurnal/AN-27.md](jurnal/AN-27.md) (`siap-kode`). Jangan mengubah `matchesKabScope`. Jangan menukar `kode_sik` staf. Jangan memakai `toDottedKabKode` sebagai identitas (empat pasang Tamiang/Jaya dan Langsa/Lhokseumawe). Jangan menebak kode perangkat.
+
 ## Saat menutup tiket
 
 Perbarui baris tiket di [STATUS.md](STATUS.md). Jangan commit.

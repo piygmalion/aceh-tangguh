@@ -118,6 +118,34 @@ Jurnal: `jurnal/BE-16.md`. Gelombang 15. Persist cache maritim hanya dari `POST 
 
 Jurnal: `jurnal/BE-17.md`. Gelombang 16. Jangan dikode sebelum AN-20 selesai. Hanya aturan tertulis di naskah.
 
+### BE-18 — saring moderasi laporan
+
+Jurnal: `jurnal/BE-18.md`. Gelombang 17. Jangan dikode sebelum AN-22. Helper `kabupaten_kota`, bukan `matchesKabScope` mentah. Reports warisan 403 untuk kab.
+
+### BE-19 — API undangan staf
+
+Jurnal: `jurnal/BE-19.md`. Gelombang 18. `requireSuperAdminApi`. POST hanya `admin_kabkota` + katalog. Jangan password. Jangan secret di klien.
+
+### BE-20 — GET cuaca inovasi baca saja
+
+Jurnal: `jurnal/BE-20.md`. Gelombang 19. Jangan dikode sebelum AN-24. `GET /api/weather/inovasi` hanya baca. Jangan mengubah `getWeatherForecasts`, `WeatherSource`, atau `POST /api/weather/refresh`. Secret `WEATHER_INOVASI_CRON_SECRET`. Jangan DATA-4.
+
+### BE-28 — GET `/api/kejadian/analisis`
+
+Jurnal: `jurnal/BE-28.md`. Gelombang 20. Jangan dikode sebelum AN-29. Agregat dari `loadKejadian()`. Kosong sah = 200. Hulu gagal = 503. Jangan menggabungkan DIBI. Jangan menabrak BE-21 (ECC-S). Jangan DATA-4.
+
+## Tiket gelombang ECC-S — kerapian
+
+Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan merge `/api/weather`.
+
+### BE-24 — `qk.hazards` (S1)
+
+Jurnal: `jurnal/BE-24.md`. Hapus kunci yatim jika uji preview tetap mengunci pensiun `/api/hazards`.
+
+### BE-22 / BE-27 / BE-21 — kontrak baca + cron (S3)
+
+Jangan dikode sebelum AN-28. Jangan menulis nilai secret. Jangan POST nasional.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Jangan commit.

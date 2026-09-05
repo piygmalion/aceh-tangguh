@@ -184,6 +184,46 @@ Jurnal: `jurnal/AN-20.md`. Gelombang 16. Jangan dikode sebelum G15 ditutup. Jang
 
 Jurnal: `jurnal/AN-21.md`. Gelombang 16. Setelah BE-17. Tutup STATUS G16.
 
+### AN-22 — naskah moderasi scoped + undangan 23 kab
+
+Jurnal: `jurnal/AN-22.md`. Gelombang 17. Jangan dikode rute sebelum naskah. Jangan merevoke `is_staff` / `is_ops`. Jangan mengarang email.
+
+### AN-23 — uji matriks moderasi + staf
+
+Jurnal: `jurnal/AN-23.md`. Gelombang 18. Setelah BE-18/BE-19/FE-18. Tutup STATUS G17/G18. Jangan menandai 23 akun hidup tanpa undangan operator.
+
+### AN-24 — naskah resmi vs inovasi cuaca
+
+Jurnal: `jurnal/AN-24.md`. Gelombang 19. Tulisan, bukan kode UI/API. Kontrak pemisahan BMKG vs WeatherNext 3. Jangan DATA-4. Jangan membuka P2 Juklak.
+
+### AN-25 — uji regresi jalur resmi + inovasi
+
+Jurnal: `jurnal/AN-25.md`. Gelombang 19. Setelah DATA-13 / BE-20 / FE-19. `/api/weather` dan `scoreKab` tidak membaca WN3. Tutup STATUS G19. DATA-4 tetap tertahan.
+
+### AN-29 — naskah halaman Analisis data
+
+Jurnal: `jurnal/AN-29.md`. Gelombang 20. Tulisan, bukan kode UI/API. Kunci rute, URL, API, DIBI terpisah, teaser, i18n. Jangan memakai AN-26. Jangan DATA-4.
+
+### AN-30 — uji penerimaan Analisis data
+
+Jurnal: `jurnal/AN-30.md`. Gelombang 20. Setelah BE-28 / FE-25. Agregat, kosong vs 503, i18n, Tanggapi. Tutup STATUS G20. DATA-4 tetap tertahan. Jangan menandai ECC-S selesai.
+
+## Tiket gelombang ECC-S — kerapian
+
+Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan membuka P2 Juklak.
+
+### AN-26 — uji lubang i18n + rute S1
+
+Jurnal: `jurnal/AN-26.md`. Setelah FE-20/FE-21. Kunci ada; path terdaftar; `npm test` hijau.
+
+### AN-27 — naskah registri kab + ruang Aceh (S2)
+
+Jurnal: `jurnal/AN-27.md`. Tulisan dulu. Jangan mengubah `matchesKabScope` di naskah menjadi tebakan.
+
+### AN-28 — naskah 200 kosong vs 503 (S3)
+
+Jurnal: `jurnal/AN-28.md`. Static, maritime, weather, inovasi. Jangan merge jalur cuaca.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Baca ulang naskah AN-3, AN-4, AN-6, dan AN-8 keesokan putaran sebelum menandai `siap-kode` ulang. Jangan commit kecuali diminta. Jangan membuka P2 `tutup_celah_juklak`.

@@ -1,10 +1,12 @@
+import { resolveAdm2 } from "@/lib/aceh-kabupaten";
 import { kabupatenNamesMatch, normalizeKabupatenKey } from "@/lib/kabupaten-join";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import type { KrbKabupaten, KrbKawasan, KrbKelasAncaman, KrbPayload, KrbWilayah } from "@/lib/krb-filter";
 
 /**
- * Join KRB rows by weather-registry dotted codes (`11.71`) or 4-digit
- * Kemendagri (`1171`). Do not invent a class when no row matches.
+ * Join KRB rows by registry adm2 (weather/KRB) or SIK 4-digit via
+ * resolveAdm2. toDottedKabKode is shape-only — not identity.
+ * Do not invent a class when no row matches.
  */
 
 export const KRB_JENIS_KODE = [
@@ -55,7 +57,7 @@ export function lookupKrbKabupaten(
   rows: readonly KrbKabupaten[],
   query: { kode?: string | null; nama?: string | null }
 ): KrbKabupaten | undefined {
-  const dotted = toDottedKabKode(query.kode ?? undefined);
+  const dotted = resolveAdm2(query.kode ?? undefined);
   if (dotted) {
     const byCode = rows.find((row) => row.kode_kabupaten === dotted);
     if (byCode) return byCode;
@@ -71,7 +73,7 @@ export function lookupKrbWilayah(
   query: { kode?: string | null; nama?: string | null; jenis: string }
 ): KrbWilayah | undefined {
   const jenis = query.jenis.trim().toLowerCase();
-  const dotted = toDottedKabKode(query.kode ?? undefined);
+  const dotted = resolveAdm2(query.kode ?? undefined);
   if (dotted) {
     const byCode = rows.find(
       (row) => row.kode_kabupaten === dotted && row.jenis_bahaya === jenis
@@ -119,7 +121,7 @@ export function kawasanOverlappingKab(
   kawasan: readonly KrbKawasan[],
   kode: string | null | undefined
 ): KrbKawasan[] {
-  const dotted = toDottedKabKode(kode);
+  const dotted = resolveAdm2(kode);
   if (!dotted) return [];
   return kawasan.filter((row) => (row.kode_kabupaten ?? []).includes(dotted));
 }

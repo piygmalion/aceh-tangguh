@@ -131,6 +131,34 @@ Jurnal: `jurnal/FE-15.md`. Gelombang 13. Judul, lead, dan tautan beranda di `/[l
 
 Jurnal: `jurnal/FE-17.md`. Gelombang 15. `fetchOverlayGeojson` memakai `overlayVectorApiPath`. Raster tetap `/api/overlay/tiles`. Verifikasi browser `/id/peta`. Jangan meni18n-kan ulang. Jangan mengubah `pkd.ts`.
 
+### FE-18 — halaman 23 slot staf kab
+
+Jurnal: `jurnal/FE-18.md`. Gelombang 18. `/admin/staf` super_admin. Dropdown katalog, bukan teks bebas. Jangan undang email fiktif. Sembunyikan tab reports warisan untuk kab.
+
+### FE-19 — strip inovasi publik terpisah
+
+Jurnal: `jurnal/FE-19.md`. Gelombang 19. Jangan dikode sebelum AN-24. Strip di bawah `WeatherStrip`. Namespace `weatherInovasi`. Jangan mengubah `WeatherStrip`, `weather-summary.ts`, atau `weather.attribution`. Jangan DATA-4.
+
+### FE-25 — halaman Analisis data + teaser
+
+Jurnal: `jurnal/FE-25.md`. Gelombang 20. Jangan dikode sebelum AN-29. Rute `/analisis-data` · `/disaster-analysis`. Namespace `analisisData`. Teaser mengganti panel `KejadianAnalisis` di Data bencana. Jangan menabrak FE-20 (ECC-S). Jangan DATA-4.
+
+## Tiket gelombang ECC-S — kerapian
+
+Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.
+
+### FE-20 — namespace calon / SDB / overlay peta (S1)
+
+Jurnal: `jurnal/FE-20.md`. Pulihkan `sikCalon`, `sikSdb`, dan kunci `map.overlay*` di ID+EN. Komponen sudah memanggilnya.
+
+### FE-21 — rute calon + SDB (S1)
+
+Jurnal: `jurnal/FE-21.md`. `routing.ts` + taut dari daftar kejadian. Jangan mengubah matriks peran.
+
+### FE-22 / FE-23 — sampah tampilan + locale tanggal (S1)
+
+`WeatherGrid` yatim; namespace `hazards` yatim; `useLocale()` pada dasbor yang masih `id-ID` keras.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Jangan commit. Jika UI berubah, verifikasi di browser sebelum menutup.

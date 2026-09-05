@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -57,23 +57,28 @@ async function fetchDibiAceh(): Promise<DibiAcehResponse> {
   return res.json();
 }
 
-function fmt(n: number): string {
-  return n.toLocaleString("id-ID");
+function numberLocale(locale: string): string {
+  return locale === "en" ? "en-US" : "id-ID";
+}
+
+function fmt(n: number, locale: string): string {
+  return n.toLocaleString(numberLocale(locale));
 }
 
 /** DIBI stores housing-loss estimates in million rupiah (`jt`). */
-function fmtJutaRp(n: number): string {
+function fmtJutaRp(n: number, locale: string): string {
+  const loc = numberLocale(locale);
   if (n >= 1_000_000) {
-    return `Rp ${(n / 1_000_000).toLocaleString("id-ID", {
+    return `Rp ${(n / 1_000_000).toLocaleString(loc, {
       maximumFractionDigits: 1,
     })} T`;
   }
   if (n >= 1_000) {
-    return `Rp ${(n / 1_000).toLocaleString("id-ID", {
+    return `Rp ${(n / 1_000).toLocaleString(loc, {
       maximumFractionDigits: 1,
     })} M`;
   }
-  return `Rp ${n.toLocaleString("id-ID")} jt`;
+  return `Rp ${n.toLocaleString(loc)} jt`;
 }
 
 type TipRow = { name: string; value: number; extra?: string };
@@ -87,6 +92,7 @@ function ChartTooltip({
   payload?: Array<{ payload?: TipRow }>;
   unit: string;
 }) {
+  const locale = useLocale();
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload;
   if (!row) return null;
@@ -94,7 +100,7 @@ function ChartTooltip({
     <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] px-3 py-2 text-xs text-[var(--text)] shadow-[var(--shadow)]">
       <div className="font-semibold text-[var(--text)]">{row.name}</div>
       <div className="mt-0.5 text-[var(--text-dim)]">
-        {fmt(row.value)} {unit}
+        {fmt(row.value, locale)} {unit}
       </div>
       {row.extra ? (
         <div className="mt-1 text-[var(--text-dim)]">{row.extra}</div>
@@ -130,6 +136,7 @@ function KpiCard({
 export function DibiDashboard() {
   const t = useTranslations("dibi");
   const tn = useTranslations("nav");
+  const locale = useLocale();
   const { data, isLoading, isError } = useQuery({
     queryKey: qk.dibiAceh,
     queryFn: fetchDibiAceh,
@@ -161,11 +168,11 @@ export function DibiDashboard() {
       name: r.kategori_bencana,
       value: r.kejadian,
       extra: t("tooltipKategori", {
-        meninggal: fmt(meninggalHilang(r)),
-        terdampak: fmt(jiwaTerdampak(r)),
+        meninggal: fmt(meninggalHilang(r), locale),
+        terdampak: fmt(jiwaTerdampak(r), locale),
       }),
     }));
-  }, [data, t]);
+  }, [data, t, locale]);
 
   const kabBars = useMemo<TipRow[]>(() => {
     if (!data) return [];
@@ -173,11 +180,11 @@ export function DibiDashboard() {
       name: r.kabupaten.replace(/^Kota\s+/i, ""),
       value: r.kejadian,
       extra: t("tooltipKab", {
-        rusak: fmt(rumahRusakTotal(r)),
-        terendam: fmt(r.rumah_terendam),
+        rusak: fmt(rumahRusakTotal(r), locale),
+        terendam: fmt(r.rumah_terendam, locale),
       }),
     }));
-  }, [data, t]);
+  }, [data, t, locale]);
 
   const tahunBars = useMemo<TipRow[]>(() => {
     if (!data) return [];
@@ -185,14 +192,14 @@ export function DibiDashboard() {
       name: String(r.tahun),
       value: r.kejadian,
       extra: t("tooltipTahun", {
-        meninggal: fmt(meninggalHilang(r)),
-        rusak: fmt(rumahRusakTotal(r)),
+        meninggal: fmt(meninggalHilang(r), locale),
+        rusak: fmt(rumahRusakTotal(r), locale),
       }),
     }));
-  }, [data, t]);
+  }, [data, t, locale]);
 
   const fetchedLabel = data?.metadata.fetched_at
-    ? new Date(data.metadata.fetched_at).toLocaleString("id-ID")
+    ? new Date(data.metadata.fetched_at).toLocaleString(numberLocale(locale))
     : null;
 
   return (
@@ -246,7 +253,7 @@ export function DibiDashboard() {
             <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               <KpiCard
                 label={t("kpi.kejadian")}
-                value={fmt(metrics.kejadian)}
+                value={fmt(metrics.kejadian, locale)}
                 sub={
                   year === "all"
                     ? t("kpi.kejadianSub", {
@@ -258,37 +265,37 @@ export function DibiDashboard() {
               />
               <KpiCard
                 label={t("kpi.meninggalHilang")}
-                value={fmt(meninggalHilang(metrics))}
+                value={fmt(meninggalHilang(metrics), locale)}
                 sub={t("kpi.meninggalHilangSub", {
-                  meninggal: fmt(metrics.meninggal),
-                  hilang: fmt(metrics.hilang),
+                  meninggal: fmt(metrics.meninggal, locale),
+                  hilang: fmt(metrics.hilang, locale),
                 })}
               />
               <KpiCard
                 label={t("kpi.terdampak")}
-                value={fmt(jiwaTerdampak(metrics))}
+                value={fmt(jiwaTerdampak(metrics), locale)}
                 sub={t("kpi.terdampakSub", {
-                  mengungsi: fmt(metrics.menderita_mengungsi),
-                  luka: fmt(metrics.luka_sakit),
+                  mengungsi: fmt(metrics.menderita_mengungsi, locale),
+                  luka: fmt(metrics.luka_sakit, locale),
                 })}
               />
               <KpiCard
                 label={t("kpi.rumahRusak")}
-                value={fmt(rumahRusakTotal(metrics))}
+                value={fmt(rumahRusakTotal(metrics), locale)}
                 sub={t("kpi.rumahRusakSub", {
-                  rb: fmt(metrics.rumah_rusak_berat),
-                  rs: fmt(metrics.rumah_rusak_sedang),
-                  rr: fmt(metrics.rumah_rusak_ringan),
+                  rb: fmt(metrics.rumah_rusak_berat, locale),
+                  rs: fmt(metrics.rumah_rusak_sedang, locale),
+                  rr: fmt(metrics.rumah_rusak_ringan, locale),
                 })}
               />
               <KpiCard
                 label={t("kpi.terendam")}
-                value={fmt(metrics.rumah_terendam)}
+                value={fmt(metrics.rumah_terendam, locale)}
                 sub={t("kpi.terendamSub")}
               />
               <KpiCard
                 label={t("kpi.kerugian")}
-                value={fmtJutaRp(metrics.estimasi_kerugian_rumah)}
+                value={fmtJutaRp(metrics.estimasi_kerugian_rumah, locale)}
                 sub={t("kpi.kerugianSub")}
               />
             </div>

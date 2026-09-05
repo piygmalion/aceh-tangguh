@@ -1,5 +1,6 @@
 import type { AdminRole } from "@/lib/supabase/types";
 import type { AdminProfile } from "@/lib/auth/types";
+import { kabScopeEqualsRow } from "@/lib/sik/kab-scope";
 
 export const SIK_ROLES = [
   "super_admin",
@@ -120,9 +121,7 @@ export function matchesKabScope(
   if (!isKabScoped(profile)) return true;
   const scope = scopeKabupaten(profile);
   if (!scope) return false;
-  const kode = row.kode_kabupaten?.trim();
-  const nama = row.kabupaten?.trim();
-  return kode === scope || nama === scope;
+  return kabScopeEqualsRow(scope, row);
 }
 
 export type ScopeDecision =

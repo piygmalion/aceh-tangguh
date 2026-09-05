@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { AdminListChrome, AdminPager, AdminTableStatusRow } from "@/components/admin/AdminListChrome";
 import { Button } from "@/components/ui/Button";
-import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { KejadianOperasiRow } from "@/lib/sik/db-tables";
 
 export function KejadianOpsList() {
   const t = useTranslations("admin");
+  const tCalon = useTranslations("sikCalon");
+  const tSdb = useTranslations("sikSdb");
   const locale = useLocale();
   const [items, setItems] = useState<KejadianOperasiRow[]>([]);
   const [total, setTotal] = useState(0);
@@ -42,16 +44,39 @@ export function KejadianOpsList() {
   }, [page, status]);
 
   return (
-    <GlassPanel className="p-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold">{t("navKejadianOps")}</h1>
-          <p className="mt-1 text-sm text-[var(--text-dim)]">{t("overviewKejadian")}</p>
+    <AdminListChrome
+      heading={t("navKejadianOps")}
+      lead={t("overviewKejadian")}
+      error={error}
+      actions={
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/sik/kejadian/calon">
+            <Button size="sm" variant="outline">
+              {tCalon("navFromList")}
+            </Button>
+          </Link>
+          <Link href="/admin/sik/sdb">
+            <Button size="sm" variant="outline">
+              {tSdb("navFromList")}
+            </Button>
+          </Link>
+          <Link href="/admin/sik/kejadian/baru">
+            <Button size="sm">{t("create")}</Button>
+          </Link>
         </div>
-        <Link href="/admin/sik/kejadian/baru">
-          <Button size="sm">{t("create")}</Button>
-        </Link>
-      </div>
+      }
+      footer={
+        <AdminPager
+          page={page}
+          pageSize={20}
+          total={total}
+          onPrev={() => setPage((p) => p - 1)}
+          onNext={() => setPage((p) => p + 1)}
+          prevLabel={t("prev")}
+          nextLabel={t("next")}
+        />
+      }
+    >
       <form
         className="mt-4 flex flex-wrap gap-2"
         onSubmit={(e) => {
@@ -84,7 +109,6 @@ export function KejadianOpsList() {
           {t("search")}
         </Button>
       </form>
-      {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-left text-sm">
           <thead className="text-[var(--text-dim)]">
@@ -99,17 +123,9 @@ export function KejadianOpsList() {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
-                  {t("loading")}
-                </td>
-              </tr>
+              <AdminTableStatusRow colSpan={6}>{t("loading")}</AdminTableStatusRow>
             ) : items.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
-                  {t("empty")}
-                </td>
-              </tr>
+              <AdminTableStatusRow colSpan={6}>{t("empty")}</AdminTableStatusRow>
             ) : (
               items.map((row) => (
                 <tr key={row.id} className="border-t border-[var(--border)]">
@@ -140,19 +156,6 @@ export function KejadianOpsList() {
           </tbody>
         </table>
       </div>
-      <div className="mt-4 flex justify-end gap-2">
-        <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-          {t("prev")}
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={page * 20 >= total}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          {t("next")} {total ? `(${total})` : ""}
-        </Button>
-      </div>
-    </GlassPanel>
+    </AdminListChrome>
   );
 }

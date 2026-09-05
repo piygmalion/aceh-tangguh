@@ -199,6 +199,100 @@ Fail-closed `admin_kabkota` tanpa profil; filter `/sik/resource` menurut matriks
 | BE-17 | backend | Terapkan AN-20 | jurnal/BE-17.md | selesai |
 | AN-21 | analis | Uji matriks + tutup STATUS | jurnal/AN-21.md | selesai |
 
+## Gelombang 17 — moderasi scoped
+
+Saring `laporan_*` per kab. Reports warisan 403 untuk kab. `npx tsc --noEmit` hijau; uji laporan-scope lulus. DATA-4 tetap tertahan. Jangan merevoke `is_staff` / `is_ops`. Jangan menandai 23 akun hidup.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-22 | analis | Naskah moderasi scoped + undangan 23 kab | jurnal/AN-22.md | selesai |
+| BE-18 | backend | Saring GET/PATCH laporan; reports 403 kab | jurnal/BE-18.md | selesai |
+
+## Gelombang 18 — administrasi + 23 slot
+
+Halaman `/id/admin/staf` + `GET`/`POST /api/admin/users`. 23 slot katalog; email resmi operator. Migrasi unik belum di-apply. DATA-4 tetap tertahan. Jangan merevoke `is_staff` / `is_ops`.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| BE-19 | backend | GET/POST `/api/admin/users` | jurnal/BE-19.md | selesai |
+| FE-18 | frontend | Halaman `/admin/staf` 23 slot | jurnal/FE-18.md | selesai |
+| DATA-12 | data | Unik parsial `admin_kabkota` per kode | jurnal/DATA-12.md | selesai |
+| AN-23 | analis | Uji matriks + tutup STATUS | jurnal/AN-23.md | selesai |
+
+## Gelombang 19 — inovasi WeatherNext 3, mesin resmi tetap BMKG
+
+Naskah AN-24 dikunci sebelum kode. Jalur resmi tidak diubah. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-24 | analis | Naskah resmi vs inovasi WN3 | jurnal/AN-24.md | selesai |
+| DATA-13 | data | Ingest EE + fixture inovasi | jurnal/DATA-13.md | selesai |
+| BE-20 | backend | GET `/api/weather/inovasi` | jurnal/BE-20.md | selesai |
+| FE-19 | frontend | Strip publik terpisah | jurnal/FE-19.md | selesai |
+| AN-25 | analis | Uji regresi + tutup STATUS | jurnal/AN-25.md | selesai |
+
+## Gelombang 20 — halaman Analisis data bencana
+
+Naskah G20 dikunci sebelum kode (lihat FE-25 / BE-28 / `analisis-data-acceptance.test.ts`). Berkas `jurnal/AN-29.md` dan `AN-30.md` kemudian dipakai ulang oleh ECC-S4 (upsert inovasi / helper kab) — jangan dibaca sebagai naskah permukaan Analisis. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan memakai ID AN-26/27, FE-20, atau BE-21 (itu ECC-S).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-29 | analis | Naskah permukaan + kontrak API | jurnal/AN-29.md | selesai |
+| BE-28 | backend | GET `/api/kejadian/analisis` | jurnal/BE-28.md | selesai |
+| FE-25 | frontend | Halaman + teaser + Tanggapi | jurnal/FE-25.md | selesai |
+| AN-30 | analis | Uji penerimaan + tutup STATUS | jurnal/AN-30.md | selesai |
+
+## Gelombang ECC-C — wrapper harness
+
+Skill/agent Aceh membungkus loop ECC. Clone sibling `../ecc` pin `v2.2.0` (`5eddf1a3`). Installer tidak dijalankan ke `.cursor/` aplikasi pada gelombang ini. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-ECC-1 | analis | Naskah wrapper ECC | jurnal/AN-ECC-1.md | selesai |
+| KOORD-ECC-C | ecc | Skill + agent + brief | jurnal/KOORD-ECC-C.md | selesai |
+| AN-ECC-2 | analis | Uji wrapper | jurnal/AN-ECC-2.md | selesai |
+
+## Gelombang ECC-A — install selektif
+
+Setelah AN-ECC-2. Dry-run `install.ps1` ditolak (hooks + MCP + skill di luar allowlist). Tulis: tiga skill + empat rules TypeScript dari clone `v2.2.0`. Doctor tanpa install-state (disengaja). DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan `--enable-hooks`.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-ECC-3 | analis | Naskah allowlist install | jurnal/AN-ECC-3.md | selesai |
+| KOORD-ECC-A | ecc | Dry-run ditolak; salinan allowlist | jurnal/KOORD-ECC-A.md | selesai |
+| AN-ECC-4 | analis | Verifikasi A | jurnal/AN-ECC-4.md | selesai |
+
+## Gelombang ECC-S — skema kerapian
+
+Riset ECC atas G0–G19 + pohon kode. Naskah: [06-skema-kerapian.md](06-skema-kerapian.md). S1–S4 dikerjakan 6 September 2026. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan merge cuaca resmi/inovasi. Jangan apply `20260923` / dump DATA-11 dari tiket ini.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-ECC-5 | ecc | Naskah skema kerapian | jurnal/AN-ECC-5.md | selesai |
+| FE-20 | frontend | Pulihkan sikCalon / sikSdb / map.overlay* | jurnal/FE-20.md | selesai |
+| FE-21 | frontend | Rute calon + SDB | jurnal/FE-21.md | selesai |
+| FE-22 | frontend | WeatherGrid + hazards yatim | jurnal/FE-22.md | selesai |
+| FE-23 | frontend | Locale tanggal dasbor publik | jurnal/FE-23.md | selesai |
+| DATA-18 | data | Fixture stub + jembatan | jurnal/DATA-18.md | selesai |
+| BE-24 | backend | Hapus qk.hazards yatim | jurnal/BE-24.md | selesai |
+| AN-26 | analis | Uji S1 | jurnal/AN-26.md | selesai |
+| AN-27 | analis | Naskah registri kab + ruang | jurnal/AN-27.md | selesai |
+| DATA-14 | data | Registri kab kanonik | jurnal/DATA-14.md | selesai |
+| DATA-15 | data | Satu modul ruang Aceh | jurnal/DATA-15.md | selesai |
+| AN-28 | analis | Naskah 200 vs 503 | jurnal/AN-28.md | selesai |
+| BE-22 | backend | Samakan static/maritime | jurnal/BE-22.md | selesai |
+| BE-27 | backend | Petunjuk 404 overlay | jurnal/BE-27.md | selesai |
+| BE-21 | backend | Alias cron cuaca di /cron/ | jurnal/BE-21.md | selesai |
+| AN-29 | analis | Naskah upsert inovasi | jurnal/AN-29.md | selesai |
+| AN-30 | analis | Naskah helper kab + catalog + reports | jurnal/AN-30.md | selesai |
+| BE-23 | backend | Helper kab-scope | jurnal/BE-23.md | selesai |
+| BE-25 | backend | Cabut /api/sik/catalog | jurnal/BE-25.md | selesai |
+| BE-26 | backend | Rencana pensiun /admin/reports | jurnal/BE-26.md | selesai |
+| DATA-16 | data | Seed overlay statis dari JSON | jurnal/DATA-16.md | selesai |
+| DATA-19 | data | Upsert inovasi ke snapshot | jurnal/DATA-19.md | selesai |
+| FE-24 | frontend | Cangkang tabel admin bersama | jurnal/FE-24.md | selesai |
+| KOORD-ECC-S | ecc | Review uji + browser | jurnal/KOORD-ECC-S.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

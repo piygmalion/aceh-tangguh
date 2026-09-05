@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { GlassPanel } from "@/components/ui/GlassPanel";
+import { AdminListChrome, AdminTableStatusRow } from "@/components/admin/AdminListChrome";
 import type { SdbKatalogRow } from "@/lib/sik/db-tables";
 
 const KELAS_LABEL: Record<"terbuka" | "terbatas" | "rahasia", "kelasTerbuka" | "kelasTerbatas" | "kelasRahasia"> = {
@@ -46,12 +46,7 @@ export function SdbKatalogList() {
   }, []);
 
   return (
-    <GlassPanel className="p-5">
-      <div>
-        <h1 className="text-xl font-semibold">{t("title")}</h1>
-        <p className="mt-1 text-sm text-[var(--text-dim)]">{t("lead")}</p>
-      </div>
-      {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
+    <AdminListChrome heading={t("title")} lead={t("lead")} error={error}>
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-left text-sm">
           <thead className="text-[var(--text-dim)]">
@@ -71,17 +66,9 @@ export function SdbKatalogList() {
           </thead>
           <tbody>
             {loading ? (
-              <tr>
-                <td colSpan={11} className="px-2 py-8 text-center text-[var(--text-dim)]">
-                  {t("loading")}
-                </td>
-              </tr>
+              <AdminTableStatusRow colSpan={11}>{t("loading")}</AdminTableStatusRow>
             ) : items.length === 0 ? (
-              <tr>
-                <td colSpan={11} className="px-2 py-8 text-center text-[var(--text-dim)]">
-                  {t("empty")}
-                </td>
-              </tr>
+              <AdminTableStatusRow colSpan={11}>{t("empty")}</AdminTableStatusRow>
             ) : (
               items.map((row) => (
                 <tr key={row.kunci} className="border-t border-[var(--border)]">
@@ -102,6 +89,6 @@ export function SdbKatalogList() {
           </tbody>
         </table>
       </div>
-    </GlassPanel>
+    </AdminListChrome>
   );
 }

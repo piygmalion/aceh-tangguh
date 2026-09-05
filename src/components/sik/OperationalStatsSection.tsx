@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -32,6 +33,7 @@ async function fetchStats(year: string, kabupaten: string, jenis: string): Promi
 }
 
 export function OperationalStatsSection() {
+  const locale = useLocale();
   const yearNow = String(new Date().getFullYear());
   const [year, setYear] = useState(yearNow);
   const [kabupaten, setKabupaten] = useState("");
@@ -104,7 +106,7 @@ export function OperationalStatsSection() {
               <span className="font-medium">{row.nama_kejadian}</span>
               <span className="text-[var(--text-dim)]"> · {row.kabupaten ?? "Aceh"}</span>
             </span>
-            <span className="text-[var(--text-dim)]">{new Date(row.waktu_kejadian).toLocaleDateString("id-ID")}</span>
+            <span className="text-[var(--text-dim)]">{new Date(row.waktu_kejadian).toLocaleDateString(locale === "en" ? "en-US" : "id-ID")}</span>
           </li>
         ))}
       </ul>

@@ -54,6 +54,11 @@ supabase/.temp/
 # Strix local / CLI artifacts (findings stay in the Cloud dashboard)
 strix_runs/
 
+# ECC harness (clone is sibling ../ecc; keep installer/memory local)
+.ecc/
+vendor/ecc/
+.cursor/ecc-install-state.json
+
 # overlay ETL scratch (unfiltered national dumps)
 public/fixtures/overlays/_raw*
 

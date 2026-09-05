@@ -26,7 +26,7 @@ export function isBasemapId(value: string | null | undefined): value is BasemapI
 }
 
 /** Aceh operational AOI — used for STAC scans, not for clamping the map camera. */
-export const ACEH_BBOX: [number, number, number, number] = [95.0, 2.0, 98.3, 6.15];
+export { ACEH_BBOX } from "./aceh-scope";
 
 /** EOX Sentinel-2 cloudless 2024 (WebMercator WMTS). Template is z/y/x. */
 export const SENTINEL_CLOUDLESS_TILES =

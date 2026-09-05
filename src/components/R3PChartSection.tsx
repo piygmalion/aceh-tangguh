@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -90,8 +90,16 @@ async function fetchPrrpkaSummary(): Promise<PrrpkaSummaryResponse> {
   return res.json();
 }
 
-function fmt(n: number, digits = 0): string {
-  return n.toLocaleString("id-ID", {
+function numberLocale(locale: string): string {
+  return locale === "en" ? "en-US" : "id-ID";
+}
+
+function useNumberLocale(): string {
+  return numberLocale(useLocale());
+}
+
+function fmt(n: number, digits = 0, locale = "id-ID"): string {
+  return n.toLocaleString(locale, {
     maximumFractionDigits: digits,
     minimumFractionDigits: digits > 0 ? Math.min(digits, 1) : 0,
   });
@@ -106,6 +114,7 @@ function ChartTooltip({
   payload?: Array<{ payload?: BarTipRow }>;
   money?: boolean;
 }) {
+  const loc = useNumberLocale();
   if (!active || !payload?.length) return null;
   const row = payload[0]?.payload;
   if (!row) return null;
@@ -113,7 +122,7 @@ function ChartTooltip({
     <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-xs shadow-[var(--shadow)]">
       <div className="font-semibold text-[var(--text)]">{row.name}</div>
       <div className="mt-0.5 text-[var(--text-dim)]">
-        {money ? formatRpCompact(row.value) : fmt(row.value)}
+        {money ? formatRpCompact(row.value, loc) : fmt(row.value, 0, loc)}
       </div>
       {row.extra ? (
         <div className="mt-1 text-[var(--text-dim)]">{row.extra}</div>
@@ -133,6 +142,7 @@ function GroupedTooltip({
   label?: string;
   money?: boolean;
 }) {
+  const loc = useNumberLocale();
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-xs shadow-[var(--shadow)]">
@@ -145,7 +155,7 @@ function GroupedTooltip({
               style={{ background: p.color }}
               aria-hidden
             />
-            {p.name}: {money ? formatRpCompact(Number(p.value ?? 0)) : fmt(Number(p.value ?? 0))}
+            {p.name}: {money ? formatRpCompact(Number(p.value ?? 0), loc) : fmt(Number(p.value ?? 0), 0, loc)}
           </li>
         ))}
       </ul>
@@ -160,6 +170,7 @@ function PieTooltip({
   active?: boolean;
   payload?: Array<{ name?: string; value?: number; payload?: { pct?: number } }>;
 }) {
+  const loc = useNumberLocale();
   if (!active || !payload?.length) return null;
   const p = payload[0];
   const pct = p.payload?.pct;
@@ -167,8 +178,8 @@ function PieTooltip({
     <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-xs shadow-[var(--shadow)]">
       <div className="font-semibold text-[var(--text)]">{p.name}</div>
       <div className="mt-0.5 text-[var(--text-dim)]">
-        {formatRpCompact(Number(p.value ?? 0))}
-        {pct != null ? ` · ${fmt(pct, 1)}%` : ""}
+        {formatRpCompact(Number(p.value ?? 0), loc)}
+        {pct != null ? ` · ${fmt(pct, 1, loc)}%` : ""}
       </div>
     </div>
   );
@@ -181,6 +192,7 @@ function HorizontalBar({
   data: BarTipRow[];
   money?: boolean;
 }) {
+  const loc = useNumberLocale();
   return (
     <div className="h-[22rem] w-full sm:h-[26rem]">
       <ResponsiveContainer width="100%" height="100%">
@@ -201,7 +213,7 @@ function HorizontalBar({
             tickLine={false}
             tickFormatter={(v: number) =>
               money
-                ? formatRpCompact(v)
+                ? formatRpCompact(v, loc)
                 : v >= 1000
                   ? `${Math.round(v / 1000)}k`
                   : String(Math.round(v))
@@ -241,6 +253,7 @@ function GroupedBar({
   money?: boolean;
   layout?: "vertical" | "horizontal";
 }) {
+  const loc = useNumberLocale();
   const vertical = layout === "vertical";
   return (
     <div className="h-[22rem] w-full sm:h-[26rem]">
@@ -264,7 +277,7 @@ function GroupedBar({
                 axisLine={{ stroke: "var(--border)" }}
                 tickLine={false}
                 tickFormatter={(v: number) =>
-                  money ? formatRpCompact(v) : String(Math.round(v))
+                  money ? formatRpCompact(v, loc) : String(Math.round(v))
                 }
               />
               <YAxis
@@ -289,7 +302,7 @@ function GroupedBar({
                 axisLine={{ stroke: "var(--border)" }}
                 tickLine={false}
                 tickFormatter={(v: number) =>
-                  money ? formatRpCompact(v) : String(Math.round(v))
+                  money ? formatRpCompact(v, loc) : String(Math.round(v))
                 }
               />
             </>
@@ -320,6 +333,7 @@ function GroupedBar({
 export function R3PChartSection() {
   const t = useTranslations("prrpkaChart");
   const tn = useTranslations("nav");
+  const loc = useNumberLocale();
   const { data, isLoading, isError } = useQuery({
     queryKey: qk.prrpkaSummary,
     queryFn: fetchPrrpkaSummary,
@@ -390,7 +404,7 @@ export function R3PChartSection() {
       .map((row) => ({
         name: row.kabupaten_kota,
         value: row.jitupasna_kerusakan_kerugian,
-        extra: `${t("kpi.prrkaAceh")}: ${formatRpCompact(row.prrka_total)}`,
+        extra: `${t("kpi.prrkaAceh")}: ${formatRpCompact(row.prrka_total, loc)}`,
       }));
 
     const topKebutuhan: BarTipRow[] = [...kab]
@@ -422,7 +436,7 @@ export function R3PChartSection() {
         value: row.prrka_total,
         extra:
           row.pangsa_prrka_terhadap_kebutuhan_rr != null
-            ? `${fmt(row.pangsa_prrka_terhadap_kebutuhan_rr * 100, 1)}% ${t("kpi.kebutuhanRr")}`
+            ? `${fmt(row.pangsa_prrka_terhadap_kebutuhan_rr * 100, 1, loc)}% ${t("kpi.kebutuhanRr")}`
             : undefined,
       }));
 
@@ -504,11 +518,11 @@ export function R3PChartSection() {
         kpis: [
           {
             label: t("kpi.kerusakan"),
-            value: formatRpCompact(r.jitupasna_kerusakan_kerugian),
+            value: formatRpCompact(r.jitupasna_kerusakan_kerugian, loc),
           },
           {
             label: t("kpi.kebutuhanRr"),
-            value: formatRpCompact(r.jitupasna_kebutuhan_rr),
+            value: formatRpCompact(r.jitupasna_kebutuhan_rr, loc),
           },
           {
             label: t("kpi.kabTerdampak"),
@@ -529,19 +543,19 @@ export function R3PChartSection() {
         kpis: [
           {
             label: t("kpi.kebutuhanPusat"),
-            value: formatRpCompact(r.kebutuhan_pusat),
+            value: formatRpCompact(r.kebutuhan_pusat, loc),
           },
           {
             label: t("kpi.kebutuhanProvinsi"),
-            value: formatRpCompact(r.kebutuhan_provinsi_r3p),
+            value: formatRpCompact(r.kebutuhan_provinsi_r3p, loc),
           },
           {
             label: t("kpi.kebutuhanKabR3p"),
-            value: formatRpCompact(r.kebutuhan_kab_r3p),
+            value: formatRpCompact(r.kebutuhan_kab_r3p, loc),
           },
           {
             label: t("kpi.kebutuhanKabPrrp"),
-            value: formatRpCompact(r.kebutuhan_kab_prrp),
+            value: formatRpCompact(r.kebutuhan_kab_prrp, loc),
           },
         ],
       },
@@ -552,17 +566,17 @@ export function R3PChartSection() {
         kpis: [
           {
             label: t("kpi.prrpKk"),
-            value: fmt(r.perumahan_prrp_kk),
+            value: fmt(r.perumahan_prrp_kk, 0, loc),
             sub: t("unit.kk"),
           },
           {
             label: t("kpi.r3pUnit"),
-            value: fmt(r.perumahan_r3p_unit),
+            value: fmt(r.perumahan_r3p_unit, 0, loc),
             sub: t("unit.rumah"),
           },
           {
             label: t("kpi.bnbaUnit"),
-            value: fmt(r.perumahan_bnba_unit),
+            value: fmt(r.perumahan_bnba_unit, 0, loc),
             sub: t("unit.rumah"),
           },
           {
@@ -578,11 +592,11 @@ export function R3PChartSection() {
         kpis: [
           {
             label: t("kpi.prrkaAceh"),
-            value: formatRpCompact(r.prrka_kewenangan_aceh),
+            value: formatRpCompact(r.prrka_kewenangan_aceh, loc),
           },
           {
             label: t("kpi.prrkaLintas"),
-            value: formatRpCompact(r.prrka_lintas_kabupaten),
+            value: formatRpCompact(r.prrka_lintas_kabupaten, loc),
           },
           {
             label: t("kpi.kabLingkup"),
@@ -606,15 +620,15 @@ export function R3PChartSection() {
         kpis: [
           {
             label: t("kpi.surplusNasional"),
-            value: formatRpCompact(gap("nasional")?.kesenjangan ?? 0),
+            value: formatRpCompact(gap("nasional")?.kesenjangan ?? 0, loc),
           },
           {
             label: t("kpi.defisitProvinsi"),
-            value: formatRpCompact(gap("provinsi")?.kesenjangan ?? 0),
+            value: formatRpCompact(gap("provinsi")?.kesenjangan ?? 0, loc),
           },
           {
             label: t("kpi.defisitKab"),
-            value: formatRpCompact(gap("kabupaten_kota")?.kesenjangan ?? 0),
+            value: formatRpCompact(gap("kabupaten_kota")?.kesenjangan ?? 0, loc),
           },
         ],
       },
@@ -624,23 +638,23 @@ export function R3PChartSection() {
         kpis: [
           {
             label: t("kpi.prrkaAceh"),
-            value: formatRpCompact(r.prrka_kewenangan_aceh),
+            value: formatRpCompact(r.prrka_kewenangan_aceh, loc),
           },
           {
             label: t("kpi.sektorTop"),
             value: sektorTop?.sektor ?? "—",
-            sub: sektorTop ? formatRpCompact(sektorTop.total) : undefined,
+            sub: sektorTop ? formatRpCompact(sektorTop.total, loc) : undefined,
           },
           {
             label: t("kpi.prrkaLintas"),
-            value: formatRpCompact(r.prrka_lintas_kabupaten),
+            value: formatRpCompact(r.prrka_lintas_kabupaten, loc),
           },
         ],
       },
     };
 
     return bySlide;
-  }, [data, t]);
+  }, [data, t, loc]);
 
   const current = slideModel?.[slideId];
   const docHref = withBasePath(
@@ -848,7 +862,7 @@ export function R3PChartSection() {
                               {s.name}
                             </span>
                             <span className="tabular-nums text-[var(--text-dim)]">
-                              {formatRpCompact(s.value)} · {fmt(s.pct, 1)}%
+                              {formatRpCompact(s.value, loc)} · {fmt(s.pct, 1, loc)}%
                             </span>
                           </li>
                         ))}

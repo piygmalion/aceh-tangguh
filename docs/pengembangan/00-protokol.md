@@ -2,7 +2,7 @@
 
 Sumber: review sistem 4 September 2026. Perbaikan P0/P1 yang sudah masuk kode tidak dikerjakan ulang.
 
-Pengembangan dijalankan oleh empat agent. Setiap agent hanya mengerjakan klusternya. Output dianggap selesai hanya jika tulisan kerja dan bukti sudah dibaca ulang sampai kriteria penerimaan terpenuhi.
+Pengembangan dijalankan oleh empat agent wilayah plus harness ECC (koordinator). Setiap agent wilayah hanya mengerjakan klusternya. Output dianggap selesai hanya jika tulisan kerja dan bukti sudah dibaca ulang sampai kriteria penerimaan terpenuhi.
 
 ## Agent
 
@@ -12,6 +12,7 @@ Pengembangan dijalankan oleh empat agent. Setiap agent hanya mengerjakan kluster
 | backend | [02-backend.md](02-backend.md) | `src/app/api/**`, `src/lib/overlay-live.ts`, `src/lib/laporan/**`, `src/lib/security/**`, `src/lib/maritime.ts` |
 | frontend | [03-frontend.md](03-frontend.md) | `src/components/**`, `src/hooks/**`, `messages/**`, `src/app/[locale]/**` |
 | analis | [04-analis.md](04-analis.md) | uji otorisasi, `.github/workflows/ci.yml`, naskah penerimaan, [STATUS.md](STATUS.md) |
+| ecc | [05-ecc.md](05-ecc.md) | harness/koordinator: STATUS, jurnal `KOORD-*` / `AN-ECC-*` / `KOORD-ECC-*`, skill `aceh-ecc` |
 
 Jangan mengedit berkas di luar wilayah kecuali brief menuliskan pengecualian. Migrasi lama tidak diubah; selalu berkas baru.
 
@@ -55,3 +56,10 @@ Batas ulang untuk satu tiket: lima putaran. Jika masih gagal, tulis blocker di j
 - **Gelombang 14** — selesai (loop overlay di pohon git produksi). Jangan mengulang. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menulis nilai `OVERLAY_CRON_SECRET`. Jangan menyelaraskan seluruh tumpukan lokal.
 - **Gelombang 15** — cron maritim + hook rute overlay + dump RPC marker. Jangan DATA-4. Jangan membuka P2 Juklak. Jangan POST nasional. Jangan menulis nilai `OVERLAY_CRON_SECRET`. Jangan mengubah `matchesKabScope` (itu G16 / AN-20).
 - **Gelombang 16** — fail-closed kab + filter `/sik/resource`. Jangan dikode sebelum AN-20 selesai. Jangan DATA-4. Jangan merevoke `is_staff` / `is_ops`.
+- **Gelombang 17** — naskah AN-22 + saring moderasi laporan per kab. Jangan undang 23 akun sebelum BE-18. Jangan DATA-4. Jangan merevoke `is_staff` / `is_ops`.
+- **Gelombang 18** — API/UI undangan `admin_kabkota` + unik parsial. Email tidak dikarang. Jangan DATA-4. Jangan merevoke `is_staff` / `is_ops`.
+- **Gelombang 19** — lapisan inovasi WeatherNext 3 terpisah dari mesin resmi BMKG. Jangan merge ke `/api/weather`. Jangan DATA-4. Jangan membuka P2 Juklak. Jangan POST nasional.
+- **Gelombang 20** — halaman Analisis data bencana. Jangan meniru tabel Data bencana atau artikel Publikasi. Jangan menjumlahkan DIBI. Jangan memakai ID AN-26/27, FE-20, atau BE-21. Jangan DATA-4. Jangan membuka P2 Juklak. Jangan POST nasional.
+- **Gelombang ECC-C** — wrapper skill/agent harness. Jangan menjalankan installer ke `.cursor/` aplikasi. Jangan DATA-4.
+- **Gelombang ECC-A** — install selektif setelah AN-ECC-2 selesai. Profil `minimal`, tanpa hooks. Jangan dump katalog. Jangan DATA-4.
+- **Gelombang ECC-S** — skema kerapian (AN-ECC-5). Kode S1 hanya setelah skema `selesai`. Jangan DATA-4. Jangan membuka P2 Juklak. Jangan POST nasional.
