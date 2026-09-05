@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
 const inputClass =
@@ -86,12 +86,12 @@ export function SikResourceManager({
       <Button className="mt-3" size="sm" onClick={() => void create()}>
         Tambah
       </Button>
-      <ul className="mt-3 space-y-2 text-sm">
+      <ul className="mt-3 flex flex-col gap-2 text-sm">
         {items.length === 0 ? <li className="text-[var(--text-dim)]">Belum ada data.</li> : null}
         {items.map((row) => (
           <li key={String(row.id)} className="flex justify-between gap-2 border-t border-[var(--border)] py-2">
             <span>{fields.map((f) => String(row[f] ?? "")).filter(Boolean).join(" · ") || String(row.id)}</span>
-            <Button size="sm" variant="danger" onClick={() => void remove(String(row.id))}>
+            <Button size="sm" variant="destructive" onClick={() => void remove(String(row.id))}>
               Hapus
             </Button>
           </li>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   DEFINISI_KERUSAKAN,
   KELOMPOK_UMUR,
@@ -555,7 +556,7 @@ export function DampakJuklakForm({
             <p className="md:col-span-2 text-xs text-[var(--text-dim)]">
               Agregat ekonomi (otomatis): {form.kerugian_ekonomi_rp || 0} juta
             </p>
-            <div className="md:col-span-2 space-y-2">
+            <div className="flex flex-col gap-2 md:col-span-2">
               <DefinisiKerusakan />
               <div className="grid grid-cols-5 gap-2 text-xs text-[var(--text-dim)]">
                 <span />
@@ -842,7 +843,14 @@ export function DampakJuklakForm({
         ) : null}
       </div>
 
-      <Button className="mt-4" size="sm" disabled={busy || locked} onClick={onSave}>
+      <Button
+        className="mt-4"
+        size="sm"
+        disabled={busy || locked}
+        onClick={onSave}
+        data-icon={busy ? "inline-start" : undefined}
+      >
+        {busy ? <Spinner /> : null}
         {locked ? "Terkunci (statis)" : busy ? "Menyimpan…" : "Simpan kaji cepat"}
       </Button>
 

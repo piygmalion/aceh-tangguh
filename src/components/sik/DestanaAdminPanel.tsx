@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { destanaLevelLabel, PKD_REKOMENDASI_GENERIK } from "@/lib/sik/pkd";
 
@@ -164,7 +164,7 @@ export function DestanaAdminPanel({
               </div>
             </div>
             {active === row.id ? (
-              <ul className="mt-3 max-h-96 space-y-2 overflow-y-auto text-sm">
+              <ul className="mt-3 flex max-h-96 flex-col gap-2 overflow-y-auto text-sm">
                 {pertanyaan.map((p) => {
                   const ans = answers.get(p.id);
                   const yaCount = pertanyaan

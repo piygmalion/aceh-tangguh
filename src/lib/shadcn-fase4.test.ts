@@ -11,7 +11,7 @@ function read(rel: string) {
 
 const PANEL = "src/components/map/AreaProfilPanel.tsx";
 
-const STILL_LEGACY = [
+const MIGRATED_IN_FASE_5 = [
   "src/components/panduan/GuidePanel.tsx",
   "src/components/sik/CalonKejadianList.tsx",
   "src/components/sik/DampakJuklakForm.tsx",
@@ -99,14 +99,14 @@ describe("shadcn Fase 4 AreaProfilPanel", () => {
     assert.equal(/params\.set\("kode_desa"/.test(src), false);
   });
 
-  it("leaves panduan and SIK on button-legacy this fase", () => {
-    for (const file of STILL_LEGACY) {
+  it("no longer treats panduan and SIK as button-legacy leftovers", () => {
+    for (const file of MIGRATED_IN_FASE_5) {
       const src = read(file);
-      assert.match(src, /@\/components\/ui\/button-legacy/);
+      assert.match(src, /from ["']@\/components\/ui\/button["']/);
       assert.equal(
-        /from ["']@\/components\/ui\/button["']/.test(src),
+        /@\/components\/ui\/button-legacy/.test(src),
         false,
-        `${file} should stay on button-legacy this fase`
+        `${file} still imports button-legacy`
       );
     }
   });

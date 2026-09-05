@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ACEH_KABUPATEN, findKabupaten } from "@/lib/sik/juklak";
 import { JENIS_BENCANA_JUKLAK } from "@/lib/sik/jenis-bencana";
@@ -212,7 +213,7 @@ export function CalonKejadianList({ isKabScoped }: { isKabScoped: boolean }) {
             key={value}
             type="button"
             size="sm"
-            variant={tab === value ? "primary" : "outline"}
+            variant={tab === value ? "default" : "outline"}
             onClick={() => {
               closePanel();
               setTab(value);
@@ -469,7 +470,14 @@ function RowBlock({
             </div>
             {formError ? <p className="mt-3 text-sm text-[var(--danger)]">{formError}</p> : null}
             <div className="mt-3 flex flex-wrap gap-2">
-              <Button type="button" size="sm" disabled={submitting} onClick={onTerima}>
+              <Button
+                type="button"
+                size="sm"
+                disabled={submitting}
+                onClick={onTerima}
+                data-icon={submitting ? "inline-start" : undefined}
+              >
+                {submitting ? <Spinner /> : null}
                 {t("actionKirimTerima")}
               </Button>
               <Button type="button" size="sm" variant="outline" disabled={submitting} onClick={onCancel}>
@@ -494,7 +502,15 @@ function RowBlock({
             </label>
             {formError ? <p className="mt-3 text-sm text-[var(--danger)]">{formError}</p> : null}
             <div className="mt-3 flex flex-wrap gap-2">
-              <Button type="button" size="sm" variant="danger" disabled={submitting} onClick={onTolak}>
+              <Button
+                type="button"
+                size="sm"
+                variant="destructive"
+                disabled={submitting}
+                onClick={onTolak}
+                data-icon={submitting ? "inline-start" : undefined}
+              >
+                {submitting ? <Spinner /> : null}
                 {t("actionKirimTolak")}
               </Button>
               <Button type="button" size="sm" variant="outline" disabled={submitting} onClick={onCancel}>

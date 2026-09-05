@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { KrbContextCard } from "@/components/sik/KrbContextCard";
 import { SikResourceManager } from "@/components/sik/SikResourceManager";
@@ -112,25 +113,45 @@ export function KejadianOpsDetail({
           </div>
           <div className="flex flex-wrap gap-2">
             {item.fase_data === "dinamis" ? (
-              <Button size="sm" variant="outline" disabled={faseBusy} onClick={() => void setFase("diajukan")}>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={faseBusy}
+                onClick={() => void setFase("diajukan")}
+                data-icon={faseBusy ? "inline-start" : undefined}
+              >
+                {faseBusy ? <Spinner /> : null}
                 {t("ajukanVerifikasi")}
               </Button>
             ) : null}
             {item.fase_data === "diajukan" && canLockStatis ? (
-              <Button size="sm" disabled={faseBusy} onClick={() => void setFase("statis")}>
+              <Button
+                size="sm"
+                disabled={faseBusy}
+                onClick={() => void setFase("statis")}
+                data-icon={faseBusy ? "inline-start" : undefined}
+              >
+                {faseBusy ? <Spinner /> : null}
                 {t("kunciDataStatis")}
               </Button>
             ) : null}
             {locked && canLockStatis ? (
-              <Button size="sm" variant="outline" disabled={faseBusy} onClick={() => void setFase("dinamis")}>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={faseBusy}
+                onClick={() => void setFase("dinamis")}
+                data-icon={faseBusy ? "inline-start" : undefined}
+              >
+                {faseBusy ? <Spinner /> : null}
                 {t("bukaKunci")}
               </Button>
             ) : null}
-            <Link href={{ pathname: "/admin/sik/kejadian/[id]/cetak", params: { id } }}>
-              <Button variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm">
+              <Link href={{ pathname: "/admin/sik/kejadian/[id]/cetak", params: { id } }}>
                 {t("cetakLampiranI")}
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
         {error ? <p className="mt-2 text-sm text-[var(--danger)]">{error}</p> : null}

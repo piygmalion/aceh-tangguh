@@ -23,7 +23,7 @@ const MIGRATED_FORMS = [
   "src/components/laporan/FormFieldRenderer.tsx",
 ];
 
-const LEFT_ON_LEGACY = [
+const MIGRATED_IN_LATER_FASE = [
   "src/components/panduan/GuidePanel.tsx",
   "src/components/sik/CalonKejadianList.tsx",
   "src/components/sik/DampakJuklakForm.tsx",
@@ -57,14 +57,14 @@ describe("shadcn Fase 2 admin/laporan forms", () => {
     }
   });
 
-  it("keeps panduan and SIK on button-legacy", () => {
-    for (const file of LEFT_ON_LEGACY) {
+  it("no longer lists panduan and SIK as button-legacy leftovers", () => {
+    for (const file of MIGRATED_IN_LATER_FASE) {
       const src = read(file);
-      assert.match(src, /@\/components\/ui\/button-legacy/);
+      assert.match(src, /from ["']@\/components\/ui\/button["']/);
       assert.equal(
-        /from ["']@\/components\/ui\/button["']/.test(src),
+        /@\/components\/ui\/button-legacy/.test(src),
         false,
-        `${file} should stay on button-legacy this fase`
+        `${file} still imports button-legacy`
       );
     }
   });
