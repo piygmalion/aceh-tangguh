@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { MapPin, Navigation } from "lucide-react";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { inAcehBounds } from "@/lib/laporan/definitions";
 
 export type LokasiValue = {
@@ -52,66 +55,74 @@ export function GpsCapture({ value, onChange }: Props) {
   }
 
   return (
-    <div className="space-y-3 rounded-xl border border-[var(--glass-border)] bg-[var(--bg)]/40 p-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-input bg-background/40 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-sm font-medium">
-          <MapPin size={16} className="text-[var(--accent)]" />
+          <MapPin size={16} className="text-primary" />
           {t("gpsTitle")}
         </div>
-        <Button type="button" size="sm" variant="outline" onClick={captureGps} disabled={capturing} leftIcon={<Navigation size={14} />}>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={captureGps}
+          disabled={capturing}
+          data-icon="inline-start"
+        >
+          {capturing ? <Spinner /> : <Navigation />}
           {capturing ? t("gpsCapturing") : t("gpsCapture")}
         </Button>
       </div>
-      {gpsError && <p className="text-sm text-[var(--danger)]">{gpsError}</p>}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-2">
-        <label className="block text-sm">
-          <span className="mb-1 block text-[var(--text-dim)]">Latitude</span>
-          <input
+      {gpsError ? <FieldError>{gpsError}</FieldError> : null}
+      <FieldGroup className="grid grid-cols-2 gap-3 sm:grid-cols-2">
+        <Field>
+          <FieldLabel htmlFor="gps-latitude">Latitude</FieldLabel>
+          <Input
+            id="gps-latitude"
             type="number"
             step="any"
             required
             value={value.latitude}
             onChange={(e) => onChange({ ...value, latitude: Number(e.target.value) })}
-            className="field-input"
           />
-        </label>
-        <label className="block text-sm">
-          <span className="mb-1 block text-[var(--text-dim)]">Longitude</span>
-          <input
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="gps-longitude">Longitude</FieldLabel>
+          <Input
+            id="gps-longitude"
             type="number"
             step="any"
             required
             value={value.longitude}
             onChange={(e) => onChange({ ...value, longitude: Number(e.target.value) })}
-            className="field-input"
           />
-        </label>
-        <label className="block text-sm sm:col-span-2">
-          <span className="mb-1 block text-[var(--text-dim)]">{t("kabupaten")}</span>
-          <input
+        </Field>
+        <Field className="sm:col-span-2">
+          <FieldLabel htmlFor="gps-kabupaten">{t("kabupaten")}</FieldLabel>
+          <Input
+            id="gps-kabupaten"
             required
             value={value.kabupaten_kota}
             onChange={(e) => onChange({ ...value, kabupaten_kota: e.target.value })}
-            className="field-input"
           />
-        </label>
-        <label className="block text-sm">
-          <span className="mb-1 block text-[var(--text-dim)]">{t("kecamatan")}</span>
-          <input
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="gps-kecamatan">{t("kecamatan")}</FieldLabel>
+          <Input
+            id="gps-kecamatan"
             value={value.kecamatan}
             onChange={(e) => onChange({ ...value, kecamatan: e.target.value })}
-            className="field-input"
           />
-        </label>
-        <label className="block text-sm">
-          <span className="mb-1 block text-[var(--text-dim)]">{t("desa")}</span>
-          <input
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="gps-desa">{t("desa")}</FieldLabel>
+          <Input
+            id="gps-desa"
             value={value.desa}
             onChange={(e) => onChange({ ...value, desa: e.target.value })}
-            className="field-input"
           />
-        </label>
-      </div>
+        </Field>
+      </FieldGroup>
     </div>
   );
 }

@@ -2,8 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ADMIN_TABLES,
   ADMIN_TABLE_KEYS,
@@ -13,6 +25,9 @@ import {
 } from "@/lib/auth/tables";
 
 type Row = Record<string, unknown>;
+
+const selectClassName =
+  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
 
 export function DatabaseExplorer() {
   const t = useTranslations("admin");
@@ -158,19 +173,21 @@ export function DatabaseExplorer() {
   }
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
+  const formOpen = editing != null || creating;
 
   return (
     <GlassPanel className="p-4 sm:p-6">
       <h1 className="text-xl font-semibold">{t("dbTitle")}</h1>
-      <p className="mt-1 text-sm text-[var(--text-dim)]">{t("dbLead")}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t("dbLead")}</p>
       {config.note ? (
-        <p className="mt-2 text-xs text-[var(--text-dim)]">{config.note}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{config.note}</p>
       ) : null}
 
       <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <label className="flex flex-col gap-1 text-sm">
-          <span className="text-xs text-[var(--text-dim)]">{t("dbTable")}</span>
+        <Field className="w-auto">
+          <FieldLabel htmlFor="db-table">{t("dbTable")}</FieldLabel>
           <select
+            id="db-table"
             value={table}
             onChange={(e) => {
               setTable(e.target.value as AdminTableKey);
@@ -178,7 +195,7 @@ export function DatabaseExplorer() {
               setEditing(null);
               setCreating(false);
             }}
-            className="rounded-full border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
+            className={selectClassName}
           >
             {ADMIN_TABLE_KEYS.map((key) => (
               <option key={key} value={key}>
@@ -186,7 +203,7 @@ export function DatabaseExplorer() {
               </option>
             ))}
           </select>
-        </label>
+        </Field>
         <form
           className="flex gap-2"
           onSubmit={(e) => {
@@ -195,11 +212,11 @@ export function DatabaseExplorer() {
             void load();
           }}
         >
-          <input
+          <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-52 rounded-full border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--ring)]"
+            className="w-52"
           />
           <Button type="submit" size="sm" variant="outline">
             {t("search")}
@@ -212,15 +229,11 @@ export function DatabaseExplorer() {
         </form>
       </div>
 
-      {error ? (
-        <p className="mt-3 text-sm text-[var(--danger)]" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <FieldError className="mt-3">{error}</FieldError> : null}
 
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-left text-sm">
-          <thead className="text-[var(--text-dim)]">
+          <thead className="text-muted-foreground">
             <tr>
               {listColumns.map((col) => (
                 <th key={col.key} className="px-2 py-2 font-medium">
@@ -235,7 +248,7 @@ export function DatabaseExplorer() {
               <tr>
                 <td
                   colSpan={listColumns.length + 1}
-                  className="px-2 py-8 text-center text-[var(--text-dim)]"
+                  className="px-2 py-8 text-center text-muted-foreground"
                 >
                   {t("loading")}
                 </td>
@@ -244,14 +257,14 @@ export function DatabaseExplorer() {
               <tr>
                 <td
                   colSpan={listColumns.length + 1}
-                  className="px-2 py-8 text-center text-[var(--text-dim)]"
+                  className="px-2 py-8 text-center text-muted-foreground"
                 >
                   {t("empty")}
                 </td>
               </tr>
             ) : (
               items.map((row, i) => (
-                <tr key={String(row[config.pk] ?? i)} className="border-t border-[var(--border)]">
+                <tr key={String(row[config.pk] ?? i)} className="border-t border-border">
                   {listColumns.map((col) => (
                     <td key={col.key} className="max-w-[14rem] truncate px-2 py-2">
                       {formatCell(row[col.key])}
@@ -281,7 +294,7 @@ export function DatabaseExplorer() {
         </table>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-sm text-[var(--text-dim)]">
+      <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
         <span>
           {t("showing", {
             from: total === 0 ? 0 : (page - 1) * pageSize + 1,
@@ -304,30 +317,37 @@ export function DatabaseExplorer() {
         </div>
       </div>
 
-      {editing || creating ? (
-        <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 p-3 sm:items-center">
-          <div className="glass max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl p-5">
-            <h2 className="text-lg font-semibold">{creating ? t("create") : t("edit")}</h2>
+      <Dialog open={formOpen} onOpenChange={(open) => { if (!open) closeForm(); }}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+          <DialogHeader className="flex flex-col gap-1.5">
+            <DialogTitle>{creating ? t("create") : t("edit")}</DialogTitle>
             {!creating && editing ? (
-              <p className="mt-1 font-mono text-xs text-[var(--text-dim)]">
+              <DialogDescription className="font-mono">
                 {config.pk}: {String(editing[config.pk])}
-              </p>
-            ) : null}
-            <div className="mt-4 flex flex-col gap-3">
-              {config.columns.map((col) => (
-                <label key={col.key} className="flex flex-col gap-1 text-sm">
-                  <span className="text-xs text-[var(--text-dim)]">
+              </DialogDescription>
+            ) : (
+              <DialogDescription className="sr-only">{t("dbTitle")}</DialogDescription>
+            )}
+          </DialogHeader>
+          <FieldGroup className="gap-3">
+            {config.columns.map((col) => {
+              const writable = columnWritable(col);
+              const fieldId = `db-field-${col.key}`;
+              return (
+                <Field key={col.key} orientation={col.type === "boolean" ? "horizontal" : "vertical"}>
+                  <FieldLabel htmlFor={fieldId}>
                     {col.label}
-                    {!columnWritable(col) ? ` · ${t("readOnly")}` : ""}
-                  </span>
+                    {!writable ? ` · ${t("readOnly")}` : ""}
+                  </FieldLabel>
                   {col.type === "select" && col.options ? (
                     <select
-                      disabled={!columnWritable(col)}
+                      id={fieldId}
+                      disabled={!writable}
                       value={draft[col.key] ?? ""}
                       onChange={(e) =>
                         setDraft((d) => ({ ...d, [col.key]: e.target.value }))
                       }
-                      className="rounded-xl border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2"
+                      className={selectClassName}
                     >
                       {col.options.map((opt) => (
                         <option key={opt} value={opt}>
@@ -337,8 +357,9 @@ export function DatabaseExplorer() {
                     </select>
                   ) : col.type === "boolean" ? (
                     <input
+                      id={fieldId}
                       type="checkbox"
-                      disabled={!columnWritable(col)}
+                      disabled={!writable}
                       checked={draft[col.key] === "true"}
                       onChange={(e) =>
                         setDraft((d) => ({
@@ -348,39 +369,41 @@ export function DatabaseExplorer() {
                       }
                     />
                   ) : col.type === "json" ? (
-                    <textarea
+                    <Textarea
+                      id={fieldId}
                       rows={6}
-                      disabled={!columnWritable(col)}
+                      disabled={!writable}
                       value={draft[col.key] ?? ""}
                       onChange={(e) =>
                         setDraft((d) => ({ ...d, [col.key]: e.target.value }))
                       }
-                      className="rounded-xl border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 font-mono text-xs"
+                      className="font-mono"
                     />
                   ) : (
-                    <input
-                      disabled={!columnWritable(col)}
+                    <Input
+                      id={fieldId}
+                      disabled={!writable}
                       value={draft[col.key] ?? ""}
                       onChange={(e) =>
                         setDraft((d) => ({ ...d, [col.key]: e.target.value }))
                       }
-                      className="rounded-xl border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2"
                     />
                   )}
-                </label>
-              ))}
-            </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <Button variant="ghost" onClick={closeForm}>
-                {t("cancel")}
-              </Button>
-              <Button disabled={busy} onClick={() => void save()}>
-                {t("save")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+                </Field>
+              );
+            })}
+          </FieldGroup>
+          <DialogFooter className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <Button variant="ghost" onClick={closeForm}>
+              {t("cancel")}
+            </Button>
+            <Button disabled={busy} onClick={() => void save()} data-icon={busy ? "inline-start" : undefined}>
+              {busy ? <Spinner /> : null}
+              {t("save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </GlassPanel>
   );
 }

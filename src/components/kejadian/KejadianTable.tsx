@@ -1,19 +1,22 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { Download, MapPin, Search, X } from "lucide-react";
+import { Download, MapPin, Search } from "lucide-react";
 import { KejadianAnalisis } from "@/components/kejadian/KejadianAnalisis";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Link } from "@/i18n/routing";
 import { KEJADIAN_MAX_PAGE_SIZE } from "@/lib/kejadian-query";
@@ -178,19 +181,16 @@ ${placemarks}
 `;
 }
 
-const inputClass =
-  "w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 text-sm text-[var(--text)] outline-none transition [color-scheme:inherit] focus:border-[var(--ring)] focus:ring-2 focus:ring-[var(--ring)]/20";
+const selectClassName =
+  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors [color-scheme:inherit] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
 
 export function KejadianTable() {
   const t = useTranslations("dataBencana");
   const tStatus = useTranslations("statusVocab");
-  const titleId = useId();
   const [draft, setDraft] = useState<Filters>(DEFAULT_FILTERS);
   const [applied, setApplied] = useState<Filters>(DEFAULT_FILTERS);
   const [detail, setDetail] = useState<KejadianRow | null>(null);
   const [exporting, setExporting] = useState(false);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   const qs = useMemo(() => buildQuery(applied), [applied]);
   const { data, isLoading, isError, isFetching } = useQuery({
@@ -280,17 +280,6 @@ export function KejadianTable() {
     return facets.kecamatanByKabupaten?.[draft.kabupaten] ?? facets.kecamatan;
   }, [facets, draft.kabupaten]);
 
-  useEffect(() => {
-    const el = dialogRef.current;
-    if (!el) return;
-    if (detail) {
-      if (!el.open) el.showModal();
-      closeBtnRef.current?.focus();
-    } else if (el.open) {
-      el.close();
-    }
-  }, [detail]);
-
   const applyFilters = useCallback(() => {
     setApplied({ ...draft, page: 1 });
   }, [draft]);
@@ -352,7 +341,7 @@ export function KejadianTable() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <KejadianAnalisis
         windowRows={analysisRows}
         selectedJenis={applied.jenis}
@@ -364,32 +353,35 @@ export function KejadianTable() {
       />
 
       <GlassPanel className="p-4 md:p-5">
-        <div className={cn("mb-3 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+        <div className={cn("mb-3 text-muted-foreground", TYPE_KICKER_CLASS)}>
           {t("filters")}
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          <label className="block text-sm">
-            <span className="mb-1 block text-[var(--text-dim)]">{t("from")}</span>
-            <input
+        <FieldGroup className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <Field>
+            <FieldLabel htmlFor="kejadian-from">{t("from")}</FieldLabel>
+            <Input
+              id="kejadian-from"
               type="date"
-              className={inputClass}
+              className="[color-scheme:inherit]"
               value={draft.from}
               onChange={(e) => setDraft((f) => ({ ...f, from: e.target.value }))}
             />
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1 block text-[var(--text-dim)]">{t("to")}</span>
-            <input
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="kejadian-to">{t("to")}</FieldLabel>
+            <Input
+              id="kejadian-to"
               type="date"
-              className={inputClass}
+              className="[color-scheme:inherit]"
               value={draft.to}
               onChange={(e) => setDraft((f) => ({ ...f, to: e.target.value }))}
             />
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1 block text-[var(--text-dim)]">{t("kabupaten")}</span>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="kejadian-kabupaten">{t("kabupaten")}</FieldLabel>
             <select
-              className={inputClass}
+              id="kejadian-kabupaten"
+              className={selectClassName}
               value={draft.kabupaten}
               onChange={(e) =>
                 setDraft((f) => ({
@@ -406,11 +398,12 @@ export function KejadianTable() {
                 </option>
               ))}
             </select>
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1 block text-[var(--text-dim)]">{t("kecamatan")}</span>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="kejadian-kecamatan">{t("kecamatan")}</FieldLabel>
             <select
-              className={inputClass}
+              id="kejadian-kecamatan"
+              className={selectClassName}
               value={draft.kecamatan}
               onChange={(e) =>
                 setDraft((f) => ({ ...f, kecamatan: e.target.value }))
@@ -423,11 +416,12 @@ export function KejadianTable() {
                 </option>
               ))}
             </select>
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1 block text-[var(--text-dim)]">{t("jenis")}</span>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="kejadian-jenis">{t("jenis")}</FieldLabel>
             <select
-              className={inputClass}
+              id="kejadian-jenis"
+              className={selectClassName}
               value={draft.jenis}
               onChange={(e) => setDraft((f) => ({ ...f, jenis: e.target.value }))}
             >
@@ -438,11 +432,12 @@ export function KejadianTable() {
                 </option>
               ))}
             </select>
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1 block text-[var(--text-dim)]">{t("status")}</span>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="kejadian-status">{t("status")}</FieldLabel>
             <select
-              className={inputClass}
+              id="kejadian-status"
+              className={selectClassName}
               value={draft.status}
               onChange={(e) => setDraft((f) => ({ ...f, status: e.target.value }))}
             >
@@ -455,12 +450,12 @@ export function KejadianTable() {
                 </option>
               ))}
             </select>
-          </label>
-          <label className="block text-sm sm:col-span-2 lg:col-span-1 xl:col-span-1">
-            <span className="mb-1 block text-[var(--text-dim)]">{t("search")}</span>
-            <input
+          </Field>
+          <Field className="sm:col-span-2 lg:col-span-1 xl:col-span-1">
+            <FieldLabel htmlFor="kejadian-q">{t("search")}</FieldLabel>
+            <Input
+              id="kejadian-q"
               type="search"
-              className={inputClass}
               placeholder={t("searchPlaceholder")}
               value={draft.q}
               onChange={(e) => setDraft((f) => ({ ...f, q: e.target.value }))}
@@ -468,19 +463,14 @@ export function KejadianTable() {
                 if (e.key === "Enter") applyFilters();
               }}
             />
-          </label>
-        </div>
+          </Field>
+        </FieldGroup>
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            variant="primary"
-            size="sm"
-            leftIcon={<Search size={14} />}
-            onClick={applyFilters}
-          >
+          <Button type="button" size="sm" onClick={applyFilters} data-icon="inline-start">
+            <Search />
             {t("search")}
           </Button>
-          <Button type="button" variant="danger" size="sm" onClick={resetFilters}>
+          <Button type="button" variant="destructive" size="sm" onClick={resetFilters}>
             {t("reset")}
           </Button>
         </div>
@@ -488,10 +478,10 @@ export function KejadianTable() {
 
       <GlassPanel className="overflow-hidden p-0">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--glass-border)] px-4 py-3">
-          <label className="flex items-center gap-2 text-sm text-[var(--text-dim)]">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>{t("pageSize")}</span>
             <select
-              className={`${inputClass} w-auto`}
+              className={`${selectClassName} w-auto`}
               value={applied.pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
               aria-label={t("pageSize")}
@@ -505,15 +495,16 @@ export function KejadianTable() {
             <span>{t("entries")}</span>
           </label>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-[var(--text-dim)]">{t("export")}</span>
+            <span className="text-sm text-muted-foreground">{t("export")}</span>
             <Button
               type="button"
               variant="outline"
               size="sm"
               disabled={exporting || total === 0}
-              leftIcon={<Download size={14} />}
+              data-icon="inline-start"
               onClick={() => exportFiltered("csv")}
             >
+              {exporting ? <Spinner /> : <Download />}
               {t("exportCsv")}
             </Button>
             <Button
@@ -690,30 +681,16 @@ export function KejadianTable() {
         </div>
       </GlassPanel>
 
-      <dialog
-        ref={dialogRef}
-        className="fixed inset-0 z-[80] m-auto max-h-[90vh] w-[min(40rem,calc(100%-1.5rem))] overflow-y-auto rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)] p-0 text-[var(--text)] shadow-[var(--shadow-elevated)] backdrop:bg-black/50"
-        onClose={() => setDetail(null)}
-        aria-labelledby={titleId}
-      >
-        {detail ? (
-          <div className="p-5 md:p-6">
-            <div className="flex items-start justify-between gap-3">
-              <h2 id={titleId} className="text-xl font-semibold tracking-tight">
-                {t("detail.title")}
-              </h2>
-              <button
-                ref={closeBtnRef}
-                type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
-                aria-label={t("detail.close")}
-                onClick={() => setDetail(null)}
-              >
-                <X size={16} />
-              </button>
-            </div>
+      <Dialog open={detail != null} onOpenChange={(open) => { if (!open) setDetail(null); }}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[40rem]">
+          {detail ? (
+            <>
+              <DialogHeader className="flex flex-col gap-1.5">
+                <DialogTitle>{t("detail.title")}</DialogTitle>
+                <DialogDescription className="sr-only">{detail.jenis_bencana}</DialogDescription>
+              </DialogHeader>
 
-            <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-[9rem_1fr]">
+            <dl className="grid gap-3 text-sm sm:grid-cols-[9rem_1fr]">
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.id")}</dt>
               <dd className="font-mono text-xs">{detail.id}</dd>
 
@@ -794,7 +771,7 @@ export function KejadianTable() {
               <dt className="font-medium text-[var(--text-dim)]">{t("detail.sumber")}</dt>
               <dd>
                 {Array.isArray(detail.sumber_data) && detail.sumber_data.length ? (
-                  <ul className="space-y-1">
+                  <ul className="flex flex-col gap-1">
                     {detail.sumber_data.map((s) => (
                       <li key={s}>
                         {/^https?:\/\//i.test(s) ? (
@@ -842,28 +819,30 @@ export function KejadianTable() {
             </dl>
 
             {hasCoords(detail) ? (
-              <div className="mt-6">
-                <Link
-                  href={{
-                    pathname: "/peta",
-                    query: {
-                      lat: String(detail.arah_di_peta!.latitude),
-                      lng: String(detail.arah_di_peta!.longitude),
-                      z: "11",
-                      layers: "disasterEvents",
-                    },
-                  }}
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-fg)] hover:bg-[var(--primary-hover)]"
-                  onClick={() => setDetail(null)}
-                >
-                  <MapPin size={14} />
-                  {t("detail.lihatPeta")}
-                </Link>
+              <div className="mt-2">
+                <Button asChild data-icon="inline-start">
+                  <Link
+                    href={{
+                      pathname: "/peta",
+                      query: {
+                        lat: String(detail.arah_di_peta!.latitude),
+                        lng: String(detail.arah_di_peta!.longitude),
+                        z: "11",
+                        layers: "disasterEvents",
+                      },
+                    }}
+                    onClick={() => setDetail(null)}
+                  >
+                    <MapPin />
+                    {t("detail.lihatPeta")}
+                  </Link>
+                </Button>
               </div>
             ) : null}
-          </div>
-        ) : null}
-      </dialog>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
