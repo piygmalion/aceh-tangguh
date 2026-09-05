@@ -68,8 +68,7 @@ export type ClusterLayerPreset = {
 /**
  * Homepage `?cluster=` aliases → marker layers.
  *
- * Posko stayed retired; tendPoints is live again from SIK tempat_pengungsian.
- * back onto those keys.
+ * Posko / tendPoints / missingPersons stay retired (same lock).
  *
  * - sar / pemulihan → disaster events + laporan kejadian
  * - logistik → disaster events + road/bridge infra
@@ -81,7 +80,7 @@ export const CLUSTER_TO_LAYERS: Record<ClusterId, ClusterLayerPreset> = {
   sar: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   pemulihan: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   logistik: { markerLayers: ["disasterEvents", "infraRoadBridge"] },
-  pengungsian: { markerLayers: ["disasterEvents", "tendPoints", "laporanKejadian"] },
+  pengungsian: { markerLayers: ["disasterEvents", "laporanKejadian"] },
   kesehatan: { markerLayers: ["facHealth"] },
   pendidikan: { markerLayers: ["facEducation"] },
 };

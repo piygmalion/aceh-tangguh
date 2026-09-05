@@ -9,6 +9,7 @@ import type { MapLayerKind, MapLayerSourceType } from "./supabase/types";
  */
 export const RETIRED_MARKER_LAYER_KEYS = [
   "poskos",
+  "tendPoints",
   "missingPersons",
 ] as const satisfies readonly MarkerLayerKey[];
 
@@ -63,10 +64,7 @@ export const FASILITAS_UMUM_LAYER_KEYS = [
 export const MARKER_TOOLBAR_GROUPS: MarkerToolbarGroup[] = [
   {
     groupKey: "groupMain",
-    options: [
-      { key: "disasterEvents", labelKey: "disasterEvents" },
-      { key: "tendPoints", labelKey: "tendPoints" },
-    ],
+    options: [{ key: "disasterEvents", labelKey: "disasterEvents" }],
   },
   {
     groupKey: "groupInfra",
@@ -305,13 +303,13 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     kind: "marker",
     title_id: "Titik pengungsian",
     title_en: "Shelter points",
-    description: "Lokasi tempat pengungsian SIK (tempat_pengungsian).",
-    source_path: "/api/layers/markers",
-    source_type: "api",
+    description: "Dihapus dari Data Utama; key dipertahankan untuk URL lama.",
+    source_path: null,
+    source_type: "geojson",
     pmtiles_path: null,
-    enabled: true,
-    sort_order: 110,
-    meta: { toolbar: "groupMain" },
+    enabled: false,
+    sort_order: 910,
+    meta: { retired: true },
   },
   {
     key: "missingPersons",
