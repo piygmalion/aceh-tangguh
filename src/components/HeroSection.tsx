@@ -6,14 +6,18 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { IrbiHeroPanel } from "@/components/IrbiHeroPanel";
 import { KrbHeroPanel } from "@/components/KrbHeroPanel";
+import { Badge } from "@/components/ui/badge";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { GlassPanel } from "@/components/ui/GlassPanel";
 import { MediaBackdrop } from "@/components/ui/MediaBackdrop";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
 import { SITE_MEDIA } from "@/lib/media";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
-import { TYPE_HERO_DISPLAY_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { TYPE_FLOOR_CLASS, TYPE_HERO_DISPLAY_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
 type HeroTab = "utama" | "peta" | "irbi" | "krb";
@@ -93,17 +97,20 @@ function HeroStatusPanel() {
     : [];
 
   return (
-    <aside className="glass w-full shrink-0 rounded-2xl border border-white/10 p-5 lg:w-[320px]">
+    <GlassPanel
+      as="aside"
+      className="w-full shrink-0 border border-white/10 p-5 lg:w-[320px]"
+    >
       <div className="mb-4 flex items-center justify-between">
         <p className={cn("mb-0 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
           {t("statusTitle")}
         </p>
         <span className="type-stamp text-[0.8125rem] text-white/40">{t("statusToday")}</span>
       </div>
-      <div className="space-y-3">
+      <div className="flex flex-col gap-3">
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <span key={i} className="skeleton block h-8 rounded-lg" aria-hidden />
+              <Skeleton key={i} className="h-8 w-full rounded-lg bg-white/10" />
             ))
           : rows.map((row) => {
               const chip = toneChip(row.tone);
@@ -113,26 +120,29 @@ function HeroStatusPanel() {
                     <span className={cn("h-2 w-2 shrink-0 rounded-full", chip.dot)} />
                     <span className="truncate text-sm font-medium">{row.place}</span>
                   </div>
-                  <span
+                  <Badge
+                    variant="outline"
                     className={cn(
-                      "shrink-0 rounded-full px-2.5 py-0.5 text-[0.8125rem] font-semibold uppercase",
+                      "shrink-0 rounded-full border-transparent px-2.5 py-0.5 font-semibold uppercase",
+                      TYPE_FLOOR_CLASS,
                       chip.chip
                     )}
                   >
                     {tp(`tone.${row.tone}`)}
-                  </span>
+                  </Badge>
                 </div>
               );
             })}
       </div>
+      <Separator className="mt-4 bg-white/10" />
       <a
         href="#status"
-        className="mt-4 flex items-center gap-1.5 border-t border-white/10 pt-3 text-[0.8125rem] font-semibold text-[var(--accent-soft)] transition-colors hover:text-[#F7F7F4]"
+        className="mt-3 flex items-center gap-1.5 text-[0.8125rem] font-semibold text-[var(--accent-soft)] transition-colors hover:text-[#F7F7F4]"
       >
         {t("statusAll")}
         <span aria-hidden>→</span>
       </a>
-    </aside>
+    </GlassPanel>
   );
 }
 
@@ -200,10 +210,16 @@ export function HeroSection() {
                   <p className={cn("mb-0 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
                     {t("kicker")}
                   </p>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-[var(--awas)]/40 bg-[var(--awas)]/20 px-3 py-1 text-[0.8125rem] font-semibold text-[#F7F7F4]">
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "gap-2 rounded-full border-[var(--awas)]/40 bg-[var(--awas)]/20 px-3 py-1 font-semibold text-[#F7F7F4]",
+                      TYPE_FLOOR_CLASS
+                    )}
+                  >
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--awas)]" />
                     {t("liveBadge")}
-                  </span>
+                  </Badge>
                 </div>
               </BlurFade>
 
@@ -211,7 +227,9 @@ export function HeroSection() {
                 <h1 className={cn("mb-5 max-w-none text-left", TYPE_HERO_DISPLAY_CLASS)}>
                   {t.rich("title", {
                     brand: (chunks) => (
-                      <span className="whitespace-nowrap text-[var(--orange)]">{chunks}</span>
+                      <span className="whitespace-nowrap rounded-md bg-accent px-1.5 text-accent-foreground">
+                        {chunks}
+                      </span>
                     ),
                     br: () => <br />,
                   })}
@@ -228,14 +246,14 @@ export function HeroSection() {
                 <div className="flex flex-wrap items-center gap-3">
                   <Link
                     href="/peta"
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--primary)] px-6 text-sm font-semibold text-white transition hover:opacity-90"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
                   >
                     {t("ctaPeta")}
                     <Map size={18} />
                   </Link>
                   <Link
                     href="/lapor/kejadian"
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 text-sm font-semibold text-white transition hover:bg-[var(--accent-hover)]"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground transition hover:bg-[var(--accent-hover)]"
                   >
                     {t("ctaLaporKejadian")}
                     <AlertTriangle size={18} />
@@ -269,7 +287,7 @@ export function HeroSection() {
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/peta"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--primary)] px-6 text-sm font-semibold text-white transition hover:opacity-90"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
                 >
                   {t("petaTab.cta")}
                   <Map size={18} />
