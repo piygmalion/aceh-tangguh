@@ -8,6 +8,8 @@ const tones = {
   warn: "bg-[var(--warn-dim)] text-[var(--warn)] border border-transparent",
   danger: "bg-[var(--danger-dim)] text-[var(--danger)] border border-transparent",
   info: "bg-[var(--info-dim)] text-[var(--info)] border border-transparent",
+  /** CTA orange + ink — never white on #FF7722. */
+  accent: "border-transparent bg-[var(--accent)] text-[var(--accent-fg)] hover:bg-[var(--accent-hover)]",
   glass:
     "glass-pill text-[var(--hero-fg)] border border-white/15",
 } as const;

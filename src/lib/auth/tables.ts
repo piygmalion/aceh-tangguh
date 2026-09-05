@@ -10,7 +10,12 @@ export type AdminTableKey =
   | "marker_features"
   | "anggaran_kegiatan"
   | "profil_desa"
-  | "map_layers";
+  | "map_layers"
+  | "krb_jenis_bahaya"
+  | "krb_kabupaten"
+  | "krb_wilayah"
+  | "krb_kawasan"
+  | "krb_dokumen";
 
 export type ColumnType = "text" | "number" | "boolean" | "select" | "json" | "datetime";
 
@@ -45,6 +50,11 @@ export const ADMIN_TABLE_KEYS: AdminTableKey[] = [
   "anggaran_kegiatan",
   "profil_desa",
   "map_layers",
+  "krb_jenis_bahaya",
+  "krb_kabupaten",
+  "krb_wilayah",
+  "krb_kawasan",
+  "krb_dokumen",
 ];
 
 const LAPORAN_STATUS_OPTIONS = [
@@ -358,10 +368,152 @@ export const ADMIN_TABLES: Record<AdminTableKey, AdminTableConfig> = {
       { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
     ],
   },
+  krb_jenis_bahaya: {
+    key: "krb_jenis_bahaya",
+    label: "KRB jenis bahaya",
+    pk: "kode",
+    defaultSort: { column: "kode", ascending: true },
+    searchable: ["kode", "label_id", "label_en", "kategori"],
+    allowInsert: false,
+    allowDelete: false,
+    note: "Katalog 11 ancaman IRBI. Baca saja.",
+    columns: [
+      { key: "kode", label: "Kode", type: "text", editable: false },
+      { key: "label_id", label: "Label ID", type: "text", editable: false },
+      { key: "label_en", label: "Label EN", type: "text", editable: false },
+      { key: "kategori", label: "Kategori", type: "text", editable: false },
+      { key: "sumber_otoritatif", label: "Sumber", type: "text", editable: false },
+      { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
+    ],
+  },
+  krb_kabupaten: {
+    key: "krb_kabupaten",
+    label: "KRB kabupaten",
+    pk: "kode_kabupaten",
+    defaultSort: { column: "irb_2025", ascending: false },
+    searchable: ["kode_kabupaten", "kabupaten", "ancaman_tertinggi"],
+    allowInsert: false,
+    allowDelete: false,
+    note: "Skor IRBI 2025 per kab/kota. Kode mengikuti weather registry.",
+    columns: [
+      { key: "kode_kabupaten", label: "Kode", type: "text", editable: false },
+      { key: "kabupaten", label: "Nama", type: "text", editable: false },
+      { key: "is_kota", label: "Kota", type: "boolean", editable: false },
+      { key: "irb_2025", label: "IRB 2025", type: "number", editable: true },
+      {
+        key: "kelas_risiko_2025",
+        label: "Kelas 2025",
+        type: "select",
+        editable: true,
+        options: ["RENDAH", "SEDANG", "TINGGI"],
+      },
+      { key: "irb_2024", label: "IRB 2024", type: "number", editable: true },
+      { key: "ancaman_tertinggi", label: "Ancaman tertinggi", type: "text", editable: true },
+      { key: "skor_ancaman_tertinggi", label: "Skor ancaman", type: "number", editable: true },
+      {
+        key: "kelas_ancaman_tertinggi",
+        label: "Kelas ancaman",
+        type: "select",
+        editable: true,
+        options: ["RENDAH", "SEDANG", "TINGGI"],
+      },
+      { key: "jumlah_ancaman_tinggi", label: "Jml tinggi", type: "number", editable: true },
+      { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
+    ],
+  },
+  krb_wilayah: {
+    key: "krb_wilayah",
+    label: "KRB wilayah (kab × ancaman)",
+    pk: "id",
+    defaultSort: { column: "id", ascending: true },
+    searchable: ["id", "kode_kabupaten", "kabupaten", "jenis_bahaya"],
+    allowInsert: false,
+    allowDelete: false,
+    note: "253 baris kab × jenis. Edit kelas/skor IRBI; jangan insert massal dari UI.",
+    columns: [
+      { key: "id", label: "ID", type: "text", editable: false },
+      { key: "kode_kabupaten", label: "Kode kab", type: "text", editable: false },
+      { key: "kabupaten", label: "Kabupaten", type: "text", editable: false },
+      { key: "jenis_bahaya", label: "Jenis", type: "text", editable: false },
+      {
+        key: "kelas_ancaman",
+        label: "Kelas",
+        type: "select",
+        editable: true,
+        options: ["RENDAH", "SEDANG", "TINGGI"],
+      },
+      { key: "skor_irbi", label: "Skor IRBI", type: "number", editable: true },
+      { key: "tahun_acuan", label: "Tahun", type: "number", editable: false },
+      { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
+    ],
+  },
+  krb_kawasan: {
+    key: "krb_kawasan",
+    label: "KRB kawasan bernama",
+    pk: "id",
+    defaultSort: { column: "id", ascending: true },
+    searchable: ["id", "nama", "jenis_bahaya", "zona"],
+    allowInsert: true,
+    allowDelete: true,
+    note: "Puncak/koridor tanpa poligon. lat/lon opsional.",
+    columns: [
+      { key: "id", label: "ID", type: "text", editable: true },
+      { key: "nama", label: "Nama", type: "text", editable: true },
+      { key: "jenis_bahaya", label: "Jenis", type: "text", editable: true },
+      { key: "zona", label: "Zona", type: "text", editable: true },
+      { key: "kabupaten", label: "Kabupaten", type: "json", editable: true },
+      { key: "kode_kabupaten", label: "Kode kab", type: "json", editable: true },
+      { key: "deskripsi", label: "Deskripsi", type: "text", editable: true },
+      { key: "latitude", label: "Latitude", type: "number", editable: true },
+      { key: "longitude", label: "Longitude", type: "number", editable: true },
+      { key: "sumber", label: "Sumber", type: "text", editable: true },
+      { key: "sumber_url", label: "URL sumber", type: "text", editable: true },
+      { key: "catatan", label: "Catatan", type: "text", editable: true },
+      { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
+    ],
+  },
+  krb_dokumen: {
+    key: "krb_dokumen",
+    label: "KRB dokumen",
+    pk: "id",
+    defaultSort: { column: "id", ascending: true },
+    searchable: ["id", "judul", "jenis", "penerbit", "kabupaten"],
+    allowInsert: true,
+    allowDelete: true,
+    note: "Katalog tautan InaRISK/PVMBG/BPBA. Bukan geometri.",
+    columns: [
+      { key: "id", label: "ID", type: "text", editable: true },
+      { key: "judul", label: "Judul", type: "text", editable: true },
+      { key: "jenis", label: "Jenis", type: "text", editable: true },
+      { key: "wilayah", label: "Wilayah", type: "text", editable: true },
+      { key: "kabupaten", label: "Kabupaten", type: "text", editable: true },
+      { key: "tahun_mulai", label: "Tahun mulai", type: "number", editable: true },
+      { key: "tahun_akhir", label: "Tahun akhir", type: "number", editable: true },
+      { key: "penerbit", label: "Penerbit", type: "text", editable: true },
+      { key: "status", label: "Status", type: "text", editable: true },
+      { key: "url", label: "URL", type: "text", editable: true },
+      { key: "catatan", label: "Catatan", type: "text", editable: true },
+      { key: "updated_at", label: "Diperbarui", type: "datetime", editable: false },
+    ],
+  },
 };
 
 export function isAdminTableKey(value: string): value is AdminTableKey {
   return (ADMIN_TABLE_KEYS as string[]).includes(value);
+}
+
+export function pickInsertRow(
+  table: AdminTableConfig,
+  input: Record<string, unknown>
+): Record<string, unknown> {
+  const allowed = new Set(
+    table.columns.filter((c) => c.key !== "updated_at").map((c) => c.key)
+  );
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (allowed.has(key)) out[key] = value;
+  }
+  return out;
 }
 
 export function pickEditablePatch(

@@ -6,10 +6,21 @@ import type { VillageClickSelection } from "@/lib/profil-desa";
 /** Below this zoom, villageDistribution paints r3p-kab only. */
 export const VILLAGE_LOD_MIN_ZOOM = 9;
 
-/** Desa outlines start here — not at the village-fill switch. */
-export const VILLAGE_OUTLINE_MIN_ZOOM = 11;
+/** Desa outlines start with the village-fill switch so polygons are not a blob. */
+export const VILLAGE_OUTLINE_MIN_ZOOM = 9;
 
 export const BASEMAP_LABEL_PLACE_LAYER = "basemap-label-place";
+export const MARKER_CLUSTERS_LAYER = "marker-clusters";
+
+export const AREA_FILL_LAYER_IDS = [
+  "area-fill",
+  "area-fill-kab",
+  "area-fill-village",
+] as const;
+
+export function isAreaFillLayerId(id: string | undefined): boolean {
+  return !!id && (AREA_FILL_LAYER_IDS as readonly string[]).includes(id);
+}
 
 export const PMTILES_KAB = {
   url: "/tiles/r3p-kab.pmtiles",
@@ -34,13 +45,6 @@ export type VillageLodFocus = {
 
 export type LngLatBoundsTuple = [[number, number], [number, number]];
 
-const KODE_PROPS = [
-  "kode_kecamatan",
-  "kode_kab",
-  "kode_kabupaten",
-  "kode_desa_kelurahan",
-] as const;
-
 export function isVillageLodZoom(zoom: number): boolean {
   return zoom >= VILLAGE_LOD_MIN_ZOOM;
 }
@@ -49,14 +53,17 @@ export function villageDistributionTiles(zoom: number): PmtilesAreaMeta {
   return isVillageLodZoom(zoom) ? PMTILES_VILLAGE : PMTILES_KAB;
 }
 
-/** Insert overlay under brand place labels; omit on Carto raster (no such layer). */
+/**
+ * Keep choropleth under map points. Prefer `marker-clusters` (Carto + brand).
+ * Fall back to brand place labels when the marker source is not mounted.
+ */
 export function overlayBeforeId(
   styleHasLayer: ((id: string) => boolean) | null | undefined
 ): string | undefined {
   if (!styleHasLayer) return undefined;
-  return styleHasLayer(BASEMAP_LABEL_PLACE_LAYER)
-    ? BASEMAP_LABEL_PLACE_LAYER
-    : undefined;
+  if (styleHasLayer(MARKER_CLUSTERS_LAYER)) return MARKER_CLUSTERS_LAYER;
+  if (styleHasLayer(BASEMAP_LABEL_PLACE_LAYER)) return BASEMAP_LABEL_PLACE_LAYER;
+  return undefined;
 }
 
 export function readStoredKode(
@@ -101,7 +108,7 @@ export function mergeVillageLodFocus(
 /**
  * JS predicate mirroring `villageLayerFilter`.
  * Prefer existing kode_* properties. Never match kecamatan name.
- * Features missing kode stay visible unless they fail a kode/name match they have.
+ * After a kab/kec focus, only features that match kode or kabupaten name stay visible.
  */
 export function villageFeatureVisible(
   props: Record<string, unknown> | null | undefined,
@@ -115,7 +122,6 @@ export function villageFeatureVisible(
   const kodeKec = readStoredKode(p, "kode_kecamatan");
   const kodeDesa = readStoredKode(p, "kode_desa_kelurahan");
   const kabupaten = String(p.kabupaten ?? "").trim();
-  const hasAnyKode = Boolean(kodeKab || kodeKec || kodeDesa);
 
   if (focus.kodeKab || focus.kabupaten) {
     const kodeHit = Boolean(
@@ -124,8 +130,7 @@ export function villageFeatureVisible(
         (focus.kodeKab && kodeDesa && kodeDesa.startsWith(focus.kodeKab))
     );
     const nameHit = Boolean(focus.kabupaten && kabupaten === focus.kabupaten);
-    const leftoverNoName = !hasAnyKode && !kabupaten;
-    if (!kodeHit && !nameHit && !leftoverNoName) return false;
+    if (!kodeHit && !nameHit) return false;
   }
 
   if (focus.kodeKecamatan) {
@@ -133,23 +138,13 @@ export function villageFeatureVisible(
       (kodeKec && kodeKec === focus.kodeKecamatan) ||
         (kodeDesa && kodeDesa.startsWith(focus.kodeKecamatan))
     );
-    const leftover = !kodeKec && !kodeDesa;
-    if (!kecHit && !leftover) return false;
+    if (!kecHit) return false;
   }
 
   return true;
 }
 
 type MapFilter = FilterSpecification;
-
-function missingKodeExpr(prop: string): MapFilter {
-  return [
-    "any",
-    ["!", ["has", prop]],
-    ["==", ["to-string", ["coalesce", ["get", prop], ""]], ""],
-    ["==", ["to-string", ["get", prop]], "null"],
-  ] as MapFilter;
-}
 
 function hasKodeExpr(prop: string): MapFilter {
   return [
@@ -191,11 +186,7 @@ function kabMatchExpr(focus: VillageLodFocus): MapFilter {
   if (focus.kabupaten) {
     any.push(["==", ["get", "kabupaten"], focus.kabupaten] as MapFilter);
   }
-  any.push([
-    "all",
-    ...KODE_PROPS.map((prop) => missingKodeExpr(prop)),
-    missingKodeExpr("kabupaten"),
-  ] as MapFilter);
+  if (any.length === 0) return ["==", ["get", "name"], "__none__"] as MapFilter;
   return ["any", ...any] as MapFilter;
 }
 
@@ -204,7 +195,6 @@ function kecMatchExpr(kodeKecamatan: string): MapFilter {
     "any",
     presentKodeEquals("kode_kecamatan", kodeKecamatan),
     presentKodePrefix("kode_desa_kelurahan", kodeKecamatan),
-    ["all", missingKodeExpr("kode_kecamatan"), missingKodeExpr("kode_desa_kelurahan")],
   ] as MapFilter;
 }
 
@@ -237,7 +227,7 @@ export const VILLAGE_OUTLINE_PAINT = {
     ["linear"],
     ["zoom"],
     VILLAGE_OUTLINE_MIN_ZOOM,
-    0,
+    0.45,
     13,
     0.9,
   ],
@@ -246,9 +236,9 @@ export const VILLAGE_OUTLINE_PAINT = {
     ["linear"],
     ["zoom"],
     VILLAGE_OUTLINE_MIN_ZOOM,
-    0,
+    0.3,
     13,
-    0.4,
+    0.45,
   ],
 } as const;
 

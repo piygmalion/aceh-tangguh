@@ -12,9 +12,15 @@ Inspired-by only. Does **not** copy AGPL Mandum source — patterns only, own im
 - MapLibre + react-map-gl + PMTiles
 - TanStack Query + Zod + lucide-react + Recharts
 
-## Run (preview lokal)
+## Preview online (Vercel)
 
-Objek preview saat ini adalah **lokal**, bukan GitHub Pages.
+Objek preview publik adalah **Vercel** (Next.js Node + API routes), bukan GitHub Pages.
+
+Import repo di [vercel.com/new](https://vercel.com/new/import?s=https://github.com/piygmalion/aceh-tangguh) — langkah, env, dan URL cron: `docs/vercel.md`.
+
+Jangan set `STATIC_EXPORT` / `GITHUB_PAGES` / `NEXT_PUBLIC_BASE_PATH` di Vercel.
+
+## Run (preview lokal)
 
 ```
 npm install
@@ -39,13 +45,14 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
 1. Copy `.env.example` → `.env.local` and set:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (legacy anon JWT for `@supabase/supabase-js`)
+   Vercel production already reads these from `.env.production` (project `whojoxrbcdyotrpolgav`).
 2. Install & build:
    ```
    bun install
    bun run build
    ```
 3. Schema documentation: `supabase/migrations/20260823_init_aceh_tangguh_backend.sql`
-4. Staff admin (`/id/admin`): apply `supabase/migrations/20260825_admin_auth.sql` then create the first `super_admin` manually — see `docs/admin-setup.md`. Laporan writes (not the admin UI) need `SUPABASE_SERVICE_ROLE_KEY` on the Node server — never on GitHub Pages.
+4. Staff admin (`/id/admin`): apply `supabase/migrations/20260825_admin_auth.sql` then create the first `super_admin` manually — see `docs/admin-setup.md`. Laporan writes (not the admin UI) need `SUPABASE_SERVICE_ROLE_KEY` on the Node server (Vercel env, never `NEXT_PUBLIC_*` and never GitHub Pages).
 5. Seed area feature metadata from fixtures (needs service role or SQL admin; anon is SELECT-only on `area_feature_meta`):
    ```
    bun run seed:area-meta
@@ -67,7 +74,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 
 | Method | Path | Source |
 |--------|------|--------|
-| GET/POST | `/api/reports` | Legacy `reports` (POST = service role; GET = published + consent) |
+| GET/POST | `/api/reports` | **410 Gone** — use `/api/laporan/*`; staff legacy rows via `/api/admin/reports` |
 | GET/PATCH | `/api/admin/reports` | Staff JWT — legacy `reports` |
 | GET/PATCH | `/api/admin/laporan` | Staff JWT — `laporan_kejadian` / `laporan_penanganan` |
 | POST | `/api/laporan/kejadian` | Service role insert after Zod + rate limit |
@@ -77,13 +84,14 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET/POST/PATCH/DELETE | `/api/admin/cms/*` | Super-admin CMS |
 | GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
 | GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
-| GET | `/api/hazards` | `hazard_status` |
-| GET | `/api/peringatan-dini` | Homepage early-warning cards (cuaca + MAGMA + Sipongi; fail independently) |
+| GET | `/api/peringatan-dini` | Homepage early-warning cards (cuaca + MAGMA + Sipongi + Tatonas; fail independently) |
 | GET | `/api/peringatan-dini/magma` | MAGMA Indonesia Aceh gempa (live homepage / VSI homepage; empty+stale if both fail) |
 | GET | `/api/peringatan-dini/sipongi` | Sipongi Aceh medium/high hotspots (live GeoJSON, else `peringatan-sipongi.json`) |
+| GET | `/api/peringatan-dini/tatonas` | Tatonas Aceh hydrology stations (live dt_data XHR, else stale `peringatan-tatonas.json`) |
 | GET | `/api/layers/catalog` | enabled `map_layers` merged with local toolbar catalog (`src/lib/map-layers-catalog.ts`) |
 | GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
 | GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
+| GET | `/api/krb` | Kawasan Rawan Bencana Aceh (`krb_*` tables, else `krb-aceh.json`); filter `?jenis=` `?kabupaten=` `?kelas=` |
 | GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
 | GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` |
 | GET | `/api/laporan/peta` | Moderated `laporan_kejadian` + `laporan_penanganan` (`status=approved` AND `tampil_di_peta`; no `jawaban_json`) |
@@ -187,7 +195,7 @@ bun run flag:coords
 
 `ACEH-2023-0005` (offshore Singkil epicentre ~1.91°N) is included on `disasterEvents` with `coord_quality=offshore_or_out_of_bbox` so the map count matches kejadian (427). The map does not clamp an Aceh bbox.
 
-After fixture changes, re-seed Supabase `marker_features` via the existing `upsert_marker_features` RPC (coordinator; this PR does not require `service_role`).
+After fixture changes, re-seed Supabase `marker_features` via the existing `upsert_marker_features` RPC (coordinator; requires `service_role`).
 
 Rebuild (does not run in CI; inputs under `/workspace/drive-aceh-data/`):
 

@@ -2,12 +2,13 @@ import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
+import { supabaseAnonKey, supabaseUrl } from "@/lib/supabase/public-env";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
 async function refreshSession(request: NextRequest, response: NextResponse) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  const url = supabaseUrl();
+  const anonKey = supabaseAnonKey();
   if (!url || !anonKey) return response;
 
   const supabase = createServerClient(url, anonKey, {

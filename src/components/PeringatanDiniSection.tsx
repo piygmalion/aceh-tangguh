@@ -3,8 +3,10 @@
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
-import { CloudRain, Flame, Mountain } from "lucide-react";
+import { CloudRain, Droplets, Flame, Mountain } from "lucide-react";
 import { Chip } from "@/components/ui/Chip";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type {
@@ -13,6 +15,7 @@ import type {
   PeringatanDiniResponse,
   PeringatanTone,
   SipongiCard,
+  TatonasCard,
 } from "@/lib/peringatan-dini-types";
 import {
   TYPE_FLOOR_CLASS,
@@ -59,7 +62,7 @@ function CardShell({
       : tone === "warn"
         ? "hover:ring-[var(--warn)]/50"
         : "hover:ring-[var(--primary)]/40";
-  const className = `glass flex h-full min-h-[14.5rem] flex-col gap-2 rounded-2xl px-3.5 py-3 transition hover:ring-1 ${ring}`;
+  const className = `glass flex h-full min-h-[16rem] flex-col gap-2 rounded-2xl p-6 transition hover:ring-1 ${ring}`;
 
   if (external) {
     return (
@@ -147,11 +150,15 @@ function CuacaCard({ card }: { card: CuacaWarningCard }) {
         stale={card.stale}
       />
       {card.empty ? (
-        <p className="mt-2 text-sm leading-relaxed text-[var(--text)]">{t("cuaca.empty")}</p>
+        <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
+          <EmptyDescription className="text-left text-foreground">
+            {t("cuaca.empty")}
+          </EmptyDescription>
+        </Empty>
       ) : (
         <div className="mt-1 flex flex-col gap-2">
           {card.highlights.map((h) => (
-            <div key={h.kabupaten} className="space-y-0.5">
+            <div key={h.kabupaten} className="flex flex-col gap-0.5">
               <Field label={t("cuaca.kabupaten")} value={h.kabupaten} />
               <Field label={t("cuaca.kondisi")} value={h.kondisi} />
               <Field
@@ -198,9 +205,13 @@ function MagmaCardView({ card }: { card: MagmaCard }) {
         stale={card.stale}
       />
       {card.empty || !ev ? (
-        <p className="mt-2 text-sm leading-relaxed text-[var(--text)]">{t("magma.empty")}</p>
+        <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
+          <EmptyDescription className="text-left text-foreground">
+            {t("magma.empty")}
+          </EmptyDescription>
+        </Empty>
       ) : (
-        <div className="mt-1 space-y-0.5">
+        <div className="mt-1 flex flex-col gap-0.5">
           <Field label={t("magma.magnitudo")} value={ev.magnitude_text} />
           <Field label={t("magma.waktu")} value={ev.waktu_kejadian} />
           <Field label={t("magma.koordinat")} value={ev.koordinat_kedalaman} />
@@ -237,11 +248,15 @@ function SipongiCardView({ card }: { card: SipongiCard }) {
         stale={card.stale}
       />
       {card.empty ? (
-        <p className="mt-2 text-sm leading-relaxed text-[var(--text)]">{t("sipongi.empty")}</p>
+        <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
+          <EmptyDescription className="text-left text-foreground">
+            {t("sipongi.empty")}
+          </EmptyDescription>
+        </Empty>
       ) : (
         <div className="mt-1 flex flex-col gap-2">
           {card.points.map((p, i) => (
-            <div key={`${p.tanggal}-${p.desa}-${i}`} className="space-y-0.5">
+            <div key={`${p.tanggal}-${p.desa}-${i}`} className="flex flex-col gap-0.5">
               <Field label={t("sipongi.tanggal")} value={p.tanggal} />
               <Field label={t("sipongi.sumber")} value={p.sumber} />
               <Field label={t("sipongi.desa")} value={p.desa} />
@@ -249,6 +264,60 @@ function SipongiCardView({ card }: { card: SipongiCard }) {
               <Field label={t("sipongi.kabkota")} value={p.kabkota} />
             </div>
           ))}
+        </div>
+      )}
+    </CardShell>
+  );
+}
+
+function TatonasCardView({ card }: { card: TatonasCard }) {
+  const t = useTranslations("peringatanDini");
+  const locale = useLocale();
+  const stamp = formatStamp(card.fetched_at, locale);
+
+  return (
+    <CardShell
+      href={card.href}
+      external
+      tone={card.tone}
+      ariaLabel={t("tatonas.aria")}
+    >
+      <CardHeader
+        icon={<Droplets className="h-3.5 w-3.5 shrink-0 text-[var(--info)]" />}
+        source={t("tatonas.source")}
+        tone={card.tone}
+        stamp={stamp}
+        stale={card.stale}
+      />
+      {card.empty ? (
+        <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
+          <EmptyDescription className="text-left text-foreground">
+            {t("tatonas.empty")}
+          </EmptyDescription>
+        </Empty>
+      ) : (
+        <div className="mt-1 flex flex-col gap-2">
+          {card.highlights.map((h) => (
+            <div key={`${h.uid}-${h.pos_name}`} className="flex flex-col gap-0.5">
+              <Field label={t("tatonas.pos")} value={h.pos_name} />
+              <Field label={t("tatonas.jenis")} value={t(`tatonas.kind.${h.logger_kind}`)} />
+              <Field
+                label={t("tatonas.nilai")}
+                value={
+                  h.value == null
+                    ? "—"
+                    : `${h.value} ${h.satuan}`.trim()
+                }
+              />
+              <Field label={t("tatonas.level")} value={h.level} />
+              {h.time_local ? <Field label={t("tatonas.waktu")} value={h.time_local} /> : null}
+            </div>
+          ))}
+          {card.extra_count > 0 ? (
+            <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+              {t("tatonas.more", { n: card.extra_count })}
+            </p>
+          ) : null}
         </div>
       )}
     </CardShell>
@@ -265,35 +334,47 @@ export function PeringatanDiniSection() {
   });
 
   return (
-    <section
-      id="status"
-      className="relative z-[1] -mt-2 border-y border-[var(--glass-border)] bg-[var(--bg-raised)]/80 px-4 py-5 backdrop-blur-sm"
-    >
+    <section id="status" className="relative z-[1] scroll-mt-28 px-4 py-20 md:py-28">
       <div className="mx-auto max-w-6xl">
-        <div>
-          <h2 className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
-            {t("title")}
-          </h2>
-          <p className="mt-1 text-xs text-[var(--text-dim)]">{t("subtitle")}</p>
+        <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className={cn("mb-2 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
+              {t("kicker")}
+            </p>
+            <h2 className="section-h2">{t("title")}</h2>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--text-dim)]">
+              {t("subtitle")}
+            </p>
+          </div>
+          <a
+            href="#cuaca"
+            className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--accent-soft)] transition-colors hover:text-[var(--text)]"
+          >
+            {t("archiveLink")}
+            <span aria-hidden>→</span>
+          </a>
         </div>
 
         {isLoading ? (
-          <div className="mt-4 grid gap-3 md:grid-cols-3" aria-hidden>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <span key={i} className="skeleton h-[14.5rem] rounded-2xl" />
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4" aria-hidden>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-[16rem] rounded-2xl" />
             ))}
           </div>
         ) : null}
 
         {isError ? (
-          <p className="mt-4 text-sm text-[var(--text-dim)]">{t("error")}</p>
+          <Empty className="border border-dashed">
+            <EmptyDescription>{t("error")}</EmptyDescription>
+          </Empty>
         ) : null}
 
         {data ? (
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             <CuacaCard card={data.cuaca} />
             <MagmaCardView card={data.magma} />
             <SipongiCardView card={data.sipongi} />
+            {data.tatonas ? <TatonasCardView card={data.tatonas} /> : null}
           </div>
         ) : null}
       </div>

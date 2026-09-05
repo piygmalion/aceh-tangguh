@@ -18,7 +18,9 @@ import {
 } from "recharts";
 import { ChevronLeft, ChevronRight, Download, Pause, Play } from "lucide-react";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
 import { formatRpCompact } from "@/lib/anggaran-format";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -648,10 +650,11 @@ export function R3PChartSection() {
   );
 
   return (
-    <section className="section-shell reveal mt-16 md:mt-24" id="prrpka">
+    <section className="section-shell reveal scroll-mt-28 py-20 md:py-28" id="prrpka">
       <BlurFade inView>
         <div className="max-w-3xl">
-          <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+          <p className="type-kicker mb-2 text-[var(--accent-soft)]">{t("kicker")}</p>
+          <h2 className="section-h2">
             {t("heading")}
           </h2>
           <p className="mt-3 text-base leading-relaxed text-[var(--text-dim)]">
@@ -667,14 +670,15 @@ export function R3PChartSection() {
             onMouseLeave={() => setHovering(false)}
           >
             {isLoading && (
-              <p className="py-16 text-center text-sm text-[var(--text-dim)]">
-                {t("loading")}
-              </p>
+              <div className="flex flex-col gap-3 py-6" aria-busy aria-label={t("loading")}>
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-48 w-full" />
+              </div>
             )}
             {isError && (
-              <p className="py-16 text-center text-sm text-[var(--danger)]">
-                {t("error")}
-              </p>
+              <Empty className="border-0 py-16">
+                <EmptyDescription className="text-danger">{t("error")}</EmptyDescription>
+              </Empty>
             )}
 
             {!isLoading && !isError && current && (

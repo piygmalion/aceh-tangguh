@@ -1,4 +1,4 @@
-import type { AreaLayerKey, MarkerLayerKey } from "@/lib/types";
+import type { AreaLayerKey, MarkerLayerKey, OverlayLayerKey } from "@/lib/types";
 import { withBasePath } from "@/lib/preview/env";
 
 export const FLAT_ICON_BASE = "/icons/flat";
@@ -53,6 +53,30 @@ export function getLayerIconPath(key: MarkerLayerKey): string {
 
 export function getAreaLayerIconPath(key: AreaLayerKey): string {
   return flatIconPath(AREA_LAYER_ICON_FILES[key]);
+}
+
+/** Reuse existing flat glyphs — no new overlay art. */
+export const OVERLAY_LAYER_ICON_FILES: Record<OverlayLayerKey, string> = {
+  maritimePorts: "icon-abrasi.png",
+  maritimeWaters: "icon-banjir.png",
+  bmkgQuakes: "icon-gempa-bumi.png",
+  magmaQuakes: "icon-gempa-bumi.png",
+  magmaVolcanoes: "icon-lainnya.png",
+  sipongiHotspots: "icon-kebakaran-hutan-lahan.png",
+  tatonasStations: "icon-banjir.png",
+  seismicSensors: "icon-gempa-bumi.png",
+  inariskSumateraFault: "icon-gempa-bumi.png",
+  inariskMegathrust: "icon-gempa-bumi.png",
+  inariskBahayaGempa: "icon-gempa-bumi.png",
+  inariskBahayaTsunami: "icon-abrasi.png",
+  inariskBahayaLongsor: "icon-longsor.png",
+  inariskBahayaBanjir: "icon-banjir.png",
+  inariskBahayaKarhutla: "icon-kebakaran-hutan-lahan.png",
+  inariskBahayaGunungApi: "icon-lainnya.png",
+};
+
+export function getOverlayLayerIconPath(key: OverlayLayerKey): string {
+  return flatIconPath(OVERLAY_LAYER_ICON_FILES[key]);
 }
 
 export function getDisasterJenisIconPath(jenis: string): string | null {

@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Link, useRouter } from "@/i18n/routing";
+import { Button } from "@/components/ui/button";
+import { FieldError } from "@/components/ui/field";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import type { ReportStatus } from "@/lib/supabase/types";
 import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
@@ -34,6 +38,7 @@ type LaporanItem = {
   tampilDiPeta: boolean;
   ringkasan: string;
   submittedAt: string;
+  kejadianId?: string | null;
 };
 
 type LegacyItem = {
@@ -65,6 +70,7 @@ const LEGACY_FILTERS: Array<ReportStatus | "all"> = [
 
 export function ModerationTable() {
   const t = useTranslations("admin");
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("kejadian");
   const [laporanStatus, setLaporanStatus] = useState<LaporanStatusFilter>("submitted");
   const [legacyStatus, setLegacyStatus] = useState<ReportStatus | "all">("queued");
@@ -186,6 +192,26 @@ export function ModerationTable() {
     await load();
   }
 
+  async function verifyAsIncident(id: string, existingId?: string | null) {
+    if (existingId) {
+      router.push({ pathname: "/admin/sik/kejadian/[id]", params: { id: existingId } });
+      return;
+    }
+    setPendingId(id);
+    const res = await fetch("/api/sik/verifikasi", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ laporan_id: id }),
+    });
+    const data = (await res.json().catch(() => null)) as { kejadian_id?: string } | null;
+    setPendingId(null);
+    if (!res.ok || !data?.kejadian_id) {
+      setError(t("updateError"));
+      return;
+    }
+    router.push({ pathname: "/admin/sik/kejadian/[id]", params: { id: data.kejadian_id } });
+  }
+
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const tabs: Tab[] = ["kejadian", "penanganan", "legacy"];
 
@@ -194,7 +220,7 @@ export function ModerationTable() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold">{t("moderationTitle")}</h1>
-          <p className="mt-1 text-sm text-[var(--text-dim)]">{t("moderationLead")}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t("moderationLead")}</p>
         </div>
         <form
           className="flex gap-2"
@@ -204,11 +230,11 @@ export function ModerationTable() {
             void load();
           }}
         >
-          <input
+          <Input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="w-52 rounded-full border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 text-sm outline-none ring-[var(--ring)] focus:ring-2"
+            className="w-52"
           />
           <Button type="submit" variant="outline" size="sm">
             {t("search")}
@@ -280,11 +306,7 @@ export function ModerationTable() {
             ))}
       </div>
 
-      {error ? (
-        <p className="mt-4 text-sm text-[var(--danger)]" role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <FieldError className="mt-4">{error}</FieldError> : null}
 
       <div className="mt-4 overflow-x-auto">
         <table className="min-w-full text-left text-sm">
@@ -334,33 +356,33 @@ export function ModerationTable() {
                     <td className="px-2 py-3">
                       <div className="flex flex-col gap-1">
                         {item.status !== "published" ? (
-                          <Button
+                          <PendingButton
                             size="sm"
-                            disabled={pendingId === item.id}
+                            pending={pendingId === item.id}
                             onClick={() => void patchLegacy(item.id, "published")}
                           >
                             {t("actionPublish")}
-                          </Button>
+                          </PendingButton>
                         ) : null}
                         {item.status !== "rejected" ? (
-                          <Button
+                          <PendingButton
                             size="sm"
-                            variant="danger"
-                            disabled={pendingId === item.id}
+                            variant="destructive"
+                            pending={pendingId === item.id}
                             onClick={() => void patchLegacy(item.id, "rejected")}
                           >
                             {t("actionReject")}
-                          </Button>
+                          </PendingButton>
                         ) : null}
                         {item.status !== "queued" ? (
-                          <Button
+                          <PendingButton
                             size="sm"
                             variant="outline"
-                            disabled={pendingId === item.id}
+                            pending={pendingId === item.id}
                             onClick={() => void patchLegacy(item.id, "queued")}
                           >
                             {t("actionQueue")}
-                          </Button>
+                          </PendingButton>
                         ) : null}
                       </div>
                     </td>
@@ -412,44 +434,63 @@ export function ModerationTable() {
                   </td>
                   <td className="px-2 py-3">
                     <div className="flex flex-col gap-1">
+                      {item.tipe === "kejadian" ? (
+                        item.kejadianId ? (
+                          <Link
+                            href={{ pathname: "/admin/sik/kejadian/[id]", params: { id: item.kejadianId } }}
+                            className="text-xs text-[var(--primary)] hover:underline"
+                          >
+                            {t("navKejadianOps")}
+                          </Link>
+                        ) : (
+                          <PendingButton
+                            size="sm"
+                            variant="outline"
+                            pending={pendingId === item.id}
+                            onClick={() => void verifyAsIncident(item.id, item.kejadianId)}
+                          >
+                            {t("actionVerifyIncident")}
+                          </PendingButton>
+                        )
+                      ) : null}
                       {item.status !== "approved" ? (
-                        <Button
+                        <PendingButton
                           size="sm"
-                          disabled={pendingId === item.id}
+                          pending={pendingId === item.id}
                           onClick={() =>
                             void patchLaporan(item.id, "approved", true)
                           }
                         >
                           {t("actionApprove")}
-                        </Button>
+                        </PendingButton>
                       ) : item.status === "approved" && !item.tampilDiPeta ? (
-                        <Button
+                        <PendingButton
                           size="sm"
-                          disabled={pendingId === item.id}
+                          pending={pendingId === item.id}
                           onClick={() => void patchLaporan(item.id, "approved", true)}
                         >
                           {t("actionShowMap")}
-                        </Button>
+                        </PendingButton>
                       ) : null}
                       {item.status !== "rejected" ? (
-                        <Button
+                        <PendingButton
                           size="sm"
-                          variant="danger"
-                          disabled={pendingId === item.id}
+                          variant="destructive"
+                          pending={pendingId === item.id}
                           onClick={() => void patchLaporan(item.id, "rejected")}
                         >
                           {t("actionReject")}
-                        </Button>
+                        </PendingButton>
                       ) : null}
                       {item.status !== "in_review" ? (
-                        <Button
+                        <PendingButton
                           size="sm"
                           variant="outline"
-                          disabled={pendingId === item.id}
+                          pending={pendingId === item.id}
                           onClick={() => void patchLaporan(item.id, "in_review")}
                         >
                           {t("actionReview")}
-                        </Button>
+                        </PendingButton>
                       ) : null}
                     </div>
                   </td>
@@ -488,5 +529,22 @@ export function ModerationTable() {
         </div>
       </div>
     </GlassPanel>
+  );
+}
+
+function PendingButton({
+  pending,
+  children,
+  ...props
+}: ComponentProps<typeof Button> & { pending: boolean }) {
+  return (
+    <Button
+      {...props}
+      disabled={pending || props.disabled}
+      data-icon={pending ? "inline-start" : undefined}
+    >
+      {pending ? <Spinner /> : null}
+      {children}
+    </Button>
   );
 }

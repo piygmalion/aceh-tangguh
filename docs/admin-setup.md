@@ -8,7 +8,10 @@ This PR does **not** seed any Auth user or password.
 
 In the Supabase SQL editor (project `whojoxrbcdyotrpolgav`), paste and run:
 
-`supabase/migrations/20260825_admin_auth.sql`
+1. `supabase/migrations/20260825_admin_auth.sql` — `admin_profiles`, staff helpers, RLS
+2. `supabase/migrations/20260906_cms_domain_tables.sql` — CREATE TABLE for CMS domains (`kejadian_bencana`, `marker_features`, `publikasi`, `publikasi_kegiatan`, `anggaran_*`, `irbi_documents`, `data_documents`, `r3p_summary`) if they do not exist yet
+3. `supabase/migrations/20260907_sik_operasional.sql` — SIK roles, kejadian operasional, kaji cepat, logistik, PKD, rehab-rekon, nomor penting
+4. `supabase/migrations/20260908_juklak_pelaporan.sql` — KIB, fase dinamis/statis, formulir Lampiran I, 13 jenis laporan warga
 
 That creates `public.admin_profiles`, staff/super-admin helpers, tightens `reports` RLS (public reads published + consent only; staff can read/update all), and adds super-admin write policies on CMS/domain tables.
 
@@ -30,15 +33,22 @@ Open `/id/admin/login` (or the **Masuk** control in the navbar) with that email/
 
 | Role | Access |
 |------|--------|
-| `admin` | Overview + Moderasi Laporan |
-| `super_admin` | Overview + Moderasi + CMS + Database tools |
+| `super_admin` | Semua modul SIK + CMS + Database + kelola user |
+| `admin` / `admin_provinsi` | Overview, moderasi, kejadian operasional, logistik, Destana, rehab, layanan publik |
+| `admin_kabkota` | Sama seperti operator, scoped `kode_kabupaten` |
+| `admin_desa` | Profil desa + PKD mandiri (`kode_desa_kelurahan`) |
+| `penilai_pkd` | Evaluasi/verifikasi PKD |
+| `admin_rr` | Rehab-rekon per kejadian |
 | Signed in, no profile | `/admin/denied` |
 | Signed out | Redirected to `/admin/login` |
 
 ## Roles
 
-- `admin` — report moderation (`laporan_*` plus legacy `reports`).
-- `super_admin` — moderation plus CMS (`publikasi`, `kejadian_bencana`) and typed table editors (not a raw SQL console).
+- `admin` — alias operator provinsi (kompatibel dengan baris lama).
+- `super_admin` — Pusdalops BPBA: seluruh SIK, CMS, dan editor tabel.
+- Jangan set password default `password`. Buat user di Supabase Auth, lalu sisipkan `admin_profiles`.
+
+Schema SIK: `supabase/migrations/20260907_sik_operasional.sql` (kejadian operasional, kaji cepat, logistik, PKD, rehab, nomor penting). Apply di SQL editor setelah migrasi admin/CMS.
 
 ## Optional one-off scripts
 

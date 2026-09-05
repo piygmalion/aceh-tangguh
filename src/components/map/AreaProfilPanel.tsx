@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Home, X } from "lucide-react";
@@ -33,8 +33,19 @@ import {
   sortKecamatanListItems,
   type VillageClickSelection,
 } from "@/lib/profil-desa";
-import { Button } from "@/components/ui/Button";
-import { Chip } from "@/components/ui/Chip";
+import { Badge } from "@/components/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
@@ -108,12 +119,12 @@ function MetricCard({
   const isUnknown = value == null;
   return (
     <div className={`rounded-xl border px-3 py-2.5 ${CARD_TONE[tone]}`}>
-      <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+      <div className={cn("text-muted-foreground", TYPE_KICKER_CLASS)}>
         {label}
       </div>
       <div
         className={`mt-1 font-semibold tabular-nums ${
-          isUnknown ? "text-sm text-[var(--text-dim)]" : `text-lg ${CARD_VALUE[tone]}`
+          isUnknown ? "text-sm text-muted-foreground" : `text-lg ${CARD_VALUE[tone]}`
         }`}
       >
         {formatMetricId(value, unknown)}
@@ -126,9 +137,9 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
   const t = useTranslations("profilDesa");
   const unknown = t("unknown");
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col gap-4">
       <section>
-        <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+        <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
           {t("populasi")}
         </h3>
         <div className="grid grid-cols-2 gap-2">
@@ -198,7 +209,7 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
         </div>
       </section>
       <section>
-        <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+        <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
           {t("korban")}
         </h3>
         <div className="grid grid-cols-2 gap-2">
@@ -217,7 +228,7 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
         </div>
       </section>
       <section>
-        <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+        <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
           {t("kerusakan")}
         </h3>
         <div className="grid grid-cols-2 gap-2">
@@ -236,6 +247,16 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
   );
 }
 
+function badgeClass(tone: ReturnType<typeof badgeTone>) {
+  if (tone === "danger") {
+    return "border-transparent bg-destructive/15 text-destructive";
+  }
+  if (tone === "ok") {
+    return "border-transparent bg-primary/15 text-primary";
+  }
+  return "border-border bg-muted text-foreground";
+}
+
 function BadgeChip({ badge }: { badge: ImpactBadge }) {
   const t = useTranslations("profilDesa");
   const label =
@@ -245,23 +266,32 @@ function BadgeChip({ badge }: { badge: ImpactBadge }) {
         ? t("badgeTidak")
         : t("badgeUnknown");
   return (
-    <Chip tone={badgeTone(badge)} className={cn("px-2.5 py-0.5", TYPE_FLOOR_CLASS)}>
+    <Badge
+      variant="outline"
+      className={cn(
+        "rounded-full px-2.5 py-0.5 font-medium",
+        TYPE_FLOOR_CLASS,
+        badgeClass(badgeTone(badge))
+      )}
+    >
       {label}
-    </Chip>
+    </Badge>
   );
 }
 
 function EmptyState() {
   const t = useTranslations("profilDesa");
   return (
-    <div className="rounded-xl border border-dashed border-[var(--border)] px-3 py-6 text-center">
+    <div className="rounded-xl border border-dashed border-border px-3 py-6 text-center">
       <p className="text-sm font-medium">{t("empty")}</p>
-      <p className="mt-1 text-xs text-[var(--text-dim)]">{t("emptyHint")}</p>
+      <p className={cn("mt-1 text-muted-foreground", TYPE_FLOOR_CLASS)}>
+        {t("emptyHint")}
+      </p>
     </div>
   );
 }
 
-function Breadcrumb({
+function ProfilBreadcrumb({
   view,
   onGo,
 }: {
@@ -276,31 +306,42 @@ function Breadcrumb({
   };
   const levels = areaProfilBreadcrumbLevels(view);
   return (
-    <nav aria-label={t("crumbKab")}>
-      <ol className={cn("mt-0.5 flex flex-wrap items-center gap-x-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+    <Breadcrumb aria-label={t("crumbKab")}>
+      <BreadcrumbList
+        className={cn(
+          "mt-0.5 gap-1 text-muted-foreground sm:gap-1",
+          TYPE_FLOOR_CLASS
+        )}
+      >
         {levels.map((id, index) => {
           const target = areaProfilBreadcrumbTarget(view, id);
           return (
-            <li key={id} className="flex items-center gap-x-1">
-              {index > 0 ? <span aria-hidden>{t("locationSep")}</span> : null}
-              {target ? (
-                <button
-                  type="button"
-                  className="text-[var(--text)] underline-offset-2 hover:underline"
-                  onClick={() => onGo(target)}
-                >
-                  {labels[id]}
-                </button>
-              ) : (
-                <span className="font-medium text-[var(--text)]" aria-current="page">
-                  {labels[id]}
-                </span>
-              )}
-            </li>
+            <Fragment key={id}>
+              {index > 0 ? (
+                <BreadcrumbSeparator>{t("locationSep")}</BreadcrumbSeparator>
+              ) : null}
+              <BreadcrumbItem className="gap-1">
+                {target ? (
+                  <BreadcrumbLink asChild>
+                    <button
+                      type="button"
+                      className="text-foreground underline-offset-2 hover:underline"
+                      onClick={() => onGo(target)}
+                    >
+                      {labels[id]}
+                    </button>
+                  </BreadcrumbLink>
+                ) : (
+                  <BreadcrumbPage className="font-medium text-foreground">
+                    {labels[id]}
+                  </BreadcrumbPage>
+                )}
+              </BreadcrumbItem>
+            </Fragment>
           );
         })}
-      </ol>
-    </nav>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }
 
@@ -327,7 +368,7 @@ function ListRow({
       >
         <span className="min-w-0 flex-1 text-left">
           <span className="block truncate font-medium">{title}</span>
-          <span className={cn("block text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+          <span className={cn("block text-muted-foreground", TYPE_FLOOR_CLASS)}>
             {subtitle}
           </span>
         </span>
@@ -484,7 +525,7 @@ export function AreaProfilPanel({
         aria-label={title}
         className="map-chrome-elevated pointer-events-auto absolute inset-x-2 top-[4.15rem] flex max-h-[min(78vh,40rem)] flex-col overflow-hidden rounded-2xl md:inset-x-auto md:left-14 md:top-[4.5rem] md:w-[24rem]"
       >
-        <header className="flex items-start gap-3 border-b border-[var(--border)] px-4 py-3">
+        <header className="flex items-start gap-3 px-4 py-3">
           <span
             className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-orange-500/15 text-orange-500"
             aria-hidden
@@ -492,45 +533,58 @@ export function AreaProfilPanel({
             <Home size={20} strokeWidth={2.25} />
           </span>
           <div className="min-w-0 flex-1">
-            <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+            <div className={cn("text-muted-foreground", TYPE_KICKER_CLASS)}>
               {kicker}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="truncate text-base font-semibold tracking-tight">{title}</h2>
               {badge ? <BadgeChip badge={badge} /> : null}
             </div>
-            <Breadcrumb view={view} onGo={setView} />
+            <ProfilBreadcrumb view={view} onGo={setView} />
             {showClickedHint ? (
-              <p className={cn("mt-0.5 truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+              <p className={cn("mt-0.5 truncate text-muted-foreground", TYPE_FLOOR_CLASS)}>
                 {t("clickedHint", { name: selection.name })}
               </p>
             ) : null}
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[var(--text-dim)] transition hover:bg-[var(--bg-muted)] hover:text-[var(--text)]"
+            className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
             aria-label={t("close")}
           >
-            <X size={15} />
-          </button>
+            <X />
+          </Button>
         </header>
+        <Separator />
 
-        <div className="min-h-0 flex-1 overflow-auto px-4 py-3">
+        <ScrollArea className="min-h-0 flex-1">
+          <div className="px-4 py-3">
           {loading ? (
-            <p className="py-8 text-center text-sm text-[var(--text-dim)]">{t("loading")}</p>
+            <div
+              className="grid grid-cols-2 gap-2"
+              aria-busy="true"
+              aria-label={t("loading")}
+            >
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-[4.25rem] rounded-xl" />
+              ))}
+            </div>
           ) : errored ? (
-            <p className="py-8 text-center text-sm text-[var(--danger)]">{t("error")}</p>
+            <p className="py-8 text-center text-sm text-destructive">{t("error")}</p>
           ) : view === "kabupaten" ? (
             kab ? (
-              <div className="space-y-4">
+              <div className="flex flex-col gap-4">
                 <MetricSections metrics={kab.metrics} />
+                <Separator />
                 <section>
-                  <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                  <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
                     {t("kecamatanLabel")}
                   </h3>
                   {kab.kecamatan_list.length > 0 ? (
-                    <ul className="space-y-1.5">
+                    <ul className="flex flex-col gap-1.5">
                       {sortKecamatanListItems(kab.kecamatan_list).map((item) => {
                         const highlighted =
                           item.kode_kecamatan === selection.kodeKecamatan ||
@@ -567,14 +621,15 @@ export function AreaProfilPanel({
             )
           ) : view === "kecamatan" ? (
             kec ? (
-              <div className="space-y-4">
+              <div className="flex flex-col gap-4">
                 <MetricSections metrics={kec.metrics} />
+                <Separator />
                 <section>
-                  <h3 className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                  <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
                     {t("desaLabel")}
                   </h3>
                   {kec.desa.length > 0 ? (
-                    <ul className="space-y-1.5">
+                    <ul className="flex flex-col gap-1.5">
                       {kec.desa.map((item) => {
                         const highlighted =
                           item.kode === selection.kodeDesa ||
@@ -613,17 +668,20 @@ export function AreaProfilPanel({
           ) : (
             <EmptyState />
           )}
-        </div>
+          </div>
+        </ScrollArea>
+        <Separator />
 
-        <footer className="flex items-center gap-2 border-t border-[var(--border)] px-4 py-3">
+        <footer className="flex items-center gap-2 px-4 py-3">
           <Button
             type="button"
             variant="outline"
             size="sm"
             className="rounded-xl"
-            leftIcon={<ArrowLeft size={14} />}
+            data-icon="inline-start"
             onClick={goBack}
           >
+            <ArrowLeft />
             {t("back")}
           </Button>
         </footer>

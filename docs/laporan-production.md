@@ -17,10 +17,23 @@ Pastikan `20260825_admin_auth.sql` sudah diterapkan (fungsi `is_staff()`).
 Verifikasi:
 
 ```bash
-node --env-file=.env.local scripts/verify-laporan-setup.mjs
+npm run verify:laporan
 ```
 
-## 2. Enkripsi PII
+Script ini juga mengecek RLS (anon INSERT diblokir) dan kolom GRANT (`jawaban_json`, `pelapor_id`).
+
+## 2. Rate limit terdistribusi (Upstash)
+
+Jika Supabase / laporan masyarakat diaktifkan, produksi **wajib** Upstash Redis agar rate limit berlaku di semua instance server:
+
+| Variabel | Deskripsi |
+|----------|-----------|
+| `UPSTASH_REDIS_REST_URL` | REST URL dari database Upstash |
+| `UPSTASH_REDIS_REST_TOKEN` | Token REST |
+
+Buat database gratis di [upstash.com](https://upstash.com). Tanpa env ini (saat Supabase dikonfigurasi), POST publik `/api/laporan/*` mengembalikan **503** di produksi. Deploy tanpa Supabase tidak memerlukan Upstash.
+
+## 3. Enkripsi PII
 
 Generate kunci produksi (simpan di secret manager / hosting env, **jangan commit**):
 
@@ -30,18 +43,22 @@ node scripts/generate-laporan-pii-key.mjs
 
 | Variabel | Deskripsi |
 |----------|-----------|
-| `LAPORAN_PII_KEY` | 64 karakter hex (32 byte) — AES-256-GCM |
+| `LAPORAN_PII_KEY` | 64 karakter hex (32 byte) — kunci tulis AES-256-GCM saat ini |
+| `LAPORAN_PII_KEY_ID` | Id kunci tulis. Opsional; default `k1`. Ciphertext baru: `v2:<id>:<iv>:<data>:<tag>` |
+| `LAPORAN_PII_KEYS` | Kunci lama untuk dekripsi saja. Opsional. Format `k1=<64hex>,k0=<64hex>` — tanpa nilai secret di berkas ini |
 | `LAPORAN_PII_SALT` | Salt untuk hash NIK/telepon (SHA-256), **bukan** default `aceh-tangguh-dev` |
 
-Produksi **gagal submit** jika kunci/salt belum di-set. Development tanpa Supabase masih boleh file-store `.data/` (folder ini di-gitignore).
+Setup yang hanya punya `LAPORAN_PII_KEY` tetap sah: tulis memakai id `k1`; baris `v1:` lama dibaca dengan kunci primer. Saat rotasi, ganti `LAPORAN_PII_KEY` + `LAPORAN_PII_KEY_ID`, lalu pindahkan kunci lama ke `LAPORAN_PII_KEYS` agar `v2:` lama dan `v1:` tetap terbuka.
 
-## 3. Service role (wajib untuk tulis)
+Produksi **gagal submit** jika kunci/salt belum di-set. Development tanpa Supabase masih boleh file-store `.data/` (folder ini di-gitignore). Jangan commit nilai kunci.
+
+## 4. Service role (wajib untuk tulis)
 
 Insert laporan, pelapor, antrean WA, dan upload media memakai `SUPABASE_SERVICE_ROLE_KEY` di server saja. Anon key **tidak** boleh INSERT ke `laporan_*` / `notifikasi_wa` / `reports`.
 
 Sesi staf tetap JWT (`requireStaffApi`). `/api/admin/laporan` membaca/mengubah `laporan_*` lewat service role setelah cek itu — Postgres GRANT berlaku per role, bukan per `is_staff()`, jadi JWT tidak boleh punya kolom PII.
 
-## 4. Antrean WhatsApp
+## 5. Antrean WhatsApp
 
 Set env:
 
@@ -61,7 +78,7 @@ LAPORAN_CRON_SECRET=... node scripts/process-laporan-wa.mjs
 
 Di development tanpa gateway, pesan hanya di-log; antrean tanpa PII key yang bisa didekripsi ditandai `skipped`.
 
-## 5. Upload media
+## 6. Upload media
 
 Bucket `laporan-media` (private, max 10MB). `POST /api/laporan/upload` membatasi `laporan_tipe` (`kejadian`/`penanganan`), `field_key` (`foto`/`video`), MIME dari magic bytes, dan rate limit per IP.
 
@@ -72,7 +89,15 @@ Env wajib:
 
 Path disimpan di `jawaban_json`. Staff melihat file via policy `laporan_media_select_staff`.
 
-## 6. Peta publik
+### Cleanup orphan (unggah tanpa submit)
+
+File diunggah **sebelum** submit formulir. Objek di `laporan-media` yang tidak direferensikan di `jawaban_json` dan berusia **> 48 jam** dihapus oleh:
+
+- Endpoint: `POST /api/cron/laporan-media-gc` (Bearer `LAPORAN_CRON_SECRET`)
+- Dry-run: tambahkan `?dry_run=1`
+- GitHub Actions: set repository variable `LAPORAN_MEDIA_GC_URL` (mis. `https://your-domain/api/cron/laporan-media-gc`) + secret `LAPORAN_CRON_SECRET`
+
+## 7. Peta publik
 
 Dua layer Partisipasi, keduanya live-query dari tabel laporan (bukan sync ke `marker_features`):
 
@@ -87,11 +112,11 @@ Key lama `citizenReports` **removed** (pola helipad): tidak ada di toolbar; `?la
 
 Setelah approve, set `status = approved` dan `tampil_di_peta = true`. Titik muncul pada fetch berikutnya. Tidak ada sync ke `marker_features`.
 
-## 7. Moderasi
+## 8. Moderasi
 
 Moderator: **BPBA Pusdalops**. Konsol `/id/admin/moderasi`:
 
 - tab **Kejadian** / **Penanganan** → tabel `laporan_*` (sumber titik Partisipasi)
-- tab **Formulir lama** → tabel `reports` (legacy, bukan overlay peta)
+- tab **Formulir lama** → tabel `reports` (legacy, bukan overlay peta; publik `GET/POST /api/reports` sudah **410 Gone**)
 
 Setujui → `status=approved`, `tampil_di_peta=true`, antrean WA `laporan_approved` (best-effort). Database explorer tetap bisa mengedit kolom yang sama.

@@ -9,7 +9,6 @@ import type { MapLayerKind, MapLayerSourceType } from "./supabase/types";
  */
 export const RETIRED_MARKER_LAYER_KEYS = [
   "poskos",
-  "tendPoints",
   "missingPersons",
 ] as const satisfies readonly MarkerLayerKey[];
 
@@ -64,7 +63,10 @@ export const FASILITAS_UMUM_LAYER_KEYS = [
 export const MARKER_TOOLBAR_GROUPS: MarkerToolbarGroup[] = [
   {
     groupKey: "groupMain",
-    options: [{ key: "disasterEvents", labelKey: "disasterEvents" }],
+    options: [
+      { key: "disasterEvents", labelKey: "disasterEvents" },
+      { key: "tendPoints", labelKey: "tendPoints" },
+    ],
   },
   {
     groupKey: "groupInfra",
@@ -303,13 +305,13 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     kind: "marker",
     title_id: "Titik pengungsian",
     title_en: "Shelter points",
-    description: "Dihapus dari Data Utama; key dipertahankan untuk URL lama.",
-    source_path: null,
-    source_type: "geojson",
+    description: "Lokasi tempat pengungsian SIK (tempat_pengungsian).",
+    source_path: "/api/layers/markers",
+    source_type: "api",
     pmtiles_path: null,
-    enabled: false,
-    sort_order: 910,
-    meta: { retired: true },
+    enabled: true,
+    sort_order: 110,
+    meta: { toolbar: "groupMain" },
   },
   {
     key: "missingPersons",
@@ -323,6 +325,19 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     enabled: false,
     sort_order: 920,
     meta: { retired: true },
+  },
+  {
+    key: "tatonasStations",
+    kind: "overlay",
+    title_id: "Pos hidrologi Tatonas",
+    title_en: "Tatonas hydrology posts",
+    description: "Live overlay pos muka air Tatonas (Aceh). Bukan marker toolbar Lokasi.",
+    source_path: "/api/overlay/tatonasStations",
+    source_type: "api",
+    pmtiles_path: null,
+    enabled: true,
+    sort_order: 610,
+    meta: { toolbar: "geospasial" },
   },
 ];
 

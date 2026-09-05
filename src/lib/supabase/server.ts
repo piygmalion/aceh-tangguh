@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { supabaseAnonKey, supabaseUrl } from "./public-env";
 import type { Database } from "./types";
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
@@ -12,8 +13,8 @@ const noStoreFetch: typeof fetch = (input, init) =>
  * Returns null when env is missing so callers can fall back to fixtures.
  */
 export function createServerClient(): TypedSupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  const url = supabaseUrl();
+  const anonKey = supabaseAnonKey();
 
   if (!url || !anonKey) {
     return null;
@@ -43,7 +44,7 @@ export function createServerClientOrThrow(): TypedSupabaseClient {
 
 /** Service role — laporan writes, storage upload, cron / WA worker (never expose to browser). */
 export function createServiceClient(): TypedSupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const url = supabaseUrl();
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
   if (!url || !serviceKey) return null;
 

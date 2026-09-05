@@ -1,17 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientIp, HOUR_MS, rateLimit } from "./rate-limit";
+import { clientIp, HOUR_MS, rateLimitAsync } from "./rate-limit";
 import { rejectCrossOrigin } from "./origin";
 
-export function guardPublicPost(
+export async function guardPublicPost(
   req: NextRequest,
   bucket: string,
   limit: number
-): NextResponse | null {
+): Promise<NextResponse | null> {
   const cross = rejectCrossOrigin(req);
   if (cross) return cross;
+
   const ip = clientIp(req.headers);
-  if (!rateLimit(`${bucket}:${ip}`, limit, HOUR_MS)) {
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  const outcome = await rateLimitAsync(`${bucket}:${ip}`, limit, HOUR_MS);
+
+  if (outcome.allowed) return null;
+
+  if (outcome.reason === "rate_limit_unconfigured") {
+    return NextResponse.json(
+      { error: "Service temporarily unavailable" },
+      { status: 503 }
+    );
   }
-  return null;
+
+  return NextResponse.json({ error: "Too many requests" }, { status: 429 });
 }

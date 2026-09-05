@@ -5,7 +5,9 @@ import {
   ADMIN_TABLES,
   isAdminTableKey,
   pickEditablePatch,
+  pickInsertRow,
 } from "@/lib/auth/tables";
+import { rejectCrossOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -84,6 +86,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
   const auth = await requireSuperAdminApi();
   if (!auth.ok) return auth.response;
 
@@ -135,4 +139,104 @@ export async function PATCH(req: NextRequest) {
     );
   }
   return NextResponse.json({ item: data });
+}
+
+const writeSchema = z.object({
+  table: z.string(),
+  id: z.string().min(1).optional(),
+  row: z.record(z.unknown()).optional(),
+});
+
+export async function POST(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
+  const auth = await requireSuperAdminApi();
+  if (!auth.ok) return auth.response;
+
+  let json: unknown;
+  try {
+    json = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const parsed = writeSchema.safeParse(json);
+  if (!parsed.success || !isAdminTableKey(parsed.data.table) || !parsed.data.row) {
+    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  }
+
+  const config = ADMIN_TABLES[parsed.data.table];
+  if (!config.allowInsert) {
+    return NextResponse.json({ error: "Insert not allowed" }, { status: 403 });
+  }
+
+  const row = pickInsertRow(config, parsed.data.row);
+  if (!row[config.pk]) {
+    return NextResponse.json({ error: "Missing primary key" }, { status: 400 });
+  }
+
+  const { data, error } = await (
+    auth.supabase.from(parsed.data.table) as unknown as {
+      insert: (values: Record<string, unknown>) => {
+        select: (cols: string) => {
+          single: () => Promise<{
+            data: Record<string, unknown> | null;
+            error: { message: string } | null;
+          }>;
+        };
+      };
+    }
+  )
+    .insert(row)
+    .select(config.columns.map((c) => c.key).join(","))
+    .single();
+
+  if (error || !data) {
+    return NextResponse.json(
+      { error: error?.message ?? "Insert failed" },
+      { status: 502 }
+    );
+  }
+  return NextResponse.json({ item: data });
+}
+
+export async function DELETE(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
+  const auth = await requireSuperAdminApi();
+  if (!auth.ok) return auth.response;
+
+  let json: unknown;
+  try {
+    json = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const parsed = writeSchema.safeParse(json);
+  if (!parsed.success || !isAdminTableKey(parsed.data.table) || !parsed.data.id) {
+    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  }
+
+  const config = ADMIN_TABLES[parsed.data.table];
+  if (!config.allowDelete) {
+    return NextResponse.json({ error: "Delete not allowed" }, { status: 403 });
+  }
+
+  const { error } = await (
+    auth.supabase.from(parsed.data.table) as unknown as {
+      delete: () => {
+        eq: (col: string, value: string) => Promise<{
+          error: { message: string } | null;
+        }>;
+      };
+    }
+  )
+    .delete()
+    .eq(config.pk, parsed.data.id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 502 });
+  }
+  return NextResponse.json({ ok: true });
 }

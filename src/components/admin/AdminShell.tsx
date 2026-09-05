@@ -1,12 +1,45 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Database, FileStack, LayoutDashboard, ShieldCheck } from "lucide-react";
+import {
+  Accessibility,
+  BookOpen,
+  Boxes,
+  Building2,
+  Database,
+  FileStack,
+  LayoutDashboard,
+  Phone,
+  ShieldCheck,
+  Siren,
+  TreePine,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
 import { isSuperAdmin, type AdminProfile } from "@/lib/auth/types";
-import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { canAccessModule, normalizedRole, type SikModule } from "@/lib/sik/roles";
+import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
+
+function roleKey(
+  role: AdminProfile["role"]
+):
+  | "roleSuperAdmin"
+  | "roleProvinsi"
+  | "roleKabkota"
+  | "roleDesa"
+  | "rolePenilai"
+  | "roleRr"
+  | "roleAdmin" {
+  const n = normalizedRole(role);
+  if (n === "super_admin") return "roleSuperAdmin";
+  if (n === "admin_provinsi") return "roleProvinsi";
+  if (n === "admin_kabkota") return "roleKabkota";
+  if (n === "admin_desa") return "roleDesa";
+  if (n === "penilai_pkd") return "rolePenilai";
+  if (n === "admin_rr") return "roleRr";
+  return "roleAdmin";
+}
 
 export function AdminShell({
   profile,
@@ -19,24 +52,47 @@ export function AdminShell({
   const pathname = usePathname();
   const superAdmin = isSuperAdmin(profile);
 
-  const items = [
-    { href: "/admin" as const, label: t("navOverview"), icon: LayoutDashboard },
-    { href: "/admin/moderasi" as const, label: t("navModeration"), icon: ShieldCheck },
-    ...(superAdmin
-      ? [
-          { href: "/admin/cms" as const, label: t("navCms"), icon: FileStack },
-          { href: "/admin/database" as const, label: t("navDatabase"), icon: Database },
-        ]
-      : []),
+  const items: Array<{
+    href:
+      | "/admin"
+      | "/admin/moderasi"
+      | "/admin/sik/kejadian"
+      | "/admin/sik/master"
+      | "/admin/sik/logistik"
+      | "/admin/sik/destana"
+      | "/admin/sik/rehab"
+      | "/admin/sik/disabilitas"
+      | "/admin/sik/publik"
+      | "/admin/cms"
+      | "/admin/database";
+    label: string;
+    icon: typeof LayoutDashboard;
+    module?: SikModule;
+    superOnly?: boolean;
+  }> = [
+    { href: "/admin", label: t("navOverview"), icon: LayoutDashboard, module: "overview" },
+    { href: "/admin/moderasi", label: t("navModeration"), icon: ShieldCheck, module: "moderasi" },
+    { href: "/admin/sik/kejadian", label: t("navKejadianOps"), icon: Siren, module: "kejadian" },
+    { href: "/admin/sik/master", label: t("navMaster"), icon: Building2, module: "master" },
+    { href: "/admin/sik/logistik", label: t("navLogistik"), icon: Boxes, module: "logistik" },
+    { href: "/admin/sik/destana", label: t("navDestana"), icon: TreePine, module: "destana" },
+    { href: "/admin/sik/rehab", label: t("navRehab"), icon: BookOpen, module: "rehab" },
+    { href: "/admin/sik/disabilitas", label: t("navDisabilitas"), icon: Accessibility, module: "disabilitas" },
+    { href: "/admin/sik/publik", label: t("navPublikCms"), icon: Phone, module: "publikCms" },
+    { href: "/admin/cms", label: t("navCms"), icon: FileStack, superOnly: true },
+    { href: "/admin/database", label: t("navDatabase"), icon: Database, superOnly: true },
   ];
+
+  const visible = items.filter((item) => {
+    if (item.superOnly) return superAdmin;
+    if (!item.module) return true;
+    return canAccessModule(profile, item.module);
+  });
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
     return pathname === href || pathname.startsWith(`${href}/`);
   };
-
-  const roleLabel =
-    profile.role === "super_admin" ? t("roleSuperAdmin") : t("roleAdmin");
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-4 px-3 pb-16 pt-24 md:flex-row md:px-4 md:pt-28">
@@ -48,11 +104,11 @@ export function AdminShell({
           <p className="mb-3 truncate px-2 text-sm">
             {profile.displayName || profile.email}
             <span className={cn("ml-2 rounded-full bg-[var(--primary-dim)] px-2 py-0.5 font-semibold text-[var(--primary)]", TYPE_KICKER_CLASS)}>
-              {roleLabel}
+              {t(roleKey(profile.role))}
             </span>
           </p>
           <nav className="flex gap-1 overflow-x-auto md:flex-col md:overflow-visible" aria-label={t("console")}>
-            {items.map((item) => {
+            {visible.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
               return (

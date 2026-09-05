@@ -1,66 +1,171 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronDown, Map, Megaphone } from "lucide-react";
+import { AlertTriangle, Home, Map } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
-import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
-import { BlurFade } from "@/components/ui/blur-fade";
-import { Chip } from "@/components/ui/Chip";
-import { MediaBackdrop } from "@/components/ui/MediaBackdrop";
-import { NumberTicker } from "@/components/ui/number-ticker";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
+import { useState } from "react";
 import { IrbiHeroPanel } from "@/components/IrbiHeroPanel";
+import { KrbHeroPanel } from "@/components/KrbHeroPanel";
+import { Badge } from "@/components/ui/badge";
+import { BlurFade } from "@/components/ui/blur-fade";
+import { GlassPanel } from "@/components/ui/GlassPanel";
+import { MediaBackdrop } from "@/components/ui/MediaBackdrop";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "@/i18n/routing";
 import { SITE_MEDIA } from "@/lib/media";
+import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
-import type { LiveStats } from "@/lib/types";
-import { TYPE_HERO_DISPLAY_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { TYPE_FLOOR_CLASS, TYPE_HERO_DISPLAY_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
-type HeroTab = "utama" | "peta" | "irbi";
+type HeroTab = "utama" | "peta" | "irbi" | "krb";
 
-async function fetchLiveStats(): Promise<LiveStats> {
-  const res = await fetchPublicApi("/api/stats/live");
-  if (!res.ok) throw new Error("Failed to load stats");
+async function fetchPeringatanDini(): Promise<PeringatanDiniResponse> {
+  const res = await fetchPublicApi("/api/peringatan-dini");
+  if (!res.ok) throw new Error("Failed to load peringatan dini");
   return res.json();
 }
 
-function StatSkeleton() {
-  return <span className="skeleton inline-block h-3.5 w-8" aria-hidden />;
+function toneChip(tone: PeringatanTone) {
+  if (tone === "danger") {
+    return {
+      dot: "bg-[var(--awas)]",
+      chip: "bg-[var(--awas)] text-white",
+    };
+  }
+  if (tone === "warn") {
+    return {
+      dot: "bg-[var(--warn)]",
+      chip: "bg-[var(--warn)] text-[var(--ink)]",
+    };
+  }
+  return {
+    dot: "bg-[var(--info)]",
+    chip: "bg-[var(--info)] text-white",
+  };
+}
+
+function HeroStatusPanel() {
+  const t = useTranslations("hero");
+  const tp = useTranslations("peringatanDini");
+  const { data, isLoading } = useQuery({
+    queryKey: qk.peringatanDini,
+    queryFn: fetchPeringatanDini,
+    staleTime: 5 * 60_000,
+    refetchInterval: 10 * 60_000,
+  });
+
+  const rows = data
+    ? [
+        {
+          key: "cuaca",
+          place: data.cuaca.empty
+            ? tp("cuaca.empty")
+            : data.cuaca.highlights[0]?.kabupaten ?? tp("cuaca.source"),
+          tone: data.cuaca.tone,
+        },
+        {
+          key: "magma",
+          place: data.magma.empty
+            ? tp("magma.empty")
+            : data.magma.event?.gunung_api_terdekat ??
+              data.magma.event?.wilayah ??
+              tp("magma.source"),
+          tone: data.magma.tone,
+        },
+        {
+          key: "sipongi",
+          place: data.sipongi.empty
+            ? tp("sipongi.empty")
+            : data.sipongi.points[0]?.kabkota ?? tp("sipongi.source"),
+          tone: data.sipongi.tone,
+        },
+        ...(data.tatonas
+          ? [
+              {
+                key: "tatonas",
+                place: data.tatonas.empty
+                  ? tp("tatonas.empty")
+                  : data.tatonas.highlights[0]?.pos_name ?? tp("tatonas.source"),
+                tone: data.tatonas.tone,
+              },
+            ]
+          : []),
+      ]
+    : [];
+
+  return (
+    <GlassPanel
+      as="aside"
+      className="w-full shrink-0 border border-white/10 p-5 lg:w-[320px]"
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <p className={cn("mb-0 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
+          {t("statusTitle")}
+        </p>
+        <span className="type-stamp text-[0.8125rem] text-white/40">{t("statusToday")}</span>
+      </div>
+      <div className="flex flex-col gap-3">
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-8 w-full rounded-lg bg-white/10" />
+            ))
+          : rows.map((row) => {
+              const chip = toneChip(row.tone);
+              return (
+                <div key={row.key} className="flex items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className={cn("h-2 w-2 shrink-0 rounded-full", chip.dot)} />
+                    <span className="truncate text-sm font-medium">{row.place}</span>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      "shrink-0 rounded-full border-transparent px-2.5 py-0.5 font-semibold uppercase",
+                      TYPE_FLOOR_CLASS,
+                      chip.chip
+                    )}
+                  >
+                    {tp(`tone.${row.tone}`)}
+                  </Badge>
+                </div>
+              );
+            })}
+      </div>
+      <Separator className="mt-4 bg-white/10" />
+      <a
+        href="#status"
+        className="mt-3 flex items-center gap-1.5 text-[0.8125rem] font-semibold text-[var(--accent-soft)] transition-colors hover:text-[#F7F7F4]"
+      >
+        {t("statusAll")}
+        <span aria-hidden>→</span>
+      </a>
+    </GlassPanel>
+  );
 }
 
 export function HeroSection() {
   const t = useTranslations("hero");
   const [tab, setTab] = useState<HeroTab>("utama");
-  const [hovering, setHovering] = useState(false);
-  const { data, isLoading, isError } = useQuery({
-    queryKey: qk.liveStats,
-    queryFn: fetchLiveStats,
-    staleTime: 30_000,
-    enabled: tab === "utama",
-  });
-
-  const incidents = isError ? null : data?.activeIncidents;
-  const reports = isError ? null : data?.reportsLast24h;
 
   const tabs: { key: HeroTab; label: string }[] = [
     { key: "utama", label: t("tabs.utama") },
     { key: "peta", label: t("tabs.peta") },
     { key: "irbi", label: t("tabs.irbi") },
+    { key: "krb", label: t("tabs.krb") },
   ];
 
   return (
     <section
+      id="hero"
       className={cn(
-        "relative flex flex-col overflow-hidden bg-[var(--bg)] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
-        tab === "irbi"
+        "relative flex scroll-mt-28 flex-col overflow-hidden bg-[var(--bg)] px-4 pt-24 text-[var(--hero-fg)] sm:pt-28",
+        tab === "irbi" || tab === "krb"
           ? "min-h-[100svh] justify-start pb-16"
-          : "min-h-[100svh] justify-end pb-20 sm:pb-24"
+          : "min-h-[100svh] justify-end pb-16"
       )}
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
     >
       <MediaBackdrop
         imageSrc={SITE_MEDIA.heroPoster.src}
@@ -68,16 +173,11 @@ export function HeroSection() {
         imageSrcs={SITE_MEDIA.heroSlides.map((slide) => slide.src)}
         imageAlts={SITE_MEDIA.heroSlides.map((slide) => slide.alt)}
         priority
-        paused={hovering}
         showDots
-        overlayClassName={
-          tab === "irbi"
-            ? "from-black/85 via-black/75 to-[var(--bg)]"
-            : "from-black/78 via-black/62 to-[var(--bg)]"
-        }
+        overlayClassName="hero-gradient"
       />
 
-      <div className="relative z-10 mx-auto w-full max-w-5xl">
+      <div className="relative z-10 mx-auto w-full max-w-6xl">
         <div
           className="mb-6 inline-flex rounded-full border border-white/15 bg-black/30 p-1 backdrop-blur-md"
           role="tablist"
@@ -90,7 +190,7 @@ export function HeroSection() {
               role="tab"
               aria-selected={tab === key}
               className={cn(
-                "rounded-full px-3.5 py-1.5 text-xs font-semibold tracking-wide transition sm:px-4 sm:text-sm",
+                "rounded-full px-3.5 py-1.5 text-[0.8125rem] font-semibold tracking-wide transition sm:px-4",
                 tab === key
                   ? "bg-white/15 text-white shadow-sm"
                   : "text-white/55 hover:text-white/85"
@@ -103,140 +203,103 @@ export function HeroSection() {
         </div>
 
         {tab === "utama" && (
-          <div>
-            <BlurFade delay={0.05} inView>
-              <div className="mb-5 inline-flex items-center rounded-full border border-white/15 bg-white/5 px-3 py-1 backdrop-blur-md">
-                <AnimatedShinyText className={cn("mx-0 max-w-none text-[var(--accent-soft)] dark:text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
-                  Aceh Tangguh · Observatorium
-                </AnimatedShinyText>
-              </div>
-            </BlurFade>
-
-            <BlurFade delay={0.12} inView>
-              <h1 className={cn("max-w-none text-left", TYPE_HERO_DISPLAY_CLASS)}>
-                {t.rich("title", {
-                  brand: (chunks) => (
-                    <mark className="whitespace-nowrap rounded-[0.16em] bg-[var(--orange)] px-[0.28em] pb-[0.06em] pt-[0.04em] font-[inherit] text-[var(--accent-fg)] [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
-                      {chunks}
-                    </mark>
-                  ),
-                  br: () => <br />,
-                })}
-              </h1>
-            </BlurFade>
-
-            <BlurFade delay={0.2} inView>
-              <p className="mt-5 max-w-2xl text-base text-[var(--hero-muted)] sm:text-lg">
-                {t("subtitle")}
-              </p>
-            </BlurFade>
-
-            <BlurFade delay={0.28} inView>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <Link href="/peta">
-                  <ShimmerButton
-                    className="shadow-2xl text-[var(--primary-fg)]"
-                    background="var(--primary)"
-                    shimmerColor="#F7F7F4"
-                  >
-                    <span className="inline-flex items-center gap-2 text-sm font-semibold">
-                      <Map size={18} />
-                      {t("ctaPeta")}
-                    </span>
-                  </ShimmerButton>
-                </Link>
-                <Link href="/lapor/kejadian">
-                  <button
-                    type="button"
+          <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <BlurFade delay={0.05} inView>
+                <div className="mb-5 flex flex-wrap items-center gap-3">
+                  <p className={cn("mb-0 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
+                    {t("kicker")}
+                  </p>
+                  <Badge
+                    variant="outline"
                     className={cn(
-                      "inline-flex h-12 items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-md transition hover:border-white/40 hover:bg-white/15"
+                      "gap-2 rounded-full border-[var(--awas)]/40 bg-[var(--awas)]/20 px-3 py-1 font-semibold text-[#F7F7F4]",
+                      TYPE_FLOOR_CLASS
                     )}
                   >
-                    <Megaphone size={18} />
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--awas)]" />
+                    {t("liveBadge")}
+                  </Badge>
+                </div>
+              </BlurFade>
+
+              <BlurFade delay={0.12} inView>
+                <h1 className={cn("mb-5 max-w-none text-left", TYPE_HERO_DISPLAY_CLASS)}>
+                  {t.rich("title", {
+                    brand: (chunks) => (
+                      <span className="whitespace-nowrap rounded-md bg-accent px-1.5 text-accent-foreground">
+                        {chunks}
+                      </span>
+                    ),
+                    br: () => <br />,
+                  })}
+                </h1>
+              </BlurFade>
+
+              <BlurFade delay={0.2} inView>
+                <p className="mb-8 max-w-xl text-lg leading-relaxed text-[var(--hero-muted)]">
+                  {t("subtitle")}
+                </p>
+              </BlurFade>
+
+              <BlurFade delay={0.28} inView>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link
+                    href="/peta"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+                  >
+                    {t("ctaPeta")}
+                    <Map size={18} />
+                  </Link>
+                  <Link
+                    href="/lapor/kejadian"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-accent-foreground transition hover:bg-[var(--accent-hover)]"
+                  >
                     {t("ctaLaporKejadian")}
-                  </button>
-                </Link>
-                <Link href="/lapor/penanganan">
-                  <button
-                    type="button"
-                    className={cn(
-                      "inline-flex h-12 items-center gap-2 rounded-full border border-white/25 bg-transparent px-6 text-sm font-semibold text-white/90 backdrop-blur-md transition hover:border-white/40 hover:bg-white/10"
-                    )}
+                    <AlertTriangle size={18} />
+                  </Link>
+                  <Link
+                    href="/destana"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/18 bg-white/[0.08] px-6 text-sm font-semibold text-[#F7F7F4] transition hover:bg-white/[0.14]"
                   >
-                    {t("ctaLaporPenanganan")}
-                  </button>
-                </Link>
-              </div>
-            </BlurFade>
+                    {t("ctaDestana")}
+                    <Home size={18} />
+                  </Link>
+                </div>
+              </BlurFade>
 
-            <BlurFade delay={0.36} inView>
-              <div className="mt-10 flex flex-wrap gap-2.5" aria-live="polite">
-                <Chip tone="glass" className="text-[0.9rem]">
-                  <span className="inline-block h-2 w-2 rounded-full bg-[var(--accent-soft)] shadow-[0_0_8px_var(--accent)]" />
-                  {isLoading || incidents == null ? (
-                    <StatSkeleton />
-                  ) : (
-                    <NumberTicker
-                      value={incidents}
-                      className="font-semibold tabular-nums text-white"
-                    />
-                  )}{" "}
-                  {t("chipIncidents")}
-                </Chip>
-                <Chip tone="glass" className="text-[0.9rem]">
-                  {isLoading || reports == null ? (
-                    <StatSkeleton />
-                  ) : (
-                    <NumberTicker
-                      value={reports}
-                      className="font-semibold tabular-nums text-white"
-                    />
-                  )}{" "}
-                  {t("chipReports")}
-                </Chip>
-              </div>
-            </BlurFade>
+              <p className="mt-6 text-[0.8125rem] text-white/50">{SITE_MEDIA.heroPoster.credit}</p>
+            </div>
 
-            <p className="mt-6 text-xs text-white/60">
-              {SITE_MEDIA.heroPoster.credit}
-            </p>
+            <BlurFade delay={0.22} inView>
+              <HeroStatusPanel />
+            </BlurFade>
           </div>
         )}
 
         {tab === "peta" && (
           <BlurFade delay={0.05} inView>
             <div className="max-w-2xl pb-8">
-              <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                {t("petaTab.heading")}
-              </h2>
+              <h2 className="section-h2">{t("petaTab.heading")}</h2>
               <p className="mt-4 text-base text-[var(--hero-muted)] sm:text-lg">
                 {t("petaTab.lead")}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/peta">
-                  <ShimmerButton
-                    className="shadow-2xl text-[var(--primary-fg)]"
-                    background="var(--primary)"
-                    shimmerColor="#F7F7F4"
-                  >
-                    <span className="inline-flex items-center gap-2 text-sm font-semibold">
-                      <Map size={18} />
-                      {t("petaTab.cta")}
-                    </span>
-                  </ShimmerButton>
+                <Link
+                  href="/peta"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+                >
+                  {t("petaTab.cta")}
+                  <Map size={18} />
                 </Link>
                 <Link
                   href={{
                     pathname: "/peta",
                     query: { area: "irbi2025", basemap: "positron" },
                   }}
+                  className="inline-flex h-11 items-center gap-2 rounded-full border border-white/18 bg-white/[0.08] px-6 text-sm font-semibold text-white transition hover:bg-white/[0.14]"
                 >
-                  <button
-                    type="button"
-                    className="inline-flex h-12 items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 text-sm font-semibold text-white backdrop-blur-md transition hover:border-white/40 hover:bg-white/15"
-                  >
-                    {t("petaTab.ctaIrbi")}
-                  </button>
+                  {t("petaTab.ctaIrbi")}
                 </Link>
               </div>
             </div>
@@ -248,17 +311,13 @@ export function HeroSection() {
             <IrbiHeroPanel />
           </BlurFade>
         )}
-      </div>
 
-      {tab === "utama" && (
-        <a
-          href="#status"
-          className="scroll-cue absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1 text-white/50 transition hover:text-white/80"
-          aria-label="Scroll"
-        >
-          <ChevronDown size={22} />
-        </a>
-      )}
+        {tab === "krb" && (
+          <BlurFade delay={0.04} inView>
+            <KrbHeroPanel />
+          </BlurFade>
+        )}
+      </div>
     </section>
   );
 }

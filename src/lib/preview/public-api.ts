@@ -12,15 +12,18 @@ import {
   buildPrrpkaSummary,
 } from "@/lib/prrpka-types";
 import type { LegendModel } from "@/lib/types";
-import { unavailableMagmaCard, type SipongiCard } from "@/lib/peringatan-dini-types";
+import { unavailableMagmaCard, type SipongiCard, type TatonasCard } from "@/lib/peringatan-dini-types";
+import { emptyTatonasCard } from "@/lib/tatonas/parse";
 import { summarizeWeatherWarning } from "@/lib/peringatan-dini/weather-summary";
 import { annotatePoliceOfficeCoordQuality } from "@/lib/coord-quality";
 import { annotateDisasterDesa, desaByIdFromKejadian } from "@/lib/map-marker-chrome";
+import { enabledMapLayersCatalog } from "@/lib/map-layers-catalog";
 import { expandMarkerLayerKeys } from "@/lib/map-url-aliases";
+import { isOverlayLayerKey, OVERLAY_STATIC_FIXTURES } from "@/lib/overlay-layers";
 import type { WeatherApiResponse } from "@/lib/weather-types";
 import { isStaticExport, withBasePath } from "./env";
-import { ensureExistingHazardKindBuckets } from "@/lib/hazard-kinds";
-import { HAZARD_STATUS_FALLBACK, LIVE_STATS_FALLBACK } from "./fallbacks";
+import { LIVE_STATS_FALLBACK } from "./fallbacks";
+import { filterKrb, type KrbPayload } from "@/lib/krb-filter";
 
 const STATIC_UNAVAILABLE = {
   error: "not_available_on_static_preview",
@@ -91,7 +94,7 @@ async function resolveStaticGet(input: string): Promise<Response> {
     return jsonResponse({ ...LIVE_STATS_FALLBACK, source: "fallback" });
   }
   if (path === "/api/hazards") {
-    return jsonResponse(ensureExistingHazardKindBuckets(HAZARD_STATUS_FALLBACK));
+    return jsonResponse(STATIC_UNAVAILABLE, 503);
   }
   if (path === "/api/prrpka/summary" || path === "/api/r3p/summary") {
     const [acehRaw, ringkasanRaw] = await Promise.all([
@@ -116,14 +119,16 @@ async function resolveStaticGet(input: string): Promise<Response> {
     return jsonResponse(await fetchJson("/fixtures/weather-snapshot.json"));
   }
   if (path === "/api/peringatan-dini") {
-    const [weather, sipongi] = await Promise.all([
+    const [weather, sipongi, tatonas] = await Promise.all([
       fetchJson("/fixtures/weather-snapshot.json") as Promise<WeatherApiResponse>,
       fetchJson("/fixtures/peringatan-sipongi.json") as Promise<SipongiCard>,
+      fetchJson("/fixtures/peringatan-tatonas.json") as Promise<TatonasCard>,
     ]);
     return jsonResponse({
       cuaca: summarizeWeatherWarning(weather),
       magma: unavailableMagmaCard(),
       sipongi: { ...sipongi, stale: true, source: "fixture" },
+      tatonas: { ...tatonas, stale: true, source: "fixture", tone: "neutral" },
     });
   }
   if (path === "/api/peringatan-dini/magma") {
@@ -134,6 +139,16 @@ async function resolveStaticGet(input: string): Promise<Response> {
       "/fixtures/peringatan-sipongi.json",
     )) as SipongiCard;
     return jsonResponse({ ...sipongi, stale: true, source: "fixture" });
+  }
+  if (path === "/api/peringatan-dini/tatonas") {
+    try {
+      const tatonas = (await fetchJson(
+        "/fixtures/peringatan-tatonas.json",
+      )) as TatonasCard;
+      return jsonResponse({ ...tatonas, stale: true, source: "fixture", tone: "neutral" });
+    } catch {
+      return jsonResponse(emptyTatonasCard({ source: "fixture", example: true }));
+    }
   }
   if (path === "/api/sentinel/status") {
     const data = (await fetchJson("/fixtures/sentinel-status.json")) as Record<
@@ -149,11 +164,45 @@ async function resolveStaticGet(input: string): Promise<Response> {
     >;
     return jsonResponse({ ...data, source: "fixture" });
   }
+  if (path === "/api/krb") {
+    const data = (await fetchJson("/fixtures/krb-aceh.json")) as KrbPayload;
+    const filtered = filterKrb(data, {
+      jenis: searchParams.get("jenis") ?? undefined,
+      kabupaten: searchParams.get("kabupaten") ?? undefined,
+      kelas: searchParams.get("kelas") ?? undefined,
+    });
+    return jsonResponse({ ...filtered, source: "fixture" });
+  }
   if (path === "/api/laporan/peta") {
     return jsonResponse({
       kejadian: { layerId: "laporanKejadian", count: 0, items: [] },
       penanganan: { layerId: "laporanPenanganan", count: 0, items: [] },
     });
+  }
+  if (path === "/api/layers/catalog") {
+    return jsonResponse({
+      items: enabledMapLayersCatalog(),
+      source: "catalog",
+    });
+  }
+  if (path === "/api/layers/meta" || path.startsWith("/api/layers/meta/")) {
+    const layerKey = decodeURIComponent(path.slice("/api/layers/meta/".length)).trim();
+    if (!layerKey) {
+      return jsonResponse({ error: "Missing layerKey" }, 400);
+    }
+    try {
+      const raw = await fetchJson(`/fixtures/layers/meta/${layerKey}.json`);
+      const items = Array.isArray(raw)
+        ? raw
+        : raw &&
+            typeof raw === "object" &&
+            Array.isArray((raw as { items?: unknown }).items)
+          ? (raw as { items: unknown[] }).items
+          : [];
+      return jsonResponse({ items, layerKey, source: "fixture" });
+    } catch {
+      return jsonResponse({ items: [], layerKey, source: "fixture" });
+    }
   }
   if (path === "/api/layers/markers") {
     const fc = (await fetchJson("/fixtures/markers.geojson")) as FeatureCollection;
@@ -283,6 +332,61 @@ async function resolveStaticGet(input: string): Promise<Response> {
   }
   if (path.startsWith("/api/profil-desa")) {
     return jsonResponse({ error: "Not found" }, 404);
+  }
+  if (path.startsWith("/api/overlay/maritime/pelabuhan/")) {
+    const kode = decodeURIComponent(path.slice("/api/overlay/maritime/pelabuhan/".length));
+    return jsonResponse({
+      kode,
+      name: kode,
+      issued: null,
+      stale: true,
+      slot: null,
+      forecast: null,
+    });
+  }
+  if (path === "/api/overlay/maritime/perairan") {
+    const fixture = OVERLAY_STATIC_FIXTURES.maritimeWaters;
+    if (!fixture) return jsonResponse({ error: "Unknown overlay" }, 404);
+    const fc = (await fetchJson(fixture)) as FeatureCollection;
+    return jsonResponse({
+      ...fc,
+      stale: true,
+      source: "fixture",
+    });
+  }
+  if (path.startsWith("/api/overlay/static/")) {
+    const key = path.slice("/api/overlay/static/".length);
+    if (!isOverlayLayerKey(key) || !(key in OVERLAY_STATIC_FIXTURES)) {
+      return jsonResponse({ error: "Unknown static overlay" }, 404);
+    }
+    const fixture = OVERLAY_STATIC_FIXTURES[key as keyof typeof OVERLAY_STATIC_FIXTURES];
+    if (!fixture) return jsonResponse({ error: "Unknown static overlay" }, 404);
+    const fc = (await fetchJson(fixture)) as FeatureCollection;
+    return jsonResponse({ ...fc, source: "fixture" });
+  }
+  if (path.startsWith("/api/overlay/tiles/")) {
+    return jsonResponse(STATIC_UNAVAILABLE, 503);
+  }
+  if (path.startsWith("/api/overlay/")) {
+    const key = path.slice("/api/overlay/".length);
+    if (!isOverlayLayerKey(key)) {
+      return jsonResponse({ error: "Unknown overlay" }, 404);
+    }
+    const fixture = OVERLAY_STATIC_FIXTURES[key];
+    if (fixture) {
+      const fc = (await fetchJson(fixture)) as FeatureCollection;
+      return jsonResponse({
+        ...fc,
+        stale: key === "maritimeWaters",
+        source: "fixture",
+      });
+    }
+    return jsonResponse({
+      type: "FeatureCollection",
+      features: [],
+      stale: true,
+      source: "fixture",
+    });
   }
 
   return jsonResponse(STATIC_UNAVAILABLE, 503);

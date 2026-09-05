@@ -168,6 +168,20 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: undefined,
   },
   {
+    id: "krb-aceh",
+    titleId: "Kawasan Rawan Bencana (KRB) Aceh",
+    titleEn: "Aceh disaster-prone areas (KRB)",
+    source:
+      "BNPB IRBI 2025 + InaRISK; BPBA Kajian Risiko Bencana Aceh 2016–2020 / 2021–2025; PVMBG peta KRB gunung api (Bur Ni Telong 2025, Seulawah Agam 2007, Peut Sague 2008); OpenData Aceh IRBI kab/kota 2024. Poligon resmi tetap di InaRISK/PVMBG — database ini adalah katalog administratif + kawasan bernama.",
+    license:
+      "Public official statistics and maps — attribute BNPB, BPBA, PVMBG/Badan Geologi, Pemerintah Aceh",
+    date: "Compiled 2026-08-31 (IRBI 2025; KRB gunung api 2007–2025)",
+    format: "Supabase krb_* tables + JSON fixture krb-aceh.json → GET /api/krb",
+    usedFor:
+      "Database KRB Aceh: 23 kab/kota × 11 jenis ancaman (kelas IRBI), kawasan bernama (gunung api, sesar, pesisir), dan katalog dokumen sumber",
+    href: "https://inarisk.bnpb.go.id/webgis/",
+  },
+  {
     id: "analisis-anggaran-2026",
     titleId: "Analisis anggaran penanganan bencana APBA 2026",
     titleEn: "APBA 2026 disaster handling budget analysis",
@@ -330,8 +344,73 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     date: "Live + snapshot fixture",
     format: "JSON API + weather-snapshot.json",
     usedFor:
-      "Perkiraan Cuaca page, homepage weather strip, and Peringatan Dini cuaca card — 23 kabupaten/kota in Aceh. The early-warning card only surfaces notable live conditions (heavy rain, thunderstorm, strong wind) from this same payload.",
+      "Perkiraan Cuaca page, homepage weather strip, and Peringatan Dini cuaca card — 23 kabupaten/kota in Aceh. The early-warning card only surfaces notable live conditions (heavy rain, thunderstorm, strong wind) from this same payload. Not used for maritime waters (see bmkg-maritim).",
     href: "https://open-meteo.com/",
+  },
+  {
+    id: "bmkg-maritim",
+    titleId: "BMKG Maritim — cuaca perairan dan pelabuhan Aceh",
+    titleEn: "BMKG Maritim — Aceh waters and port forecast",
+    source:
+      "BMKG marine2026-data: meta/area_province.json, meta/wilmetos.min.geojson, meta/pelabuhan.json, GET /perairan/{KODE}.json and /pelabuhan/{KODE}.json. Aceh codes P.A.01–P.A.08, M.01, M.03.",
+    license:
+      "Official BMKG maritime forecast — attribution required. Wave height and wind are copied from the live payload; values are never invented when the feed is stale or missing.",
+    date: "Live (cache 1 hour, BMKG cycle ~00 UTC)",
+    format: "JSON → GET /api/overlay/maritimeWaters and /api/overlay/maritime/pelabuhan/{kode}",
+    usedFor:
+      "Map Geospasial overlays maritimeWaters (choropleth wave_cat) and port popups. Does not replace kabupaten/kota /api/weather.",
+    href: "https://maritim.bmkg.go.id/apidoc",
+  },
+  {
+    id: "ruangkita-static-poi",
+    titleId: "Ruang Kita — temuan POI statis (bukan runtime)",
+    titleEn: "Ruang Kita — static POI discovery (not runtime)",
+    source:
+      "One-off ETL scripts/scrape-ruangkita-static.mjs reads GeoJSON/XHR URLs that ruangkita.net itself loads (pelabuhan BMKG meta, sensor InaTEWS). Production map never requests ruangkita.net.",
+    license:
+      "Discovery path only — do not copy Ruang Kita UI, Leaflet, CSS, or tiles. Forecast credit stays with BMKG.",
+    date: "ETL snapshot 2026-09-03",
+    format: "GeoJSON fixtures in public/fixtures/overlays/",
+    usedFor:
+      "Static overlay maritimePorts and seismicSensors after ACEH_BBOX filter. Join kode_bmkg for live BMKG port forecasts.",
+    href: "https://ruangkita.net/",
+  },
+  {
+    id: "inarisk-faults",
+    titleId: "InaRISK — patahan Sumatera dan Megathrust (clip Aceh)",
+    titleEn: "InaRISK — Sumatran fault and Megathrust (Aceh clip)",
+    source:
+      "BNPB InaRISK Faults MapServer layers 6 (Sumatera) and 0 (Megathrust), queried with Aceh envelope and stored as GeoJSON fixtures.",
+    license: "Public InaRISK / BNPB geospatial services — attribute BNPB InaRISK.",
+    date: "ETL snapshot 2026-09-03",
+    format: "GeoJSON fixtures → MapLibre line/fill overlays",
+    usedFor: "Geospasial overlays inariskSumateraFault and inariskMegathrust.",
+    href: "https://inarisk.bnpb.go.id/",
+  },
+  {
+    id: "inarisk-bahaya-raster",
+    titleId: "InaRISK — raster bahaya (proxy ubin)",
+    titleEn: "InaRISK — hazard rasters (tile proxy)",
+    source:
+      "BNPB InaRISK ImageServer exportImage (gempa, tsunami, longsor, banjir, karhutla, letusan gunung api). Next.js proxies Web Mercator tiles so MapLibre can paint without CORS. Volcano KRB polygons are not stored; the gunung-api ImageServer is the raster stand-in.",
+    license: "Public InaRISK / BNPB — attribute BNPB InaRISK. Empty PNG on upstream failure.",
+    date: "Live tiles (cache up to 24h)",
+    format: "PNG via GET /api/overlay/tiles/{key}/{z}/{x}/{y}",
+    usedFor:
+      "Geospasial raster overlays inariskBahaya*. InaWaves marine rasters are not enabled in this wave.",
+    href: "https://inarisk.bnpb.go.id/",
+  },
+  {
+    id: "inatews-sensors",
+    titleId: "BMKG InaTEWS — sensor seismik Aceh",
+    titleEn: "BMKG InaTEWS — Aceh seismic sensors",
+    source:
+      "BMKG InaTEWS sensor_seismic.json (URL discovered via Ruang Kita). Filtered to ACEH_BBOX.",
+    license: "Official BMKG InaTEWS station list — attribute BMKG.",
+    date: "ETL snapshot 2026-09-03",
+    format: "GeoJSON fixture sensor-seismic-aceh.geojson",
+    usedFor: "Geospasial overlay seismicSensors (static markers).",
+    href: "https://inatews.bmkg.go.id/",
   },
   {
     id: "magma-gempa",
@@ -344,7 +423,7 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     date: "Live official homepage; fail-closed empty card if blocked (revalidate ~10 min)",
     format: "Homepage public JSON list → GET /api/peringatan-dini/magma",
     usedFor:
-      "Homepage Peringatan Dini card 2 — latest Aceh-relevant gempa (bbox or wilayah text). If live MAGMA is unreachable or unreadable, the card is empty and marked delayed — a last-known fixture event is not shown as current. Card links to MAGMA home.",
+      "Homepage Peringatan Dini card 2 and map overlay magmaQuakes / magmaVolcanoes — latest Aceh-relevant gempa (bbox or wilayah text). Volcano markers only if the homepage vars exist; otherwise the overlay is empty. If live MAGMA is unreachable, the card is empty and marked delayed.",
     href: "https://magma.esdm.go.id/",
   },
   {
@@ -358,8 +437,23 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     date: "Live + fixture fallback (revalidate ~10 min)",
     format: "GeoJSON via GET /api/opsroom/indoHotspot → GET /api/peringatan-dini/sipongi",
     usedFor:
-      "Homepage Peringatan Dini card 3 — latest 1–3 Aceh medium/high hotspots. Card links to the official Sipongi map.",
+      "Homepage Peringatan Dini card 3 and map overlay sipongiHotspots — latest 1–3 Aceh medium/high hotspots. Card links to the official Sipongi map.",
     href: "https://sipongi.gakkum.kehutanan.go.id/peta",
+  },
+  {
+    id: "tatonas-monitoring",
+    titleId: "Tatonas — pos hidrologi Aceh",
+    titleEn: "Tatonas — Aceh hydrology stations",
+    source:
+      "Tatonas Web Monitoring public dashboard (tatonas.co.id/monitoring). Live JSON via the same dt_data XHR the dashboard uses (HMAC from the public page + /api/server-time). Filtered to Aceh bbox (95–98.3E / 2–6.15N); camera loggers omitted. Typical Aceh project: BWS Aceh.",
+    license:
+      "Vendor cloud dashboard — attribute Tatonas. Schema may change without notice. Not an official government API.",
+    date: "Live + stale fixture fallback (revalidate ~10 min; readings older than 15 min marked delayed)",
+    format:
+      "JSON GET /api/dt_data → GET /api/peringatan-dini/tatonas and map overlay tatonasStations",
+    usedFor:
+      "Homepage Peringatan Dini card 4 and Geospasial overlay tatonasStations (not the Lokasi marker toolbar). Alarm tone is fail-closed: stale snapshots never display as “Aman”. Coordinates are never invented. Does not create kejadian_operasi.",
+    href: "https://tatonas.co.id/monitoring/",
   },
   {
     id: "unsplash-media",

@@ -1,5 +1,10 @@
 /** Lightweight Database types mirroring public tables in Aceh Tangguh Supabase. */
 
+import type { SikTables } from "@/lib/sik/db-tables";
+import type { Json as JsonValue } from "./json";
+
+export type Json = JsonValue;
+
 export type ReportTopic =
   | "banjir"
   | "longsor"
@@ -11,7 +16,14 @@ export type ReportTopic =
 
 export type ReportStatus = "queued" | "published" | "rejected";
 
-export type AdminRole = "super_admin" | "admin";
+export type AdminRole =
+  | "super_admin"
+  | "admin"
+  | "admin_provinsi"
+  | "admin_kabkota"
+  | "admin_desa"
+  | "penilai_pkd"
+  | "admin_rr";
 
 export type HazardKind =
   | "banjir"
@@ -23,16 +35,8 @@ export type HazardKind =
   | "lainnya";
 export type HazardSeverity = "low" | "med" | "high";
 
-export type MapLayerKind = "area" | "marker" | "boundary";
+export type MapLayerKind = "area" | "marker" | "boundary" | "overlay";
 export type MapLayerSourceType = "geojson" | "pmtiles" | "api" | "mixed";
-
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[];
 
 type EmptyRelationships = [];
 
@@ -81,18 +85,36 @@ export interface Database {
           role: AdminRole;
           display_name: string | null;
           created_at: string;
+          kode_kabupaten: string | null;
+          kabupaten: string | null;
+          kode_kecamatan: string | null;
+          kecamatan: string | null;
+          kode_desa_kelurahan: string | null;
+          desa: string | null;
         };
         Insert: {
           user_id: string;
           role: AdminRole;
           display_name?: string | null;
           created_at?: string;
+          kode_kabupaten?: string | null;
+          kabupaten?: string | null;
+          kode_kecamatan?: string | null;
+          kecamatan?: string | null;
+          kode_desa_kelurahan?: string | null;
+          desa?: string | null;
         };
         Update: {
           user_id?: string;
           role?: AdminRole;
           display_name?: string | null;
           created_at?: string;
+          kode_kabupaten?: string | null;
+          kabupaten?: string | null;
+          kode_kecamatan?: string | null;
+          kecamatan?: string | null;
+          kode_desa_kelurahan?: string | null;
+          desa?: string | null;
         };
         Relationships: EmptyRelationships;
       };
@@ -204,6 +226,7 @@ export interface Database {
           submitted_at: string;
           created_at: string;
           updated_at: string;
+          kejadian_id: string | null;
         };
         Insert: {
           id?: string;
@@ -228,6 +251,7 @@ export interface Database {
           submitted_at?: string;
           created_at?: string;
           updated_at?: string;
+          kejadian_id?: string | null;
         };
         Update: {
           id?: string;
@@ -252,6 +276,7 @@ export interface Database {
           submitted_at?: string;
           created_at?: string;
           updated_at?: string;
+          kejadian_id?: string | null;
         };
         Relationships: EmptyRelationships;
       };
@@ -785,6 +810,9 @@ export interface Database {
           rumah_rb: number | null;
           total_rumah_rusak: number | null;
           payload: Json | null;
+          destana_level: string | null;
+          destana_indeks: number | null;
+          destana_tahun: number | null;
           updated_at: string;
         };
         Insert: {
@@ -816,6 +844,9 @@ export interface Database {
           rumah_rb?: number | null;
           total_rumah_rusak?: number | null;
           payload?: Json | null;
+          destana_level?: string | null;
+          destana_indeks?: number | null;
+          destana_tahun?: number | null;
           updated_at?: string;
         };
         Update: {
@@ -847,6 +878,246 @@ export interface Database {
           rumah_rb?: number | null;
           total_rumah_rusak?: number | null;
           payload?: Json | null;
+          destana_level?: string | null;
+          destana_indeks?: number | null;
+          destana_tahun?: number | null;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      krb_jenis_bahaya: {
+        Row: {
+          kode: string;
+          label_id: string;
+          label_en: string | null;
+          kategori: string;
+          sumber_otoritatif: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          kode: string;
+          label_id: string;
+          label_en?: string | null;
+          kategori: string;
+          sumber_otoritatif?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          kode?: string;
+          label_id?: string;
+          label_en?: string | null;
+          kategori?: string;
+          sumber_otoritatif?: string | null;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      krb_kabupaten: {
+        Row: {
+          kode_kabupaten: string;
+          kabupaten: string;
+          is_kota: boolean;
+          irb_2025: number | null;
+          kelas_risiko_2025: string | null;
+          irb_2024: number | null;
+          ancaman_tertinggi: string | null;
+          skor_ancaman_tertinggi: number | null;
+          kelas_ancaman_tertinggi: string | null;
+          jumlah_ancaman_tinggi: number;
+          ancaman_tinggi: string[];
+          latitude: number | null;
+          longitude: number | null;
+          sumber: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          kode_kabupaten: string;
+          kabupaten: string;
+          is_kota?: boolean;
+          irb_2025?: number | null;
+          kelas_risiko_2025?: string | null;
+          irb_2024?: number | null;
+          ancaman_tertinggi?: string | null;
+          skor_ancaman_tertinggi?: number | null;
+          kelas_ancaman_tertinggi?: string | null;
+          jumlah_ancaman_tinggi?: number;
+          ancaman_tinggi?: string[];
+          latitude?: number | null;
+          longitude?: number | null;
+          sumber?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          kode_kabupaten?: string;
+          kabupaten?: string;
+          is_kota?: boolean;
+          irb_2025?: number | null;
+          kelas_risiko_2025?: string | null;
+          irb_2024?: number | null;
+          ancaman_tertinggi?: string | null;
+          skor_ancaman_tertinggi?: number | null;
+          kelas_ancaman_tertinggi?: string | null;
+          jumlah_ancaman_tinggi?: number;
+          ancaman_tinggi?: string[];
+          latitude?: number | null;
+          longitude?: number | null;
+          sumber?: string | null;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      krb_wilayah: {
+        Row: {
+          id: string;
+          kode_kabupaten: string;
+          kabupaten: string;
+          jenis_bahaya: string;
+          kelas_ancaman: string;
+          skor_irbi: number | null;
+          tahun_acuan: number;
+          sumber: string | null;
+          sumber_url: string | null;
+          latitude: number | null;
+          longitude: number | null;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          kode_kabupaten: string;
+          kabupaten: string;
+          jenis_bahaya: string;
+          kelas_ancaman: string;
+          skor_irbi?: number | null;
+          tahun_acuan?: number;
+          sumber?: string | null;
+          sumber_url?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          kode_kabupaten?: string;
+          kabupaten?: string;
+          jenis_bahaya?: string;
+          kelas_ancaman?: string;
+          skor_irbi?: number | null;
+          tahun_acuan?: number;
+          sumber?: string | null;
+          sumber_url?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      krb_kawasan: {
+        Row: {
+          id: string;
+          nama: string;
+          jenis_bahaya: string;
+          zona: string;
+          kabupaten: string[];
+          kode_kabupaten: string[];
+          deskripsi: string | null;
+          potensi_bahaya: string | null;
+          latitude: number | null;
+          longitude: number | null;
+          tahun_acuan: number | null;
+          sumber: string | null;
+          sumber_url: string | null;
+          grain: string | null;
+          catatan: string | null;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          nama: string;
+          jenis_bahaya: string;
+          zona: string;
+          kabupaten?: string[];
+          kode_kabupaten?: string[];
+          deskripsi?: string | null;
+          potensi_bahaya?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          tahun_acuan?: number | null;
+          sumber?: string | null;
+          sumber_url?: string | null;
+          grain?: string | null;
+          catatan?: string | null;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          nama?: string;
+          jenis_bahaya?: string;
+          zona?: string;
+          kabupaten?: string[];
+          kode_kabupaten?: string[];
+          deskripsi?: string | null;
+          potensi_bahaya?: string | null;
+          latitude?: number | null;
+          longitude?: number | null;
+          tahun_acuan?: number | null;
+          sumber?: string | null;
+          sumber_url?: string | null;
+          grain?: string | null;
+          catatan?: string | null;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      krb_dokumen: {
+        Row: {
+          id: string;
+          judul: string;
+          jenis: string;
+          wilayah: string | null;
+          kabupaten: string | null;
+          tahun_mulai: number | null;
+          tahun_akhir: number | null;
+          penerbit: string | null;
+          status: string | null;
+          url: string | null;
+          catatan: string | null;
+          payload: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          judul: string;
+          jenis: string;
+          wilayah?: string | null;
+          kabupaten?: string | null;
+          tahun_mulai?: number | null;
+          tahun_akhir?: number | null;
+          penerbit?: string | null;
+          status?: string | null;
+          url?: string | null;
+          catatan?: string | null;
+          payload?: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          judul?: string;
+          jenis?: string;
+          wilayah?: string | null;
+          kabupaten?: string | null;
+          tahun_mulai?: number | null;
+          tahun_akhir?: number | null;
+          penerbit?: string | null;
+          status?: string | null;
+          url?: string | null;
+          catatan?: string | null;
+          payload?: Json;
           updated_at?: string;
         };
         Relationships: EmptyRelationships;
@@ -881,12 +1152,236 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
-    };
+      overlay_live_features: {
+        Row: {
+          id: string;
+          layer_key: string;
+          source: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id: string;
+          longitude: number;
+          latitude: number;
+          occurred_at: string | null;
+          properties: Json;
+          created_at: string;
+          updated_at: string;
+          expires_at: string | null;
+        };
+        Insert: {
+          id: string;
+          layer_key: string;
+          source: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id: string;
+          longitude: number;
+          latitude: number;
+          occurred_at?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+          expires_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          layer_key?: string;
+          source?: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id?: string;
+          longitude?: number;
+          latitude?: number;
+          occurred_at?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+          expires_at?: string | null;
+        };
+        Relationships: [];
+      };
+      overlay_static_features: {
+        Row: {
+          id: string;
+          layer_key: string;
+          external_id: string;
+          name: string;
+          kode_bmkg: string | null;
+          longitude: number;
+          latitude: number;
+          source: string;
+          source_url: string | null;
+          properties: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          layer_key: string;
+          external_id: string;
+          name: string;
+          kode_bmkg?: string | null;
+          longitude: number;
+          latitude: number;
+          source?: string;
+          source_url?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          layer_key?: string;
+          external_id?: string;
+          name?: string;
+          kode_bmkg?: string | null;
+          longitude?: number;
+          latitude?: number;
+          source?: string;
+          source_url?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      overlay_live_refresh: {
+        Row: {
+          layer_key: string;
+          refreshed_at: string;
+          ok: boolean;
+          feature_count: number;
+          error: string | null;
+        };
+        Insert: {
+          layer_key: string;
+          refreshed_at: string;
+          ok: boolean;
+          feature_count: number;
+          error?: string | null;
+        };
+        Update: {
+          layer_key?: string;
+          refreshed_at?: string;
+          ok?: boolean;
+          feature_count?: number;
+          error?: string | null;
+        };
+        Relationships: EmptyRelationships;
+      };
+      maritime_forecast_cache: {
+        Row: {
+          kode: string;
+          jenis: "perairan" | "pelabuhan";
+          issued: string | null;
+          valid_from: string | null;
+          valid_to: string | null;
+          payload: Json;
+          fetched_at: string;
+          expires_at: string | null;
+        };
+        Insert: {
+          kode: string;
+          jenis: "perairan" | "pelabuhan";
+          issued?: string | null;
+          valid_from?: string | null;
+          valid_to?: string | null;
+          payload?: Json;
+          fetched_at?: string;
+          expires_at?: string | null;
+        };
+        Update: {
+          kode?: string;
+          jenis?: "perairan" | "pelabuhan";
+          issued?: string | null;
+          valid_from?: string | null;
+          valid_to?: string | null;
+          payload?: Json;
+          fetched_at?: string;
+          expires_at?: string | null;
+        };
+        Relationships: EmptyRelationships;
+      };
+      panduan_faq: {
+        Row: {
+          id: string;
+          pola: string;
+          intent: string;
+          body_id: string;
+          body_en: string;
+          href: string;
+          hash: string | null;
+          label_key: string;
+          published: boolean;
+          urutan: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          pola: string;
+          intent: string;
+          body_id: string;
+          body_en: string;
+          href: string;
+          hash?: string | null;
+          label_key?: string;
+          published?: boolean;
+          urutan?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          pola?: string;
+          intent?: string;
+          body_id?: string;
+          body_en?: string;
+          href?: string;
+          hash?: string | null;
+          label_key?: string;
+          published?: boolean;
+          urutan?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      panduan_unknown: {
+        Row: {
+          id: string;
+          query_sanitized: string;
+          locale: string;
+          reason: string;
+          pathname: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          query_sanitized: string;
+          locale?: string;
+          reason?: string;
+          pathname?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          query_sanitized?: string;
+          locale?: string;
+          reason?: string;
+          pathname?: string;
+          created_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+    } & SikTables;
     Views: Record<string, never>;
     Functions: {
       next_laporan_nomor: {
         Args: { prefix: string };
         Returns: string;
+      };
+      next_kejadian_nomor: {
+        Args: Record<string, never>;
+        Returns: string;
+      };
+      is_walidata: {
+        Args: Record<string, never>;
+        Returns: boolean;
       };
     };
     Enums: Record<string, never>;
@@ -913,3 +1408,8 @@ export type IrbiDocumentRow = Database["public"]["Tables"]["irbi_documents"]["Ro
 export type DataDocumentRow = Database["public"]["Tables"]["data_documents"]["Row"];
 export type WeatherForecastRow = Database["public"]["Tables"]["weather_forecasts"]["Row"];
 export type ProfilDesaRow = Database["public"]["Tables"]["profil_desa"]["Row"];
+export type KrbJenisBahayaRow = Database["public"]["Tables"]["krb_jenis_bahaya"]["Row"];
+export type KrbKabupatenRow = Database["public"]["Tables"]["krb_kabupaten"]["Row"];
+export type KrbWilayahRow = Database["public"]["Tables"]["krb_wilayah"]["Row"];
+export type KrbKawasanRow = Database["public"]["Tables"]["krb_kawasan"]["Row"];
+export type KrbDokumenRow = Database["public"]["Tables"]["krb_dokumen"]["Row"];

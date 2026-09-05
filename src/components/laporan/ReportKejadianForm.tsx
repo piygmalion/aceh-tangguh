@@ -1,17 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowLeft, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
 import { FormFieldRenderer } from "@/components/laporan/FormFieldRenderer";
 import { GpsCapture, type LokasiValue } from "@/components/laporan/GpsCapture";
 import { ReporterFields, type ReporterValue } from "@/components/laporan/ReporterFields";
+import { Link } from "@/i18n/routing";
 import {
   getKejadianFields,
   getKejadianJenisList,
   type JenisBencana,
 } from "@/lib/laporan/definitions";
 import { fetchPublicApi } from "@/lib/preview/public-api";
+import { cn } from "@/lib/utils";
+
+const STEPS = ["lokasi", "jenis", "pelapor"] as const;
 
 export function ReportKejadianForm() {
   const t = useTranslations("laporKejadian");
@@ -78,73 +85,120 @@ export function ReportKejadianForm() {
   }
 
   return (
-    <div className="space-y-6 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)] p-6">
-      <div>
-        <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <p className="mt-1 text-sm text-[var(--text-dim)]">{t("subtitle")}</p>
+    <div>
+      <div className="mb-8 flex flex-wrap items-center gap-2" role="list" aria-label={t("stepsAria")}>
+        {STEPS.map((key, i) => (
+          <div key={key} className="flex items-center gap-2">
+            {i > 0 ? <span className="hidden text-white/20 sm:inline" aria-hidden>—</span> : null}
+            <button
+              type="button"
+              role="listitem"
+              aria-current={step === i ? "step" : undefined}
+              className={cn("step-pill", step === i && "is-active")}
+              onClick={() => setStep(i)}
+            >
+              <span className="step-num">{i + 1}</span>
+              {t(`step.${key}`)}
+            </button>
+          </div>
+        ))}
       </div>
 
-      {step === 0 && (
-        <div className="space-y-4">
-          <p className="text-sm font-medium">{t("chooseJenis")}</p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {jenisList.map((j) => (
-              <button
-                key={j.kode}
-                type="button"
-                onClick={() => {
-                  setJenis(j.kode as JenisBencana);
-                  setJawaban({});
-                }}
-                className={`rounded-xl border p-4 text-left transition ${
-                  jenis === j.kode
-                    ? "border-[var(--accent)] bg-[var(--accent-dim)]"
-                    : "border-[var(--glass-border)] hover:border-[var(--accent)]/50"
-                }`}
-              >
-                <div className="font-semibold">{j.nama}</div>
-                <p className="mt-1 text-xs text-[var(--text-dim)] line-clamp-3">{j.deskripsi}</p>
-              </button>
-            ))}
-          </div>
-          <Button type="button" onClick={() => setStep(1)} className="w-full">{t("next")}</Button>
-        </div>
-      )}
-
-      {step === 1 && (
-        <div className="space-y-4">
-          {jenisMeta && <p className="text-sm text-[var(--text-dim)]">{jenisMeta.deskripsi}</p>}
-          <GpsCapture value={lokasi} onChange={setLokasi} />
-          <ReporterFields value={pelapor} onChange={setPelapor} />
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={() => setStep(0)}>{t("back")}</Button>
-            <Button type="button" onClick={() => setStep(2)} className="flex-1">{t("next")}</Button>
-          </div>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="space-y-4">
-          <FormFieldRenderer
-            fields={fields}
-            values={jawaban}
-            laporanTipe="kejadian"
-            onChange={(k, v) => setJawaban((prev) => ({ ...prev, [k]: v }))}
-          />
-          <label className="flex items-start gap-2 text-sm">
-            <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1" />
-            <span>{t("consent")}</span>
-          </label>
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={() => setStep(1)}>{t("back")}</Button>
-            <Button type="button" disabled={busy || !consent} onClick={submit} className="flex-1">
-              {t("submit")}
+      <div className="glass flex flex-col gap-6 rounded-2xl border border-input p-5 sm:p-8">
+        {step === 0 && (
+          <FieldGroup className="gap-4">
+            <GpsCapture value={lokasi} onChange={setLokasi} />
+            <Button type="button" onClick={() => setStep(1)} className="w-full">
+              {t("next")}
             </Button>
-          </div>
-        </div>
-      )}
+          </FieldGroup>
+        )}
 
-      {status && <p className="text-sm text-[var(--text-dim)]">{status}</p>}
+        {step === 1 && (
+          <FieldGroup className="gap-4">
+            <Field>
+              <FieldLabel>{t("chooseJenis")}</FieldLabel>
+              <div className="flex flex-wrap gap-2" role="group" aria-label={t("chooseJenis")}>
+                {jenisList.map((j) => (
+                  <button
+                    key={j.kode}
+                    type="button"
+                    aria-pressed={jenis === j.kode}
+                    onClick={() => {
+                      setJenis(j.kode as JenisBencana);
+                      setJawaban({});
+                    }}
+                    className="jenis-chip"
+                  >
+                    {j.nama}
+                  </button>
+                ))}
+              </div>
+            </Field>
+            {jenisMeta ? <p className="text-sm text-muted-foreground">{jenisMeta.deskripsi}</p> : null}
+            <FormFieldRenderer
+              fields={fields}
+              values={jawaban}
+              laporanTipe="kejadian"
+              onChange={(k, v) => setJawaban((prev) => ({ ...prev, [k]: v }))}
+            />
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={() => setStep(0)}>
+                {t("back")}
+              </Button>
+              <Button type="button" onClick={() => setStep(2)} className="flex-1">
+                {t("next")}
+              </Button>
+            </div>
+          </FieldGroup>
+        )}
+
+        {step === 2 && (
+          <FieldGroup className="gap-4">
+            <ReporterFields value={pelapor} onChange={setPelapor} />
+            <Field
+              orientation="horizontal"
+              className="cursor-pointer items-start rounded-xl border border-input bg-background/30 p-4"
+            >
+              <input
+                id="kejadian-consent"
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+                className="mt-0.5 h-5 w-5 shrink-0 accent-primary"
+              />
+              <FieldLabel htmlFor="kejadian-consent" className="font-normal leading-relaxed text-muted-foreground">
+                {t("consent")}
+              </FieldLabel>
+            </Field>
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <Button type="button" variant="ghost" onClick={() => setStep(1)} data-icon="inline-start">
+                <ArrowLeft />
+                {t("back")}
+              </Button>
+              <Button
+                type="button"
+                disabled={busy || !consent}
+                onClick={submit}
+                data-icon={busy ? "inline-start" : "inline-end"}
+              >
+                {busy ? <Spinner /> : null}
+                {t("submit")}
+                {busy ? null : <Send />}
+              </Button>
+            </div>
+          </FieldGroup>
+        )}
+
+        {status ? <FieldError className="text-muted-foreground">{status}</FieldError> : null}
+      </div>
+
+      <p className="mt-6 text-center text-[0.8125rem] leading-relaxed text-muted-foreground">
+        {t("emergencyNote")}{" "}
+        <Link href="/nomor-penting" className="font-semibold text-primary hover:underline">
+          {t("emergencyLink")}
+        </Link>
+      </p>
     </div>
   );
 }

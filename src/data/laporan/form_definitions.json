@@ -208,6 +208,55 @@
         "kode": "tsunami",
         "nama": "Tsunami",
         "deskripsi": "Laporkan dampak tsunami termasuk korban tersapu arus dan kondisi genangan di lokasi Anda."
+      },
+      {
+        "kode": "abrasi",
+        "nama": "Gelombang pasang dan abrasi",
+        "deskripsi": "Laporkan abrasi pantai atau gelombang pasang yang merusak permukiman, tambak, atau infrastruktur."
+      },
+      {
+        "kode": "cuaca_ekstrem",
+        "nama": "Cuaca ekstrem",
+        "deskripsi": "Laporkan puting beliung, angin kencang, hujan es, atau cuaca ekstrem lain di lokasi Anda."
+      },
+      {
+        "kode": "kekeringan",
+        "nama": "Kekeringan",
+        "deskripsi": "Laporkan kekeringan yang mengganggu air bersih, pertanian, atau penghidupan."
+      },
+      {
+        "kode": "karhutla",
+        "nama": "Kebakaran hutan dan lahan",
+        "deskripsi": "Laporkan kebakaran hutan atau lahan, termasuk sebaran asap di lokasi Anda."
+      },
+      {
+        "kode": "epidemi",
+        "nama": "Epidemi dan wabah penyakit",
+        "deskripsi": "Laporkan wabah atau epidemi yang berdampak pada masyarakat di lokasi Anda."
+      },
+      {
+        "kode": "kebakaran_permukiman",
+        "nama": "Kebakaran gedung dan permukiman",
+        "deskripsi": "Laporkan kebakaran rumah, gedung, atau permukiman."
+      },
+      {
+        "kode": "gagal_teknologi",
+        "nama": "Gagal teknologi",
+        "deskripsi": "Laporkan kecelakaan atau kegagalan industri/teknologi yang mengancam warga."
+      },
+      {
+        "kode": "konflik_sosial",
+        "nama": "Konflik sosial",
+        "deskripsi": "Laporkan kerusuhan atau konflik sosial yang menimbulkan korban atau kerusakan."
+      }
+    ],
+    "fields_generic": [
+      {
+        "field_key": "deskripsi_kejadian",
+        "label": "Uraikan apa yang terjadi di lokasi Anda",
+        "tipe_input": "textarea",
+        "wajib": true,
+        "urutan": 20
       }
     ],
     "fields_by_jenis": {
@@ -437,7 +486,15 @@
           { "value": "longsor", "label": "Tanah Longsor" },
           { "value": "gunung_meletus", "label": "Gunung Meletus" },
           { "value": "gempa", "label": "Gempa Bumi" },
-          { "value": "tsunami", "label": "Tsunami" }
+          { "value": "tsunami", "label": "Tsunami" },
+          { "value": "abrasi", "label": "Gelombang pasang dan abrasi" },
+          { "value": "cuaca_ekstrem", "label": "Cuaca ekstrem" },
+          { "value": "kekeringan", "label": "Kekeringan" },
+          { "value": "karhutla", "label": "Kebakaran hutan dan lahan" },
+          { "value": "epidemi", "label": "Epidemi / wabah" },
+          { "value": "kebakaran_permukiman", "label": "Kebakaran gedung dan permukiman" },
+          { "value": "gagal_teknologi", "label": "Gagal teknologi" },
+          { "value": "konflik_sosial", "label": "Konflik sosial" }
         ]
       },
       {

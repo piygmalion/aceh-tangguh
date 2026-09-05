@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireStaffApi, sanitizeSearch } from "@/lib/auth/admin";
+import { requireModuleApi, sanitizeSearch } from "@/lib/auth/admin";
 import { rejectCrossOrigin } from "@/lib/security/origin";
 import type { ReportRow, ReportStatus } from "@/lib/supabase/types";
 
@@ -28,7 +28,7 @@ function toApiItem(row: ReportRow) {
 }
 
 export async function GET(req: NextRequest) {
-  const auth = await requireStaffApi();
+  const auth = await requireModuleApi("moderasi");
   if (!auth.ok) return auth.response;
 
   const sp = req.nextUrl.searchParams;
@@ -90,7 +90,7 @@ export async function PATCH(req: NextRequest) {
   const cross = rejectCrossOrigin(req);
   if (cross) return cross;
 
-  const auth = await requireStaffApi();
+  const auth = await requireModuleApi("moderasi");
   if (!auth.ok) return auth.response;
 
   let json: unknown;

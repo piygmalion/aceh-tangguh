@@ -17,7 +17,8 @@ tippecanoe \
   --layer=r3p \
   --name="Aceh R3P kab" \
   --attribution="Aceh Tangguh / Compiled R3P + GADM" \
-  -zg \
+  --minimum-zoom=0 \
+  --maximum-zoom=9 \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \
   -y name -y value -y bucket -y kode_kab -y rumah_rr -y rumah_rs -y rumah_rb \
@@ -44,7 +45,7 @@ tippecanoe \
   --extend-zooms-if-still-dropping \
   --coalesce-densest-as-needed \
   -y name -y value -y bucket -y kabupaten -y kecamatan \
-  -y kode_desa_kelurahan -y kode_kecamatan \
+  -y kode_desa_kelurahan -y kode_kecamatan -y kode_kabupaten -y kode_kab -y level \
   -y rumah_rr -y rumah_rs -y rumah_rb \
   "$AREAS/villageDistribution.geojson"
 

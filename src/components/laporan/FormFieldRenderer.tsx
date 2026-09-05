@@ -1,7 +1,16 @@
 "use client";
 
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import type { FormFieldDef } from "@/lib/laporan/definitions";
 import { fetchPublicApi } from "@/lib/preview/public-api";
+import { cn } from "@/lib/utils";
 
 type Props = {
   fields: FormFieldDef[];
@@ -19,30 +28,34 @@ const SKIP_KEYS = new Set([
   "kontak_darurat",
 ]);
 
+const selectClassName =
+  "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50";
+
 export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kejadian" }: Props) {
   const visible = fields.filter((f) => !SKIP_KEYS.has(f.field_key) && f.tipe_input !== "gps");
 
   return (
-    <div className="space-y-4">
+    <FieldGroup className="gap-4">
       {visible.map((field) => {
         const val = values[field.field_key];
 
         if (field.tipe_input === "select") {
           return (
-            <label key={field.field_key} className="block text-sm">
-              <span className="mb-1 block">{field.label}</span>
+            <Field key={field.field_key}>
+              <FieldLabel htmlFor={`field-${field.field_key}`}>{field.label}</FieldLabel>
               <select
+                id={`field-${field.field_key}`}
                 required={field.wajib}
                 value={String(val ?? "")}
                 onChange={(e) => onChange(field.field_key, e.target.value)}
-                className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+                className={selectClassName}
               >
                 <option value="">—</option>
                 {field.opsi?.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
               </select>
-            </label>
+            </Field>
           );
         }
 
@@ -50,13 +63,13 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
           const selected = Array.isArray(val) ? val as string[] : [];
           const max = (field.validasi?.max_select as number | undefined) ?? 99;
           return (
-            <div key={field.field_key} className="block text-sm">
-              <span className="mb-2 block">{field.label}</span>
-              <div className="space-y-2">
+            <Field key={field.field_key}>
+              <FieldLabel>{field.label}</FieldLabel>
+              <FieldGroup className="gap-2" data-slot="checkbox-group">
                 {field.opsi?.map((o) => {
                   const checked = selected.includes(o.value);
                   return (
-                    <label key={o.value} className="flex items-start gap-2">
+                    <Field key={o.value} orientation="horizontal" className="items-start">
                       <input
                         type="checkbox"
                         checked={checked}
@@ -70,44 +83,45 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
                         }}
                         className="mt-1"
                       />
-                      <span>{o.label}</span>
-                    </label>
+                      <FieldLabel className="font-normal">{o.label}</FieldLabel>
+                    </Field>
                   );
                 })}
-              </div>
-            </div>
+              </FieldGroup>
+            </Field>
           );
         }
 
         if (field.tipe_input === "number" || field.tipe_input === "rating") {
           return (
-            <label key={field.field_key} className="block text-sm">
-              <span className="mb-1 block">{field.label}</span>
-              <input
+            <Field key={field.field_key}>
+              <FieldLabel htmlFor={`field-${field.field_key}`}>{field.label}</FieldLabel>
+              <Input
+                id={`field-${field.field_key}`}
                 type="number"
                 required={field.wajib}
                 min={field.validasi?.min as number | undefined}
                 max={field.validasi?.max as number | undefined}
                 value={val != null ? String(val) : ""}
                 onChange={(e) => onChange(field.field_key, e.target.value ? Number(e.target.value) : undefined)}
-                className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
               />
-            </label>
+            </Field>
           );
         }
 
         if (field.tipe_input === "date" || field.tipe_input === "time") {
           return (
-            <label key={field.field_key} className="block text-sm">
-              <span className="mb-1 block">{field.label}</span>
-              <input
+            <Field key={field.field_key}>
+              <FieldLabel htmlFor={`field-${field.field_key}`}>{field.label}</FieldLabel>
+              <Input
+                id={`field-${field.field_key}`}
                 type={field.tipe_input}
                 required={field.wajib}
                 value={String(val ?? "")}
                 onChange={(e) => onChange(field.field_key, e.target.value)}
-                className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+                className="[color-scheme:inherit]"
               />
-            </label>
+            </Field>
           );
         }
 
@@ -115,20 +129,22 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
           const maxLen = (field.validasi?.max_length as number | undefined) ?? 5000;
           const text = String(val ?? "");
           return (
-            <label key={field.field_key} className="block text-sm">
-              <span className="mb-1 block">{field.label}</span>
-              <textarea
+            <Field key={field.field_key}>
+              <FieldLabel htmlFor={`field-${field.field_key}`}>{field.label}</FieldLabel>
+              <Textarea
+                id={`field-${field.field_key}`}
                 required={field.wajib}
                 rows={4}
                 maxLength={maxLen}
                 value={text}
                 onChange={(e) => onChange(field.field_key, e.target.value)}
-                className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
               />
-              {Boolean(field.validasi?.show_counter) && (
-                <span className="mt-1 block text-xs text-[var(--text-dim)]">{text.length}/{maxLen}</span>
-              )}
-            </label>
+              {Boolean(field.validasi?.show_counter) ? (
+                <FieldDescription>
+                  {text.length}/{maxLen}
+                </FieldDescription>
+              ) : null}
+            </Field>
           );
         }
 
@@ -154,9 +170,10 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
           };
 
           return (
-            <label key={field.field_key} className="block text-sm">
-              <span className="mb-1 block">{field.label}</span>
-              <input
+            <Field key={field.field_key}>
+              <FieldLabel htmlFor={`field-${field.field_key}`}>{field.label}</FieldLabel>
+              <Input
+                id={`field-${field.field_key}`}
                 type="file"
                 accept={field.validasi?.accept as string | undefined}
                 multiple={maxFiles > 1}
@@ -167,14 +184,11 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
                     console.error(err);
                   }
                 }}
-                className="w-full text-sm"
               />
-              {paths.length > 0 && (
-                <span className="mt-1 block text-xs text-[var(--text-dim)]">
-                  {paths.length} file terunggah
-                </span>
-              )}
-            </label>
+              {paths.length > 0 ? (
+                <FieldDescription>{paths.length} file terunggah</FieldDescription>
+              ) : null}
+            </Field>
           );
         }
 
@@ -186,19 +200,20 @@ export function FormFieldRenderer({ fields, values, onChange, laporanTipe = "kej
               : "text";
 
         return (
-          <label key={field.field_key} className="block text-sm">
-            <span className="mb-1 block">{field.label}</span>
-            <input
+          <Field key={field.field_key}>
+            <FieldLabel htmlFor={`field-${field.field_key}`}>{field.label}</FieldLabel>
+            <Input
+              id={`field-${field.field_key}`}
               type={inputType}
               required={field.wajib}
               maxLength={field.validasi?.max_length as number | undefined}
               value={String(val ?? "")}
               onChange={(e) => onChange(field.field_key, e.target.value)}
-              className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
+              className={cn(field.tipe_input === "nik" && "font-mono")}
             />
-          </label>
+          </Field>
         );
       })}
-    </div>
+    </FieldGroup>
   );
 }

@@ -25,11 +25,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const initial = stored === "light" || stored === "dark" ? stored : "dark";
     setThemeState(initial);
     document.documentElement.setAttribute("data-theme", initial);
+    document.documentElement.classList.toggle("dark", initial === "dark");
   }, []);
 
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
     document.documentElement.setAttribute("data-theme", t);
+    document.documentElement.classList.toggle("dark", t === "dark");
     window.localStorage.setItem("at-theme", t);
   }, []);
 

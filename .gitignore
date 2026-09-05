@@ -39,8 +39,23 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 out/
 .static-export-park/
 
+# vercel
+.vercel
+
+# supabase CLI cache
+supabase/.temp/
+
 # local laporan file-store (PII)
 .data/
+
+# Superdesign temp HTML (never commit)
+.superdesign/tmp/
+
+# Strix local / CLI artifacts (findings stay in the Cloud dashboard)
+strix_runs/
+
+# overlay ETL scratch (unfiltered national dumps)
+public/fixtures/overlays/_raw*
 
 # local artifacts
 screenshots/
@@ -58,6 +73,7 @@ patch_flat_icons.py
 scripts/_*/
 scripts/_*
 scripts/seed-sql/
+scripts/generated/
 scripts/*-log.txt
 scripts/bmkg-*-test.txt
 scripts/inspect_*.js

@@ -1,5 +1,8 @@
+import type { TatonasCard } from "@/lib/tatonas/types";
+
 export type PeringatanTone = "neutral" | "warn" | "danger";
 export type PeringatanSource = "live" | "fixture" | "unavailable";
+export type { TatonasCard, TatonasHighlight } from "@/lib/tatonas/types";
 
 export type CuacaHighlight = {
   kabupaten: string;
@@ -73,6 +76,7 @@ export type PeringatanDiniResponse = {
   cuaca: CuacaWarningCard;
   magma: MagmaCard;
   sipongi: SipongiCard;
+  tatonas: TatonasCard;
 };
 
 export const MAGMA_HOME = "https://magma.esdm.go.id/";

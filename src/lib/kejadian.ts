@@ -16,6 +16,7 @@ import {
 } from "./supabase/fallback";
 import type { TypedSupabaseClient } from "./supabase/server";
 import type { KejadianBencanaRow } from "./supabase/types";
+import { loadKejadianOperasiAsRows } from "@/lib/sik/public";
 
 export type {
   KejadianFacets,
@@ -131,8 +132,23 @@ export async function loadKejadian(): Promise<{
   data: KejadianFixture;
   source: DomainSource;
 }> {
-  return trySupabaseThenFixture(loadKejadianFromSupabase, loadKejadianFixture, {
+  const loaded = await trySupabaseThenFixture(loadKejadianFromSupabase, loadKejadianFixture, {
     label: "kejadian",
     isEmpty: (value) => value.kejadian.length === 0,
   });
+  const ops = await loadKejadianOperasiAsRows().catch(() => []);
+  if (ops.length === 0) return loaded;
+  const existing = new Set(loaded.data.kejadian.map((r) => r.id));
+  const merged = [...ops.filter((r) => !existing.has(r.id)), ...loaded.data.kejadian];
+  return {
+    source: loaded.source,
+    data: {
+      ...loaded.data,
+      kejadian: merged,
+      metadata: {
+        ...loaded.data.metadata,
+        total_kejadian_tercatat: merged.length,
+      },
+    },
+  };
 }

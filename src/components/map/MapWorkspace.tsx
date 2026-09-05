@@ -17,9 +17,11 @@ function MapWorkspaceInner() {
     setBasemap,
     setPreferVector,
     setAreaLayer,
+    setKrbJenis,
     toggleMarkerLayer,
     toggleDisasterJenis,
     toggleFasilitasUmum,
+    toggleOverlay,
   } = useMapUrlState();
   const [villageSelection, setVillageSelection] =
     useState<VillageClickSelection | null>(null);
@@ -39,9 +41,11 @@ function MapWorkspaceInner() {
         preferVector={state.preferVector}
         markerLayers={state.markerLayers}
         areaLayer={state.areaLayer}
+        krbJenis={state.krbJenis ?? null}
         disasterJenis={state.disasterJenis}
         villageSelection={villageSelection}
         onVillageClick={setVillageSelection}
+        overlays={state.overlays}
       />
       {villageSelection && state.areaLayer === "villageDistribution" ? (
         <AreaProfilPanel
@@ -52,12 +56,16 @@ function MapWorkspaceInner() {
       <SiteNav />
       <MapToolbar
         areaLayer={state.areaLayer}
+        krbJenis={state.krbJenis ?? null}
+        onKrbJenisChange={setKrbJenis}
         onAreaLayerChange={setAreaLayer}
         markerLayers={state.markerLayers}
         onToggleMarker={toggleMarkerLayer}
         disasterJenis={state.disasterJenis}
         onToggleDisasterJenis={toggleDisasterJenis}
         onToggleFasilitasUmum={toggleFasilitasUmum}
+        overlays={state.overlays}
+        onToggleOverlay={toggleOverlay}
       />
       <MapSettings
         basemap={state.basemap}

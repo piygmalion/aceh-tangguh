@@ -7,6 +7,7 @@ import {
 } from "@/lib/supabase/ssr";
 import type { AdminProfileRow } from "@/lib/supabase/types";
 import { isSuperAdmin, type AdminProfile } from "@/lib/auth/types";
+import { canAccessModule, type SikModule } from "@/lib/sik/roles";
 
 export type { AdminProfile } from "@/lib/auth/types";
 export { isSuperAdmin, isStaff } from "@/lib/auth/types";
@@ -28,6 +29,12 @@ function toProfile(
     role: row.role,
     displayName: row.display_name,
     createdAt: row.created_at,
+    kodeKabupaten: row.kode_kabupaten,
+    kabupaten: row.kabupaten,
+    kodeKecamatan: row.kode_kecamatan,
+    kecamatan: row.kecamatan,
+    kodeDesaKelurahan: row.kode_desa_kelurahan,
+    desa: row.desa,
   };
 }
 
@@ -52,7 +59,9 @@ export async function getAuthContext(): Promise<AuthContext> {
 
   const { data: row } = await supabase
     .from("admin_profiles")
-    .select("user_id, role, display_name, created_at")
+    .select(
+      "user_id, role, display_name, created_at, kode_kabupaten, kabupaten, kode_kecamatan, kecamatan, kode_desa_kelurahan, desa"
+    )
     .eq("user_id", user.id)
     .maybeSingle();
 
@@ -131,4 +140,31 @@ export async function requireSuperAdminApi(): Promise<ApiOk | ApiErr> {
     };
   }
   return staff;
+}
+
+export function authorizeStaffModule(
+  profile: AdminProfile | null,
+  module: SikModule
+): { ok: true } | { ok: false; status: 403; error: "forbidden" } {
+  if (!canAccessModule(profile, module)) {
+    return { ok: false, status: 403, error: "forbidden" };
+  }
+  return { ok: true };
+}
+
+export async function requireModuleApi(module: SikModule): Promise<ApiOk | ApiErr> {
+  const staff = await requireStaffApi();
+  if (!staff.ok) return staff;
+  const gate = authorizeStaffModule(staff.profile, module);
+  if (!gate.ok) {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: gate.error }, { status: gate.status }),
+    };
+  }
+  return staff;
+}
+
+export async function requireOpsApi(): Promise<ApiOk | ApiErr> {
+  return requireModuleApi("kejadian");
 }

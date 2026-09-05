@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
 import type { KejadianBencanaRow } from "@/lib/supabase/types";
 
 const emptyForm = {
@@ -146,7 +150,7 @@ export function CmsKejadianManager() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-xl font-semibold">{t("cmsKejadianTitle")}</h1>
-            <p className="mt-1 text-sm text-[var(--text-dim)]">{t("cmsKejadianLead")}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{t("cmsKejadianLead")}</p>
           </div>
           <form
             className="flex gap-2"
@@ -156,25 +160,21 @@ export function CmsKejadianManager() {
               void load();
             }}
           >
-            <input
+            <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={t("searchPlaceholder")}
-              className="w-44 rounded-full border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--ring)]"
+              className="w-44"
             />
             <Button type="submit" size="sm" variant="outline">
               {t("search")}
             </Button>
           </form>
         </div>
-        {error ? (
-          <p className="mt-3 text-sm text-[var(--danger)]" role="alert">
-            {error}
-          </p>
-        ) : null}
+        {error ? <FieldError className="mt-3">{error}</FieldError> : null}
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="text-[var(--text-dim)]">
+            <thead className="text-muted-foreground">
               <tr>
                 <th className="px-2 py-2 font-medium">ID</th>
                 <th className="px-2 py-2 font-medium">{t("colJenis")}</th>
@@ -186,26 +186,26 @@ export function CmsKejadianManager() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-2 py-8 text-center text-[var(--text-dim)]">
+                  <td colSpan={5} className="px-2 py-8 text-center text-muted-foreground">
                     {t("loading")}
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-2 py-8 text-center text-[var(--text-dim)]">
+                  <td colSpan={5} className="px-2 py-8 text-center text-muted-foreground">
                     {t("empty")}
                   </td>
                 </tr>
               ) : (
                 items.map((row) => (
-                  <tr key={row.id} className="border-t border-[var(--border)]">
-                    <td className="px-2 py-2 font-mono text-xs">{row.id}</td>
+                  <tr key={row.id} className="border-t border-border">
+                    <td className="px-2 py-2 font-mono text-sm">{row.id}</td>
                     <td className="px-2 py-2">{row.jenis_bencana}</td>
-                    <td className="px-2 py-2 text-[var(--text-dim)]">
+                    <td className="px-2 py-2 text-muted-foreground">
                       {[row.kabupaten, row.kecamatan, row.desa].filter(Boolean).join(" · ") ||
                         "—"}
                     </td>
-                    <td className="px-2 py-2 text-[var(--text-dim)]">
+                    <td className="px-2 py-2 text-muted-foreground">
                       {row.hari_tanggal ?? "—"}
                     </td>
                     <td className="px-2 py-2">
@@ -213,7 +213,7 @@ export function CmsKejadianManager() {
                         <Button size="sm" variant="outline" onClick={() => startEdit(row)}>
                           {t("edit")}
                         </Button>
-                        <Button size="sm" variant="danger" onClick={() => void remove(row.id)}>
+                        <Button size="sm" variant="destructive" onClick={() => void remove(row.id)}>
                           {t("delete")}
                         </Button>
                       </div>
@@ -241,7 +241,7 @@ export function CmsKejadianManager() {
 
       <GlassPanel className="h-fit p-4 sm:p-5">
         <h2 className="font-semibold">{editing ? t("edit") : t("create")}</h2>
-        <div className="mt-3 flex flex-col gap-3 text-sm">
+        <FieldGroup className="mt-3 gap-3">
           {(
             [
               ["id", "ID", editing],
@@ -254,34 +254,36 @@ export function CmsKejadianManager() {
               ["latitude", "Latitude", false],
             ] as const
           ).map(([key, label, disabled]) => (
-            <label key={key} className="flex flex-col gap-1">
-              <span className="text-xs font-medium text-[var(--text-dim)]">{label}</span>
-              <input
+            <Field key={key}>
+              <FieldLabel htmlFor={`cms-kejadian-${key}`}>{label}</FieldLabel>
+              <Input
+                id={`cms-kejadian-${key}`}
                 disabled={disabled}
                 value={form[key]}
                 onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-                className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--ring)]"
               />
-            </label>
+            </Field>
           ))}
-          <label className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-[var(--text-dim)]">Payload JSON</span>
-            <textarea
+          <Field>
+            <FieldLabel htmlFor="cms-kejadian-payload">Payload JSON</FieldLabel>
+            <Textarea
+              id="cms-kejadian-payload"
               rows={7}
               value={form.payload}
               onChange={(e) => setForm((f) => ({ ...f, payload: e.target.value }))}
-              className="w-full rounded-xl border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 font-mono text-xs outline-none focus:ring-2 focus:ring-[var(--ring)]"
+              className="font-mono"
             />
-          </label>
+          </Field>
           <div className="flex gap-2">
-            <Button disabled={busy} onClick={() => void save()}>
+            <Button disabled={busy} onClick={() => void save()} data-icon={busy ? "inline-start" : undefined}>
+              {busy ? <Spinner /> : null}
               {t("save")}
             </Button>
             <Button variant="ghost" onClick={startCreate}>
               {t("reset")}
             </Button>
           </div>
-        </div>
+        </FieldGroup>
       </GlassPanel>
     </div>
   );

@@ -1,0 +1,115 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, it } from "node:test";
+import type { AdminProfile } from "../auth/types";
+import type { AdminRole } from "../supabase/types";
+import {
+  authorizeDampakRead,
+  authorizeKejadianDelete,
+  canAccessModule,
+  canLockStatis,
+  matchesKabScope,
+} from "./roles";
+
+const KAB_A = "1101";
+const KAB_B = "1171";
+
+function staff(role: AdminRole, wilayah?: { kode?: string | null; nama?: string | null }): AdminProfile {
+  return {
+    userId: "u-an1",
+    email: "an1@example.test",
+    role,
+    displayName: role,
+    createdAt: "2026-01-01T00:00:00.000Z",
+    kodeKabupaten: wilayah?.kode ?? null,
+    kabupaten: wilayah?.nama ?? null,
+    kodeKecamatan: null,
+    kecamatan: null,
+    kodeDesaKelurahan: role === "admin_desa" ? "1101010001" : null,
+    desa: null,
+  };
+}
+
+describe("AN-1 authorization matrix", () => {
+  it("rejects DELETE of another kabupaten kejadian (P0)", () => {
+    const actor = staff("admin_kabkota", { kode: KAB_A });
+    const kejadianB = { kode_kabupaten: KAB_B, kabupaten: "Banda Aceh", fase_data: "dinamis" };
+    assert.equal(matchesKabScope(actor, kejadianB), false);
+    const decision = authorizeKejadianDelete(actor, kejadianB);
+    assert.equal(decision.ok, false);
+    if (!decision.ok) {
+      assert.equal(decision.status, 403);
+      assert.equal(decision.error, "forbidden");
+    }
+  });
+
+  it("allows DELETE of own kabupaten kejadian when fase is not locked", () => {
+    const actor = staff("admin_kabkota", { kode: KAB_A });
+    for (const fase of ["dinamis", "diajukan"] as const) {
+      const kejadianA = { kode_kabupaten: KAB_A, kabupaten: "Aceh Selatan", fase_data: fase };
+      assert.equal(matchesKabScope(actor, kejadianA), true);
+      assert.equal(authorizeKejadianDelete(actor, kejadianA).ok, true);
+    }
+  });
+
+  it("returns 409 on DELETE of locked-static unless canLockStatis", () => {
+    const kab = staff("admin_kabkota", { kode: KAB_A });
+    const locked = { kode_kabupaten: KAB_A, kabupaten: "Aceh Selatan", fase_data: "statis" };
+    assert.equal(canLockStatis(kab), false);
+    const denied = authorizeKejadianDelete(kab, locked);
+    assert.equal(denied.ok, false);
+    if (!denied.ok) {
+      assert.equal(denied.status, 409);
+    }
+
+    const provinsi = staff("admin_provinsi");
+    assert.equal(canLockStatis(provinsi), true);
+    assert.equal(authorizeKejadianDelete(provinsi, locked).ok, true);
+
+    const legacyAdmin = staff("admin");
+    assert.equal(canLockStatis(legacyAdmin), true);
+    assert.equal(authorizeKejadianDelete(legacyAdmin, locked).ok, true);
+  });
+
+  it("rejects GET dampak for another kabupaten kejadian (P0)", () => {
+    const actor = staff("admin_kabkota", { kode: KAB_A });
+    const headerB = { kode_kabupaten: KAB_B, kabupaten: "Banda Aceh" };
+    assert.equal(matchesKabScope(actor, headerB), false);
+    const decision = authorizeDampakRead(actor, headerB);
+    assert.equal(decision.ok, false);
+    if (!decision.ok) {
+      assert.equal(decision.status, 403);
+    }
+
+    const headerA = { kode_kabupaten: KAB_A, kabupaten: "Aceh Selatan" };
+    assert.equal(matchesKabScope(actor, headerA), true);
+    assert.equal(authorizeDampakRead(actor, headerA).ok, true);
+  });
+
+  it("denies moderasi (GET laporan PII) to admin_desa and penilai_pkd", () => {
+    assert.equal(canAccessModule(staff("admin_desa"), "moderasi"), false);
+    assert.equal(canAccessModule(staff("penilai_pkd"), "moderasi"), false);
+  });
+
+  it("allows moderasi (GET laporan PII) to admin_provinsi", () => {
+    assert.equal(canAccessModule(staff("admin_provinsi"), "moderasi"), true);
+    assert.equal(canAccessModule(staff("admin"), "moderasi"), true);
+  });
+});
+
+describe("AN-1 P0 route guards still present", () => {
+  const root = process.cwd();
+
+  it("DELETE kejadian uses authorizeKejadianDelete", () => {
+    const src = readFileSync(join(root, "src/app/api/sik/kejadian/[id]/route.ts"), "utf8");
+    assert.match(src, /export async function DELETE/);
+    assert.match(src, /authorizeKejadianDelete/);
+  });
+
+  it("GET dampak uses authorizeDampakRead on the parent header", () => {
+    const src = readFileSync(join(root, "src/app/api/sik/kejadian/[id]/dampak/route.ts"), "utf8");
+    assert.match(src, /export async function GET/);
+    assert.match(src, /authorizeDampakRead/);
+  });
+});

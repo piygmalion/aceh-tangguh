@@ -1,6 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldTitle,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 export type ReporterValue = {
   nama: string;
@@ -19,55 +27,57 @@ export function ReporterFields({ value, onChange }: Props) {
   const t = useTranslations("laporForm");
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-semibold">{t("identityTitle")}</h3>
-      <p className="text-xs text-[var(--text-dim)]">{t("identityNote")}</p>
-      <label className="block text-sm">
-        <span className="mb-1 block">{t("nama")}</span>
-        <input
+    <FieldGroup className="gap-3">
+      <Field>
+        <FieldTitle>{t("identityTitle")}</FieldTitle>
+        <FieldDescription>{t("identityNote")}</FieldDescription>
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="reporter-nama">{t("nama")}</FieldLabel>
+        <Input
+          id="reporter-nama"
           required
           value={value.nama}
           onChange={(e) => onChange({ ...value, nama: e.target.value })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
         />
-      </label>
-      <label className="block text-sm">
-        <span className="mb-1 block">{t("nik")}</span>
-        <input
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="reporter-nik">{t("nik")}</FieldLabel>
+        <Input
+          id="reporter-nik"
           required
           pattern="\d{16}"
           maxLength={16}
           value={value.nik}
           onChange={(e) => onChange({ ...value, nik: e.target.value.replace(/\D/g, "") })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
         />
-      </label>
-      <label className="block text-sm">
-        <span className="mb-1 block">{t("telepon")}</span>
-        <input
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="reporter-telepon">{t("telepon")}</FieldLabel>
+        <Input
+          id="reporter-telepon"
           value={value.telepon}
           onChange={(e) => onChange({ ...value, telepon: e.target.value })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
           placeholder="628..."
         />
-      </label>
-      <label className="block text-sm">
-        <span className="mb-1 block">{t("email")}</span>
-        <input
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="reporter-email">{t("email")}</FieldLabel>
+        <Input
+          id="reporter-email"
           type="email"
           value={value.email}
           onChange={(e) => onChange({ ...value, email: e.target.value })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
         />
-      </label>
-      <label className="block text-sm">
-        <span className="mb-1 block">{t("kontakDarurat")}</span>
-        <input
+      </Field>
+      <Field>
+        <FieldLabel htmlFor="reporter-kontak">{t("kontakDarurat")}</FieldLabel>
+        <Input
+          id="reporter-kontak"
           value={value.kontak_darurat}
           onChange={(e) => onChange({ ...value, kontak_darurat: e.target.value })}
-          className="w-full rounded-lg border border-[var(--glass-border)] bg-transparent px-3 py-2"
         />
-      </label>
-    </div>
+      </Field>
+    </FieldGroup>
   );
 }

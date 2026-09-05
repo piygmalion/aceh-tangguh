@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { isSuperAdmin } from "@/lib/auth/types";
+import { canAccessModule } from "@/lib/sik/roles";
 import { requireStaffPage } from "@/lib/auth/admin";
 
 const OVERVIEW_STATUSES = [
@@ -56,6 +57,9 @@ export default async function AdminOverviewPage() {
 
   const cards = [
     { href: "/admin/moderasi" as const, title: t("navModeration"), body: t("overviewModeration") },
+    ...(canAccessModule(profile, "kejadian")
+      ? [{ href: "/admin/sik/kejadian" as const, title: t("navKejadianOps"), body: t("overviewKejadian") }]
+      : []),
     ...(superAdmin
       ? [
           { href: "/admin/cms" as const, title: t("navCms"), body: t("overviewCms") },

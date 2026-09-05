@@ -37,6 +37,7 @@ describe("LAYER_COLORS tokens", () => {
     }
     assert.equal(LAYER_COLORS.policeOffices, COLOR_TOKENS.ink);
     assert.equal(LAYER_COLORS.facEducation, COLOR_TOKENS.sage);
+    assert.equal("tatonasStations" in LAYER_COLORS, false);
   });
 
   it("tokenizes leftover marker/area colors in public/icons/flat/index.json", () => {
