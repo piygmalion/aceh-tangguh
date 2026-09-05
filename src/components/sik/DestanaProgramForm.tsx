@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { DestanaAktivitasStatus } from "@/lib/sik/destana-program";
 
@@ -166,12 +167,19 @@ export function DestanaProgramForm({
         </label>
       </div>
       {data.can_write ? (
-        <Button className="mt-3" size="sm" disabled={busy} onClick={() => void saveSi()}>
+        <Button
+          className="mt-3"
+          size="sm"
+          disabled={busy}
+          onClick={() => void saveSi()}
+          data-icon={busy ? "inline-start" : undefined}
+        >
+          {busy ? <Spinner /> : null}
           {t("saveSi")}
         </Button>
       ) : null}
 
-      <ul className="mt-4 space-y-2">
+      <ul className="mt-4 flex flex-col gap-2">
         {data.aktivitas.map((slot) => (
           <li key={slot.kode_aktivitas} className="border-t border-[var(--border)] pt-2 text-sm">
             <p>

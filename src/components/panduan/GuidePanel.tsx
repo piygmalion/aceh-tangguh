@@ -3,7 +3,7 @@
 import { Send, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/Chip";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { GuideChipKey } from "@/lib/panduan/page-context";
@@ -88,7 +88,7 @@ export function GuidePanel({
 
       <div
         ref={scrollerRef}
-        className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3 text-base leading-relaxed"
+        className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-3 text-base leading-relaxed"
       >
         {messages.map((item) => (
           <GuideMessage
@@ -104,7 +104,7 @@ export function GuidePanel({
         ) : null}
       </div>
 
-      <div className="space-y-3 border-t border-[var(--glass-border)] px-4 py-3">
+      <div className="flex flex-col gap-3 border-t border-[var(--glass-border)] px-4 py-3">
         <div className="flex flex-wrap gap-1.5">
           {chipKeys.map((key) => (
             <Chip
@@ -148,12 +148,13 @@ export function GuidePanel({
           />
           <Button
             type="submit"
-            size="sm"
-            className="h-11 w-11 shrink-0 px-0"
+            size="icon"
+            className="h-11 w-11 shrink-0"
             aria-label={t("send")}
             disabled={busy || !input.trim()}
+            data-icon="inline-end"
           >
-            <Send size={16} />
+            <Send />
           </Button>
         </form>
         <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("disclaimer")}</p>

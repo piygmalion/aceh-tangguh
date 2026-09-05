@@ -20,7 +20,7 @@ const HOMEPAGE_CHROME = [
 
 const ORANGE_CTA_FILES = [
   "src/components/HeroSection.tsx",
-  "src/components/ui/button-legacy.tsx",
+  "src/components/ui/button.tsx",
   "src/components/laporan/ReportLaporDropdown.tsx",
   "src/components/ParticipationSection.tsx",
 ] as const;

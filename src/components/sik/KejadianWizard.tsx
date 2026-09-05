@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "@/i18n/routing";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { JENIS_BENCANA_JUKLAK } from "@/lib/sik/jenis-bencana";
 import { KrbContextCard } from "@/components/sik/KrbContextCard";
@@ -409,7 +410,13 @@ export function KejadianWizard({
             Lanjut
           </Button>
         ) : (
-          <Button type="button" onClick={() => void submit()} disabled={busy}>
+          <Button
+            type="button"
+            onClick={() => void submit()}
+            disabled={busy}
+            data-icon={busy ? "inline-start" : undefined}
+          >
+            {busy ? <Spinner /> : null}
             {busy ? "Menyimpan…" : "Simpan kejadian"}
           </Button>
         )}

@@ -27,7 +27,7 @@ describe("shadcn Fase 1 setup", () => {
     const ui = path.join(ROOT, "src/components/ui");
     assert.equal(existsSync(path.join(ui, "Button.tsx")), false);
     assert.equal(existsSync(path.join(ui, "button.tsx")), true);
-    assert.equal(existsSync(path.join(ui, "button-legacy.tsx")), true);
+    assert.equal(existsSync(path.join(ui, "button-legacy.tsx")), false);
   });
 
   it("keeps Aceh HEX as source of truth and bridges shadcn aliases", () => {

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { Button } from "@/components/ui/button-legacy";
+import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { KejadianOperasiRow } from "@/lib/sik/db-tables";
 
@@ -48,9 +48,9 @@ export function KejadianOpsList() {
           <h1 className="text-xl font-semibold">{t("navKejadianOps")}</h1>
           <p className="mt-1 text-sm text-[var(--text-dim)]">{t("overviewKejadian")}</p>
         </div>
-        <Link href="/admin/sik/kejadian/baru">
-          <Button size="sm">{t("create")}</Button>
-        </Link>
+        <Button asChild size="sm">
+          <Link href="/admin/sik/kejadian/baru">{t("create")}</Link>
+        </Button>
       </div>
       <form
         className="mt-4 flex flex-wrap gap-2"
