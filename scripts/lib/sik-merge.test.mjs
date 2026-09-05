@@ -51,6 +51,34 @@ describe("sik schema aliases", () => {
     );
   });
 
+  it("picks kejadian when jenis is jenis_bencana_teks, not ref_kabupaten_kota", () => {
+    const kejadianCols = [
+      "id",
+      "jenis_bencana_teks",
+      "tanggal",
+      "latitude",
+      "longitude",
+      "kabupaten",
+    ];
+    const mapping = resolveKejadianColumns(kejadianCols);
+    assert.equal(mapping.jenis_bencana, "jenis_bencana_teks");
+    assert.equal(looksLikeKejadian(kejadianCols), true);
+    assert.equal(looksLikeKejadian(["id", "jenis_bencana_teks"]), false);
+    assert.equal(
+      resolveKejadianTable(["ref_kabupaten_kota", "kejadian"], {
+        ref_kabupaten_kota: [
+          "id",
+          "jenis",
+          "nama_kabupaten",
+          "latitude",
+          "longitude",
+        ],
+        kejadian: kejadianCols,
+      }),
+      "kejadian"
+    );
+  });
+
   it("normalizes kabupaten aliases without inventing names", () => {
     assert.equal(normalizeKabupaten("Kab. Aceh Utara"), "Aceh Utara");
     assert.equal(normalizeKabupaten("KOTA BANDA ACEH"), "Banda Aceh");
@@ -373,6 +401,57 @@ con.commit()
     const layers = markers.features.map((f) => f.properties.layer);
     assert.ok(layers.includes("infraRoadBridge"));
     assert.equal(layers.filter((l) => l === "disasterEvents").length, 2);
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("dry-run picks kejadian when jenis column is jenis_bencana_teks", () => {
+    const dir = mkdtempSync(join(tmpdir(), "sik-aceh-teks-"));
+    const db = join(dir, "sik_aceh.db");
+    const kejadianPath = join(dir, "kejadian.json");
+    const markersPath = join(dir, "markers.geojson");
+    writeFileSync(
+      kejadianPath,
+      JSON.stringify({
+        metadata: { total_kejadian_tercatat: 0, sumber: [] },
+        kejadian: [],
+      })
+    );
+    writeFileSync(
+      markersPath,
+      JSON.stringify({ type: "FeatureCollection", features: [] })
+    );
+    execFileSync("python3", [
+      "-c",
+      `
+import sqlite3
+con = sqlite3.connect(${JSON.stringify(db)})
+con.execute("create table ref_kabupaten_kota (id integer, jenis text, nama_kabupaten text, latitude real, longitude real)")
+con.execute("create table kejadian (id text, jenis_bencana_teks text, tanggal text, latitude real, longitude real, kabupaten text)")
+con.execute("insert into ref_kabupaten_kota values (1, 'kabupaten', 'Pidie', 5.2, 96.1)")
+con.execute("insert into kejadian values ('1', 'Banjir', '2024-01-02', 5.21, 96.12, 'Pidie')")
+con.execute("insert into kejadian values ('2', 'Longsor', '2024-03-04', 5.22, 96.13, 'Bireuen')")
+con.commit()
+`,
+    ]);
+    const out = execFileSync(
+      "python3",
+      [
+        join(root, "scripts/import-sik-aceh.py"),
+        "--db",
+        db,
+        "--kejadian",
+        kejadianPath,
+        "--markers",
+        markersPath,
+      ],
+      { encoding: "utf8" }
+    );
+    assert.match(out, /"kejadian_table": "kejadian"/);
+    assert.match(out, /"extracted_rows": 2/);
+    assert.match(out, /"jenis_bencana": "jenis_bencana_teks"/);
+    assert.match(out, /Dry-run: fixtures unchanged/);
+    const after = JSON.parse(readFileSync(kejadianPath, "utf8"));
+    assert.equal(after.kejadian.length, 0);
     rmSync(dir, { recursive: true, force: true });
   });
 });

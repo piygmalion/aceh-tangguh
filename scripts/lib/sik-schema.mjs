@@ -47,6 +47,7 @@ export const COLUMN_ALIASES = {
   sik_id: ["id", "id_kejadian", "kejadian_id", "kode", "kode_kejadian", "no"],
   jenis_bencana: [
     "jenis_bencana",
+    "jenis_bencana_teks",
     "jenis",
     "tipe_bencana",
     "nama_bencana",
