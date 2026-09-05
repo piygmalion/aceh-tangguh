@@ -480,3 +480,65 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: "https://unsplash.com/license",
   },
 ];
+
+/**
+ * Footer “Sumber data” column — official catalog rows only.
+ * Short labels match the signed SoT (BNPB/DIBI, MAGMA, BMKG, Sipongi,
+ * Geoportal desa, Anggaran). Do not invent sources here.
+ */
+export const FOOTER_SUMBER_IDS = [
+  "dibi-aceh",
+  "magma-gempa",
+  "weather-forecast",
+  "sipongi-hotspot",
+  "village-borders",
+  "analisis-anggaran-2026",
+] as const;
+
+export type FooterSumberId = (typeof FOOTER_SUMBER_IDS)[number];
+
+export type FooterSumberLink = {
+  id: FooterSumberId;
+  labelId: string;
+  labelEn: string;
+  hash: string;
+};
+
+export const FOOTER_SUMBER: FooterSumberLink[] = [
+  {
+    id: "dibi-aceh",
+    labelId: "BNPB / DIBI",
+    labelEn: "BNPB / DIBI",
+    hash: "dibi-aceh",
+  },
+  {
+    id: "magma-gempa",
+    labelId: "MAGMA",
+    labelEn: "MAGMA",
+    hash: "magma-gempa",
+  },
+  {
+    id: "weather-forecast",
+    labelId: "BMKG",
+    labelEn: "BMKG",
+    hash: "weather-forecast",
+  },
+  {
+    id: "sipongi-hotspot",
+    labelId: "Sipongi",
+    labelEn: "Sipongi",
+    hash: "sipongi-hotspot",
+  },
+  {
+    id: "village-borders",
+    labelId: "Geoportal desa",
+    labelEn: "Village geoportal",
+    hash: "village-borders",
+  },
+  {
+    id: "analisis-anggaran-2026",
+    labelId: "Anggaran",
+    labelEn: "Budget",
+    hash: "analisis-anggaran-2026",
+  },
+];
