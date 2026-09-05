@@ -7,6 +7,10 @@ import {
   isAllowedUploadField,
 } from "@/lib/security/magic-bytes";
 import { guardPublicPost } from "@/lib/security/public-post";
+import {
+  isReencodableImageMime,
+  reencodeImageWithoutMeta,
+} from "@/lib/laporan/strip-image-meta";
 
 export const dynamic = "force-dynamic";
 
@@ -36,8 +40,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid upload field" }, { status: 400 });
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const sniffed = detectMimeFromMagic(buffer);
+  const original = Buffer.from(await file.arrayBuffer());
+  const sniffed = detectMimeFromMagic(original);
   if (!sniffed) {
     return NextResponse.json({ error: "Unrecognized file type" }, { status: 400 });
   }
@@ -48,11 +52,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "video must be a video" }, { status: 400 });
   }
 
-  const ext = extensionForMime(sniffed);
+  let uploadBuffer = original;
+  let uploadMime = sniffed;
+  if (isReencodableImageMime(sniffed) || fieldKey === "foto") {
+    const stripped = await reencodeImageWithoutMeta(original, sniffed);
+    if (!stripped) {
+      return NextResponse.json({ error: "Image could not be re-encoded" }, { status: 400 });
+    }
+    uploadBuffer = Buffer.from(stripped.buffer);
+    uploadMime = stripped.mime;
+  }
+
+  const ext = extensionForMime(uploadMime);
   const path = `${laporanTipe}/${fieldKey}/${randomUUID()}.${ext}`;
 
-  const { error } = await supabase.storage.from("laporan-media").upload(path, buffer, {
-    contentType: sniffed,
+  const { error } = await supabase.storage.from("laporan-media").upload(path, uploadBuffer, {
+    contentType: uploadMime,
     upsert: false,
   });
 
@@ -63,7 +78,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     path,
     bucket: "laporan-media",
-    size: file.size,
-    mime: sniffed,
+    size: uploadBuffer.length,
+    mime: uploadMime,
   });
 }

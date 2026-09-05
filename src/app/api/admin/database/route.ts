@@ -7,6 +7,7 @@ import {
   pickEditablePatch,
   pickInsertRow,
 } from "@/lib/auth/tables";
+import { rejectCrossOrigin } from "@/lib/security/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -85,6 +86,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
   const auth = await requireSuperAdminApi();
   if (!auth.ok) return auth.response;
 
@@ -145,6 +148,8 @@ const writeSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
   const auth = await requireSuperAdminApi();
   if (!auth.ok) return auth.response;
 
@@ -196,6 +201,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
   const auth = await requireSuperAdminApi();
   if (!auth.ok) return auth.response;
 

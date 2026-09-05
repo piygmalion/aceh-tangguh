@@ -59,6 +59,9 @@ export function composeGuideAnswer(
   if (match.intent === "unknown") {
     return composeUnknown(match, locale);
   }
+  if (match.faq) {
+    return composeFaq(match, ctx, locale);
+  }
 
   switch (match.intent) {
     case "tour":
@@ -86,11 +89,11 @@ export function composeGuideAnswer(
     case "krb":
       return composeKrb(match, ctx, locale);
     case "pelatihan":
-      return composePelatihan(locale);
+      return composePelatihan(ctx, locale);
     case "mitra":
-      return composeMitra(locale);
+      return composeMitra(ctx, locale);
     case "publikasi":
-      return composePublikasi(locale);
+      return composePublikasi(ctx, locale);
     case "metodologi":
       return composeMetodologi(locale);
     case "tentang":
@@ -110,8 +113,8 @@ export function composeTourStep(index: number, locale: GuideLocale): GuideAnswer
       en: "Home: Aceh’s status, the map, and the report door. This is the observatory start.",
     },
     tourStatus: {
-      id: "Peringatan dini: tiga kartu mandiri — cuaca, MAGMA, dan Sipongi. Kartu yang gagal tidak mengisi angka palsu.",
-      en: "Early warning: three independent cards — weather, MAGMA, and Sipongi. A failed card does not invent numbers.",
+      id: "Peringatan dini: empat kartu mandiri — cuaca, MAGMA, Sipongi, dan Tatonas (muka air). Kartu yang gagal tidak mengisi angka palsu.",
+      en: "Early warning: four independent cards — weather, MAGMA, Sipongi, and Tatonas (water level). A failed card does not invent numbers.",
     },
     tourCuaca: {
       id: "Strip cuaca merangkum prakiraan kab/kota. Hanya kondisi yang perlu perhatian yang jadi peringatan.",
@@ -159,6 +162,28 @@ export function composeTourStep(index: number, locale: GuideLocale): GuideAnswer
   };
 }
 
+function composeFaq(match: GuideMatch, ctx: GuideContext, locale: GuideLocale): GuideAnswer {
+  const faq = match.faq;
+  if (!faq) return composeUnknown(match, locale);
+  const live =
+    match.intent === "peringatan" && ctx.peringatan && !ctx.failed.includes("peringatan")
+      ? composePeringatan(ctx, locale).body
+      : match.intent === "destana" && (ctx.destanaDesa || ctx.destana)
+        ? composeDestana(match, ctx, locale).body
+        : "";
+  return {
+    intent: match.intent,
+    body: [t(locale, faq.bodyId, faq.bodyEn), live].filter(Boolean).join(" "),
+    links: [
+      link(faq.href, faq.labelKey, {
+        hash: faq.hash,
+        accent: faq.href.startsWith("/lapor"),
+      }),
+    ],
+    source: t(locale, "FAQ kurasi situs", "Curated site FAQ"),
+  };
+}
+
 function composeUnknown(match: GuideMatch, locale: GuideLocale): GuideAnswer {
   if (match.reason === "emergency") {
     return {
@@ -186,8 +211,8 @@ function composeUnknown(match: GuideMatch, locale: GuideLocale): GuideAnswer {
     intent: "unknown",
     body: t(
       locale,
-      "Saya hanya menjawab dari data resmi Aceh Tangguh. Saya tidak mengarang angka korban, SK darurat, atau perintah evakuasi. Coba tanya peringatan dini, cuaca, Destana, atau buka nomor penting.",
-      "I only answer from official Aceh Tangguh data. I do not invent casualty figures, emergency decrees, or evacuation orders. Try early warning, weather, Destana, or open the contact list."
+      "Saya hanya menjawab dari sumber resmi di situs ini: navigasi halaman atau riset dari cuplikan yang sudah ada. Saya tidak mengarang angka korban, SK darurat, atau perintah evakuasi. Coba bandingkan Destana dan IRBI, atau tanya cara membaca DIBI.",
+      "I only answer from official sources on this site: page navigation or research from snippets already here. I do not invent casualty figures, emergency decrees, or evacuation orders. Try comparing Destana and IRBI, or ask how to read DIBI."
     ),
     links: fallbackLinks(locale),
   };
@@ -215,9 +240,20 @@ function composePeringatan(ctx: GuideContext, locale: GuideLocale): GuideAnswer 
         `Sipongi: ${p.sipongiCount} hotspot, antara lain ${p.sipongiPlace ?? "Aceh"}.`,
         `Sipongi: ${p.sipongiCount} hotspot(s), including ${p.sipongiPlace ?? "Aceh"}.`
       );
+  const tatonas = p.tatonasEmpty
+    ? t(
+        locale,
+        "Tatonas: tidak ada pos hidrologi di atas ambang, atau umpan tertunda.",
+        "Tatonas: no hydrology post above threshold, or the feed is delayed."
+      )
+    : t(
+        locale,
+        `Tatonas: ${p.tatonasHighlight ?? "pos hidrologi tercatat"}.`,
+        `Tatonas: ${p.tatonasHighlight ?? "a hydrology post is recorded"}.`
+      );
   return {
     intent: "peringatan",
-    body: [cuaca, magma, sipongi].join(" ") + staleNote(locale, p.stale),
+    body: [cuaca, magma, sipongi, tatonas].join(" ") + staleNote(locale, p.stale),
     links: [link("/", "linkPeringatan", { hash: "status" }), link("/peta", "linkPeta")],
     source: t(locale, "Peringatan dini situs", "Site early warning"),
   };
@@ -301,6 +337,27 @@ function composePeta(locale: GuideLocale): GuideAnswer {
 }
 
 function composeDestana(match: GuideMatch, ctx: GuideContext, locale: GuideLocale): GuideAnswer {
+  if (ctx.destanaDesa) {
+    const d = ctx.destanaDesa;
+    const place = [d.nama, d.kecamatan, d.kabupaten].filter(Boolean).join(" · ");
+    const level = d.destanaLevel
+      ? t(locale, ` Status Destana: ${d.destanaLevel}.`, ` Destana status: ${d.destanaLevel}.`)
+      : t(
+          locale,
+          " Status Destana ada di halaman Destana — tidak saya isi sendiri.",
+          " Destana status is on the Destana page — I will not invent it."
+        );
+    return {
+      intent: "destana",
+      body: t(
+        locale,
+        `Desa ${place}.${level} Ini status ketangguhan, bukan perintah evakuasi.`,
+        `Village ${place}.${level} This is resilience status, not an evacuation order.`
+      ),
+      links: [link("/destana", "linkDestana")],
+      source: t(locale, "SIK publik — Destana / profil desa", "Public SIK — Destana / village profile"),
+    };
+  }
   if (ctx.failed.includes("destana") || !ctx.destana) {
     return {
       intent: "destana",
@@ -546,39 +603,92 @@ function composeKrb(match: GuideMatch, ctx: GuideContext, locale: GuideLocale): 
   };
 }
 
-function composePelatihan(locale: GuideLocale): GuideAnswer {
+function composePelatihan(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
+  if (ctx.failed.includes("pelatihan") || !ctx.pelatihan) {
+    return {
+      intent: "pelatihan",
+      body: failedNote(locale, t(locale, "pelatihan", "training")),
+      links: [link("/pelatihan", "linkPelatihan")],
+    };
+  }
+  if (ctx.pelatihan.length === 0) {
+    return {
+      intent: "pelatihan",
+      body: t(
+        locale,
+        "Belum ada pelatihan yang dipublikasikan di katalog resmi. Halaman Pelatihan tetap tempat meminta jadwal.",
+        "No training items are published in the official catalogue yet. The Training page is still where you request a schedule."
+      ),
+      links: [link("/pelatihan", "linkPelatihan")],
+    };
+  }
+  const lines = ctx.pelatihan
+    .map((row) => [row.judul, row.tanggal, row.status].filter(Boolean).join(" · "))
+    .join("; ");
   return {
     intent: "pelatihan",
     body: t(
       locale,
-      "Katalog pelatihan BPBA dan permintaan pelatihan ada di halaman Pelatihan. Saya tidak membuat jadwal yang tidak dipublikasikan.",
-      "The BPBA training catalogue and training requests are on the Training page. I do not invent unpublished schedules."
+      `Pelatihan yang dipublikasikan (cuplikan): ${lines}. Daftar lengkap dan permintaan ada di halaman Pelatihan.`,
+      `Published training (sample): ${lines}. The full list and requests are on the Training page.`
     ),
     links: [link("/pelatihan", "linkPelatihan")],
+    source: t(locale, "SIK publik — pelatihan", "Public SIK — training"),
   };
 }
 
-function composeMitra(locale: GuideLocale): GuideAnswer {
+function composeMitra(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
+  if (ctx.failed.includes("mitra") || !ctx.mitra) {
+    return {
+      intent: "mitra",
+      body: failedNote(locale, t(locale, "mitra", "partners")),
+      links: [link("/mitra", "linkMitra")],
+    };
+  }
+  if (ctx.mitra.length === 0) {
+    return {
+      intent: "mitra",
+      body: t(
+        locale,
+        "Belum ada lembaga mitra yang dipublikasikan. Buka halaman Mitra untuk katalog resmi.",
+        "No partner organisations are published yet. Open the Partners page for the official catalogue."
+      ),
+      links: [link("/mitra", "linkMitra")],
+    };
+  }
+  const names = ctx.mitra.map((row) => row.judul).join("; ");
   return {
     intent: "mitra",
     body: t(
       locale,
-      "Lembaga mitra yang dipublikasikan tercantum di halaman Mitra, lengkap dengan catatan operasional.",
-      "Published partner organisations are listed on the Partners page, with operational notes."
+      `Mitra yang dipublikasikan (cuplikan): ${names}. Catatan operasional ada di halaman Mitra.`,
+      `Published partners (sample): ${names}. Operational notes are on the Partners page.`
     ),
     links: [link("/mitra", "linkMitra")],
+    source: t(locale, "SIK publik — mitra", "Public SIK — partners"),
   };
 }
 
-function composePublikasi(locale: GuideLocale): GuideAnswer {
+function composePublikasi(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
+  if (ctx.failed.includes("publikasi") || !ctx.publikasi) {
+    return {
+      intent: "publikasi",
+      body: failedNote(locale, t(locale, "publikasi", "publications")),
+      links: [link("/publikasi", "linkPublikasi")],
+    };
+  }
+  const lines = ctx.publikasi
+    .map((row) => `${row.title} (${row.channel === "kegiatan" ? "kegiatan BPBA" : "analisis"})`)
+    .join("; ");
   return {
     intent: "publikasi",
     body: t(
       locale,
-      "Ada dua kanal: kegiatan lapangan BPBA dan analisis kebijakan (termasuk BTT). Buka halaman publikasi untuk daftar resmi.",
-      "There are two channels: BPBA field activities and policy analysis (including BTT). Open Publications for the official list."
+      `Dua kanal resmi: analisis kebijakan dan kegiatan BPBA. Cuplikan: ${lines}.`,
+      `Two official channels: policy analysis and BPBA field activities. Sample: ${lines}.`
     ),
     links: [link("/publikasi", "linkPublikasi")],
+    source: t(locale, "Publikasi situs", "Site publications"),
   };
 }
 
@@ -610,8 +720,8 @@ function composeTentang(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
     intent: "tentang",
     body: t(
       locale,
-      `Aceh Tangguh adalah observatorium dan SIK publik untuk kesiapsiagaan serta penanganan bencana di Aceh.${live} Saya memandu halaman situs dan menjawab dari data resmi — bukan pengganti 112 atau Pusdalops.`,
-      `Aceh Tangguh is a public observatory and SIK for preparedness and disaster response in Aceh.${live} I guide the site and answer from official data — not a substitute for 112 or Pusdalops.`
+      `Aceh Tangguh adalah observatorium dan SIK publik untuk kesiapsiagaan serta penanganan bencana di Aceh.${live} Saya memandu halaman situs dan merangkai riset dari sumber resmi di sini — bukan pengganti 112 atau Pusdalops.`,
+      `Aceh Tangguh is a public observatory and SIK for preparedness and disaster response in Aceh.${live} I guide the site and rephrase research from official sources here — not a substitute for 112 or Pusdalops.`
     ),
     links: [
       link("/", "linkMulaiTur", { hash: "hero" }),

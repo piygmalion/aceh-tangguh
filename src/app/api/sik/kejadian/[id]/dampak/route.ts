@@ -66,7 +66,6 @@ export async function POST(
       ...body,
       ...rolled,
       korban_terpilah: matrix as unknown as Json,
-      kerugian_rinci: (rolled.kerugian_rinci ?? body.kerugian_rinci ?? {}) as unknown as Json,
       kejadian_id: params.id,
       created_by: auth.profile.userId,
     })

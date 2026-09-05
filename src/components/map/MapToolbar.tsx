@@ -4,9 +4,16 @@ import { useState } from "react";
 import { ChevronDown, Layers } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { Chip } from "@/components/ui/Chip";
+import {
+  isLiveOverlayStatusKey,
+  strongestLiveOverlayAlert,
+  useLiveOverlayHealth,
+  type OverlayHealth,
+} from "@/hooks/useOverlayGeojson";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
-import type { AreaLayerKey, LegendModel, MarkerLayerKey } from "@/lib/types";
+import type { AreaLayerKey, LegendModel, MarkerLayerKey, OverlayLayerKey } from "@/lib/types";
 import { LAYER_COLORS } from "@/lib/layer-colors";
 import { MapLayerIcon } from "@/components/map/MapLayerIcon";
 import {
@@ -17,12 +24,18 @@ import {
   getAreaLayerIconPath,
   getDisasterJenisIconPath,
   getLayerIconPath,
+  getOverlayLayerIconPath,
 } from "@/lib/layer-icons";
 import {
   AREA_TOOLBAR_OPTIONS,
   FASILITAS_UMUM_LAYER_KEYS,
   MARKER_TOOLBAR_GROUPS,
 } from "@/lib/map-layers-catalog";
+import {
+  MARITIME_WAVE_LEGEND,
+  OVERLAY_TOOLBAR_GROUPS,
+  overlayColor,
+} from "@/lib/overlay-layers";
 import { KRB_JENIS_KODE } from "@/lib/krb-by-kab";
 import { STATUS_HEX } from "@/lib/chart-colors";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
@@ -35,11 +48,44 @@ async function fetchAreaLegend(key: AreaLayerKey): Promise<LegendModel | null> {
   return (json.legend as LegendModel) ?? null;
 }
 
-type TabKey = "distribusi" | "lokasi" | "legenda";
+type TabKey = "distribusi" | "lokasi" | "geospasial" | "legenda";
 
 function activeDisasterJenisList(disasterJenis: string[]): string[] {
   if (disasterJenis.length === 0) return [...DISASTER_JENIS];
   return DISASTER_JENIS.filter((j) => disasterJenis.includes(j));
+}
+
+type OverlayLiveLabelFn = (
+  key: "overlayLiveStale" | "overlayLiveUpstream" | "overlayLiveFailed",
+) => string;
+
+function overlayHealthLabel(
+  health: OverlayHealth | undefined,
+  t: OverlayLiveLabelFn,
+): string | null {
+  if (health === "stale") return t("overlayLiveStale");
+  if (health === "upstream") return t("overlayLiveUpstream");
+  if (health === "failed") return t("overlayLiveFailed");
+  return null;
+}
+
+function OverlayHealthChip({
+  health,
+  t,
+}: {
+  health: OverlayHealth | undefined;
+  t: OverlayLiveLabelFn;
+}) {
+  const label = overlayHealthLabel(health, t);
+  if (!label || !health) return null;
+  return (
+    <Chip
+      tone={health === "stale" ? "warn" : "danger"}
+      className={cn("mt-0.5 px-2 py-0.5", TYPE_FLOOR_CLASS)}
+    >
+      {label}
+    </Chip>
+  );
 }
 
 export function MapToolbar({
@@ -52,6 +98,8 @@ export function MapToolbar({
   disasterJenis,
   onToggleDisasterJenis,
   onToggleFasilitasUmum,
+  overlays = [],
+  onToggleOverlay,
 }: {
   areaLayer: AreaLayerKey | null;
   krbJenis?: string | null;
@@ -62,9 +110,13 @@ export function MapToolbar({
   disasterJenis: string[];
   onToggleDisasterJenis: (jenis: string) => void;
   onToggleFasilitasUmum: () => void;
+  overlays?: OverlayLayerKey[];
+  onToggleOverlay?: (k: OverlayLayerKey) => void;
 }) {
   const t = useTranslations("map");
-  const [tab, setTab] = useState<TabKey>("lokasi");
+  const overlayHealth = useLiveOverlayHealth(overlays);
+  const overlayAlert = strongestLiveOverlayAlert(overlayHealth);
+  const [tab, setTab] = useState<TabKey>(overlays.length ? "geospasial" : "lokasi");
   /** Mobile bottom-sheet open state. Desktop panel is always shown via md: classes. */
   const [expanded, setExpanded] = useState(false);
   const [jenisExpanded, setJenisExpanded] = useState(false);
@@ -80,11 +132,12 @@ export function MapToolbar({
   const parentFasilitasOn = FASILITAS_UMUM_LAYER_KEYS.some((k) =>
     markerLayers.includes(k)
   );
-  const activeCount = markerLayers.length + (areaLayer ? 1 : 0);
+  const activeCount = markerLayers.length + (areaLayer ? 1 : 0) + overlays.length;
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: "distribusi", label: t("distribusi") },
     { key: "lokasi", label: t("lokasi") },
+    { key: "geospasial", label: t("geospasial") },
     { key: "legenda", label: t("legenda") },
   ];
 
@@ -143,7 +196,7 @@ export function MapToolbar({
         }`}
       >
         <div
-          className="map-chrome-inset mx-2 mt-2 flex rounded-xl p-0.5 md:mx-3"
+          className="map-chrome-inset map-tablist-4 mx-2 mt-2 flex rounded-xl p-0.5 md:mx-3"
           role="tablist"
           aria-label={t("toolbarHandle")}
         >
@@ -417,6 +470,73 @@ export function MapToolbar({
             </div>
           )}
 
+          {tab === "geospasial" && (
+            <div className="space-y-3">
+              {overlayAlert === "upstream" ? (
+                <p
+                  role="status"
+                  className={cn(
+                    "rounded-xl border border-[var(--danger)]/30 bg-[var(--danger-dim)] px-2.5 py-2 leading-snug text-[var(--danger)]",
+                    TYPE_FLOOR_CLASS,
+                  )}
+                >
+                  {t("overlayLiveUpstreamHint")}
+                </p>
+              ) : overlayAlert === "stale" ? (
+                <p
+                  role="status"
+                  className={cn(
+                    "rounded-xl border border-[var(--warn)]/30 bg-[var(--warn-dim)] px-2.5 py-2 leading-snug text-[var(--warn)]",
+                    TYPE_FLOOR_CLASS,
+                  )}
+                >
+                  {t("overlayLiveStaleHint")}
+                </p>
+              ) : null}
+              {OVERLAY_TOOLBAR_GROUPS.map((group) => (
+                <fieldset
+                  key={group.group}
+                  className="map-chrome-inset space-y-0.5 rounded-xl p-2"
+                >
+                  <legend className={cn("mb-1 px-1 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                    {t(group.labelKey)}
+                  </legend>
+                  {group.options.map((key) => {
+                    const active = overlays.includes(key);
+                    const health = isLiveOverlayStatusKey(key)
+                      ? overlayHealth[key]
+                      : undefined;
+                    return (
+                      <label
+                        key={key}
+                        className="map-option"
+                        data-active={active ? "true" : "false"}
+                      >
+                        <input
+                          className="map-check"
+                          type="checkbox"
+                          checked={active}
+                          onChange={() => onToggleOverlay?.(key)}
+                        />
+                        <MapLayerIcon
+                          iconSrc={getOverlayLayerIconPath(key)}
+                          fallbackColor={overlayColor(key)}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="leading-snug">{t(key)}</span>
+                          <OverlayHealthChip health={health} t={t} />
+                        </span>
+                      </label>
+                    );
+                  })}
+                </fieldset>
+              ))}
+              <p className={cn("px-1 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                {t("overlayAttribution")}
+              </p>
+            </div>
+          )}
+
           {tab === "legenda" && (
             <div className="space-y-4">
               {markerLayers.length > 0 && (
@@ -456,6 +576,49 @@ export function MapToolbar({
                   </ul>
                   <p className={cn("mt-3 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                     {t("coordApproxLegend")}
+                  </p>
+                </div>
+              )}
+              {overlays.length > 0 && (
+                <div className="map-chrome-inset rounded-xl p-3">
+                  <div className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                    {t("geospasial")}
+                  </div>
+                  <ul className="space-y-2">
+                    {overlays.map((key) => {
+                      const health = isLiveOverlayStatusKey(key)
+                        ? overlayHealth[key]
+                        : undefined;
+                      return (
+                        <li key={key} className="flex items-center gap-2.5">
+                          <MapLayerIcon
+                            iconSrc={getOverlayLayerIconPath(key)}
+                            fallbackColor={overlayColor(key)}
+                            size="sm"
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span>{t(key)}</span>
+                            <OverlayHealthChip health={health} t={t} />
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {overlays.includes("maritimeWaters") ? (
+                    <ul className="mt-3 space-y-2">
+                      {MARITIME_WAVE_LEGEND.map((item) => (
+                        <li key={item.labelKey} className="flex items-center gap-2.5">
+                          <span
+                            className="map-swatch map-swatch-sq"
+                            style={{ background: item.color }}
+                          />
+                          <span>{t(item.labelKey)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  <p className={cn("mt-3 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                    {t("overlayAttribution")}
                   </p>
                 </div>
               )}
@@ -507,7 +670,7 @@ export function MapToolbar({
                   </ul>
                 </div>
               )}
-              {markerLayers.length === 0 && !areaLayer && (
+              {markerLayers.length === 0 && !areaLayer && overlays.length === 0 && (
                 <p className="rounded-xl border border-dashed border-[var(--border)] px-3 py-4 text-center text-[var(--text-dim)]">
                   {t("legendEmpty")}
                 </p>

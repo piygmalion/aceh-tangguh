@@ -6,10 +6,12 @@ import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import type { GuideChipKey } from "@/lib/panduan/page-context";
 import type { GuideAnswer, GuideHref } from "@/lib/panduan/types";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { GuideMessage } from "./GuideMessage";
+import { TanggapiAvatar } from "./TanggapiAvatar";
 
 export type GuideChatItem = {
   id: string;
@@ -18,7 +20,7 @@ export type GuideChatItem = {
   answer?: GuideAnswer;
 };
 
-const CHIP_KEYS = [
+const DEFAULT_CHIP_KEYS: GuideChipKey[] = [
   "tour",
   "peringatan",
   "cuaca",
@@ -26,7 +28,7 @@ const CHIP_KEYS = [
   "destana",
   "nomor",
   "lapor",
-] as const;
+];
 
 export function GuidePanel({
   messages,
@@ -35,6 +37,7 @@ export function GuidePanel({
   onInput,
   onSubmit,
   onClose,
+  chipKeys = DEFAULT_CHIP_KEYS,
   onChip,
   onLink,
   tourActive,
@@ -46,7 +49,8 @@ export function GuidePanel({
   onInput: (value: string) => void;
   onSubmit: () => void;
   onClose: () => void;
-  onChip: (key: (typeof CHIP_KEYS)[number]) => void;
+  chipKeys?: GuideChipKey[];
+  onChip: (key: GuideChipKey) => void;
   onLink: (href: GuideHref, hash?: string) => void;
   tourActive: boolean;
   onNextTour: () => void;
@@ -61,11 +65,16 @@ export function GuidePanel({
   }, [messages, busy]);
 
   return (
-    <GlassPanel className="flex max-h-[70vh] w-[min(100%,380px)] flex-col overflow-hidden border border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
+    <GlassPanel className="flex max-h-[70vh] w-[min(calc(100vw-1.5rem),380px)] flex-col overflow-hidden border border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
       <div className="flex items-start justify-between gap-3 border-b border-[var(--glass-border)] px-4 py-3">
-        <div>
-          <p className={cn(TYPE_KICKER_CLASS, "text-[var(--accent-soft)]")}>{t("kicker")}</p>
-          <p className="text-lg font-semibold leading-tight">{t("title")}</p>
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-9 w-9 shrink-0 overflow-hidden rounded-full bg-[var(--forest-700)]">
+            <TanggapiAvatar size="panel" />
+          </span>
+          <div>
+            <p className={cn(TYPE_KICKER_CLASS, "text-[var(--accent-soft)]")}>{t("kicker")}</p>
+            <p className="text-lg font-semibold leading-tight">{t("title")}</p>
+          </div>
         </div>
         <button
           type="button"
@@ -97,11 +106,17 @@ export function GuidePanel({
 
       <div className="space-y-3 border-t border-[var(--glass-border)] px-4 py-3">
         <div className="flex flex-wrap gap-1.5">
-          {CHIP_KEYS.map((key) => (
+          {chipKeys.map((key) => (
             <Chip
               key={key}
-              tone="ok"
-              className={cn(TYPE_FLOOR_CLASS, "font-semibold")}
+              tone={key === "lapor" ? "warn" : "ok"}
+              className={cn(
+                TYPE_FLOOR_CLASS,
+                "font-semibold",
+                key === "lapor"
+                  ? "border-transparent bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
+                  : ""
+              )}
               onClick={() => onChip(key)}
             >
               {t(`chips.${key}`)}

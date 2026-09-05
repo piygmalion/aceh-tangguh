@@ -51,6 +51,12 @@ supabase/.temp/
 # Superdesign temp HTML (never commit)
 .superdesign/tmp/
 
+# Strix local / CLI artifacts (findings stay in the Cloud dashboard)
+strix_runs/
+
+# overlay ETL scratch (unfiltered national dumps)
+public/fixtures/overlays/_raw*
+
 # local artifacts
 screenshots/
 _refs/

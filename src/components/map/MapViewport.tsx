@@ -23,6 +23,7 @@ import type {
   LegendModel,
   MapViewState,
   MarkerLayerKey,
+  OverlayLayerKey,
 } from "@/lib/types";
 import { getBasemapStyle, isBrandBasemapId } from "@/lib/basemap";
 import type { FeatureCollection, Feature, Point } from "geojson";
@@ -66,6 +67,12 @@ import { registerMapChromeIcons } from "@/lib/map-symbol-images";
 import { Chip } from "@/components/ui/Chip";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { useTranslations } from "next-intl";
+import {
+  MapOverlays,
+  overlayInteractiveLayerIds,
+  pickOverlayHit,
+  type OverlayHit,
+} from "@/components/map/MapOverlays";
 import {
   COORD_QUALITY_OFFSHORE,
   COORD_QUALITY_TRUNCATED,
@@ -378,6 +385,7 @@ export function MapViewport({
   disasterJenis = [],
   villageSelection = null,
   onVillageClick,
+  overlays = [],
 }: {
   view: MapViewState;
   onViewChange: (v: Partial<MapViewState>) => void;
@@ -390,6 +398,7 @@ export function MapViewport({
   disasterJenis?: string[];
   villageSelection?: VillageClickSelection | null;
   onVillageClick?: (sel: VillageClickSelection) => void;
+  overlays?: OverlayLayerKey[];
 }) {
   const t = useTranslations("map");
   const mapRef = useRef<MapRef>(null);
@@ -404,6 +413,7 @@ export function MapViewport({
     coordQuality?: CoordQuality | null;
     stackItems?: StackMember[];
   } | null>(null);
+  const [overlayPopup, setOverlayPopup] = useState<OverlayHit | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
   const [chromeIconsReady, setChromeIconsReady] = useState(false);
@@ -481,6 +491,11 @@ export function MapViewport({
   useEffect(() => {
     setKabFocus(null);
   }, [areaLayer]);
+
+  const overlayInteractiveIds = useMemo(
+    () => overlayInteractiveLayerIds(overlays),
+    [overlays]
+  );
 
   const sortedKeys = useMemo(
     () => [...markerLayers].sort(),
@@ -670,7 +685,7 @@ export function MapViewport({
 
   useEffect(() => {
     syncOverlayBeforeId();
-  }, [sortedKeys, areaLayer, useKabPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
+  }, [sortedKeys, overlays, areaLayer, useKabPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
 
   const onMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -706,6 +721,14 @@ export function MapViewport({
           coordQuality: readCoordQuality(props as Record<string, unknown>),
           stackItems: stackItems.length > 1 ? stackItems : undefined,
         });
+        setOverlayPopup(null);
+        return;
+      }
+
+      const overlayHit = pickOverlayHit(e.features, e.lngLat);
+      if (overlayHit) {
+        setPopup(null);
+        setOverlayPopup(overlayHit);
         return;
       }
 
@@ -721,6 +744,7 @@ export function MapViewport({
           subtitle: [props.jenis_bahaya, props.kabupaten].filter(Boolean).join(" · "),
           href: props.sumber_url ? String(props.sumber_url) : undefined,
         });
+        setOverlayPopup(null);
         return;
       }
 
@@ -806,6 +830,7 @@ export function MapViewport({
           "marker-clusters",
           ...POINT_LAYER_IDS,
           "krb-kawasan-circles",
+          ...overlayInteractiveIds,
           ...(villageClickEnabled ? [...AREA_FILL_LAYER_IDS] : []),
         ]}
         onLoad={onMapLoad}
@@ -1042,6 +1067,14 @@ export function MapViewport({
               villageClickEnabled={villageClickEnabled && useVillageTiles}
             />
           </Source>
+        )}
+        {overlays.length > 0 && (
+          <MapOverlays
+            keys={overlays}
+            beforeId={overlaySlot}
+            popup={overlayPopup}
+            onPopupClose={() => setOverlayPopup(null)}
+          />
         )}
         {popup && (
           <Popup

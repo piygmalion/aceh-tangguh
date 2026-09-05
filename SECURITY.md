@@ -24,3 +24,11 @@ npm run verify:laporan
 The Node server validates required production secrets at startup (`src/instrumentation.ts`).
 
 Public map and GET APIs must not return pelapor fields or raw `jawaban_json`.
+
+## Authorized testing (Strix Cloud)
+
+Pentests of this app use **Strix Cloud** only against this repository and an **isolated staging** host. Do not point a scanner at production Vercel or the production Supabase project (citizen PII).
+
+Operator runbook: `docs/security/strix.md`. Engagement rules: `security/strix-instructions.md`. Baseline status: `security/strix-baseline.md`.
+
+Do not open a public issue for scanner output that includes secrets, RLS bypasses, or PII. Keep proofs in the Strix dashboard; do not commit exploits or `strix_runs/`.

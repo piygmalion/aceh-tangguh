@@ -17,11 +17,12 @@ import { emptyTatonasCard } from "@/lib/tatonas/parse";
 import { summarizeWeatherWarning } from "@/lib/peringatan-dini/weather-summary";
 import { annotatePoliceOfficeCoordQuality } from "@/lib/coord-quality";
 import { annotateDisasterDesa, desaByIdFromKejadian } from "@/lib/map-marker-chrome";
+import { enabledMapLayersCatalog } from "@/lib/map-layers-catalog";
 import { expandMarkerLayerKeys } from "@/lib/map-url-aliases";
+import { isOverlayLayerKey, OVERLAY_STATIC_FIXTURES } from "@/lib/overlay-layers";
 import type { WeatherApiResponse } from "@/lib/weather-types";
 import { isStaticExport, withBasePath } from "./env";
-import { ensureExistingHazardKindBuckets } from "@/lib/hazard-kinds";
-import { HAZARD_STATUS_FALLBACK, LIVE_STATS_FALLBACK } from "./fallbacks";
+import { LIVE_STATS_FALLBACK } from "./fallbacks";
 import { filterKrb, type KrbPayload } from "@/lib/krb-filter";
 
 const STATIC_UNAVAILABLE = {
@@ -93,7 +94,7 @@ async function resolveStaticGet(input: string): Promise<Response> {
     return jsonResponse({ ...LIVE_STATS_FALLBACK, source: "fallback" });
   }
   if (path === "/api/hazards") {
-    return jsonResponse(ensureExistingHazardKindBuckets(HAZARD_STATUS_FALLBACK));
+    return jsonResponse(STATIC_UNAVAILABLE, 503);
   }
   if (path === "/api/prrpka/summary" || path === "/api/r3p/summary") {
     const [acehRaw, ringkasanRaw] = await Promise.all([
@@ -177,6 +178,31 @@ async function resolveStaticGet(input: string): Promise<Response> {
       kejadian: { layerId: "laporanKejadian", count: 0, items: [] },
       penanganan: { layerId: "laporanPenanganan", count: 0, items: [] },
     });
+  }
+  if (path === "/api/layers/catalog") {
+    return jsonResponse({
+      items: enabledMapLayersCatalog(),
+      source: "catalog",
+    });
+  }
+  if (path === "/api/layers/meta" || path.startsWith("/api/layers/meta/")) {
+    const layerKey = decodeURIComponent(path.slice("/api/layers/meta/".length)).trim();
+    if (!layerKey) {
+      return jsonResponse({ error: "Missing layerKey" }, 400);
+    }
+    try {
+      const raw = await fetchJson(`/fixtures/layers/meta/${layerKey}.json`);
+      const items = Array.isArray(raw)
+        ? raw
+        : raw &&
+            typeof raw === "object" &&
+            Array.isArray((raw as { items?: unknown }).items)
+          ? (raw as { items: unknown[] }).items
+          : [];
+      return jsonResponse({ items, layerKey, source: "fixture" });
+    } catch {
+      return jsonResponse({ items: [], layerKey, source: "fixture" });
+    }
   }
   if (path === "/api/layers/markers") {
     const fc = (await fetchJson("/fixtures/markers.geojson")) as FeatureCollection;
@@ -306,6 +332,61 @@ async function resolveStaticGet(input: string): Promise<Response> {
   }
   if (path.startsWith("/api/profil-desa")) {
     return jsonResponse({ error: "Not found" }, 404);
+  }
+  if (path.startsWith("/api/overlay/maritime/pelabuhan/")) {
+    const kode = decodeURIComponent(path.slice("/api/overlay/maritime/pelabuhan/".length));
+    return jsonResponse({
+      kode,
+      name: kode,
+      issued: null,
+      stale: true,
+      slot: null,
+      forecast: null,
+    });
+  }
+  if (path === "/api/overlay/maritime/perairan") {
+    const fixture = OVERLAY_STATIC_FIXTURES.maritimeWaters;
+    if (!fixture) return jsonResponse({ error: "Unknown overlay" }, 404);
+    const fc = (await fetchJson(fixture)) as FeatureCollection;
+    return jsonResponse({
+      ...fc,
+      stale: true,
+      source: "fixture",
+    });
+  }
+  if (path.startsWith("/api/overlay/static/")) {
+    const key = path.slice("/api/overlay/static/".length);
+    if (!isOverlayLayerKey(key) || !(key in OVERLAY_STATIC_FIXTURES)) {
+      return jsonResponse({ error: "Unknown static overlay" }, 404);
+    }
+    const fixture = OVERLAY_STATIC_FIXTURES[key as keyof typeof OVERLAY_STATIC_FIXTURES];
+    if (!fixture) return jsonResponse({ error: "Unknown static overlay" }, 404);
+    const fc = (await fetchJson(fixture)) as FeatureCollection;
+    return jsonResponse({ ...fc, source: "fixture" });
+  }
+  if (path.startsWith("/api/overlay/tiles/")) {
+    return jsonResponse(STATIC_UNAVAILABLE, 503);
+  }
+  if (path.startsWith("/api/overlay/")) {
+    const key = path.slice("/api/overlay/".length);
+    if (!isOverlayLayerKey(key)) {
+      return jsonResponse({ error: "Unknown overlay" }, 404);
+    }
+    const fixture = OVERLAY_STATIC_FIXTURES[key];
+    if (fixture) {
+      const fc = (await fetchJson(fixture)) as FeatureCollection;
+      return jsonResponse({
+        ...fc,
+        stale: key === "maritimeWaters",
+        source: "fixture",
+      });
+    }
+    return jsonResponse({
+      type: "FeatureCollection",
+      features: [],
+      stale: true,
+      source: "fixture",
+    });
   }
 
   return jsonResponse(STATIC_UNAVAILABLE, 503);

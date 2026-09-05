@@ -1,0 +1,40 @@
+# Strix Cloud source upload — keep the archive under size limits and
+# out of secrets / bulky fixtures. Trailing / excludes the subtree.
+
+# Secrets and env (including committed public keys)
+.env
+.env.*
+.env.production
+.env.local
+.data/
+
+# Dependencies and build output
+node_modules/
+.next/
+out/
+dist/
+.vercel/
+.static-export-park/
+coverage/
+*.tsbuildinfo
+
+# Large map artifacts (PMTiles + GeoJSON polygons)
+public/tiles/
+public/fixtures/areas/
+public/fixtures/boundaries-aceh-kab.geojson
+public/fixtures/markers.geojson
+public/fixtures/drive-tendPoints.geojson
+public/media/
+public/docs/
+public/icons/
+
+# Design scratch
+.superdesign/
+
+# Local / OS
+strix_runs/
+screenshots/
+_refs/
+.idea/
+.DS_Store
+*.log

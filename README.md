@@ -84,7 +84,6 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET/POST/PATCH/DELETE | `/api/admin/cms/*` | Super-admin CMS |
 | GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
 | GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
-| GET | `/api/hazards` | `hazard_status` |
 | GET | `/api/peringatan-dini` | Homepage early-warning cards (cuaca + MAGMA + Sipongi + Tatonas; fail independently) |
 | GET | `/api/peringatan-dini/magma` | MAGMA Indonesia Aceh gempa (live homepage / VSI homepage; empty+stale if both fail) |
 | GET | `/api/peringatan-dini/sipongi` | Sipongi Aceh medium/high hotspots (live GeoJSON, else `peringatan-sipongi.json`) |
@@ -94,7 +93,7 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
 | GET | `/api/krb` | Kawasan Rawan Bencana Aceh (`krb_*` tables, else `krb-aceh.json`); filter `?jenis=` `?kabupaten=` `?kelas=` |
 | GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
-| GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` / `tatonasStations` |
+| GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` |
 | GET | `/api/laporan/peta` | Moderated `laporan_kejadian` + `laporan_penanganan` (`status=approved` AND `tampil_di_peta`; no `jawaban_json`) |
 | GET | `/api/layers/markers/summary` | Same as markers (debug counts) |
 | GET | `/api/boundaries` | GeoJSON fixtures |
@@ -196,7 +195,7 @@ bun run flag:coords
 
 `ACEH-2023-0005` (offshore Singkil epicentre ~1.91°N) is included on `disasterEvents` with `coord_quality=offshore_or_out_of_bbox` so the map count matches kejadian (427). The map does not clamp an Aceh bbox.
 
-After fixture changes, re-seed Supabase `marker_features` via the existing `upsert_marker_features` RPC (coordinator; this PR does not require `service_role`).
+After fixture changes, re-seed Supabase `marker_features` via the existing `upsert_marker_features` RPC (coordinator; requires `service_role`).
 
 Rebuild (does not run in CI; inputs under `/workspace/drive-aceh-data/`):
 

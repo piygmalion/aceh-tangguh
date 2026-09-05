@@ -9,6 +9,7 @@ import {
   type MapUrlState,
   type MapViewState,
   type MarkerLayerKey,
+  type OverlayLayerKey,
 } from "@/lib/types";
 import { isBasemapId } from "@/lib/basemap";
 import { DISASTER_JENIS, encodeDisasterJenis } from "@/lib/disaster-jenis";
@@ -20,6 +21,10 @@ import {
 } from "@/lib/map-url-aliases";
 import { FASILITAS_UMUM_LAYER_KEYS } from "@/lib/map-layers-catalog";
 import { parseKrbJenis } from "@/lib/krb-by-kab";
+import {
+  encodeOverlayLayers,
+  parseOverlayLayers,
+} from "@/lib/overlay-layers";
 
 export { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 
@@ -58,8 +63,8 @@ export function useMapUrlState() {
       disasterJenis: resolved.disasterJenis,
       hazard: parseHazardKind(searchParams.get("hazard")),
       cluster: parseClusterId(searchParams.get("cluster")),
-      selectedId: searchParams.get("selected") || undefined,
       krbJenis: parseKrbJenis(searchParams.get("krbJenis")),
+      overlays: parseOverlayLayers(searchParams.get("overlays")),
     };
   }, [resolved, searchParams]);
 
@@ -182,6 +187,16 @@ export function useMapUrlState() {
     push({ layers: Array.from(set).join(",") || null });
   }, [push, state.markerLayers]);
 
+  const toggleOverlay = useCallback(
+    (key: OverlayLayerKey) => {
+      const next = new Set(state.overlays);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      push({ overlays: encodeOverlayLayers(Array.from(next)) });
+    },
+    [push, state.overlays]
+  );
+
   return {
     state,
     setView,
@@ -192,5 +207,6 @@ export function useMapUrlState() {
     toggleMarkerLayer,
     toggleDisasterJenis,
     toggleFasilitasUmum,
+    toggleOverlay,
   };
 }

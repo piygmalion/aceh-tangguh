@@ -153,21 +153,6 @@ export const dampakSchema = z.object({
   jembatan_terendam: int0,
   transportasi_jaringan: optStr,
   spbu_jaringan: optStr,
-  kerugian_rinci: z.record(z.string(), z.number().min(0).nullable()).optional().nullable(),
-});
-
-const pengungsiCellSchema = z.object({
-  L: int0,
-  P: int0,
-});
-
-export const pengungsianKajiSchema = z.object({
-  tempat_pengungsian_id: z.string().uuid(),
-  tanggal: z.string().min(8),
-  jumlah_kk: int0,
-  jiwa: z.record(z.string(), pengungsiCellSchema).optional().nullable(),
-  rentan: z.record(z.string(), z.number().min(0)).optional().nullable(),
-  air_sanitasi: optStr,
 });
 
 export const faseDataSchema = z.object({

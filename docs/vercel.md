@@ -27,17 +27,21 @@ Set di Vercel → Project → Settings → Environment Variables (Production + P
 | Variabel | Wajib untuk | Catatan |
 |----------|-------------|---------|
 | `SUPABASE_SERVICE_ROLE_KEY` | Tulis laporan, upload, cron | **Server only** — jangan prefix `NEXT_PUBLIC_` |
-| `LAPORAN_PII_KEY` | Submit laporan | 64 hex; lihat `docs/laporan-production.md` |
+| `LAPORAN_PII_KEY` | Submit laporan | 64 hex; kunci tulis; lihat `docs/laporan-production.md` |
+| `LAPORAN_PII_KEY_ID` | Submit laporan | Opsional; default `k1` |
+| `LAPORAN_PII_KEYS` | Baca PII lama | Opsional; `id=hex64,...` saat rotasi |
 | `LAPORAN_PII_SALT` | Submit laporan | Bukan default `aceh-tangguh-dev` |
 | `LAPORAN_CRON_SECRET` | `POST /api/cron/laporan-wa` | Bearer |
 | `WEATHER_CRON_SECRET` | `POST /api/weather/refresh` | Bearer |
+| `OVERLAY_CRON_SECRET` | `POST /api/cron/overlay-live` | Bearer; jangan reuse secret lain |
 
 Setelah URL Vercel hidup, isi GitHub variable:
 
 - `WEATHER_REFRESH_URL` = `https://aceh-tangguh.vercel.app/api/weather/refresh`
 - `LAPORAN_WA_URL` = `https://aceh-tangguh.vercel.app/api/cron/laporan-wa`
+- `OVERLAY_REFRESH_URL` = `https://aceh-tangguh.vercel.app/api/cron/overlay-live`
 
 ## 4. Yang sengaja tidak diubah
 
 - GitHub Pages tetap mati. Pipeline `STATIC_EXPORT=1` tetap di repo untuk nanti.
-- Cron cuaca / DIBI / Sipongi / WA tetap di GitHub Actions (mereka butuh Bearer sendiri; cron Vercel tidak dikonfigurasi di sini).
+- Cron cuaca / overlay live / DIBI / Sipongi / WA tetap di GitHub Actions (mereka butuh Bearer sendiri; cron Vercel tidak dikonfigurasi di sini).

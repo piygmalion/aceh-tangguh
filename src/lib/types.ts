@@ -44,8 +44,7 @@ export type MarkerLayerKey =
   | "facReligious"
   | "infraRoadBridge"
   | "laporanKejadian"
-  | "laporanPenanganan"
-  | "tatonasStations";
+  | "laporanPenanganan";
 
 export type OverlayLayerKey =
   | "maritimePorts"
@@ -115,7 +114,7 @@ export interface MapUrlState {
   areaLayer: AreaLayerKey | null;
   markerLayers: MarkerLayerKey[];
   /** Geospasial overlays (default none). */
-  overlays?: OverlayLayerKey[];
+  overlays: OverlayLayerKey[];
   /** Active jenis_bencana filters; empty = all jenis when disasterEvents is on. */
   disasterJenis: string[];
   hazard?: HazardKind;

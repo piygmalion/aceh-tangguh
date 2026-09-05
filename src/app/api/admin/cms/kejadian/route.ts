@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireSuperAdminApi, sanitizeSearch } from "@/lib/auth/admin";
+import { rejectCrossOrigin } from "@/lib/security/origin";
 import type { Json } from "@/lib/supabase/types";
 
 export const dynamic = "force-dynamic";
@@ -67,6 +68,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
   const auth = await requireSuperAdminApi();
   if (!auth.ok) return auth.response;
 
@@ -103,6 +106,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
   const auth = await requireSuperAdminApi();
   if (!auth.ok) return auth.response;
 
@@ -139,6 +144,8 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const cross = rejectCrossOrigin(req);
+  if (cross) return cross;
   const auth = await requireSuperAdminApi();
   if (!auth.ok) return auth.response;
 

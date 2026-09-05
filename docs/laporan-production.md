@@ -43,10 +43,14 @@ node scripts/generate-laporan-pii-key.mjs
 
 | Variabel | Deskripsi |
 |----------|-----------|
-| `LAPORAN_PII_KEY` | 64 karakter hex (32 byte) — AES-256-GCM |
+| `LAPORAN_PII_KEY` | 64 karakter hex (32 byte) — kunci tulis AES-256-GCM saat ini |
+| `LAPORAN_PII_KEY_ID` | Id kunci tulis. Opsional; default `k1`. Ciphertext baru: `v2:<id>:<iv>:<data>:<tag>` |
+| `LAPORAN_PII_KEYS` | Kunci lama untuk dekripsi saja. Opsional. Format `k1=<64hex>,k0=<64hex>` — tanpa nilai secret di berkas ini |
 | `LAPORAN_PII_SALT` | Salt untuk hash NIK/telepon (SHA-256), **bukan** default `aceh-tangguh-dev` |
 
-Produksi **gagal submit** jika kunci/salt belum di-set. Development tanpa Supabase masih boleh file-store `.data/` (folder ini di-gitignore).
+Setup yang hanya punya `LAPORAN_PII_KEY` tetap sah: tulis memakai id `k1`; baris `v1:` lama dibaca dengan kunci primer. Saat rotasi, ganti `LAPORAN_PII_KEY` + `LAPORAN_PII_KEY_ID`, lalu pindahkan kunci lama ke `LAPORAN_PII_KEYS` agar `v2:` lama dan `v1:` tetap terbuka.
+
+Produksi **gagal submit** jika kunci/salt belum di-set. Development tanpa Supabase masih boleh file-store `.data/` (folder ini di-gitignore). Jangan commit nilai kunci.
 
 ## 4. Service role (wajib untuk tulis)
 

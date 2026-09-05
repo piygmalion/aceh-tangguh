@@ -1,0 +1,40 @@
+# On-demand Strix Cloud code review (source upload).
+# Pull-request reviews use the Strix GitHub App — do not add a pull_request
+# trigger here (that would double-scan and double-bill). See docs/security/strix.md.
+#
+# Secret: STRIX_API_TOKEN from app.strix.ai → Settings → API Access
+# (scopes: scans:write, uploads:write).
+
+name: Strix Cloud
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  code-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Strix
+        run: |
+          curl -sSL https://strix.ai/install | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.strix/bin" >> "$GITHUB_PATH"
+
+      - name: Upload source and wait
+        env:
+          STRIX_API_TOKEN: ${{ secrets.STRIX_API_TOKEN }}
+        run: |
+          if [ -z "$STRIX_API_TOKEN" ]; then
+            echo "STRIX_API_TOKEN not set — skip Strix Cloud scan"
+            exit 0
+          fi
+          export PATH="$HOME/.local/bin:$HOME/.strix/bin:$PATH"
+          strix cloud whoami
+          # --yes approves only this invocation's snapshot (CI one-shot).
+          strix cloud scans start --source . --yes --wait

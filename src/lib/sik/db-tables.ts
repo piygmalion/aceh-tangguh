@@ -23,11 +23,6 @@ export type KejadianOperasiRow = {
   cakupan: string | null;
   kabupaten: string | null;
   kode_kabupaten: string | null;
-  kode_kecamatan: string | null;
-  kode_desa_kelurahan: string | null;
-  kode_kabupaten_kib: string | null;
-  kib_sumber: string;
-  kib_catatan: string | null;
   kecamatan: string | null;
   desa_ringkas: string | null;
   latitude: number | null;
@@ -62,7 +57,6 @@ export type KejadianLokasiRow = {
   desa: string | null;
   kecamatan: string | null;
   kabupaten: string | null;
-  kode_kecamatan: string | null;
   kode_desa_kelurahan: string | null;
   alamat: string | null;
   deskripsi: string | null;
@@ -100,7 +94,6 @@ export type KejadianDampakRow = {
   toko: number;
   pabrik: number;
   kerugian_ekonomi_rp: number | null;
-  kerugian_rinci: Json;
   catatan: string | null;
   korban_terpilah: Json;
   kondisi_mutakhir: string | null;
@@ -159,20 +152,6 @@ export type KejadianDampakRow = {
   created_at: string;
 };
 
-export type PengungsianKajiRow = {
-  id: string;
-  kejadian_id: string;
-  tempat_pengungsian_id: string;
-  tanggal: string;
-  jumlah_kk: number;
-  jiwa: Json;
-  rentan: Json;
-  air_sanitasi: string | null;
-  created_by: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
 /** Staff CRUD rows: UUID is DB-generated, so Insert does not require `id`. */
 export type LooseRow = {
   id: string;
@@ -185,41 +164,6 @@ export type LooseInsert = {
 };
 
 type LooseTable = Table<LooseRow, LooseInsert, LooseInsert>;
-
-
-export type OverlayCalonSource = "bmkg" | "magma" | "sipongi" | "tatonas";
-export type OverlayCalonStatus = "draf" | "ditolak" | "diterima";
-export type OverlayCalonTautan = "utuh" | "putus";
-export type OverlayCalonAsal = "otomatis" | "manual";
-
-export type OverlayCalonKejadianRow = {
-  id: string;
-  source: OverlayCalonSource;
-  layer_key: string;
-  external_id: string;
-  overlay_feature_id: string | null;
-  status: OverlayCalonStatus;
-  tautan_status: OverlayCalonTautan;
-  kejadian_id: string | null;
-  nama_sinyal: string;
-  waktu_sinyal: string | null;
-  kabupaten: string | null;
-  kode_kabupaten: string | null;
-  latitude: number;
-  longitude: number;
-  usulan_kode_jenis: number | null;
-  usulan_jenis_bencana: string | null;
-  sumber_label: string;
-  penyebab_ringkas: string | null;
-  properties_snapshot: Json;
-  asal_buat: OverlayCalonAsal;
-  created_by: string | null;
-  decided_by: string | null;
-  decided_at: string | null;
-  ditolak_alasan: string | null;
-  created_at: string;
-  updated_at: string;
-};
 
 export type SikTables = {
   jenis_bencana: Table<
@@ -249,11 +193,6 @@ export type SikTables = {
     Partial<KejadianDampakRow> & { kejadian_id: string },
     Partial<KejadianDampakRow>
   >;
-  pengungsian_kaji: Table<
-    PengungsianKajiRow,
-    Partial<PengungsianKajiRow> & { kejadian_id: string; tempat_pengungsian_id: string },
-    Partial<PengungsianKajiRow>
-  >;
   kejadian_korban: LooseTable;
   pengungsi_terpilah: LooseTable;
   kerusakan_aset: LooseTable;
@@ -279,20 +218,6 @@ export type SikTables = {
     { slug: string; judul: string; isi_markdown: string; updated_at: string },
     { slug: string; judul: string; isi_markdown?: string; updated_at?: string },
     Partial<{ slug: string; judul: string; isi_markdown: string; updated_at: string }>
-  >;
-  overlay_calon_kejadian: Table<
-    OverlayCalonKejadianRow,
-    Partial<OverlayCalonKejadianRow> & {
-      source: OverlayCalonSource;
-      layer_key: string;
-      external_id: string;
-      nama_sinyal: string;
-      latitude: number;
-      longitude: number;
-      sumber_label: string;
-      asal_buat: OverlayCalonAsal;
-    },
-    Partial<OverlayCalonKejadianRow>
   >;
   disabilitas_agregat: LooseTable;
 };

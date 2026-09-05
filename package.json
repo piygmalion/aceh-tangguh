@@ -28,6 +28,8 @@
     "refresh:weather": "node scripts/refresh-weather-cache.mjs",
     "refresh:peringatan": "node scripts/refresh-peringatan.mjs",
     "refresh:sipongi": "node scripts/refresh-peringatan.mjs --sipongi-only",
+    "scrape:ruangkita": "node scripts/scrape-ruangkita-static.mjs",
+    "fetch:inarisk-faults": "node scripts/fetch-inarisk-faults.mjs",
     "verify:weather": "node scripts/verify-weather-setup.mjs",
     "flag:coords": "node scripts/flag-truncated-coords.js",
     "normalize:status": "node scripts/normalize-status.js",
@@ -52,6 +54,7 @@
     "react-dom": "^18.3.1",
     "react-map-gl": "^7.1.9",
     "recharts": "^3.10.1",
+    "sharp": "^0.35.4",
     "tailwind-merge": "^3.6.0",
     "zod": "^3.24.2"
   },

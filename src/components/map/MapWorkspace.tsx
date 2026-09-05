@@ -21,6 +21,7 @@ function MapWorkspaceInner() {
     toggleMarkerLayer,
     toggleDisasterJenis,
     toggleFasilitasUmum,
+    toggleOverlay,
   } = useMapUrlState();
   const [villageSelection, setVillageSelection] =
     useState<VillageClickSelection | null>(null);
@@ -44,6 +45,7 @@ function MapWorkspaceInner() {
         disasterJenis={state.disasterJenis}
         villageSelection={villageSelection}
         onVillageClick={setVillageSelection}
+        overlays={state.overlays}
       />
       {villageSelection && state.areaLayer === "villageDistribution" ? (
         <AreaProfilPanel
@@ -62,6 +64,8 @@ function MapWorkspaceInner() {
         disasterJenis={state.disasterJenis}
         onToggleDisasterJenis={toggleDisasterJenis}
         onToggleFasilitasUmum={toggleFasilitasUmum}
+        overlays={state.overlays}
+        onToggleOverlay={toggleOverlay}
       />
       <MapSettings
         basemap={state.basemap}

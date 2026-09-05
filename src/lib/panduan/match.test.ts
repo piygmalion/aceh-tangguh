@@ -1,13 +1,17 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { composeGuideAnswer } from "./answers";
+import { PANDUAN_LLM_ENABLED } from "./llm-gate";
 import {
+  extractDesa,
   extractKabupaten,
   extractJenis,
   matchGuideIntent,
   shouldShowGuideBot,
 } from "./match";
+import { chipsForPathname, welcomeQueryForPath } from "./page-context";
 import type { GuideContext } from "./types";
+import { sanitizeUnknownQuery } from "./unknown";
 
 const emptyCtx = (): GuideContext => ({ failed: [] });
 
@@ -78,5 +82,92 @@ describe("panduan matcher", () => {
     assert.equal(shouldShowGuideBot("/peta"), false);
     assert.equal(shouldShowGuideBot("/admin/login"), false);
     assert.equal(shouldShowGuideBot("/admin/sik/kejadian"), false);
+  });
+
+  it("matches Tatonas and water-level questions as early warning", () => {
+    assert.equal(matchGuideIntent("cek muka air tatonas", "id").intent, "peringatan");
+    assert.equal(matchGuideIntent("pos hidrologi hari ini", "id").intent, "peringatan");
+    const faq = matchGuideIntent("apa itu tatonas", "id");
+    assert.equal(faq.intent, "peringatan");
+    assert.equal(faq.faq?.id, "apa-itu-tatonas");
+  });
+
+  it("includes Tatonas in the early-warning answer and does not invent a level", () => {
+    const withFeed = composeGuideAnswer(
+      { intent: "peringatan", query: "tatonas" },
+      {
+        failed: [],
+        peringatan: {
+          cuacaEmpty: true,
+          cuacaTone: "ok",
+          magmaEmpty: true,
+          sipongiEmpty: true,
+          sipongiCount: 0,
+          tatonasEmpty: false,
+          tatonasHighlight: "Pos Krueng Aceh WL 1.2 m (WASPADA)",
+          tatonasLevel: "WASPADA",
+          stale: false,
+        },
+      },
+      "id"
+    );
+    assert.match(withFeed.body, /Tatonas/i);
+    assert.match(withFeed.body, /Pos Krueng Aceh/);
+    const delayed = composeGuideAnswer(
+      { intent: "peringatan", query: "tatonas" },
+      { failed: ["peringatan"], peringatan: null },
+      "id"
+    );
+    assert.match(delayed.body, /tertunda/i);
+    assert.doesNotMatch(delayed.body, /WASPADA|AWAS/);
+  });
+
+  it("reuses session slots on a follow-up without an LLM", () => {
+    const first = matchGuideIntent("kejadian banjir", "id");
+    assert.equal(first.intent, "kejadian");
+    assert.equal(first.jenis, "Banjir");
+    const follow = matchGuideIntent("yang di Aceh Utara", "id", {
+      lastIntent: "kejadian",
+      jenis: first.jenis,
+    });
+    assert.equal(follow.intent, "kejadian");
+    assert.equal(follow.kabupaten, "Aceh Utara");
+    assert.equal(follow.jenis, "Banjir");
+    const year = matchGuideIntent("tahun 2024", "id", {
+      lastIntent: "kejadian",
+      kabupaten: "Aceh Utara",
+      jenis: "Banjir",
+    });
+    assert.equal(year.intent, "kejadian");
+    assert.equal(year.year, 2024);
+    assert.equal(year.kabupaten, "Aceh Utara");
+  });
+
+  it("extracts a village name and does not treat Destana as a village", () => {
+    assert.equal(extractDesa("destana desa pande aceh besar"), "Pande");
+    assert.equal(extractDesa("desa tangguh di aceh utara"), undefined);
+    const match = matchGuideIntent("gampong pande", "id");
+    assert.equal(match.intent, "destana");
+    assert.equal(match.desa, "Pande");
+  });
+
+  it("locks page chips and welcome to Destana / contacts", () => {
+    assert.equal(chipsForPathname("/destana")[0], "destana");
+    assert.equal(chipsForPathname("/nomor-penting")[0], "nomor");
+    assert.equal(chipsForPathname("/").includes("risetBanding"), true);
+    assert.equal(chipsForPathname("/").at(-1), "lapor");
+    assert.equal(welcomeQueryForPath("/destana", "id"), "destana");
+    assert.equal(welcomeQueryForPath("/", "id"), "apa itu aceh tangguh");
+  });
+
+  it("sanitizes unknown logs and keeps the LLM gate closed", () => {
+    assert.equal(PANDUAN_LLM_ENABLED, false);
+    const cleaned = sanitizeUnknownQuery("hubungi admin@example.com 081234567890 12345678");
+    assert.doesNotMatch(cleaned, /example\.com/);
+    assert.match(cleaned, /\[email\]/);
+    assert.match(cleaned, /\[tel\]|\[angka\]/);
+    const unknown = composeGuideAnswer(matchGuideIntent("xyzabc", "id"), emptyCtx(), "id");
+    assert.doesNotMatch(unknown.body, /korban jiwa \d+/i);
+    assert.doesNotMatch(unknown.body, /\b\d{2,}\b/);
   });
 });

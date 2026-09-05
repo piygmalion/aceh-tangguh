@@ -50,12 +50,30 @@ export type GuideTourAction = {
 
 export type GuideMatchReason = "emergency" | "out_of_scope" | "low_confidence";
 
+export type GuideFaqHit = {
+  id: string;
+  bodyId: string;
+  bodyEn: string;
+  href: GuideHref;
+  hash?: string;
+  labelKey: string;
+};
+
+export type GuideSlots = {
+  kabupaten?: string;
+  jenis?: string;
+  year?: number;
+  lastIntent?: Exclude<GuideIntentId, "unknown">;
+};
+
 export type GuideMatch = {
   intent: GuideIntentId;
   query: string;
   kabupaten?: string;
   jenis?: string;
   year?: number;
+  desa?: string;
+  faq?: GuideFaqHit;
   reason?: GuideMatchReason;
 };
 
@@ -78,7 +96,10 @@ export type GuideContextKey =
   | "dibi"
   | "anggaran"
   | "irbi"
-  | "krb";
+  | "krb"
+  | "pelatihan"
+  | "mitra"
+  | "publikasi";
 
 export type GuideNomorItem = {
   nama: string;
@@ -105,6 +126,9 @@ export type GuideContext = {
     sipongiEmpty: boolean;
     sipongiCount: number;
     sipongiPlace?: string;
+    tatonasEmpty: boolean;
+    tatonasHighlight?: string;
+    tatonasLevel?: string;
     stale: boolean;
     fetchedAt?: string;
   } | null;
@@ -128,6 +152,15 @@ export type GuideContext = {
   destana?: {
     counts: Record<string, number>;
   } | null;
+  destanaDesa?: {
+    nama: string;
+    kabupaten?: string;
+    kecamatan?: string;
+    destanaLevel?: string;
+  } | null;
+  pelatihan?: { judul: string; tanggal?: string; status?: string }[] | null;
+  mitra?: { judul: string }[] | null;
+  publikasi?: { title: string; channel: "analisis" | "kegiatan" }[] | null;
   kejadian?: {
     total: number;
     items: GuideKejadianItem[];

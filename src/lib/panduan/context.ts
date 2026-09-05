@@ -54,6 +54,9 @@ function summarizePeringatan(data: PeringatanDiniResponse): GuideContext["pering
   const cuaca = data.cuaca.highlights[0];
   const magma = data.magma.event;
   const sipongi = data.sipongi.points[0];
+  const tatonas = data.tatonas.highlights[0];
+  const tatonasValue =
+    tatonas && tatonas.value != null ? `${tatonas.value} ${tatonas.satuan}`.trim() : undefined;
   return {
     cuacaEmpty: data.cuaca.empty,
     cuacaTone: data.cuaca.tone,
@@ -69,21 +72,32 @@ function summarizePeringatan(data: PeringatanDiniResponse): GuideContext["pering
     sipongiEmpty: data.sipongi.empty,
     sipongiCount: data.sipongi.points.length,
     sipongiPlace: sipongi?.kabkota,
-    stale: data.cuaca.stale || data.magma.stale || data.sipongi.stale,
-    fetchedAt: data.cuaca.fetched_at || data.magma.fetched_at || data.sipongi.fetched_at || undefined,
+    tatonasEmpty: data.tatonas.empty,
+    tatonasHighlight: tatonas
+      ? [tatonas.pos_name, tatonas.sensor, tatonasValue, tatonas.level && `(${tatonas.level})`]
+          .filter(Boolean)
+          .join(" ")
+      : undefined,
+    tatonasLevel: tatonas?.level,
+    stale: data.cuaca.stale || data.magma.stale || data.sipongi.stale || data.tatonas.stale,
+    fetchedAt:
+      data.cuaca.fetched_at ||
+      data.magma.fetched_at ||
+      data.sipongi.fetched_at ||
+      data.tatonas.fetched_at ||
+      undefined,
   };
 }
 
 export async function loadGuideContext(
   match: GuideMatch,
-  locale: "id" | "en" = "id"
+  locale: "id" | "en" = "id",
+  keysOverride?: GuideContextKey[]
 ): Promise<GuideContext> {
   const keys =
-    match.intent === "unknown" ? [] : CONTEXT_FOR_INTENT[match.intent];
+    keysOverride ??
+    (match.intent === "unknown" ? [] : CONTEXT_FOR_INTENT[match.intent]);
   const need = new Set<GuideContextKey>(keys);
-  if (match.intent === "kejadian" && !match.kabupaten && !match.jenis && !match.year) {
-    need.delete("kejadian");
-  }
 
   const ctx: GuideContext = { failed: [] };
   const tasks: Promise<void>[] = [];
@@ -180,13 +194,53 @@ export async function loadGuideContext(
     const sp = new URLSearchParams({ kind: "destana" });
     if (match.kabupaten) sp.set("kabupaten", match.kabupaten);
     tasks.push(
-      getJson<{ counts: Record<string, number> }>(`/api/sik/public?${sp}`).then((data) => {
+      getJson<{
+        counts: Record<string, number>;
+        items?: Array<{
+          nama?: string;
+          kabupaten?: string;
+          kecamatan?: string;
+          destana_level?: string | null;
+        }>;
+      }>(`/api/sik/public?${sp}`).then((data) => {
         if (!data?.counts) {
           mark("destana", false);
           ctx.destana = null;
           return;
         }
         ctx.destana = { counts: data.counts };
+        if (!match.desa) return;
+        const needle = match.desa.toLowerCase();
+        const row = (data.items ?? []).find((item) =>
+          String(item.nama ?? "").toLowerCase().includes(needle)
+        );
+        if (!row?.nama) return;
+        ctx.destanaDesa = {
+          nama: row.nama,
+          kabupaten: row.kabupaten ?? ctx.destanaDesa?.kabupaten,
+          kecamatan: row.kecamatan ?? ctx.destanaDesa?.kecamatan,
+          destanaLevel: row.destana_level ?? ctx.destanaDesa?.destanaLevel,
+        };
+      })
+    );
+  }
+
+  if (match.desa && match.intent === "destana") {
+    const sp = new URLSearchParams({ nama: match.desa });
+    if (match.kabupaten) sp.set("kabupaten", match.kabupaten);
+    tasks.push(
+      getJson<{
+        title?: string;
+        kabupaten?: string | null;
+        kecamatan?: string | null;
+      }>(`/api/profil-desa/desa?${sp}`).then((data) => {
+        if (!data?.title) return;
+        ctx.destanaDesa = {
+          nama: ctx.destanaDesa?.nama ?? data.title,
+          kabupaten: ctx.destanaDesa?.kabupaten ?? data.kabupaten ?? undefined,
+          kecamatan: ctx.destanaDesa?.kecamatan ?? data.kecamatan ?? undefined,
+          destanaLevel: ctx.destanaDesa?.destanaLevel,
+        };
       })
     );
   }
@@ -291,6 +345,66 @@ export async function loadGuideContext(
           };
         }
       )
+    );
+  }
+
+  if (need.has("pelatihan")) {
+    tasks.push(
+      getJson<{ items: Array<{ judul?: string; tanggal?: string; status?: string }> }>(
+        "/api/sik/public?kind=pelatihan"
+      ).then((data) => {
+        if (!data || !Array.isArray(data.items)) {
+          mark("pelatihan", false);
+          ctx.pelatihan = null;
+          return;
+        }
+        ctx.pelatihan = data.items.slice(0, 3).map((row) => ({
+          judul: String(row.judul ?? "").trim(),
+          tanggal: row.tanggal,
+          status: row.status,
+        })).filter((row) => row.judul);
+      })
+    );
+  }
+
+  if (need.has("mitra")) {
+    tasks.push(
+      getJson<{ items: Array<{ judul?: string }> }>("/api/sik/public?kind=mitra").then((data) => {
+        if (!data || !Array.isArray(data.items)) {
+          mark("mitra", false);
+          ctx.mitra = null;
+          return;
+        }
+        ctx.mitra = data.items
+          .slice(0, 3)
+          .map((row) => ({ judul: String(row.judul ?? "").trim() }))
+          .filter((row) => row.judul);
+      })
+    );
+  }
+
+  if (need.has("publikasi")) {
+    tasks.push(
+      (async () => {
+        const [list, kegiatan] = await Promise.all([
+          getJson<{ publikasi?: Array<{ title?: string }> }>("/api/publikasi"),
+          getJson<{ kegiatan?: Array<{ judul?: string }> }>("/api/publikasi/kegiatan"),
+        ]);
+        const analisis = (list?.publikasi ?? [])
+          .slice(0, 3)
+          .map((row) => ({ title: String(row.title ?? "").trim(), channel: "analisis" as const }))
+          .filter((row) => row.title);
+        const field = (kegiatan?.kegiatan ?? [])
+          .slice(0, 2)
+          .map((row) => ({ title: String(row.judul ?? "").trim(), channel: "kegiatan" as const }))
+          .filter((row) => row.title);
+        if (analisis.length === 0 && field.length === 0) {
+          mark("publikasi", false);
+          ctx.publikasi = null;
+          return;
+        }
+        ctx.publikasi = [...analisis, ...field];
+      })()
     );
   }
 

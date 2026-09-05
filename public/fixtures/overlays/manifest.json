@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-09-03T07:35:16.469Z",
+  "ruangkita": "https://ruangkita.net",
+  "discovered": [
+    {
+      "url": "https://ruangkita.net/assets/js/cuaca-maritim-layer.js",
+      "found": {
+        "pelabuhan": "https://maritim.bmkg.go.id/marine2026-data/meta/pelabuhan.json",
+        "perairanIndex": "https://maritim.bmkg.go.id/marine2026-data/meta/area_province.json",
+        "sensors": null,
+        "faults": null
+      }
+    },
+    {
+      "url": "https://ruangkita.net/assets/js/sensor-seismic.js",
+      "found": {
+        "pelabuhan": null,
+        "perairanIndex": null,
+        "sensors": "https://bmkg-content-inatews.storage.googleapis.com/sensor_seismic.json",
+        "faults": null
+      }
+    },
+    {
+      "url": "https://ruangkita.net/assets/js/fault-layer.js",
+      "found": {
+        "pelabuhan": null,
+        "perairanIndex": null,
+        "sensors": null,
+        "faults": "https://gis.bnpb.go.id/server/rest/services/inarisk/Faults/MapServer"
+      }
+    }
+  ],
+  "urls": {
+    "pelabuhan": "https://maritim.bmkg.go.id/marine2026-data/meta/pelabuhan.json",
+    "perairanIndex": "https://maritim.bmkg.go.id/marine2026-data/meta/area_province.json",
+    "wilmetos": "https://maritim.bmkg.go.id/marine2026-data/meta/wilmetos.min.geojson",
+    "sensors": "https://bmkg-content-inatews.storage.googleapis.com/sensor_seismic.json",
+    "faults": "https://gis.bnpb.go.id/server/rest/services/inarisk/Faults/MapServer"
+  },
+  "counts": {
+    "maritimePorts": 15,
+    "maritimeWaters": 10,
+    "seismicSensors": 23
+  },
+  "layers": {
+    "maritimePorts": {
+      "featureCount": 15,
+      "checksum": "b2ee4a1c58c371649eda23fa267a024132e099b65ee6ac888880b865802da115"
+    },
+    "maritimeWaters": {
+      "featureCount": 10,
+      "checksum": "6ba5818d5d1b3f05010834035218aa74ddfb9b607e35ca74789ed702ad19e9c3"
+    },
+    "seismicSensors": {
+      "featureCount": 23,
+      "checksum": "5f3ed6014c04d6917d51c9fc557f99aeba9a86054954331d7edd34f28ebdb808"
+    }
+  }
+}
