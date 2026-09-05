@@ -10,33 +10,44 @@ function read(rel: string) {
   return readFileSync(path.join(ROOT, rel), "utf8");
 }
 
+const LOCKED_FOOTER_IDS = [
+  "irbi-2025",
+  "compiled-r3p",
+  "publikasi-kegiatan",
+  "publikasi-btt",
+  "analisis-anggaran-2026",
+] as const;
+
+const EXCLUDED_FOOTER_IDS = [
+  "dibi-aceh",
+  "magma-gempa",
+  "sipongi-hotspot",
+  "village-borders",
+] as const;
+
 describe("footer sumber column", () => {
-  it("lists 5–7 official catalog sources and does not invent ids", () => {
-    assert.ok(FOOTER_SUMBER.length >= 5 && FOOTER_SUMBER.length <= 7);
+  it("lists the five locked catalog sources only and does not invent ids", () => {
+    assert.equal(FOOTER_SUMBER.length, 5);
     assert.equal(FOOTER_SUMBER.length, FOOTER_SUMBER_IDS.length);
     const catalogIds = new Set(DATA_SOURCES.map((row) => row.id));
     for (const row of FOOTER_SUMBER) {
       assert.equal(catalogIds.has(row.id), true, `unknown source ${row.id}`);
       assert.equal(row.hash, row.id);
     }
-    const ids = FOOTER_SUMBER.map((row) => row.id);
-    assert.deepEqual(ids, [
-      "irbi-2025",
-      "compiled-r3p",
-      "publikasi-kegiatan",
-      "publikasi-btt",
-      "analisis-anggaran-2026",
-    ]);
-    assert.equal(ids.includes("dibi-aceh"), false);
-    assert.equal(ids.includes("magma-gempa"), false);
-    assert.equal(ids.includes("sipongi-hotspot"), false);
-    assert.equal(ids.includes("village-borders"), false);
+    const footerIds = FOOTER_SUMBER.map((row) => row.id);
+    const footerIdSet = new Set<string>(footerIds);
+    assert.deepEqual(footerIds, [...LOCKED_FOOTER_IDS]);
+    for (const id of EXCLUDED_FOOTER_IDS) {
+      assert.equal(footerIdSet.has(id), false, `${id} must not be in the footer list`);
+    }
   });
 
-  it("keeps DIBI / MAGMA / Sipongi / Geoportal in the catalog without inventing them", () => {
+  it("keeps DIBI / MAGMA / Sipongi / Geoportal in the catalog, not the footer", () => {
     const catalogIds = new Set(DATA_SOURCES.map((row) => row.id));
-    for (const id of ["dibi-aceh", "magma-gempa", "sipongi-hotspot", "village-borders"]) {
-      assert.equal(catalogIds.has(id), true, `catalog missing optional ${id}`);
+    const footerIdSet = new Set<string>(FOOTER_SUMBER_IDS);
+    for (const id of EXCLUDED_FOOTER_IDS) {
+      assert.equal(catalogIds.has(id), true, `catalog missing ${id}`);
+      assert.equal(footerIdSet.has(id), false, `${id} leaked into FOOTER_SUMBER_IDS`);
     }
   });
 
