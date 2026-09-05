@@ -172,6 +172,18 @@ Jurnal: `jurnal/AN-17.md`. Gelombang 13. Tulisan + uji berkas. Jangan menerapkan
 
 Jurnal: `jurnal/AN-18.md`. Gelombang 14. Tulisan + uji berkas. Jangan menyunting rute (itu BE-14). Jangan menulis nilai secret. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. Naskah: daftar berkas G14; setelah deploy satu `workflow_dispatch` (bukan skip / 404 / 503 not configured); GET kunci live 200 atau 503 upstream. Non-tujuan: tiles, MapOverlays, FAQ, dump RPC.
 
+### AN-19 — naskah rute overlay + GET maritim baca saja
+
+Jurnal: `jurnal/AN-19.md`. Gelombang 15. Tabel path vektor; kontrak GET maritim baca saja. Uji path helper + cron memuat `maritime` tanpa nilai secret. Jangan menyunting rute (itu BE-16) atau hook (itu FE-17) kecuali helper path. Jangan DATA-4.
+
+### AN-20 — naskah fail-closed kab + matriks resource
+
+Jurnal: `jurnal/AN-20.md`. Gelombang 16. Jangan dikode sebelum G15 ditutup. Jangan merevoke `is_staff` / `is_ops`.
+
+### AN-21 — uji matriks kab + resource
+
+Jurnal: `jurnal/AN-21.md`. Gelombang 16. Setelah BE-17. Tutup STATUS G16.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Baca ulang naskah AN-3, AN-4, AN-6, dan AN-8 keesokan putaran sebelum menandai `siap-kode` ulang. Jangan commit kecuali diminta. Jangan membuka P2 `tutup_celah_juklak`.

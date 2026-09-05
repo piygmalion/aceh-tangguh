@@ -323,8 +323,6 @@ export function calonVisibleToOps(
   profile: AdminProfile,
   row: { kode_kabupaten?: string | null; kabupaten?: string | null },
 ): boolean {
-  if (!isKabScoped(profile)) return true;
-  if (calonBelumTerikat(row)) return true;
   return matchesKabScope(profile, row);
 }
 

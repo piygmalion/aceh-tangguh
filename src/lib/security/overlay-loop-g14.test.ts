@@ -10,6 +10,7 @@ describe("AN-18 loop overlay G14", () => {
     const cron = readFileSync(join(ROOT, "src/app/api/cron/overlay-live/route.ts"), "utf8");
     assert.match(cron, /OVERLAY_CRON_SECRET/);
     assert.match(cron, /refreshAllOverlayLive/);
+    assert.match(cron, /refreshMaritimeForecasts/);
     assert.match(cron, /not configured/);
     assert.match(cron, /status:\s*503/);
     assert.match(cron, /status:\s*401/);

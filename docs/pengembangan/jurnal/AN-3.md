@@ -82,7 +82,20 @@ Tim data Aceh Tangguh
 
 ---
 
-Petunjuk kirim (internal): salin naskah ke surel/kontak teknis Tatonas yang sudah dipakai proyek. Jangan menambahkan tabel atau contoh pemetaan dari pihak kami.
+Petunjuk kirim (internal): salin naskah ke surel/kontak teknis Tatonas yang sudah dipakai proyek. Jangan menambahkan tabel atau contoh pemetaan dari pihak kami. Jangan mengarang alamat surel — repo hanya memuat `https://tatonas.co.id/monitoring/`.
+
+## Status kirim
+
+Diperbarui 5 September 2026.
+
+| Butir | Isi |
+| --- | --- |
+| Naskah | Siap salin (bagian di atas). Jangan menambah tabel pemetaan dari pihak kami. |
+| Kirim | **Belum terkirim.** Tanggal dan saluran (surel atau kontak proyek) masih kosong. |
+| Alamat | Tidak ditulis di sini. Isi hanya kontak teknis yang sudah dipakai proyek, setelah koordinator memberikannya. |
+| Jawaban tertulis | Belum ada. DATA-4 tetap `menunggu-naskah` sampai jawaban masuk di jurnal ini. |
+
+Setelah dikirim: tulis tanggal, saluran, dan (jika ada) nama kontak yang sudah dipakai — bukan tebakan. Setelah jawaban tertulis: tempel di bawah bagian ini; baru DATA-4 boleh `siap-kode`.
 
 ## Bukti
 

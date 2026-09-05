@@ -117,8 +117,9 @@ export function matchesKabScope(
   profile: AdminProfile | null,
   row: { kode_kabupaten?: string | null; kabupaten?: string | null }
 ): boolean {
+  if (!isKabScoped(profile)) return true;
   const scope = scopeKabupaten(profile);
-  if (!scope) return true;
+  if (!scope) return false;
   const kode = row.kode_kabupaten?.trim();
   const nama = row.kabupaten?.trim();
   return kode === scope || nama === scope;

@@ -28,7 +28,7 @@ Review lalu rapikan kontrak yang salah. Bukan gelombang fitur baru. Bukan Tatona
 ```
 Kanvas tinjauan-pasca-g13: 60 rute, 34 migrasi, overlay GET baca ledger
 Tindak lanjut reviewer: admin/reports = moderasi; resource q = sanitizeSearch; panduan di inventaris
-DATA-10 berkas 20260921 siap; apply remote menunggu persetujuan
+DATA-10 berkas 20260921 siap; apply remote kemudian selesai (lihat DATA-10 + STATUS tindak lanjut 5 September). Kalimat “menunggu persetujuan” di naskah awal review ini sudah dusta.
 purge_expired di produksi sudah service_role (bukan temuan baru)
 npm test setelah tindak lanjut
 

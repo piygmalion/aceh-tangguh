@@ -89,6 +89,10 @@ Jurnal: `jurnal/DATA-9.md`. Gelombang 12. Selesai. Jangan diulang.
 
 Migrasi baru `20260920_revoke_definer_write_rpcs.sql`: REVOKE `next_laporan_nomor` / `upsert_marker_features` dari Data API; GRANT `service_role`. Jangan `CREATE OR REPLACE` isi fungsi. Jangan merevoke `is_staff` / `is_ops`. Jangan DATA-4.
 
+### DATA-11 — dump tubuh `upsert_marker_features`
+
+Jurnal: `jurnal/DATA-11.md`. Gelombang 15. Dump `pg_get_functiondef` dari produksi ke migrasi baru. Jangan apply. Jangan mengarang `CREATE`. Jangan DATA-4. Jangan merevoke fungsi peran.
+
 ## Saat menutup tiket
 
 Perbarui baris tiket di [STATUS.md](STATUS.md). Jangan commit.

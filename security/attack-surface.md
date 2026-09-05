@@ -47,6 +47,8 @@ Roles: `super_admin`, `admin` → `admin_provinsi`, `admin_kabkota` (scoped), `a
 
 `GET /api/laporan/peta` must not include pelapor fields or `jawaban_json`.
 
+Public maritime GET (`/api/overlay/maritime/perairan`, `/api/overlay/maritime/pelabuhan/[kode]`) reads `maritime_forecast_cache` only. Cron `POST /api/cron/overlay-live` writes the cache (`refreshMaritimeForecasts`). G14 live overlay GET does not write.
+
 ## Public POST APIs
 
 | Method | Path | Controls |
@@ -70,7 +72,7 @@ Dua jalur laporan: `laporan_*` + `/api/admin/laporan` (hidup) versus tabel waris
 | --- | --- | --- |
 | Staff + `moderasi` | GET, PATCH | `/api/admin/reports` (tabel warisan `reports`) |
 | Staff + `moderasi` | GET, PATCH | `/api/admin/laporan` |
-| Staff + modul per sumber; `sanitizeSearch` pada `q` | GET, POST, PATCH, DELETE | `/api/sik/resource` |
+| Staff + modul per sumber; `sanitizeSearch` pada `q`; kab filter AN-20 (`authorizeResourceList` / `authorizeResourceRow`) | GET, POST, PATCH, DELETE | `/api/sik/resource` |
 | Staff + Destana | GET, POST | `/api/sik/pkd` |
 | Staff + Destana | GET | `/api/sik/destana/program` |
 | Staff + Destana; tulis `admin_desa` / `super_admin` + `rejectCrossOrigin` | PATCH, PUT | `/api/sik/destana/program` |

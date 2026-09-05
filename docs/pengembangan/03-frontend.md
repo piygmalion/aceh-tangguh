@@ -127,6 +127,10 @@ Judul, lead, header tabel, dan label tingkat di `/[locale]/destana` lewat `desta
 
 Jurnal: `jurnal/FE-15.md`. Gelombang 13. Judul, lead, dan tautan beranda di `/[locale]/pelatihan`, `/nomor-penting`, `/mitra` lewat namespace `publik` + `nav.home`. Jangan meni18n-kan daftar/form di dalam komponen. Jangan meni18n-kan admin atau cetak Juklak. Jangan mengubah `pkd.ts`.
 
+### FE-17 — hook peta ikut tabel AN-19
+
+Jurnal: `jurnal/FE-17.md`. Gelombang 15. `fetchOverlayGeojson` memakai `overlayVectorApiPath`. Raster tetap `/api/overlay/tiles`. Verifikasi browser `/id/peta`. Jangan meni18n-kan ulang. Jangan mengubah `pkd.ts`.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Jangan commit. Jika UI berubah, verifikasi di browser sebelum menutup.

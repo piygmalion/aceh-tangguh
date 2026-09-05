@@ -87,6 +87,17 @@ describe("AN-1 authorization matrix", () => {
     assert.equal(authorizeDampakRead(actor, headerA).ok, true);
   });
 
+  it("admin_kabkota without kabupaten profile is fail-closed (AN-20)", () => {
+    const empty = staff("admin_kabkota", { kode: null, nama: null });
+    const rowA = { kode_kabupaten: KAB_A, kabupaten: "Aceh Selatan", fase_data: "dinamis" };
+    assert.equal(matchesKabScope(empty, rowA), false);
+    assert.equal(authorizeDampakRead(empty, rowA).ok, false);
+    const denied = authorizeKejadianDelete(empty, rowA);
+    assert.equal(denied.ok, false);
+    if (!denied.ok) assert.equal(denied.status, 403);
+    assert.equal(matchesKabScope(staff("admin_provinsi"), rowA), true);
+  });
+
   it("denies moderasi (GET laporan PII) to admin_desa and penilai_pkd", () => {
     assert.equal(canAccessModule(staff("admin_desa"), "moderasi"), false);
     assert.equal(canAccessModule(staff("penilai_pkd"), "moderasi"), false);
@@ -111,5 +122,12 @@ describe("AN-1 P0 route guards still present", () => {
     const src = readFileSync(join(root, "src/app/api/sik/kejadian/[id]/dampak/route.ts"), "utf8");
     assert.match(src, /export async function GET/);
     assert.match(src, /authorizeDampakRead/);
+  });
+
+  it("GET/POST/PATCH/DELETE /sik/resource memakai authorizeResourceList / authorizeResourceRow", () => {
+    const src = readFileSync(join(root, "src/app/api/sik/resource/route.ts"), "utf8");
+    assert.match(src, /authorizeResourceList/);
+    assert.match(src, /authorizeResourceRow/);
+    assert.match(src, /RESOURCE_SCOPE_MODE/);
   });
 });

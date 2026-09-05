@@ -176,6 +176,29 @@ Koordinator menaruh POST cron + GET ledger overlay ke `origin/main` (`c5ed644`).
 | AN-18 | analis | Naskah penerimaan loop overlay | jurnal/AN-18.md | selesai |
 | KOORD-G14 | koordinator | Bacaan ulang + commit daftar | jurnal/KOORD-G14.md | selesai |
 
+## Gelombang 15 — overlay maritim + hook peta + dump RPC
+
+Koordinator membuka rekomendasi pasca-G14. Cron maritim memakai secret overlay yang sudah ada. GET maritim hanya baca. Hook peta memakai tabel AN-19. DATA-11 dump tubuh RPC, jangan apply, jangan mengarang. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menulis nilai `OVERLAY_CRON_SECRET`. Jangan mengubah `matchesKabScope` sebelum AN-20.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-19 | analis | Naskah rute overlay + GET maritim baca saja | jurnal/AN-19.md | selesai |
+| BE-16 | backend | Cron maritim; GET hanya baca | jurnal/BE-16.md | selesai |
+| FE-17 | frontend | Hook peta ikut tabel AN-19 | jurnal/FE-17.md | selesai |
+| DATA-11 | data | Dump tubuh `upsert_marker_features` | jurnal/DATA-11.md | selesai |
+
+`npx tsc --noEmit` hijau. Uji path/maritim/G14 lulus. GET static + maritime/perairan 200; path live-only lama 404. DATA-11 tidak di-apply. DATA-4 tetap tertahan.
+
+## Gelombang 16 — otorisasi kab
+
+Fail-closed `admin_kabkota` tanpa profil; filter `/sik/resource` menurut matriks AN-20. Calon overlay tanpa wilayah tersembunyi dari kab (efek disengaja). Operator harus mengisi profil kab sebelum deploy. `npx tsc --noEmit` hijau; uji roles / resource-scope / Destana / calon lulus. DATA-4 tetap tertahan. Jangan merevoke `is_staff` / `is_ops`. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-20 | analis | Naskah fail-closed kab + matriks resource | jurnal/AN-20.md | selesai |
+| BE-17 | backend | Terapkan AN-20 | jurnal/BE-17.md | selesai |
+| AN-21 | analis | Uji matriks + tutup STATUS | jurnal/AN-21.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |
@@ -183,8 +206,18 @@ Koordinator menaruh POST cron + GET ledger overlay ke `origin/main` (`c5ed644`).
 | DATA-4 | data | Pemetaan `loggerKind` Tatonas | jurnal/DATA-4.md | menunggu-naskah |
 | DATA-10 | data | Cabut anon dari `next_kejadian_nomor` | jurnal/DATA-10.md | selesai |
 
+DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
+
 ## Tindak lanjut 5 September 2026
 
 DATA-10 diterapkan ke produksi `aceh-tangguh`: `next_kejadian_nomor` anon EXECUTE = false; `authenticated` dan `service_role` tetap; bukan SECURITY DEFINER.
 
-Nama `OVERLAY_CRON_SECRET` diisi di GitHub Actions dan Vercel Production + Preview (bukan secret cuaca; nilai tidak ditulis). Variabel `OVERLAY_REFRESH_URL` tetap. Production Vercel di-redeploy agar runtime membaca env. Satu `workflow_dispatch` `overlay-live-refresh.yml`: job tidak skip “secret not set”; `curl` 404 karena `src/app/api/cron/overlay-live` belum ada di pohon git produksi. Jangan menulis nilai. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+Nama `OVERLAY_CRON_SECRET` diisi di GitHub Actions dan Vercel Production + Preview (bukan secret cuaca; nilai tidak ditulis). Variabel `OVERLAY_REFRESH_URL` tetap. Production Vercel di-redeploy agar runtime membaca env. Satu `workflow_dispatch` `overlay-live-refresh.yml` sukses setelah G14 (`c5ed644`): job tidak skip “secret not set”; rute cron sudah di `origin/main`; `GET /api/overlay/bmkgQuakes` 200 setelah refresh. Kalimat “curl 404 karena rute belum di git” adalah fakta sebelum G14, bukan status hari ini. Jangan menulis nilai. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+## Tinjauan pasca-G14 — 5 September 2026
+
+Koordinator + data + backend + analis membaca ulang 70 rute API dan 35 migrasi (pohon `src/` = `origin/main`). Kanvas: tinjauan-pasca-g14. Jurnal: `jurnal/KOORD-REVIEW-20260905-g14.md`.
+
+Perbaikan aman di review ini: `POST /api/sik/public` memakai `guardPublicPost` (kontrak `attack-surface.md` ~8/jam); uji inventaris mengunci enam rute POST publik; STATUS tidak lagi mengklaim cron overlay 404.
+
+Tertutup di G15–G16: GET maritim hanya baca (BE-16); hook peta memakai tabel AN-19 (FE-17); dump RPC marker (DATA-11, tidak di-apply); `matchesKabScope` fail-closed + filter `/sik/resource` (AN-20 / BE-17 / AN-21). DATA-4 dan Juklak P2 tidak dibuka. Kalimat gelombang 2–12 yang menyebut secret/migrasi “belum diterapkan dari tiket ini” adalah catatan waktu tiket, bukan fakta operasional hari ini.

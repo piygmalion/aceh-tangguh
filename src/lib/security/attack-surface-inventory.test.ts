@@ -70,4 +70,23 @@ describe("inventaris penerimaan produksi G2–G5 (AN-9)", () => {
       "attack-surface.md harus menyebut requireModuleApi(\"moderasi\") untuk /api/admin/laporan"
     );
   });
+
+  it("rute POST publik yang diklaim memakai guardPublicPost benar-benar mengimpornya", () => {
+    const routes = [
+      "src/app/api/laporan/kejadian/route.ts",
+      "src/app/api/laporan/penanganan/route.ts",
+      "src/app/api/laporan/upload/route.ts",
+      "src/app/api/sik/public/route.ts",
+      "src/app/api/panduan/ask/route.ts",
+      "src/app/api/panduan/unknown/route.ts",
+    ] as const;
+    for (const rel of routes) {
+      const source = readFileSync(join(ROOT, rel), "utf8");
+      assert.equal(
+        source.includes("guardPublicPost"),
+        true,
+        `${rel} tidak mengimpor guardPublicPost`
+      );
+    }
+  });
 });

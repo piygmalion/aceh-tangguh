@@ -110,6 +110,14 @@ Jurnal: `jurnal/BE-13.md`. Gelombang 13. Nama `OVERLAY_CRON_SECRET` / `OVERLAY_R
 
 Jurnal: `jurnal/BE-14.md`. Gelombang 14. Landasikan `POST /api/cron/overlay-live` dan `GET /api/overlay/{key}` ke pohon git. GET hanya membaca ledger (BE-8 / AN-5). Jangan menulis nilai secret. Jangan menebak Tatonas. Jangan migrasi baru. Jangan rute tiles/static/maritime. **Pengecualian wilayah:** `src/lib/overlay-calon.ts`, `src/lib/overlay-layers.ts`, `src/lib/inarisk-tiles.ts`, `src/lib/types.ts`, `src/lib/supabase/types.ts`, `src/lib/sik/db-tables.ts` (hanya tipe overlay/calon).
 
+### BE-16 — cron maritim, GET baca saja
+
+Jurnal: `jurnal/BE-16.md`. Gelombang 15. Persist cache maritim hanya dari `POST /api/cron/overlay-live`. GET `/api/overlay/maritime/*` hanya baca. Paralel + allowlist Aceh. Jangan secret baru. Jangan DATA-4. Jangan mengubah `matchesKabScope`.
+
+### BE-17 — fail-closed kab + filter resource
+
+Jurnal: `jurnal/BE-17.md`. Gelombang 16. Jangan dikode sebelum AN-20 selesai. Hanya aturan tertulis di naskah.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Jangan commit.

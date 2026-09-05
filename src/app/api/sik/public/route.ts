@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { loadKejadianOperasiPublik } from "@/lib/sik/public";
 import { permintaanPelatihanSchema } from "@/lib/sik/schemas";
-import { rejectCrossOrigin } from "@/lib/security/origin";
+import { guardPublicPost } from "@/lib/security/public-post";
 
 export const dynamic = "force-dynamic";
 
@@ -85,8 +85,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const originErr = rejectCrossOrigin(req);
-  if (originErr) return originErr;
+  const blocked = await guardPublicPost(req, "sik-public-pelatihan", 8);
+  if (blocked) return blocked;
   const json = await req.json().catch(() => null);
   const parsed = permintaanPelatihanSchema.safeParse(json);
   if (!parsed.success) {

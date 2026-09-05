@@ -108,9 +108,26 @@ function summarize(forecast: MaritimeForecast, stale: boolean): MaritimeSlotSumm
   };
 }
 
+/** Same window as weather / overlay live cron. */
+export const MARITIME_TTL_MS = 2 * 60 * 60 * 1000;
+
+export function maritimeExpiresAt(nowMs: number = Date.now()): string {
+  return new Date(nowMs + MARITIME_TTL_MS).toISOString();
+}
+
+export function isMaritimeCacheStale(
+  expiresAt: string | null | undefined,
+  nowMs: number = Date.now(),
+): boolean {
+  if (!expiresAt) return false;
+  const ms = Date.parse(expiresAt);
+  return Number.isFinite(ms) && ms < nowMs;
+}
+
 async function persistForecast(jenis: MaritimeJenis, forecast: MaritimeForecast): Promise<void> {
   const client = createServiceClient();
   if (!client) return;
+  const now = new Date();
   await client.from("maritime_forecast_cache").upsert({
     kode: forecast.code,
     jenis,
@@ -118,36 +135,75 @@ async function persistForecast(jenis: MaritimeJenis, forecast: MaritimeForecast)
     valid_from: forecast.valid_from ?? null,
     valid_to: forecast.valid_to ?? null,
     payload: forecast as unknown as Json,
-    fetched_at: new Date().toISOString(),
+    fetched_at: now.toISOString(),
+    expires_at: maritimeExpiresAt(now.getTime()),
   });
 }
 
-async function readCachedForecast(kode: string): Promise<MaritimeForecast | null> {
+async function readCachedForecast(kode: string): Promise<{
+  forecast: MaritimeForecast;
+  expires_at: string | null;
+} | null> {
   const client = createServerClient();
   if (!client) return null;
   const { data, error } = await client
     .from("maritime_forecast_cache")
-    .select("payload")
+    .select("payload, expires_at")
     .eq("kode", kode)
     .maybeSingle();
   if (error || !data?.payload || typeof data.payload !== "object") return null;
-  return data.payload as MaritimeForecast;
+  return {
+    forecast: data.payload as MaritimeForecast,
+    expires_at: data.expires_at ?? null,
+  };
 }
 
+/** GET path: cache only. Cron writes via refreshMaritimeForecasts. */
 export async function loadMaritimeForecast(
-  jenis: MaritimeJenis,
+  _jenis: MaritimeJenis,
   kode: string,
 ): Promise<{ forecast: MaritimeForecast; stale: boolean } | null> {
-  try {
-    const forecast = await fetchForecastJson(jenis, kode);
-    void persistForecast(jenis, forecast);
-    return { forecast, stale: false };
-  } catch (err) {
-    console.error("[maritime]", jenis, kode, err);
-    const cached = await readCachedForecast(kode);
-    if (cached) return { forecast: cached, stale: true };
-    return null;
-  }
+  const cached = await readCachedForecast(kode);
+  if (!cached) return null;
+  return {
+    forecast: cached.forecast,
+    stale: isMaritimeCacheStale(cached.expires_at),
+  };
+}
+
+export type MaritimeRefreshCode = {
+  jenis: MaritimeJenis;
+  kode: string;
+  ok: boolean;
+};
+
+export async function refreshMaritimeForecasts(): Promise<{
+  ok: number;
+  failed: number;
+  codes: MaritimeRefreshCode[];
+}> {
+  const ports = await allowedPelabuhanKodes();
+  const jobs: Array<{ jenis: MaritimeJenis; kode: string }> = [
+    ...ACEH_PERAIRAN_CODES.map((kode) => ({ jenis: "perairan" as const, kode })),
+    ...Array.from(ports).map((kode) => ({ jenis: "pelabuhan" as const, kode })),
+  ];
+  const codes = await Promise.all(
+    jobs.map(async ({ jenis, kode }): Promise<MaritimeRefreshCode> => {
+      try {
+        const forecast = await fetchForecastJson(jenis, kode);
+        await persistForecast(jenis, forecast);
+        return { jenis, kode, ok: true };
+      } catch (err) {
+        console.error("[maritime-refresh]", jenis, kode, err);
+        return { jenis, kode, ok: false };
+      }
+    }),
+  );
+  return {
+    ok: codes.filter((row) => row.ok).length,
+    failed: codes.filter((row) => !row.ok).length,
+    codes,
+  };
 }
 
 const getCachedAcehWaterForecasts = unstable_cache(

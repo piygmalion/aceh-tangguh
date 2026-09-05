@@ -2,6 +2,7 @@
 
 import { useQueries } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
+import { overlayVectorApiPath } from "@/lib/overlay-paths";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { OverlayLayerKey } from "@/lib/types";
@@ -94,7 +95,7 @@ export function parseOverlayResponse(input: {
 export async function fetchOverlayGeojson(
   key: OverlayLayerKey,
 ): Promise<OverlayFetchResult> {
-  const res = await fetchPublicApi(`/api/overlay/${key}`);
+  const res = await fetchPublicApi(overlayVectorApiPath(key));
   let body: unknown = null;
   try {
     body = await res.json();

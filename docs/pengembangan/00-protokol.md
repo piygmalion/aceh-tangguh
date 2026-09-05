@@ -53,3 +53,5 @@ Batas ulang untuk satu tiket: lima putaran. Jika masih gagal, tulis blocker di j
 - **Gelombang 12** — selesai (revoke RPC definer tulis). Jangan mengulang. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menyunting SQL migrasi yang sudah diterapkan.
 - **Gelombang 13** — nama env overlay + i18n tiga halaman publik. Jangan mengulang. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menulis nilai `OVERLAY_CRON_SECRET`. Jangan POST ke cron overlay.
 - **Gelombang 14** — selesai (loop overlay di pohon git produksi). Jangan mengulang. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menulis nilai `OVERLAY_CRON_SECRET`. Jangan menyelaraskan seluruh tumpukan lokal.
+- **Gelombang 15** — cron maritim + hook rute overlay + dump RPC marker. Jangan DATA-4. Jangan membuka P2 Juklak. Jangan POST nasional. Jangan menulis nilai `OVERLAY_CRON_SECRET`. Jangan mengubah `matchesKabScope` (itu G16 / AN-20).
+- **Gelombang 16** — fail-closed kab + filter `/sik/resource`. Jangan dikode sebelum AN-20 selesai. Jangan DATA-4. Jangan merevoke `is_staff` / `is_ops`.

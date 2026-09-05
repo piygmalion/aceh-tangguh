@@ -1,4 +1,6 @@
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
+import { refreshMaritimeForecasts } from "@/lib/maritime";
 import { refreshAllOverlayLive } from "@/lib/overlay-live";
 import { bearerMatches } from "@/lib/security/bearer";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -25,12 +27,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Supabase service role missing" }, { status: 503 });
   }
 
-  const result = await refreshAllOverlayLive();
+  const [result, maritime] = await Promise.all([
+    refreshAllOverlayLive(),
+    refreshMaritimeForecasts(),
+  ]);
+  revalidateTag("maritime-perairan");
   const failed = result.layers.filter((layer) => !layer.ok);
   return NextResponse.json({
     refreshed: result.layers.filter((layer) => layer.ok).length,
     failed: failed.length,
     purged: result.purged,
     layers: result.layers,
+    maritime: {
+      ok: maritime.ok,
+      failed: maritime.failed,
+      codes: maritime.codes,
+    },
   });
 }

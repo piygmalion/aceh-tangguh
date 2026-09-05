@@ -134,7 +134,8 @@ export function authorizeDestanaProgramRead(
   }
   if (isKabScoped(profile)) {
     const kab = scopeKabupaten(profile);
-    if (kab && KODE_KAB_NUMERIK.test(kab) && !kodeDesa.startsWith(kab)) {
+    if (!kab) return { ok: false, status: 403, error: "scope_kabupaten" };
+    if (KODE_KAB_NUMERIK.test(kab) && !kodeDesa.startsWith(kab)) {
       return { ok: false, status: 403, error: "scope_kabupaten" };
     }
     return { ok: true };

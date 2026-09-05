@@ -257,9 +257,9 @@ describe("cuplikan dan waktu", () => {
 describe("wilayah admin_kabkota", () => {
   const kab = staff("admin_kabkota", { kode: "1101", nama: "Aceh Selatan" });
 
-  it("melihat scope sendiri atau belum terikat, bukan kabupaten lain", () => {
+  it("melihat scope sendiri, bukan belum terikat atau kabupaten lain", () => {
     assert.equal(calonVisibleToOps(kab, { kode_kabupaten: "1101", kabupaten: "Aceh Selatan" }), true);
-    assert.equal(calonVisibleToOps(kab, { kode_kabupaten: null, kabupaten: null }), true);
+    assert.equal(calonVisibleToOps(kab, { kode_kabupaten: null, kabupaten: null }), false);
     assert.equal(calonVisibleToOps(kab, { kode_kabupaten: "1171", kabupaten: "Banda Aceh" }), false);
     assert.equal(calonVisibleToOps(staff("admin_provinsi"), { kode_kabupaten: "1171" }), true);
   });
@@ -290,7 +290,7 @@ describe("wilayah admin_kabkota", () => {
     const denied = authorizeCalonTolak(kab, { kode_kabupaten: "1171", kabupaten: "Banda Aceh" });
     assert.equal(denied.ok, false);
     if (!denied.ok) assert.equal(denied.status, 403);
-    assert.equal(authorizeCalonTolak(kab, { kode_kabupaten: null, kabupaten: null }).ok, true);
+    assert.equal(authorizeCalonTolak(kab, { kode_kabupaten: null, kabupaten: null }).ok, false);
   });
 });
 
