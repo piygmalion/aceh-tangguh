@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import type { ReportStatus } from "@/lib/supabase/types";

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { KejadianOperasiRow } from "@/lib/sik/db-tables";
 

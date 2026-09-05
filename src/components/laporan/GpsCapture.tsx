@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { MapPin, Navigation } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { inAcehBounds } from "@/lib/laporan/definitions";
 
 export type LokasiValue = {

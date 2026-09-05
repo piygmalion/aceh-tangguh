@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 

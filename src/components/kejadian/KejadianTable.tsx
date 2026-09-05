@@ -12,7 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Download, MapPin, Search, X } from "lucide-react";
 import { KejadianAnalisis } from "@/components/kejadian/KejadianAnalisis";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button-legacy";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Link } from "@/i18n/routing";
