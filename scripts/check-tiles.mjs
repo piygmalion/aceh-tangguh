@@ -6,7 +6,10 @@
  * Per-tile limit: 500 KB (Mapbox vector tile payload). Archive size is not that
  * limit — village-r3p.pmtiles ~2.9 MB is fine. Second gate: that archive < 4 MB.
  * Known overlays must keep MapViewport source-layers: r3p, kecamatan, village, irbi.
- * Carto raster remains the default basemap. Geometry stays on disk, not PostGIS.
+ * Optional Aceh OSM basemap extract (`aceh-osm.pmtiles`) is checked for header +
+ * OpenMapTiles source-layers only when present — never rebuilt here, never a
+ * planet archive. Carto raster remains the default basemap. Geometry stays on
+ * disk, not PostGIS. r3p-kab.pmtiles stays required (villageDistribution LOD z<9).
  *
  * Usage:
  *   node scripts/check-tiles.mjs
@@ -17,6 +20,11 @@ import { open, readdir, stat } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { PMTiles, TileType, tileIdToZxy } from "pmtiles";
+import {
+  ACEH_OSM_ARCHIVE,
+  ACEH_OSM_REQUIRED_LAYERS,
+  missingAcehOsmLayers,
+} from "./lib/aceh-osm-layers.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 const DEFAULT_DIR = join(ROOT, "public", "tiles");
@@ -24,6 +32,7 @@ const DEFAULT_LIMIT_BYTES = 500 * 1024;
 
 /** @type {Record<string, { sourceLayer: string, maxArchiveBytes?: number }>} */
 const EXPECTED_OVERLAYS = {
+  // Required. villageDistribution LOD z<9 paints this archive — do not delete.
   "r3p-kab.pmtiles": { sourceLayer: "r3p" },
   "kecamatan-r3p.pmtiles": {
     sourceLayer: "kecamatan",
@@ -35,6 +44,11 @@ const EXPECTED_OVERLAYS = {
   },
   "irbi-2025.pmtiles": { sourceLayer: "irbi" },
 };
+
+/**
+ * Overlay size/source-layer gates do not apply to the optional Aceh OSM basemap.
+ * Brand presets need OpenMapTiles layers; per-tile 500 KB is an overlay budget.
+ */
 
 class NodeFileSource {
   /**
@@ -171,7 +185,11 @@ function parseArgs(argv) {
       continue;
     }
     if (arg === "--help" || arg === "-h") {
-      console.log("Usage: node scripts/check-tiles.mjs [--limit=512000] [file.pmtiles ...]");
+      console.log(
+        "Usage: node scripts/check-tiles.mjs [--limit=512000] [file.pmtiles ...]\n" +
+          "  Overlay archives: per-tile 500 KB + source-layer.\n" +
+          "  aceh-osm.pmtiles (optional): header + OpenMapTiles source-layers only.",
+      );
       process.exit(0);
     }
     if (arg.startsWith("-")) {
@@ -207,6 +225,48 @@ async function resolveTargets(paths) {
     .map((name) => join(DEFAULT_DIR, name));
 }
 
+/**
+ * @param {string} filePath
+ * @param {{ header: import("pmtiles").Header, tiles: { z: number, x: number, y: number, bytes: number }[], fileBytes: number, metadata: unknown }} inspected
+ */
+function checkAcehOsmArchive(filePath, inspected) {
+  const { header, tiles, fileBytes, metadata } = inspected;
+  const label = relative(process.cwd(), filePath);
+  let archiveFailed = false;
+  let archiveWarned = 0;
+  const ids = vectorLayerIds(metadata);
+  const { missing, optionalMissing } = missingAcehOsmLayers(ids);
+
+  console.log(`==> ${label}  (Aceh OSM basemap extract — header/source-layers only)`);
+  console.log(`    archive: ${formatBytes(fileBytes)}  (not an overlay; no 500 KB tile gate)`);
+  console.log(
+    `    type: ${tileTypeLabel(header.tileType)}  zooms: ${header.minZoom}–${header.maxZoom}  tiles: ${tiles.length}`,
+  );
+  if (header.tileType !== TileType.Mvt && header.tileType !== TileType.Unknown) {
+    archiveFailed = true;
+    console.log(`    FAIL  expected Mapbox vector tiles, found ${tileTypeLabel(header.tileType)}`);
+  }
+  if (tiles.length === 0) {
+    archiveFailed = true;
+    console.log("    FAIL  archive has no tile entries");
+  }
+  if (missing.length) {
+    archiveFailed = true;
+    console.log(
+      `    FAIL  missing OpenMapTiles source-layer(s) ${missing.join(", ")} (brand presets)`,
+    );
+    console.log(`    found: ${ids.join(", ") || "(none)"}`);
+  } else {
+    console.log(`    source-layers: ${ACEH_OSM_REQUIRED_LAYERS.join(" ")}`);
+  }
+  if (optionalMissing.length) {
+    archiveWarned += 1;
+    console.log(`    warn  optional layers missing: ${optionalMissing.join(", ")}`);
+  }
+  console.log("");
+  return { failed: archiveFailed, warned: archiveWarned };
+}
+
 const { limitBytes: LIMIT_BYTES, warnBytes: WARN_BYTES, paths: cliPaths } = parseArgs(
   process.argv.slice(2),
 );
@@ -222,6 +282,22 @@ console.log(
 
 let failed = 0;
 let warned = 0;
+let sawAcehOsm = false;
+
+if (cliPaths.length === 0) {
+  const present = new Set(files.map((filePath) => filePath.split(/[\\/]/).pop() ?? ""));
+  for (const name of Object.keys(EXPECTED_OVERLAYS)) {
+    if (present.has(name)) continue;
+    failed += 1;
+    console.log(`==> public/tiles/${name}`);
+    console.log(
+      name === "r3p-kab.pmtiles"
+        ? "    FAIL  required overlay missing — do not delete; villageDistribution LOD z<9 still paints r3p-kab"
+        : "    FAIL  required overlay missing",
+    );
+    console.log("");
+  }
+}
 
 for (const filePath of files) {
   const label = relative(process.cwd(), filePath);
@@ -239,6 +315,13 @@ for (const filePath of files) {
     continue;
   }
   const basename = filePath.split(/[\\/]/).pop() ?? "";
+  if (basename === ACEH_OSM_ARCHIVE) {
+    sawAcehOsm = true;
+    const result = checkAcehOsmArchive(filePath, { header, tiles, fileBytes, metadata });
+    if (result.failed) failed += 1;
+    warned += result.warned;
+    continue;
+  }
   const expected = EXPECTED_OVERLAYS[basename];
   let archiveFailed = false;
   const max = tiles.reduce(
@@ -315,12 +398,19 @@ for (const filePath of files) {
   console.log("");
 }
 
+if (!sawAcehOsm && cliPaths.length === 0) {
+  console.log(
+    `==> public/tiles/${ACEH_OSM_ARCHIVE}  skip (not built; npm run build:aceh-osm — local/manual, not CI)`,
+  );
+  console.log("");
+}
+
 if (failed) {
   console.error(`${failed} archive(s) failed the overlay tile check`);
   process.exit(1);
 }
 console.log(
-  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; village/kecamatan archive budgets and source-layers ok).`,
+  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; required archives including r3p-kab present; village/kecamatan archive budgets and source-layers ok).`,
 );
 if (warned) {
   console.log(`${warned} warning(s) — see above.`);

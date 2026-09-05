@@ -1,5 +1,6 @@
 import type { AreaLayerKey, MarkerLayerKey } from "./types";
 import type { MapLayerKind, MapLayerSourceType } from "./supabase/types";
+import { overlayPmtilesUrl } from "./tiles-url";
 
 /**
  * Local registry aligned with the map toolbar.
@@ -106,7 +107,7 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     description: "Choropleth desa / gampong (R3P rumah rusak) with kab → kecamatan → desa zoom LOD.",
     source_path: "/fixtures/areas/villageDistribution.geojson",
     source_type: "pmtiles",
-    pmtiles_path: "/tiles/village-r3p.pmtiles",
+    pmtiles_path: overlayPmtilesUrl("village-r3p.pmtiles"),
     enabled: true,
     sort_order: 10,
     meta: { toolbar: "distribusi" },
@@ -119,7 +120,7 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     description: "Choropleth kab/kota R3P (RR+RS+RB).",
     source_path: "/fixtures/areas/r3pDistribution.geojson",
     source_type: "pmtiles",
-    pmtiles_path: "/tiles/r3p-kab.pmtiles",
+    pmtiles_path: overlayPmtilesUrl("r3p-kab.pmtiles"),
     enabled: false,
     sort_order: 20,
     meta: { toolbar: "distribusi", retired: true },
@@ -132,7 +133,7 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     description: "Indeks Risiko Bencana Indonesia 2025 per kab/kota Aceh.",
     source_path: "/fixtures/areas/irbi2025.geojson",
     source_type: "pmtiles",
-    pmtiles_path: "/tiles/irbi-2025.pmtiles",
+    pmtiles_path: overlayPmtilesUrl("irbi-2025.pmtiles"),
     enabled: true,
     sort_order: 30,
     meta: { toolbar: "distribusi" },

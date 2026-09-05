@@ -15,6 +15,8 @@
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test src/lib/*.test.ts src/lib/**/*.test.ts scripts/**/*.test.mjs",
     "build:tiles": "bash scripts/build-pmtiles.sh",
+    "build:aceh-osm": "bash scripts/build-aceh-osm-pmtiles.sh",
+    "sync:tiles": "bash scripts/sync-tiles-s3.sh",
     "build:village-geoportal": "python3 scripts/build-village-distribution-geoportal.py",
     "dissolve:kecamatan": "node scripts/dissolve-kecamatan-distribution.mjs",
     "check:tiles": "node scripts/check-tiles.mjs",

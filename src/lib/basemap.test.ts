@@ -14,8 +14,10 @@ import {
   BRAND_BASEMAP_IDS,
   DARK_WATER,
   INK_SCALE,
+  OPENFREEMAP_TILEJSON,
   buildBrandBasemapStyle,
   collectStylePaintHex,
+  resolveBrandVectorTilesSource,
 } from "./basemap-presets";
 
 const FORBIDDEN = [
@@ -189,5 +191,40 @@ describe("brand MapLibre presets", () => {
     const source = style.sources.openmaptiles as { url?: string };
     assert.equal(source.url, "https://tiles.openfreemap.org/planet");
     assert.equal("sprite" in style, false);
+  });
+
+  it("prefers the Aceh extract when configured, else OpenFreeMap", () => {
+    const prevAceh = process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+    delete process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+    try {
+      const ofm = resolveBrandVectorTilesSource();
+      assert.equal(ofm.kind, "openfreemap");
+      assert.equal(ofm.url, OPENFREEMAP_TILEJSON);
+
+      const local = resolveBrandVectorTilesSource({ localAcehOsmPresent: true });
+      assert.equal(local.kind, "aceh-pmtiles");
+      assert.equal(local.url, "pmtiles:///tiles/aceh-osm.pmtiles");
+
+      const remote = buildBrandBasemapStyle("brand-light", {
+        acehOsmUrl: "https://cdn.example.com/aceh-osm.pmtiles",
+      });
+      const source = remote.sources.openmaptiles as {
+        url?: string;
+        attribution?: string;
+      };
+      assert.equal(source.url, "pmtiles://https://cdn.example.com/aceh-osm.pmtiles");
+      assert.match(source.attribution ?? "", /Aceh extract/);
+
+      process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES = "/tiles/aceh-osm.pmtiles";
+      const fromEnv = resolveBrandVectorTilesSource();
+      assert.equal(fromEnv.kind, "aceh-pmtiles");
+      assert.equal(fromEnv.url, "pmtiles:///tiles/aceh-osm.pmtiles");
+
+      const fallback = getBasemapStyle("brand-light", { rasterFallback: true });
+      assert.equal(fallback, BASEMAP_RASTER.positron);
+    } finally {
+      if (prevAceh === undefined) delete process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+      else process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES = prevAceh;
+    }
   });
 });
