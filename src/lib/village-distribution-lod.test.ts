@@ -108,6 +108,7 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(isVillageLodZoom(10.99), false);
     assert.equal(isVillageLodZoom(11), true);
     assert.deepEqual(villageDistributionTiles(7), PMTILES_KAB);
+    assert.equal(villageDistributionTiles(7).url, "/tiles/r3p-kab.pmtiles");
     assert.equal(villageDistributionTiles(7).sourceLayer, "r3p");
     assert.deepEqual(villageDistributionTiles(9), PMTILES_KECAMATAN);
     assert.equal(villageDistributionTiles(10).sourceLayer, "kecamatan");

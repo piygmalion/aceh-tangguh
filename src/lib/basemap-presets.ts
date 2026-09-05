@@ -1,5 +1,11 @@
 import type { BrandBasemapId } from "./types";
 import { COLOR_TOKENS } from "./layer-colors";
+import {
+  ACEH_OSM_PMTILES_FILENAME,
+  configuredAcehOsmPmtilesUrl,
+  overlayPmtilesUrl,
+  toMapLibreVectorSourceUrl,
+} from "./tiles-url";
 
 /**
  * Ink scale 50–900 derived from paper #F4F5F0, charcoal #242420, and ink #1A1A17.
@@ -416,7 +422,47 @@ function layersFor(p: Palette): MapLibreLayer[] {
   ];
 }
 
-export function buildBrandBasemapStyle(id: BrandBasemapId): MapLibreStyleV8 {
+export type BrandVectorTilesKind = "aceh-pmtiles" | "openfreemap";
+
+export type BrandVectorTilesSource = {
+  kind: BrandVectorTilesKind;
+  url: string;
+  attribution: string;
+};
+
+/**
+ * Brand vector tiles: Aceh extract when env/file is configured, else OpenFreeMap
+ * planet TileJSON. Carto raster is applied by `getBasemapStyle({ rasterFallback })`.
+ */
+export function resolveBrandVectorTilesSource(opts?: {
+  acehOsmUrl?: string | null;
+  localAcehOsmPresent?: boolean;
+}): BrandVectorTilesSource {
+  const aceh =
+    opts?.acehOsmUrl?.trim() ||
+    configuredAcehOsmPmtilesUrl() ||
+    (opts?.localAcehOsmPresent
+      ? overlayPmtilesUrl(ACEH_OSM_PMTILES_FILENAME)
+      : null);
+  if (aceh) {
+    return {
+      kind: "aceh-pmtiles",
+      url: toMapLibreVectorSourceUrl(aceh),
+      attribution: "© OpenStreetMap © OpenMapTiles · Aceh extract",
+    };
+  }
+  return {
+    kind: "openfreemap",
+    url: OPENFREEMAP_TILEJSON,
+    attribution: "© OpenFreeMap © OpenMapTiles © OpenStreetMap",
+  };
+}
+
+export function buildBrandBasemapStyle(
+  id: BrandBasemapId,
+  opts?: { acehOsmUrl?: string | null; localAcehOsmPresent?: boolean }
+): MapLibreStyleV8 {
+  const tiles = resolveBrandVectorTilesSource(opts);
   return {
     version: 8,
     name: STYLE_NAMES[id],
@@ -424,8 +470,8 @@ export function buildBrandBasemapStyle(id: BrandBasemapId): MapLibreStyleV8 {
     sources: {
       openmaptiles: {
         type: "vector",
-        url: OPENFREEMAP_TILEJSON,
-        attribution: "© OpenFreeMap © OpenMapTiles © OpenStreetMap",
+        url: tiles.url,
+        attribution: tiles.attribution,
       },
     },
     layers: layersFor(PALETTES[id]),

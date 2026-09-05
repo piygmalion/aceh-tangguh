@@ -150,7 +150,15 @@ Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
 
 `villageDistribution` LOD: **z<9** kab, **z 9–10** kecamatan, **z≥11** desa. Rebuild the dissolve with `node scripts/dissolve-kecamatan-distribution.mjs` (requires shapely).
 
-`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS.
+`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS. Set `NEXT_PUBLIC_TILES_BASE_URL` to serve the same filenames from S3/R2. **Do not delete `r3p-kab.pmtiles`** — villageDistribution LOD z<9 still paints it. Retiring that archive is a follow-up after an LOD0 replacement.
+
+Optional Aceh OSM basemap extract (brand presets only, never the default):
+
+```
+npm run build:aceh-osm
+```
+
+Writes `public/tiles/aceh-osm.pmtiles` (gitignored; Aceh bbox only — no planet). Point brand styles at it with `NEXT_PUBLIC_ACEH_OSM_PMTILES` or drop the file under `/tiles`. Opt-in upload: `bash scripts/sync-tiles-s3.sh --dry-run` (skips if S3 env is missing). See `docs/basemap.md`.
 
 ## Basemap (Carto raster + Sentinel)
 

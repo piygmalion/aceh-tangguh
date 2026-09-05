@@ -87,3 +87,4 @@ ls -lh "$OUT"/*.pmtiles
 echo "==> Checking per-tile sizes (500 KB limit, not archive size)"
 node "$ROOT/scripts/check-tiles.mjs"
 echo "Done. MapViewport will prefer these when present under /tiles/."
+echo "Aceh OSM basemap extract is separate: npm run build:aceh-osm (not this script)."

@@ -57,6 +57,10 @@ strix_runs/
 # overlay ETL scratch (unfiltered national dumps)
 public/fixtures/overlays/_raw*
 
+# Local Aceh OSM basemap extract (rebuild: npm run build:aceh-osm). Do not commit planet.
+public/tiles/aceh-osm.pmtiles
+public/tiles/_osm-src/
+
 # local SIK master SQLite (do not commit operational dumps)
 data/sik/*
 !data/sik/README.md

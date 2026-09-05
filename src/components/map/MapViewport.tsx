@@ -26,6 +26,11 @@ import type {
   OverlayLayerKey,
 } from "@/lib/types";
 import { getBasemapStyle, isBrandBasemapId } from "@/lib/basemap";
+import {
+  ACEH_OSM_PMTILES_FILENAME,
+  configuredAcehOsmPmtilesUrl,
+  overlayPmtilesUrl,
+} from "@/lib/tiles-url";
 import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
@@ -141,15 +146,15 @@ const PMTILES_AREA: Partial<
   Record<AreaLayerKey, { url: string; sourceLayer: string }>
 > = {
   r3pDistribution: {
-    url: "/tiles/r3p-kab.pmtiles",
+    url: overlayPmtilesUrl("r3p-kab.pmtiles"),
     sourceLayer: "r3p",
   },
   villageDistribution: {
-    url: "/tiles/village-r3p.pmtiles",
+    url: overlayPmtilesUrl("village-r3p.pmtiles"),
     sourceLayer: "village",
   },
   irbi2025: {
-    url: "/tiles/irbi-2025.pmtiles",
+    url: overlayPmtilesUrl("irbi-2025.pmtiles"),
     sourceLayer: "irbi",
   },
 };
@@ -451,13 +456,25 @@ export function MapViewport({
     setVectorFailed(false);
   }, [basemap, preferVector]);
 
+  const acehOsmConfigured = configuredAcehOsmPmtilesUrl();
+  const acehOsmCandidate =
+    acehOsmConfigured ?? overlayPmtilesUrl(ACEH_OSM_PMTILES_FILENAME);
+  const { data: acehOsmPresent } = useQuery({
+    queryKey: ["pmtiles-exists", acehOsmCandidate],
+    queryFn: () => pmtilesExists(acehOsmCandidate),
+    enabled: isBrandBasemapId(basemap) && !acehOsmConfigured,
+    staleTime: 60_000,
+  });
+
   const mapStyle = useMemo(
     () =>
       getBasemapStyle(basemap, {
         preferVector: preferVector && !vectorFailed,
         rasterFallback: vectorFailed,
+        acehOsmUrl: acehOsmConfigured,
+        localAcehOsmPresent: acehOsmConfigured ? undefined : acehOsmPresent === true,
       }),
-    [basemap, preferVector, vectorFailed]
+    [basemap, preferVector, vectorFailed, acehOsmConfigured, acehOsmPresent]
   );
 
   const haloStroke = useMemo(() => markerHaloStroke(basemap), [basemap]);

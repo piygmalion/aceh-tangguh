@@ -2,6 +2,7 @@ import type { FilterSpecification } from "maplibre-gl";
 import type { Geometry, Position } from "geojson";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import type { VillageClickSelection } from "@/lib/profil-desa";
+import { overlayPmtilesUrl } from "@/lib/tiles-url";
 
 /** Below this zoom, villageDistribution paints r3p-kab only. */
 export const KECAMATAN_LOD_MIN_ZOOM = 9;
@@ -29,18 +30,19 @@ export function isAreaFillLayerId(id: string | undefined): boolean {
   return !!id && (AREA_FILL_LAYER_IDS as readonly string[]).includes(id);
 }
 
+/** z<9 villageDistribution LOD — do not delete r3p-kab; retirement is a follow-up. */
 export const PMTILES_KAB = {
-  url: "/tiles/r3p-kab.pmtiles",
+  url: overlayPmtilesUrl("r3p-kab.pmtiles"),
   sourceLayer: "r3p",
 } as const;
 
 export const PMTILES_KECAMATAN = {
-  url: "/tiles/kecamatan-r3p.pmtiles",
+  url: overlayPmtilesUrl("kecamatan-r3p.pmtiles"),
   sourceLayer: "kecamatan",
 } as const;
 
 export const PMTILES_VILLAGE = {
-  url: "/tiles/village-r3p.pmtiles",
+  url: overlayPmtilesUrl("village-r3p.pmtiles"),
   sourceLayer: "village",
 } as const;
 
