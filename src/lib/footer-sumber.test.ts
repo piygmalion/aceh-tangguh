@@ -21,13 +21,23 @@ describe("footer sumber column", () => {
     }
     const ids = FOOTER_SUMBER.map((row) => row.id);
     assert.deepEqual(ids, [
-      "dibi-aceh",
-      "magma-gempa",
-      "weather-forecast",
-      "sipongi-hotspot",
-      "village-borders",
+      "irbi-2025",
+      "compiled-r3p",
+      "publikasi-kegiatan",
+      "publikasi-btt",
       "analisis-anggaran-2026",
     ]);
+    assert.equal(ids.includes("dibi-aceh"), false);
+    assert.equal(ids.includes("magma-gempa"), false);
+    assert.equal(ids.includes("sipongi-hotspot"), false);
+    assert.equal(ids.includes("village-borders"), false);
+  });
+
+  it("keeps DIBI / MAGMA / Sipongi / Geoportal in the catalog without inventing them", () => {
+    const catalogIds = new Set(DATA_SOURCES.map((row) => row.id));
+    for (const id of ["dibi-aceh", "magma-gempa", "sipongi-hotspot", "village-borders"]) {
+      assert.equal(catalogIds.has(id), true, `catalog missing optional ${id}`);
+    }
   });
 
   it("renders Sumber data as the fourth column at the 13px type floor", () => {

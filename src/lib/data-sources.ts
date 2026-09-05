@@ -482,16 +482,16 @@ export const DATA_SOURCES: DataSourceEntry[] = [
 ];
 
 /**
- * Footer “Sumber data” column — official catalog rows only.
- * Short labels match the signed SoT (BNPB/DIBI, MAGMA, BMKG, Sipongi,
- * Geoportal desa, Anggaran). Do not invent sources here.
+ * Footer “Sumber data” column — Data + Designer lock.
+ * Five DB-backed catalog rows first. DIBI / MAGMA / Sipongi / Geoportal
+ * exist in DATA_SOURCES but are not listed here (optional extras only).
+ * Do not invent sources or URLs; hashes match existing `/sumber-data#id`.
  */
 export const FOOTER_SUMBER_IDS = [
-  "dibi-aceh",
-  "magma-gempa",
-  "weather-forecast",
-  "sipongi-hotspot",
-  "village-borders",
+  "irbi-2025",
+  "compiled-r3p",
+  "publikasi-kegiatan",
+  "publikasi-btt",
   "analisis-anggaran-2026",
 ] as const;
 
@@ -506,39 +506,33 @@ export type FooterSumberLink = {
 
 export const FOOTER_SUMBER: FooterSumberLink[] = [
   {
-    id: "dibi-aceh",
-    labelId: "BNPB / DIBI",
-    labelEn: "BNPB / DIBI",
-    hash: "dibi-aceh",
+    id: "irbi-2025",
+    labelId: "BNPB IRBI",
+    labelEn: "BNPB IRBI",
+    hash: "irbi-2025",
   },
   {
-    id: "magma-gempa",
-    labelId: "MAGMA",
-    labelEn: "MAGMA",
-    hash: "magma-gempa",
+    id: "compiled-r3p",
+    labelId: "Spreadsheet R3P",
+    labelEn: "R3P spreadsheet",
+    hash: "compiled-r3p",
   },
   {
-    id: "weather-forecast",
-    labelId: "BMKG",
-    labelEn: "BMKG",
-    hash: "weather-forecast",
+    id: "publikasi-kegiatan",
+    labelId: "BPBA",
+    labelEn: "BPBA",
+    hash: "publikasi-kegiatan",
   },
   {
-    id: "sipongi-hotspot",
-    labelId: "Sipongi",
-    labelEn: "Sipongi",
-    hash: "sipongi-hotspot",
-  },
-  {
-    id: "village-borders",
-    labelId: "Geoportal desa",
-    labelEn: "Village geoportal",
-    hash: "village-borders",
+    id: "publikasi-btt",
+    labelId: "Tanggapi",
+    labelEn: "Tanggapi",
+    hash: "publikasi-btt",
   },
   {
     id: "analisis-anggaran-2026",
-    labelId: "Anggaran",
-    labelEn: "Budget",
+    labelId: "PERGUB APBA",
+    labelEn: "PERGUB APBA",
     hash: "analisis-anggaran-2026",
   },
 ];
