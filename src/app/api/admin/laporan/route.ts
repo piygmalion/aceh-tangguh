@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { requireStaffApi, sanitizeSearch } from "@/lib/auth/admin";
+import { requireModuleApi, sanitizeSearch } from "@/lib/auth/admin";
 import { decryptPii } from "@/lib/laporan/crypto";
 import { queueWaNotification } from "@/lib/laporan/service";
 import { isLaporanStatus, LAPORAN_STATUSES, type LaporanStatus } from "@/lib/laporan/status";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * JWT GRANT on laporan_* is column-limited (no jawaban_json / pelapor_id).
- * Staff moderation reads those via service_role after requireStaffApi.
+ * Staff moderation reads those via service_role after requireModuleApi("moderasi").
  */
 function requireStaffLaporanClient():
   | { ok: true; client: TypedSupabaseClient }
@@ -125,7 +125,7 @@ function toPenangananItem(row: {
 }
 
 export async function GET(req: NextRequest) {
-  const auth = await requireStaffApi();
+  const auth = await requireModuleApi("moderasi");
   if (!auth.ok) return auth.response;
   const svc = requireStaffLaporanClient();
   if (!svc.ok) return svc.response;
@@ -213,7 +213,7 @@ export async function PATCH(req: NextRequest) {
   const cross = rejectCrossOrigin(req);
   if (cross) return cross;
 
-  const auth = await requireStaffApi();
+  const auth = await requireModuleApi("moderasi");
   if (!auth.ok) return auth.response;
   const svc = requireStaffLaporanClient();
   if (!svc.ok) return svc.response;

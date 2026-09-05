@@ -123,3 +123,34 @@ export function matchesKabScope(
   const nama = row.kabupaten?.trim();
   return kode === scope || nama === scope;
 }
+
+export type ScopeDecision =
+  | { ok: true }
+  | { ok: false; status: 403 | 409; error: string };
+
+export function authorizeKejadianDelete(
+  profile: AdminProfile | null,
+  row: {
+    kode_kabupaten?: string | null;
+    kabupaten?: string | null;
+    fase_data?: string | null;
+  }
+): ScopeDecision {
+  if (!matchesKabScope(profile, row)) {
+    return { ok: false, status: 403, error: "forbidden" };
+  }
+  if (row.fase_data === "statis" && !canLockStatis(profile)) {
+    return { ok: false, status: 409, error: "Data statis terkunci" };
+  }
+  return { ok: true };
+}
+
+export function authorizeDampakRead(
+  profile: AdminProfile | null,
+  row: { kode_kabupaten?: string | null; kabupaten?: string | null }
+): ScopeDecision {
+  if (!matchesKabScope(profile, row)) {
+    return { ok: false, status: 403, error: "forbidden" };
+  }
+  return { ok: true };
+}

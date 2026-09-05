@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireOpsApi } from "@/lib/auth/admin";
-import { matchesKabScope } from "@/lib/sik/roles";
+import { authorizeDampakRead, matchesKabScope } from "@/lib/sik/roles";
 import { dampakSchema } from "@/lib/sik/schemas";
 import { rejectCrossOrigin } from "@/lib/security/origin";
 import {
@@ -19,6 +19,20 @@ export async function GET(
 ) {
   const auth = await requireOpsApi();
   if (!auth.ok) return auth.response;
+
+  const { data: headerRow, error: headerError } = await auth.supabase
+    .from("kejadian_operasi")
+    .select("*")
+    .eq("id", params.id)
+    .maybeSingle();
+  if (headerError) return NextResponse.json({ error: headerError.message }, { status: 500 });
+  if (!headerRow) return NextResponse.json({ error: "not found" }, { status: 404 });
+  const header = headerRow as KejadianOperasiRow;
+  const decision = authorizeDampakRead(auth.profile, header);
+  if (!decision.ok) {
+    return NextResponse.json({ error: decision.error }, { status: decision.status });
+  }
+
   const { data, error } = await auth.supabase
     .from("kejadian_dampak")
     .select("*")

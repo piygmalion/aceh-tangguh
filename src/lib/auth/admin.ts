@@ -7,7 +7,7 @@ import {
 } from "@/lib/supabase/ssr";
 import type { AdminProfileRow } from "@/lib/supabase/types";
 import { isSuperAdmin, type AdminProfile } from "@/lib/auth/types";
-import { canAccessModule } from "@/lib/sik/roles";
+import { canAccessModule, type SikModule } from "@/lib/sik/roles";
 
 export type { AdminProfile } from "@/lib/auth/types";
 export { isSuperAdmin, isStaff } from "@/lib/auth/types";
@@ -142,14 +142,29 @@ export async function requireSuperAdminApi(): Promise<ApiOk | ApiErr> {
   return staff;
 }
 
-export async function requireOpsApi(): Promise<ApiOk | ApiErr> {
+export function authorizeStaffModule(
+  profile: AdminProfile | null,
+  module: SikModule
+): { ok: true } | { ok: false; status: 403; error: "forbidden" } {
+  if (!canAccessModule(profile, module)) {
+    return { ok: false, status: 403, error: "forbidden" };
+  }
+  return { ok: true };
+}
+
+export async function requireModuleApi(module: SikModule): Promise<ApiOk | ApiErr> {
   const staff = await requireStaffApi();
   if (!staff.ok) return staff;
-  if (!canAccessModule(staff.profile, "kejadian")) {
+  const gate = authorizeStaffModule(staff.profile, module);
+  if (!gate.ok) {
     return {
       ok: false,
-      response: NextResponse.json({ error: "forbidden" }, { status: 403 }),
+      response: NextResponse.json({ error: gate.error }, { status: gate.status }),
     };
   }
   return staff;
+}
+
+export async function requireOpsApi(): Promise<ApiOk | ApiErr> {
+  return requireModuleApi("kejadian");
 }

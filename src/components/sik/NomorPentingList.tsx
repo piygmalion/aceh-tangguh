@@ -1,10 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 
 export function NomorPentingList() {
+  const t = useTranslations("nomorPentingPublic");
   const { data } = useQuery({
     queryKey: ["nomor-penting"],
     queryFn: async () => {
@@ -24,7 +26,7 @@ export function NomorPentingList() {
         </GlassPanel>
       ))}
       {(data?.items ?? []).length === 0 ? (
-        <p className="text-sm text-[var(--text-dim)]">Belum ada nomor yang dipublikasikan.</p>
+        <p className="text-sm text-[var(--text-dim)]">{t("empty")}</p>
       ) : null}
     </div>
   );

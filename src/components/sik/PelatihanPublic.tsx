@@ -2,11 +2,13 @@
 
 import { useState, type FormEvent } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 
 export function PelatihanPublic() {
+  const t = useTranslations("pelatihanPublic");
   const [form, setForm] = useState({
     judul: "",
     desa: "",
@@ -39,7 +41,7 @@ export function PelatihanPublic() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <div>
-        <h2 className="font-semibold">Jadwal pelatihan</h2>
+        <h2 className="font-semibold">{t("scheduleTitle")}</h2>
         <ul className="mt-3 space-y-2 text-sm">
           {(data?.items ?? []).map((row) => (
             <li key={row.id} className="border-t border-[var(--border)] py-2">

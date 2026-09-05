@@ -326,6 +326,19 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     sort_order: 920,
     meta: { retired: true },
   },
+  {
+    key: "tatonasStations",
+    kind: "overlay",
+    title_id: "Pos hidrologi Tatonas",
+    title_en: "Tatonas hydrology posts",
+    description: "Live overlay pos muka air Tatonas (Aceh). Bukan marker toolbar Lokasi.",
+    source_path: "/api/overlay/tatonasStations",
+    source_type: "api",
+    pmtiles_path: null,
+    enabled: true,
+    sort_order: 610,
+    meta: { toolbar: "geospasial" },
+  },
 ];
 
 const RETIRED_SET = new Set<string>(RETIRED_MARKER_LAYER_KEYS);

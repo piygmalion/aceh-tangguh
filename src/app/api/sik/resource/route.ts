@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireStaffApi } from "@/lib/auth/admin";
+import { requireStaffApi, sanitizeSearch } from "@/lib/auth/admin";
 import { canAccessModule, type SikModule } from "@/lib/sik/roles";
 import { rejectCrossOrigin } from "@/lib/security/origin";
 import type { Database } from "@/lib/supabase/types";
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
   }
 
   const kejadianId = req.nextUrl.searchParams.get("kejadian_id");
-  const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
+  const q = sanitizeSearch(req.nextUrl.searchParams.get("q") ?? "");
   let query = auth.supabase
     .from(spec.table as keyof Database["public"]["Tables"])
     .select("*")

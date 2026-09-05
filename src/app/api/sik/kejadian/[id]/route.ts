@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireOpsApi } from "@/lib/auth/admin";
-import { matchesKabScope } from "@/lib/sik/roles";
+import { authorizeKejadianDelete, matchesKabScope } from "@/lib/sik/roles";
 import { kejadianWizardSchema } from "@/lib/sik/schemas";
 import { rejectCrossOrigin } from "@/lib/security/origin";
 import type { KejadianDampakRow, KejadianLokasiRow, KejadianOperasiRow } from "@/lib/sik/db-tables";
@@ -100,6 +100,20 @@ export async function DELETE(
   if (originErr) return originErr;
   const auth = await requireOpsApi();
   if (!auth.ok) return auth.response;
+
+  const { data: current, error: loadError } = await auth.supabase
+    .from("kejadian_operasi")
+    .select("*")
+    .eq("id", params.id)
+    .maybeSingle();
+  if (loadError) return NextResponse.json({ error: loadError.message }, { status: 500 });
+  if (!current) return NextResponse.json({ error: "not found" }, { status: 404 });
+
+  const decision = authorizeKejadianDelete(auth.profile, current as KejadianOperasiRow);
+  if (!decision.ok) {
+    return NextResponse.json({ error: decision.error }, { status: decision.status });
+  }
+
   const { error } = await auth.supabase.from("kejadian_operasi").delete().eq("id", params.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });

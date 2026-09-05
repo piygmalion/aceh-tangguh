@@ -1,4 +1,4 @@
-import type { AreaLayerKey, MarkerLayerKey } from "./types";
+import type { AreaLayerKey, MarkerLayerKey, OverlayLayerKey } from "./types";
 
 export const qk = {
   liveStats: ["stats", "live"] as const,
@@ -32,4 +32,6 @@ export const qk = {
   peringatanDini: ["peringatan-dini"] as const,
   sikStats: (year: string, kabupaten: string, jenis: string) =>
     ["sik", "stats", year, kabupaten, jenis] as const,
+  overlay: (key: OverlayLayerKey) => ["overlay", key] as const,
+  overlayPort: (kode: string) => ["overlay", "port", kode] as const,
 };

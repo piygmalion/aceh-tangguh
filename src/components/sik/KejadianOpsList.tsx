@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
@@ -9,6 +9,7 @@ import type { KejadianOperasiRow } from "@/lib/sik/db-tables";
 
 export function KejadianOpsList() {
   const t = useTranslations("admin");
+  const locale = useLocale();
   const [items, setItems] = useState<KejadianOperasiRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -89,7 +90,7 @@ export function KejadianOpsList() {
           <thead className="text-[var(--text-dim)]">
             <tr>
               <th className="px-2 py-2 font-medium">{t("colNomor")}</th>
-              <th className="px-2 py-2 font-medium">KIB</th>
+              <th className="px-2 py-2 font-medium">{t("colKib")}</th>
               <th className="px-2 py-2 font-medium">{t("colJenis")}</th>
               <th className="px-2 py-2 font-medium">{t("colPlace")}</th>
               <th className="px-2 py-2 font-medium">{t("colDate")}</th>
@@ -124,7 +125,7 @@ export function KejadianOpsList() {
                     {[row.desa_ringkas, row.kecamatan, row.kabupaten].filter(Boolean).join(", ") || "—"}
                   </td>
                   <td className="whitespace-nowrap px-2 py-3 text-[var(--text-dim)]">
-                    {new Date(row.waktu_kejadian).toLocaleString("id-ID")}
+                    {new Date(row.waktu_kejadian).toLocaleString(locale)}
                   </td>
                   <td className="px-2 py-3">
                     <span className="capitalize">{row.status}</span>

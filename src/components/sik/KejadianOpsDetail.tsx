@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
@@ -22,6 +23,8 @@ export function KejadianOpsDetail({
   id: string;
   canLockStatis?: boolean;
 }) {
+  const t = useTranslations("admin");
+  const locale = useLocale();
   const [item, setItem] = useState<KejadianOperasiRow | null>(null);
   const [lokasi, setLokasi] = useState<KejadianLokasiRow[]>([]);
   const [dampak, setDampak] = useState<KejadianDampakRow[]>([]);
@@ -33,7 +36,7 @@ export function KejadianOpsDetail({
   async function load() {
     const res = await fetch(`/api/sik/kejadian/${id}`, { cache: "no-store" });
     if (!res.ok) {
-      setError("Gagal memuat kejadian");
+      setError(t("loadKejadianError"));
       return;
     }
     const data = (await res.json()) as {
@@ -62,7 +65,7 @@ export function KejadianOpsDetail({
     setBusy(false);
     if (!res.ok) {
       const body = (await res.json().catch(() => null)) as { error?: string } | null;
-      setError(typeof body?.error === "string" ? body.error : "Gagal menyimpan dampak");
+      setError(typeof body?.error === "string" ? body.error : t("saveDampakError"));
       return;
     }
     setForm((f) => ({ ...emptyDampakForm(), tanggal: f.tanggal, korban_terpilah: normalizeKorbanTerpilah(null) }));
@@ -80,7 +83,7 @@ export function KejadianOpsDetail({
     setFaseBusy(false);
     if (!res.ok) {
       const body = (await res.json().catch(() => null)) as { error?: string } | null;
-      setError(typeof body?.error === "string" ? body.error : "Gagal mengubah fase data");
+      setError(typeof body?.error === "string" ? body.error : t("faseError"));
       return;
     }
     await load();
@@ -104,28 +107,28 @@ export function KejadianOpsDetail({
             </p>
             <h1 className="text-xl font-semibold">{item.nama_kejadian}</h1>
             <p className="mt-1 text-sm text-[var(--text-dim)]">
-              {item.jenis_bencana} · {item.tarikh ?? new Date(item.waktu_kejadian).toLocaleString("id-ID")} · {item.status}
+              {item.jenis_bencana} · {item.tarikh ?? new Date(item.waktu_kejadian).toLocaleString(locale)} · {item.status}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             {item.fase_data === "dinamis" ? (
               <Button size="sm" variant="outline" disabled={faseBusy} onClick={() => void setFase("diajukan")}>
-                Ajukan verifikasi
+                {t("ajukanVerifikasi")}
               </Button>
             ) : null}
             {item.fase_data === "diajukan" && canLockStatis ? (
               <Button size="sm" disabled={faseBusy} onClick={() => void setFase("statis")}>
-                Kunci data statis
+                {t("kunciDataStatis")}
               </Button>
             ) : null}
             {locked && canLockStatis ? (
               <Button size="sm" variant="outline" disabled={faseBusy} onClick={() => void setFase("dinamis")}>
-                Buka kunci
+                {t("bukaKunci")}
               </Button>
             ) : null}
             <Link href={{ pathname: "/admin/sik/kejadian/[id]/cetak", params: { id } }}>
               <Button variant="outline" size="sm">
-                Cetak Lampiran I
+                {t("cetakLampiranI")}
               </Button>
             </Link>
           </div>
@@ -137,7 +140,7 @@ export function KejadianOpsDetail({
         </p>
         {item.kondisi_mutakhir ? (
           <p className="mt-2 text-sm">
-            <span className="text-[var(--text-dim)]">Kondisi mutakhir: </span>
+            <span className="text-[var(--text-dim)]">{t("kondisiMutakhir")} </span>
             {item.kondisi_mutakhir}
           </p>
         ) : null}
@@ -177,9 +180,9 @@ export function KejadianOpsDetail({
       </GlassPanel>
 
       <GlassPanel className="p-5">
-        <h2 className="font-semibold">Desa terdampak</h2>
+        <h2 className="font-semibold">{t("desaTerdampak")}</h2>
         <ul className="mt-2 list-disc pl-5 text-sm">
-          {lokasi.length === 0 ? <li className="text-[var(--text-dim)]">Belum ada lokasi tambahan.</li> : null}
+          {lokasi.length === 0 ? <li className="text-[var(--text-dim)]">{t("noLokasi")}</li> : null}
           {lokasi.map((loc) => (
             <li key={loc.id}>
               {[loc.desa, loc.kecamatan, loc.kabupaten].filter(Boolean).join(", ")}
@@ -190,20 +193,20 @@ export function KejadianOpsDetail({
 
       <SikResourceManager
         resource="korban"
-        title="Korban (mikrodata)"
+        title={t("korbanMikrodata")}
         fields={["nama_enc", "kondisi", "desa", "ahli_waris", "keterangan"]}
         extra={{ kejadian_id: id }}
         staffOnlyNote="Nama tersimpan terenkripsi (kolom nama_enc). Jangan isi NIK mentah."
       />
       <SikResourceManager
         resource="pengungsi"
-        title="Pengungsi terpilah"
+        title={t("pengungsiTerpilah")}
         fields={["nama_enc", "jenis_kelamin", "kelompok_umur", "kelompok_rentan", "kondisi"]}
         extra={{ kejadian_id: id }}
       />
       <SikResourceManager
         resource="kerusakan"
-        title="Kerusakan aset"
+        title={t("kerusakanAset")}
         fields={["kategori", "sektor", "jenis", "level_kerusakan", "pemilik", "desa"]}
         extra={{ kejadian_id: id }}
       />

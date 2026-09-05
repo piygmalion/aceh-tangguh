@@ -35,7 +35,7 @@ export type HazardKind =
   | "lainnya";
 export type HazardSeverity = "low" | "med" | "high";
 
-export type MapLayerKind = "area" | "marker" | "boundary";
+export type MapLayerKind = "area" | "marker" | "boundary" | "overlay";
 export type MapLayerSourceType = "geojson" | "pmtiles" | "api" | "mixed";
 
 type EmptyRelationships = [];
@@ -1149,6 +1149,222 @@ export interface Database {
           fetched_at?: string;
           expires_at?: string;
           updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      overlay_live_features: {
+        Row: {
+          id: string;
+          layer_key: string;
+          source: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id: string;
+          longitude: number;
+          latitude: number;
+          occurred_at: string | null;
+          properties: Json;
+          created_at: string;
+          updated_at: string;
+          expires_at: string | null;
+        };
+        Insert: {
+          id: string;
+          layer_key: string;
+          source: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id: string;
+          longitude: number;
+          latitude: number;
+          occurred_at?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+          expires_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          layer_key?: string;
+          source?: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id?: string;
+          longitude?: number;
+          latitude?: number;
+          occurred_at?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+          expires_at?: string | null;
+        };
+        Relationships: [];
+      };
+      overlay_static_features: {
+        Row: {
+          id: string;
+          layer_key: string;
+          external_id: string;
+          name: string;
+          kode_bmkg: string | null;
+          longitude: number;
+          latitude: number;
+          source: string;
+          source_url: string | null;
+          properties: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          layer_key: string;
+          external_id: string;
+          name: string;
+          kode_bmkg?: string | null;
+          longitude: number;
+          latitude: number;
+          source?: string;
+          source_url?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          layer_key?: string;
+          external_id?: string;
+          name?: string;
+          kode_bmkg?: string | null;
+          longitude?: number;
+          latitude?: number;
+          source?: string;
+          source_url?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      overlay_live_refresh: {
+        Row: {
+          layer_key: string;
+          refreshed_at: string;
+          ok: boolean;
+          feature_count: number;
+          error: string | null;
+        };
+        Insert: {
+          layer_key: string;
+          refreshed_at: string;
+          ok: boolean;
+          feature_count: number;
+          error?: string | null;
+        };
+        Update: {
+          layer_key?: string;
+          refreshed_at?: string;
+          ok?: boolean;
+          feature_count?: number;
+          error?: string | null;
+        };
+        Relationships: EmptyRelationships;
+      };
+      maritime_forecast_cache: {
+        Row: {
+          kode: string;
+          jenis: "perairan" | "pelabuhan";
+          issued: string | null;
+          valid_from: string | null;
+          valid_to: string | null;
+          payload: Json;
+          fetched_at: string;
+          expires_at: string | null;
+        };
+        Insert: {
+          kode: string;
+          jenis: "perairan" | "pelabuhan";
+          issued?: string | null;
+          valid_from?: string | null;
+          valid_to?: string | null;
+          payload?: Json;
+          fetched_at?: string;
+          expires_at?: string | null;
+        };
+        Update: {
+          kode?: string;
+          jenis?: "perairan" | "pelabuhan";
+          issued?: string | null;
+          valid_from?: string | null;
+          valid_to?: string | null;
+          payload?: Json;
+          fetched_at?: string;
+          expires_at?: string | null;
+        };
+        Relationships: EmptyRelationships;
+      };
+      panduan_faq: {
+        Row: {
+          id: string;
+          pola: string;
+          intent: string;
+          body_id: string;
+          body_en: string;
+          href: string;
+          hash: string | null;
+          label_key: string;
+          published: boolean;
+          urutan: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          pola: string;
+          intent: string;
+          body_id: string;
+          body_en: string;
+          href: string;
+          hash?: string | null;
+          label_key?: string;
+          published?: boolean;
+          urutan?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          pola?: string;
+          intent?: string;
+          body_id?: string;
+          body_en?: string;
+          href?: string;
+          hash?: string | null;
+          label_key?: string;
+          published?: boolean;
+          urutan?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: EmptyRelationships;
+      };
+      panduan_unknown: {
+        Row: {
+          id: string;
+          query_sanitized: string;
+          locale: string;
+          reason: string;
+          pathname: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          query_sanitized: string;
+          locale?: string;
+          reason?: string;
+          pathname?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          query_sanitized?: string;
+          locale?: string;
+          reason?: string;
+          pathname?: string;
+          created_at?: string;
         };
         Relationships: EmptyRelationships;
       };

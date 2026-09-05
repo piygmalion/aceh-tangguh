@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 
@@ -13,6 +14,7 @@ type Agregat = {
 };
 
 export function MitraPublic() {
+  const t = useTranslations("mitraPublic");
   const { data } = useQuery({
     queryKey: ["mitra"],
     queryFn: async () => {
@@ -46,7 +48,7 @@ export function MitraPublic() {
         ))}
       </div>
       <section>
-        <h2 className="font-semibold">Agregat disabilitas (tanpa identitas)</h2>
+        <h2 className="font-semibold">{t("disabilityAgg")}</h2>
         <p className="mt-1 text-sm text-[var(--text-dim)]">
           Angka per kabupaten dari input staf. Nama dan NIK tidak dipublikasikan.
         </p>

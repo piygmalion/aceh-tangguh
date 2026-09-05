@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { destanaLevelLabel, type PkdLevel } from "@/lib/sik/pkd";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -17,6 +18,7 @@ type DestanaPayload = {
 };
 
 export function DestanaPublicList() {
+  const t = useTranslations("destanaPublic");
   const { data } = useQuery({
     queryKey: ["sik-destana"],
     queryFn: async () => {
@@ -40,10 +42,10 @@ export function DestanaPublicList() {
         <table className="min-w-full text-left text-sm">
           <thead className="text-[var(--text-dim)]">
             <tr>
-              <th className="px-2 py-2">Desa</th>
-              <th className="px-2 py-2">Kabupaten</th>
-              <th className="px-2 py-2">Status</th>
-              <th className="px-2 py-2">Indeks</th>
+              <th className="px-2 py-2">{t("colDesa")}</th>
+              <th className="px-2 py-2">{t("colKabupaten")}</th>
+              <th className="px-2 py-2">{t("colStatus")}</th>
+              <th className="px-2 py-2">{t("colIndeks")}</th>
             </tr>
           </thead>
           <tbody>

@@ -23,7 +23,7 @@ function escapeRegExp(value: string): string {
 
 function numberHasOperationalContext(body: string, n: string): boolean {
   const re = new RegExp(`(?:\\S+\\s+){0,3}\\b${escapeRegExp(n)}\\b(?:\\s+\\S+){0,3}`, "gi");
-  for (const match of body.matchAll(re)) {
+  for (const match of Array.from(body.matchAll(re))) {
     if (OPERATIONAL_CONTEXT.test(match[0])) return true;
   }
   return false;
