@@ -77,7 +77,7 @@ describe("signed type-floor", () => {
     assert.equal(/fonts\.googleapis/.test(css), false);
   });
 
-  it("caps the hero display and highlights brand as orange text", () => {
+  it("caps the hero display and highlights brand with orange bg + ink text", () => {
     const hero = readFileSync(
       path.join(ROOT, "src/components/HeroSection.tsx"),
       "utf8"
@@ -85,7 +85,9 @@ describe("signed type-floor", () => {
     assert.match(hero, /TYPE_HERO_DISPLAY_CLASS/);
     assert.match(hero, /TYPE_KICKER_CLASS/);
     assert.equal(HERO_OVERSIZE.test(hero), false);
-    assert.match(hero, /text-\[var\(--orange\)\]/);
+    assert.match(hero, /bg-accent/);
+    assert.match(hero, /text-accent-foreground/);
+    assert.equal(/text-\[var\(--orange\)\]/.test(hero), false);
     assert.match(hero, /t\.rich\("title"/);
     assert.match(hero, /brand: \(chunks\) =>/);
     assert.equal(/<mark className=/.test(hero), false);

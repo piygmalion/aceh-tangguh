@@ -6,9 +6,9 @@ type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-[var(--primary)] text-[var(--primary-fg)] shadow-sm hover:bg-[var(--primary-hover)] hover:shadow-md active:scale-[0.98]",
+    "bg-primary text-primary-foreground shadow-sm hover:bg-[var(--primary-hover)] hover:shadow-md active:scale-[0.98]",
   accent:
-    "bg-[var(--accent)] text-white shadow-sm hover:bg-[var(--accent-hover)] hover:shadow-md active:scale-[0.98]",
+    "bg-accent text-accent-foreground shadow-sm hover:bg-[var(--accent-hover)] hover:shadow-md active:scale-[0.98]",
   ghost:
     "bg-transparent text-[var(--text)] hover:bg-[var(--primary-dim)] active:scale-[0.98]",
   outline:
