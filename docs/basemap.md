@@ -67,24 +67,28 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 
 ## Overlay PMTiles (bukan basemap)
 
-`public/tiles/*.pmtiles` adalah **overlay vektor** (R3P kab, village, IRBI) yang dibangun tippecanoe dari `public/fixtures/areas/*.geojson`. Geometri tetap di disk — **bukan PostGIS**. **Carto raster tetap basemap default.** Jangan ganti default ke OpenFreeMap atau self-host planet PMTiles. Keputusan yang tetap ditolak: Cesium/globe, terrain DEM, Mapbox token, TiTiler di runtime. GitHub Pages auto-deploy tetap mati; workflow overlay tidak menghidupkannya.
+`public/tiles/*.pmtiles` adalah **overlay vektor** (R3P kab, kecamatan, village, IRBI) yang dibangun tippecanoe dari `public/fixtures/areas/*.geojson`. Geometri tetap di disk — **bukan PostGIS**. **Carto raster tetap basemap default.** Jangan ganti default ke OpenFreeMap atau self-host planet PMTiles. Keputusan yang tetap ditolak: Cesium/globe, terrain DEM, Mapbox token, TiTiler di runtime. GitHub Pages auto-deploy tetap mati; workflow overlay tidak menghidupkannya.
 
 `MapViewport` membaca `source-layer` yang sama dengan `tippecanoe --layer`:
 
 | Arsip | Source-layer | Sumber |
 |---|---|---|
 | `r3p-kab.pmtiles` | `r3p` | `r3pDistribution.geojson` |
+| `kecamatan-r3p.pmtiles` | `kecamatan` | `kecamatanDistribution.geojson` (dissolve by `kode_kecamatan`) |
 | `village-r3p.pmtiles` | `village` | `villageDistribution.geojson` |
 | `irbi-2025.pmtiles` | `irbi` | `irbi2025.geojson` |
 
-`villageDistribution` uses both archives as zoom LOD (tiles only, no remount, no retile): **z<9** paints `r3p-kab` only; **z≥9** swaps to `village-r3p`. Desa outlines start at **z11**. After a kab/kec selection, village features filter on existing `kode_kecamatan` / `kode_kab` / `kode_kabupaten` / `kode_desa_kelurahan` (never kecamatan name). Leftovers without kode stay visible. Overlay fill/outline/highlight use `beforeId=basemap-label-place` when that brand layer exists; Carto raster omits `beforeId`.
+`villageDistribution` uses three archives as zoom LOD (tiles only, no remount, no retile): **z<9** paints `r3p-kab` only; **z 9–10** paints `kecamatan-r3p` only (no village mesh); **z≥11** paints `village-r3p` (desa fill + outlines). After a kab/kec selection, kecamatan and village features filter on existing `kode_kecamatan` (6-digit) / `kode_kab` / `kode_kabupaten` / `kode_desa_kelurahan` — never kecamatan name. Leftovers without `kode_kecamatan` stay **out** of the kecamatan dissolve (no invented codes) and remain on village tiles only. Overlay fill/outline/highlight use `beforeId=marker-clusters` when that layer exists, else `basemap-label-place`; Carto raster omits `beforeId` when neither is mounted.
 
-Village tiles carry `properties.kode_desa_kelurahan` (10-digit BPS) **only where the source GeoJSON already has it**. Slug-only leftover polygons stay without a BPS id — the rebuild does not invent codes or remap leftover names. `MapViewport` joins village clicks on that property, not on MVT feature ids. `kode_kecamatan` is kept when present. Do not use tippecanoe `--use-attribute-for-id=kode_desa_kelurahan` (string BPS codes are not valid MVT ids; numeric conversion would drop the property and can invent `0` for empty kode).
+Rebuild kecamatan polygons with `node scripts/dissolve-kecamatan-distribution.mjs` (group key = `kode_kecamatan` only; bucket = sum `rumah_rr+rumah_rs+rumah_rb` then the same desa terciles t1=106 / t2=1184). Do not seed `area_feature_meta` from this dissolve.
 
-Batas (dua gerbang):
+Village tiles carry `properties.kode_desa_kelurahan` (10-digit BPS) **only where the source GeoJSON already has it**. Slug-only leftover polygons stay without a BPS id — the rebuild does not invent codes or remap leftover names. `MapViewport` joins village clicks on that property, not on MVT feature ids. `kode_kecamatan` is kept when present. Do not use tippecanoe `--use-attribute-for-id=` on BPS kode strings (not valid MVT ids; numeric conversion would drop the property and can invent `0` for empty kode).
+
+Batas (tiga gerbang):
 
 1. **500 KB per tile MVT** — payload satu `z/x/y` di dalam arsip (yang diunduh MapLibre). Bukan ukuran file `.pmtiles`.
 2. **Anggaran arsip village** — `village-r3p.pmtiles` under 4 MB. Rebuild from geoportal desa + profil_desa; `check:tiles` still enforces the archive budget.
+3. **Anggaran arsip kecamatan** — `kecamatan-r3p.pmtiles` under 2 MB.
 
 Pada arsip yang ter-commit, tile terberat village ada di zoom rendah (~145 KB di z7), bukan z12. `check:tiles` tetap menolak jika *satu* tile melewati 500 KB.
 
