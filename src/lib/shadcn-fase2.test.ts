@@ -24,7 +24,6 @@ const MIGRATED_FORMS = [
 ];
 
 const LEFT_ON_LEGACY = [
-  "src/components/map/AreaProfilPanel.tsx",
   "src/components/panduan/GuidePanel.tsx",
   "src/components/sik/CalonKejadianList.tsx",
   "src/components/sik/DampakJuklakForm.tsx",
@@ -58,7 +57,7 @@ describe("shadcn Fase 2 admin/laporan forms", () => {
     }
   });
 
-  it("keeps AreaProfilPanel, panduan, and SIK on button-legacy", () => {
+  it("keeps panduan and SIK on button-legacy", () => {
     for (const file of LEFT_ON_LEGACY) {
       const src = read(file);
       assert.match(src, /@\/components\/ui\/button-legacy/);
