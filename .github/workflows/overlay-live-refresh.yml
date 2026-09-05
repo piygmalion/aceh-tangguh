@@ -1,0 +1,33 @@
+name: Overlay live refresh
+
+on:
+  schedule:
+    # Every 15 minutes (UTC) — matches TATONAS_STALE_MS
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# POSTs POST /api/cron/overlay-live.
+# Skip-if-unset (same pattern as weather-refresh.yml job refresh-supabase):
+# - job is skipped when vars.OVERLAY_REFRESH_URL is empty
+# - if OVERLAY_CRON_SECRET is empty, echo a skip message and exit 0
+
+jobs:
+  refresh-supabase:
+    runs-on: ubuntu-latest
+    if: ${{ vars.OVERLAY_REFRESH_URL != '' }}
+    steps:
+      - name: Trigger deployed overlay live refresh
+        env:
+          OVERLAY_CRON_SECRET: ${{ secrets.OVERLAY_CRON_SECRET }}
+          OVERLAY_REFRESH_URL: ${{ vars.OVERLAY_REFRESH_URL }}
+        run: |
+          if [ -z "$OVERLAY_CRON_SECRET" ]; then
+            echo "OVERLAY_CRON_SECRET not set — skip overlay live refresh"
+            exit 0
+          fi
+          curl -fsS -X POST "$OVERLAY_REFRESH_URL" \
+            -H "Authorization: Bearer $OVERLAY_CRON_SECRET" \
+            -H "Content-Type: application/json"
