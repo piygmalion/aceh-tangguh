@@ -109,14 +109,8 @@ export function GuidePanel({
           {chipKeys.map((key) => (
             <Chip
               key={key}
-              tone={key === "lapor" ? "warn" : "ok"}
-              className={cn(
-                TYPE_FLOOR_CLASS,
-                "font-semibold",
-                key === "lapor"
-                  ? "border-transparent bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
-                  : ""
-              )}
+              tone={key === "lapor" ? "accent" : "ok"}
+              className={cn(TYPE_FLOOR_CLASS, "font-semibold")}
               onClick={() => onChip(key)}
             >
               {t(`chips.${key}`)}
