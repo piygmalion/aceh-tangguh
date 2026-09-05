@@ -47,6 +47,24 @@ export type MarkerLayerKey =
   | "laporanPenanganan"
   | "tatonasStations";
 
+export type OverlayLayerKey =
+  | "maritimePorts"
+  | "maritimeWaters"
+  | "bmkgQuakes"
+  | "magmaQuakes"
+  | "magmaVolcanoes"
+  | "sipongiHotspots"
+  | "tatonasStations"
+  | "seismicSensors"
+  | "inariskSumateraFault"
+  | "inariskMegathrust"
+  | "inariskBahayaGempa"
+  | "inariskBahayaTsunami"
+  | "inariskBahayaLongsor"
+  | "inariskBahayaBanjir"
+  | "inariskBahayaKarhutla"
+  | "inariskBahayaGunungApi";
+
 export type ReportTopic =
   | "banjir"
   | "longsor"
@@ -81,7 +99,7 @@ export interface HazardStatus {
 
 export interface GeoFeatureSummary {
   id: FeatureId;
-  layer: MarkerLayerKey | AreaLayerKey | "boundary";
+  layer: MarkerLayerKey | AreaLayerKey | OverlayLayerKey | "boundary";
   title: string;
   subtitle?: string;
   status?: string;
@@ -96,6 +114,8 @@ export interface MapUrlState {
   preferVector: boolean;
   areaLayer: AreaLayerKey | null;
   markerLayers: MarkerLayerKey[];
+  /** Geospasial overlays (default none). */
+  overlays?: OverlayLayerKey[];
   /** Active jenis_bencana filters; empty = all jenis when disasterEvents is on. */
   disasterJenis: string[];
   hazard?: HazardKind;

@@ -1152,6 +1152,48 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
+      overlay_live_features: {
+        Row: {
+          id: string;
+          layer_key: string;
+          source: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id: string;
+          longitude: number;
+          latitude: number;
+          occurred_at: string | null;
+          properties: Json;
+          created_at: string;
+          updated_at: string;
+          expires_at: string | null;
+        };
+        Insert: {
+          id: string;
+          layer_key: string;
+          source: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id: string;
+          longitude: number;
+          latitude: number;
+          occurred_at?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+          expires_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          layer_key?: string;
+          source?: "bmkg" | "magma" | "sipongi" | "tatonas";
+          external_id?: string;
+          longitude?: number;
+          latitude?: number;
+          occurred_at?: string | null;
+          properties?: Json;
+          created_at?: string;
+          updated_at?: string;
+          expires_at?: string | null;
+        };
+        Relationships: [];
+      };
     } & SikTables;
     Views: Record<string, never>;
     Functions: {

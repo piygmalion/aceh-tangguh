@@ -39,6 +39,9 @@ export function assertProductionConfig(): void {
   if (!process.env.WEATHER_CRON_SECRET?.trim()) {
     warnings.push("WEATHER_CRON_SECRET (weather refresh cron disabled)");
   }
+  if (!process.env.OVERLAY_CRON_SECRET?.trim()) {
+    warnings.push("OVERLAY_CRON_SECRET (overlay live cron disabled)");
+  }
 
   for (const item of warnings) {
     console.warn(`[production-config] ${item}`);

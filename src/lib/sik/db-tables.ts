@@ -186,6 +186,41 @@ export type LooseInsert = {
 
 type LooseTable = Table<LooseRow, LooseInsert, LooseInsert>;
 
+
+export type OverlayCalonSource = "bmkg" | "magma" | "sipongi" | "tatonas";
+export type OverlayCalonStatus = "draf" | "ditolak" | "diterima";
+export type OverlayCalonTautan = "utuh" | "putus";
+export type OverlayCalonAsal = "otomatis" | "manual";
+
+export type OverlayCalonKejadianRow = {
+  id: string;
+  source: OverlayCalonSource;
+  layer_key: string;
+  external_id: string;
+  overlay_feature_id: string | null;
+  status: OverlayCalonStatus;
+  tautan_status: OverlayCalonTautan;
+  kejadian_id: string | null;
+  nama_sinyal: string;
+  waktu_sinyal: string | null;
+  kabupaten: string | null;
+  kode_kabupaten: string | null;
+  latitude: number;
+  longitude: number;
+  usulan_kode_jenis: number | null;
+  usulan_jenis_bencana: string | null;
+  sumber_label: string;
+  penyebab_ringkas: string | null;
+  properties_snapshot: Json;
+  asal_buat: OverlayCalonAsal;
+  created_by: string | null;
+  decided_by: string | null;
+  decided_at: string | null;
+  ditolak_alasan: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type SikTables = {
   jenis_bencana: Table<
     { kode: number; klasifikasi: string; nama: string; label_peta: string; sort_order: number; updated_at: string },
@@ -244,6 +279,20 @@ export type SikTables = {
     { slug: string; judul: string; isi_markdown: string; updated_at: string },
     { slug: string; judul: string; isi_markdown?: string; updated_at?: string },
     Partial<{ slug: string; judul: string; isi_markdown: string; updated_at: string }>
+  >;
+  overlay_calon_kejadian: Table<
+    OverlayCalonKejadianRow,
+    Partial<OverlayCalonKejadianRow> & {
+      source: OverlayCalonSource;
+      layer_key: string;
+      external_id: string;
+      nama_sinyal: string;
+      latitude: number;
+      longitude: number;
+      sumber_label: string;
+      asal_buat: OverlayCalonAsal;
+    },
+    Partial<OverlayCalonKejadianRow>
   >;
   disabilitas_agregat: LooseTable;
 };
