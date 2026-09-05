@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { supabaseUrl } from "@/lib/supabase/public-env";
 import { kabupatenIndexKeys } from "@/lib/irbi-by-kab";
 import { bearerMatches } from "@/lib/security/bearer";
 import { loadRegistry } from "@/lib/weather/service";
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = supabaseUrl();
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !serviceKey) {
     return NextResponse.json({ error: "Supabase service key missing" }, { status: 503 });

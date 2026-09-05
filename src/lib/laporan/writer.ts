@@ -1,5 +1,6 @@
 import { createServiceClient, type TypedSupabaseClient } from "@/lib/supabase/server";
 import { isProductionPiiConfigured } from "@/lib/laporan/crypto";
+import { supabaseUrl } from "@/lib/supabase/public-env";
 
 export class LaporanConfigError extends Error {
   constructor(message: string) {
@@ -36,8 +37,7 @@ export function requireLaporanWriter(): LaporanWriter {
     return { kind: "supabase", client };
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  if (supabaseUrl) {
+  if (supabaseUrl()) {
     throw new LaporanConfigError(
       "SUPABASE_SERVICE_ROLE_KEY is required for laporan writes when Supabase is configured"
     );
