@@ -34,12 +34,13 @@ describe("footer sumber column", () => {
       assert.equal(catalogIds.has(row.id), true, `unknown source ${row.id}`);
       assert.equal(row.hash, row.id);
     }
-    const footerIds = FOOTER_SUMBER.map((row) => row.id);
-    const footerIdSet = new Set<string>(footerIds);
-    assert.deepEqual(footerIds, [...LOCKED_FOOTER_IDS]);
-    for (const id of EXCLUDED_FOOTER_IDS) {
-      assert.equal(footerIdSet.has(id), false, `${id} must not be in the footer list`);
-    }
+    const ids = FOOTER_SUMBER.map((row) => row.id);
+    const idSet = new Set<string>(ids);
+    assert.deepEqual(ids, [...LOCKED_FOOTER_IDS]);
+    assert.equal(idSet.has("dibi-aceh"), false);
+    assert.equal(idSet.has("magma-gempa"), false);
+    assert.equal(idSet.has("sipongi-hotspot"), false);
+    assert.equal(idSet.has("village-borders"), false);
   });
 
   it("keeps DIBI / MAGMA / Sipongi / Geoportal in the catalog, not the footer", () => {
