@@ -32,6 +32,7 @@ const DEFAULT_LIMIT_BYTES = 500 * 1024;
 
 /** @type {Record<string, { sourceLayer: string, maxArchiveBytes?: number }>} */
 const EXPECTED_OVERLAYS = {
+  // Required. villageDistribution LOD z<9 paints this archive — do not delete.
   "r3p-kab.pmtiles": { sourceLayer: "r3p" },
   "kecamatan-r3p.pmtiles": {
     sourceLayer: "kecamatan",
@@ -282,6 +283,21 @@ console.log(
 let failed = 0;
 let warned = 0;
 let sawAcehOsm = false;
+
+if (cliPaths.length === 0) {
+  const present = new Set(files.map((filePath) => filePath.split(/[\\/]/).pop() ?? ""));
+  for (const name of Object.keys(EXPECTED_OVERLAYS)) {
+    if (present.has(name)) continue;
+    failed += 1;
+    console.log(`==> public/tiles/${name}`);
+    console.log(
+      name === "r3p-kab.pmtiles"
+        ? "    FAIL  required overlay missing — do not delete; villageDistribution LOD z<9 still paints r3p-kab"
+        : "    FAIL  required overlay missing",
+    );
+    console.log("");
+  }
+}
 
 for (const filePath of files) {
   const label = relative(process.cwd(), filePath);

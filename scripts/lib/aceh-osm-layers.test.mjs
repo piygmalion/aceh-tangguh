@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import { access } from "node:fs/promises";
 import { describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 import {
   ACEH_OSM_ARCHIVE,
   ACEH_OSM_OPTIONAL_LAYERS,
@@ -7,6 +10,15 @@ import {
   missingAcehOsmLayers,
 } from "./aceh-osm-layers.mjs";
 import { classifyOsmFeature, nameProps } from "./osm-to-openmaptiles.mjs";
+
+const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "../..");
+
+describe("required overlay archives stay on disk", () => {
+  it("keeps r3p-kab.pmtiles for villageDistribution LOD z<9", async () => {
+    await access(resolve(ROOT, "public/tiles/r3p-kab.pmtiles"));
+    assert.notEqual(ACEH_OSM_ARCHIVE, "r3p-kab.pmtiles");
+  });
+});
 
 describe("Aceh OSM layer contract", () => {
   it("names the extract archive and required OpenMapTiles layers", () => {
