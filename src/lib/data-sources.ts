@@ -264,13 +264,13 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleId: "Batas desa/gampong Aceh",
     titleEn: "Aceh village / gampong borders",
     source:
-      "pararawendy/border-desa-indonesia-geojson (province ACEH) with GADM 4.1 admin4 fill-ins",
+      "Geoportal Aceh Peta_Administrasi_Desa (ADMINISTRASI_AR_DESA) joined to data-bencana-aceh profil_desa on 10-digit kdepum / kode_desa_kelurahan",
     license:
-      "See upstream repos (pararawendy border-desa; GADM for fill-ins)",
-    date: "Assembled 2026-08-22",
-    format: "GeoJSON (~7869 features)",
+      "Geoportal Aceh provincial administrative boundaries; profil attributes from data-bencana-aceh",
+    date: "Geoportal layer 2026-08; profil snapshot 2026-08-23",
+    format: "GeoJSON (6508 official desa polygons)",
     usedFor: "Village-level R3P choropleth geometry",
-    href: "https://github.com/pararawendy/border-desa-indonesia-geojson",
+    href: "https://geoportal.acehprov.go.id/server/rest/services/Hosted/Peta_Administrasi_Desa/FeatureServer/0",
   },
   {
     id: "basemap-carto",

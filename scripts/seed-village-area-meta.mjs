@@ -9,6 +9,7 @@
  * Rule: upsert only the intersection of
  *   (1) village GeoJSON features that already have a 10-digit properties.kode_desa_kelurahan
  *   (2) profil_desa rows that already have that same kode (the coded 6499)
+ * After the geoportal rebuild that intersection is 6499 (was 6408).
  *
  * Join on properties.kode_desa_kelurahan, never feature.id.
  * Stamp name/kabupaten and copied attributes from profil_desa only.

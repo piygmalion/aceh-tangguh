@@ -36,7 +36,7 @@ tippecanoe \
   --force \
   --layer=village \
   --name="Aceh R3P village" \
-  --attribution="Aceh Tangguh / Compiled R3P + village borders" \
+  --attribution="Aceh Tangguh / profil_desa + geoportal.acehprov.go.id Peta_Administrasi_Desa" \
   --minimum-zoom=5 \
   --maximum-zoom=12 \
   --simplification=12 \

@@ -84,9 +84,9 @@ Village tiles carry `properties.kode_desa_kelurahan` (10-digit BPS) **only where
 Batas (dua gerbang):
 
 1. **500 KB per tile MVT** — payload satu `z/x/y` di dalam arsip (yang diunduh MapLibre). Bukan ukuran file `.pmtiles`.
-2. **Anggaran arsip village** — `village-r3p.pmtiles` under 4 MB. Arsip ~2.9 MB sekarang itu wajar.
+2. **Anggaran arsip village** — `village-r3p.pmtiles` under 4 MB. Rebuild from geoportal desa + profil_desa; `check:tiles` still enforces the archive budget.
 
-Pada arsip yang ter-commit, tile terberat village ada di zoom rendah (~125 KB di z7), bukan z12 (~18 KB). `check:tiles` tetap menolak jika *satu* tile melewati 500 KB.
+Pada arsip yang ter-commit, tile terberat village ada di zoom rendah (~145 KB di z7), bukan z12. `check:tiles` tetap menolak jika *satu* tile melewati 500 KB.
 
 ```bash
 # Cek per-tile + anggaran arsip + source-layer (cepat; tidak rebuild)

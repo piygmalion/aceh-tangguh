@@ -194,21 +194,31 @@ describe("propertiesFromProfil", () => {
 });
 
 describe("committed villageDistribution.geojson", () => {
-  it("has 7869 features, 6408 ten-digit kodes, 1461 empty, and feature.id ≠ kode", () => {
+  it("has 6508 geoportal polygons, 6499 ten-digit kodes, 9 leftovers, and feature.id ≠ kode", () => {
     const geo = JSON.parse(
       readFileSync(resolve(root, "public/fixtures/areas/villageDistribution.geojson"), "utf8")
     );
     const { rows, counts } = buildVillageAreaMeta(geo.features, []);
-    assert.equal(geo.features.length, 7869);
-    assert.equal(counts.geojson_coded, 6408);
-    assert.equal(counts.skipped_empty_geojson, 1461);
+    assert.equal(geo.features.length, 6508);
+    assert.equal(counts.geojson_coded, 6499);
+    assert.equal(counts.skipped_empty_geojson, 9);
     assert.equal(counts.intersection, 0);
-    assert.equal(counts.geojson_kode_not_in_profil, 6408);
+    assert.equal(counts.geojson_kode_not_in_profil, 6499);
     assert.equal(rows.length, 0);
 
     const coded = geo.features.find((f) => f.properties?.kode_desa_kelurahan === "1101012001");
     assert.ok(coded);
     assert.equal(coded.id, "desa-1101012001");
     assert.notEqual(String(coded.id), "1101012001");
+    assert.equal(coded.properties.source, "profil_desa_aceh.json");
+
+    const leftovers = geo.features.filter((f) => !f.properties?.kode_desa_kelurahan);
+    assert.equal(leftovers.length, 9);
+    assert.ok(leftovers.every((f) => f.properties?.source === "geom:geoportal-aceh"));
+    assert.ok(leftovers.some((f) => f.properties?.name === "Sungai Lueng"));
+    assert.ok(
+      leftovers.every((f) => String(f.id).startsWith("desa-geo-")),
+      "leftover feature.id is not a BPS kode"
+    );
   });
 });
