@@ -48,13 +48,13 @@ export function sumNumeric(value: unknown): number {
 }
 
 function consistentString(values: unknown[]): string | null {
-  const uniq = [
-    ...new Set(
+  const uniq = Array.from(
+    new Set(
       (values || [])
         .map((v) => (v == null ? "" : String(v).trim()))
         .filter((s) => s && s !== "null" && s !== "undefined"),
     ),
-  ];
+  );
   return uniq.length === 1 ? uniq[0] : null;
 }
 
@@ -136,9 +136,8 @@ export function buildR3pKabProperties(group: R3pKabGroup): Record<string, string
 }
 
 export function rumahTotalFromGroups(groups: Map<string, R3pKabGroup>): number {
-  let total = 0;
-  for (const group of groups.values()) {
-    total += group.rumah_rr + group.rumah_rs + group.rumah_rb;
-  }
-  return total;
+  return Array.from(groups.values()).reduce(
+    (total, group) => total + group.rumah_rr + group.rumah_rs + group.rumah_rb,
+    0,
+  );
 }
