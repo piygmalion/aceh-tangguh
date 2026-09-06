@@ -11,6 +11,7 @@ export default async function DataBencanaPage({
 }) {
   setRequestLocale(params.locale);
   const t = await getTranslations("dataBencana");
+  const tn = await getTranslations("nav");
 
   return (
     <>
@@ -23,6 +24,10 @@ export default async function DataBencanaPage({
           {" · "}
           <Link href="/peta" className="hover:text-[var(--primary)]">
             {t("seeMap")}
+          </Link>
+          {" · "}
+          <Link href="/analisis-data" className="hover:text-[var(--primary)]">
+            {tn("analisisData")}
           </Link>
         </p>
         <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">

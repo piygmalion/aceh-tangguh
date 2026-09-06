@@ -164,6 +164,14 @@ export const GUIDE_INTENTS: GuideIntentDef[] = [
     },
   },
   {
+    id: "analisisData",
+    priority: 85,
+    patterns: {
+      id: ["analisis data", "analisis data bencana"],
+      en: ["disaster analysis", "disaster data analysis"],
+    },
+  },
+  {
     id: "dibi",
     priority: 90,
     patterns: {
@@ -279,6 +287,7 @@ export const CONTEXT_FOR_INTENT: Record<
   destana: ["destana"],
   nomor: ["nomor"],
   kejadian: ["liveStats", "sikStats", "kejadian"],
+  analisisData: [],
   dibi: ["dibi"],
   anggaran: ["anggaran"],
   irbi: ["irbi"],

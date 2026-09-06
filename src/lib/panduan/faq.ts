@@ -19,6 +19,7 @@ const GUIDE_HREFS = new Set<GuideHref>([
   "/lapor/kejadian",
   "/lapor/penanganan",
   "/data-bencana",
+  "/analisis-data",
   "/anggaran-bencana",
   "/publikasi",
   "/destana",
@@ -38,6 +39,7 @@ const GUIDE_INTENTS = new Set<Exclude<GuideIntentId, "unknown">>([
   "destana",
   "nomor",
   "kejadian",
+  "analisisData",
   "dibi",
   "anggaran",
   "irbi",
@@ -51,6 +53,20 @@ const GUIDE_INTENTS = new Set<Exclude<GuideIntentId, "unknown">>([
 
 /** Always-on curated answers. CMS rows are merged in front of this list. */
 export const STATIC_GUIDE_FAQ: GuideFaqEntry[] = [
+  {
+    id: "apa-itu-analisis-data",
+    intent: "analisisData",
+    patterns: {
+      id: ["analisis data bencana", "analisis data", "halaman analisis data"],
+      en: ["disaster data analysis", "disaster analysis"],
+    },
+    bodyId:
+      "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana: jenis, kabupaten, dan waktu lewat URL yang bisa dibagikan. Bukan artikel publikasi. Angka DIBI nasional tidak dijumlahkan ke total halaman itu.",
+    bodyEn:
+      "The Data analysis page slices the same event catalogue as Disaster data: type, district, and time through a shareable URL. It is not a publication article. National DIBI figures are not added into that page’s totals.",
+    href: "/analisis-data",
+    labelKey: "linkAnalisisData",
+  },
   {
     id: "apa-itu-tatonas",
     intent: "peringatan",

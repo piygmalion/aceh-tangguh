@@ -222,6 +222,7 @@ describe("panduan grounded LLM gate", () => {
     assert.equal(shouldUseGroundedLlm(matchGuideIntent("peringatan dini", "id")), false);
     assert.equal(shouldUseGroundedLlm(matchGuideIntent("kejadian banjir aceh utara 2024", "id")), false);
     assert.equal(shouldUseGroundedLlm(matchGuideIntent("analisis cuaca banda aceh", "id")), false);
+    assert.equal(shouldUseGroundedLlm(matchGuideIntent("analisis data bencana", "id")), false);
     assert.equal(shouldUseGroundedLlm(matchGuideIntent("jelaskan tren kejadian aceh utara 2024", "id")), false);
   });
 

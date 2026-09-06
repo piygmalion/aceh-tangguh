@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { afterEach, describe, it } from "node:test";
 import { enabledMapLayersCatalog } from "../map-layers-catalog";
 import { fetchPublicApi } from "./public-api";
@@ -64,6 +66,28 @@ describe("static preview public API", () => {
     assert.equal(body.source, "fixture");
     assert.equal(body.name, undefined);
     assert.equal(body.desa, undefined);
+  });
+
+  it("maps GET /api/weather/inovasi to the unconfigured inovasi fixture", () => {
+    const src = readFileSync(
+      path.join(process.cwd(), "src/lib/preview/public-api.ts"),
+      "utf8",
+    );
+    assert.match(src, /path === "\/api\/weather\/inovasi"/);
+    assert.match(src, /weather-inovasi-snapshot\.json/);
+    const fixture = JSON.parse(
+      readFileSync(
+        path.join(process.cwd(), "public/fixtures/weather-inovasi-snapshot.json"),
+        "utf8",
+      ),
+    ) as {
+      metadata: { official: boolean; kind: string; status: string };
+      kabupaten_kota: unknown[];
+    };
+    assert.equal(fixture.metadata.official, false);
+    assert.equal(fixture.metadata.kind, "inovasi");
+    assert.equal(fixture.metadata.status, "unconfigured");
+    assert.deepEqual(fixture.kabupaten_kota, []);
   });
 
   it("returns 400 for GET /api/layers/meta without a layer key", async () => {

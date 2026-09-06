@@ -80,6 +80,8 @@ export function composeGuideAnswer(
       return composeNomor(ctx, locale);
     case "kejadian":
       return composeKejadian(match, ctx, locale);
+    case "analisisData":
+      return composeAnalisisData(locale);
     case "dibi":
       return composeDibi(ctx, locale);
     case "anggaran":
@@ -468,6 +470,23 @@ function composeKejadian(match: GuideMatch, ctx: GuideContext, locale: GuideLoca
     body: parts.join(" "),
     links: [link("/data-bencana", "linkDataBencana"), link("/peta", "linkPeta")],
     source: t(locale, "SIK publik + katalog kejadian", "Public SIK + event catalogue"),
+  };
+}
+
+function composeAnalisisData(locale: GuideLocale): GuideAnswer {
+  return {
+    intent: "analisisData",
+    body: t(
+      locale,
+      "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana. Filter jenis, kabupaten, dan waktu langsung mengubah grafik dan URL. Bukan artikel publikasi, dan angka DIBI tidak dijumlahkan ke total halaman itu.",
+      "The Data analysis page slices the same event catalogue as Disaster data. Type, district, and time filters update the charts and the URL immediately. It is not a publication article, and DIBI figures are not added into that page’s totals."
+    ),
+    links: [
+      link("/analisis-data", "linkAnalisisData"),
+      link("/data-bencana", "linkDataBencana"),
+      link("/peta", "linkPeta"),
+    ],
+    source: t(locale, "Katalog kejadian publik", "Public event catalogue"),
   };
 }
 

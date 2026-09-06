@@ -26,6 +26,18 @@ describe("panduan retrieve", () => {
     assert.equal(retrieveKnowledgeChunks(match.query, "id").length, 0);
   });
 
+  it("retrieves the analisis-data card, not Tanggapi Aceh publications", () => {
+    const chunks = retrieveKnowledgeChunks("analisis data bencana", "id");
+    assert.ok(
+      chunks.some((chunk) => chunk.sourceId === "concept-analisis-data"),
+      chunks.map((chunk) => chunk.sourceId).join(",")
+    );
+    assert.equal(
+      chunks.some((chunk) => chunk.sourceId === "concept-tanggapi-publikasi"),
+      false
+    );
+  });
+
   it("distinguishes the Tanggapi assistant from the Tanggapi Aceh publication portal", () => {
     const assistant = retrieveKnowledgeChunks("apa itu tanggapi", "id");
     assert.ok(

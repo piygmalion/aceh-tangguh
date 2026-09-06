@@ -34,6 +34,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link className="transition hover:text-[var(--primary)]" href="/analisis-data">
+                {tn("analisisData")}
+              </Link>
+            </li>
+            <li>
               <Link className="transition hover:text-[var(--primary)]" href="/anggaran-bencana">
                 {tn("anggaranBencana")}
               </Link>

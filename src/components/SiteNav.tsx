@@ -19,6 +19,7 @@ export function SiteNav() {
   const items = [
     { key: "peta", href: "/peta" as const, label: t("peta") },
     { key: "dataBencana", href: "/data-bencana" as const, label: t("dataBencana") },
+    { key: "analisisData", href: "/analisis-data" as const, label: t("analisisData") },
     { key: "destana", href: "/destana" as const, label: t("destana") },
     { key: "anggaranBencana", href: "/anggaran-bencana" as const, label: t("anggaranBencana") },
     { key: "publikasi", href: "/publikasi" as const, label: t("publikasi") },

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { requireModuleApi, sanitizeSearch } from "@/lib/auth/admin";
 import { rejectCrossOrigin } from "@/lib/security/origin";
+import { authorizeLegacyReports } from "@/lib/sik/laporan-scope";
 import type { ReportRow, ReportStatus } from "@/lib/supabase/types";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +31,8 @@ function toApiItem(row: ReportRow) {
 export async function GET(req: NextRequest) {
   const auth = await requireModuleApi("moderasi");
   if (!auth.ok) return auth.response;
+  const legacy = authorizeLegacyReports(auth.profile);
+  if (!legacy.ok) return NextResponse.json({ error: legacy.error }, { status: legacy.status });
 
   const sp = req.nextUrl.searchParams;
   const status = sp.get("status")?.trim();
@@ -92,6 +95,8 @@ export async function PATCH(req: NextRequest) {
 
   const auth = await requireModuleApi("moderasi");
   if (!auth.ok) return auth.response;
+  const legacy = authorizeLegacyReports(auth.profile);
+  if (!legacy.ok) return NextResponse.json({ error: legacy.error }, { status: legacy.status });
 
   let json: unknown;
   try {

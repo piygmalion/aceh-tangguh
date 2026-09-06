@@ -46,6 +46,17 @@ describe("Vercel Node preview (not static export)", () => {
     const match = refresh.match(/export const maxDuration = (\d+)/);
     assert.ok(match, "weather refresh must set maxDuration");
     assert.ok(Number(match[1]) <= 60, `maxDuration ${match[1]} exceeds Vercel Hobby`);
+
+    const inovasiRefresh = read("src/app/api/weather/inovasi/refresh/route.ts");
+    const inovasiMatch = inovasiRefresh.match(/export const maxDuration = (\d+)/);
+    assert.ok(inovasiMatch, "inovasi refresh must set maxDuration");
+    assert.ok(
+      Number(inovasiMatch[1]) <= 60,
+      `inovasi maxDuration ${inovasiMatch[1]} exceeds Vercel Hobby`,
+    );
+    assert.match(inovasiRefresh, /WEATHER_INOVASI_CRON_SECRET/);
+    assert.doesNotMatch(inovasiRefresh, /WEATHER_CRON_SECRET[^_]/);
+    assert.doesNotMatch(inovasiRefresh, /from ["']@\/lib\/weather\/service["']/);
   });
 
   it("ships public Supabase keys for the Vercel host, never the service role", () => {

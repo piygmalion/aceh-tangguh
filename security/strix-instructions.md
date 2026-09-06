@@ -49,7 +49,7 @@ See `security/attack-surface.md` for the endpoint inventory.
 3. **Public writes** — `POST /api/laporan/kejadian`, `/api/laporan/penanganan`, `/api/laporan/upload` reject invalid bodies, enforce MIME magic-bytes and 10 MB cap, and fail closed without Upstash in production-like config. Confirm anon cannot insert laporan rows directly in Postgres (RLS).
 4. **Origin check** — `rejectCrossOrigin` allows requests with neither Origin nor Referer (`src/lib/security/origin.ts`). Confirm mutating staff and public routes still require a valid session or other server-side checks so a missing Origin is not enough to change data.
 5. **Unauthenticated admin** — `/id/admin` (except login/denied) redirects to login. `/api/admin/*` and `/api/sik/*` mutating routes return 401/403 without a profile.
-6. **Cron** — `POST /api/cron/laporan-wa`, `/api/cron/laporan-media-gc`, `/api/weather/refresh` return 401 without a matching Bearer, and 503 if the secret is unset. Do not brute-force.
+6. **Cron** — `POST /api/cron/laporan-wa`, `/api/cron/laporan-media-gc`, `/api/weather/refresh`, `/api/weather/inovasi/refresh` return 401 without a matching Bearer, and 503 if the secret is unset. Do not brute-force. Do not reuse `WEATHER_CRON_SECRET` on the inovasi refresh route.
 7. **Upload storage** — object keys are UUID paths under `laporan-media`; confirm the public cannot list or overwrite arbitrary objects.
 8. **Headers** — `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: SAMEORIGIN` are set; CSP and HSTS are currently absent (`next.config.mjs`). Report missing CSP/HSTS as informational, not as a confirmed exploit.
 9. **`POST /api/sik/public`** — training-request insert uses origin check but not Upstash. Confirm Zod limits fields; do not flood the table.

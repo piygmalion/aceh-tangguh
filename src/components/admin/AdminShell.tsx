@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Siren,
   TreePine,
+  Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
@@ -63,6 +64,7 @@ export function AdminShell({
       | "/admin/sik/rehab"
       | "/admin/sik/disabilitas"
       | "/admin/sik/publik"
+      | "/admin/staf"
       | "/admin/cms"
       | "/admin/database";
     label: string;
@@ -79,6 +81,7 @@ export function AdminShell({
     { href: "/admin/sik/rehab", label: t("navRehab"), icon: BookOpen, module: "rehab" },
     { href: "/admin/sik/disabilitas", label: t("navDisabilitas"), icon: Accessibility, module: "disabilitas" },
     { href: "/admin/sik/publik", label: t("navPublikCms"), icon: Phone, module: "publikCms" },
+    { href: "/admin/staf", label: t("navStaff"), icon: Users, superOnly: true },
     { href: "/admin/cms", label: t("navCms"), icon: FileStack, superOnly: true },
     { href: "/admin/database", label: t("navDatabase"), icon: Database, superOnly: true },
   ];

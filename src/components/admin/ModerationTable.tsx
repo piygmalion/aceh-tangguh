@@ -65,7 +65,7 @@ const LEGACY_FILTERS: Array<ReportStatus | "all"> = [
   "rejected",
 ];
 
-export function ModerationTable() {
+export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }) {
   const t = useTranslations("admin");
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("kejadian");
@@ -115,6 +115,10 @@ export function ModerationTable() {
     if (q.trim()) params.set("q", q.trim());
 
     if (tab === "legacy") {
+      if (hideLegacy) {
+        setLoading(false);
+        return;
+      }
       if (legacyStatus !== "all") params.set("status", legacyStatus);
       const res = await fetch(`/api/admin/reports?${params.toString()}`, {
         cache: "no-store",
@@ -150,9 +154,13 @@ export function ModerationTable() {
   }
 
   useEffect(() => {
+    if (hideLegacy && tab === "legacy") setTab("kejadian");
+  }, [hideLegacy, tab]);
+
+  useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, laporanStatus, legacyStatus, page]);
+  }, [tab, laporanStatus, legacyStatus, page, hideLegacy]);
 
   async function patchLaporan(id: string, status: string, tampilDiPeta?: boolean) {
     setPendingId(id);
@@ -210,7 +218,9 @@ export function ModerationTable() {
   }
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
-  const tabs: Tab[] = ["kejadian", "penanganan", "legacy"];
+  const tabs: Tab[] = hideLegacy
+    ? ["kejadian", "penanganan"]
+    : ["kejadian", "penanganan", "legacy"];
 
   return (
     <GlassPanel className="p-4 sm:p-6">

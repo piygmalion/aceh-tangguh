@@ -82,7 +82,14 @@ export function isResearchQuestion(query: string): boolean {
   return RESEARCH_PATTERNS.some((pattern) => text.includes(pattern));
 }
 
-const LIVE_V1_INTENTS = new Set(["peringatan", "cuaca", "nomor", "destana", "kejadian"]);
+const LIVE_V1_INTENTS = new Set([
+  "peringatan",
+  "cuaca",
+  "nomor",
+  "destana",
+  "kejadian",
+  "analisisData",
+]);
 
 export function isComparativeResearch(query: string): boolean {
   const text = ` ${normalizeGuideQuery(query)} `;

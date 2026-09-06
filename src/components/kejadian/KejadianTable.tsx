@@ -11,12 +11,11 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { Download, MapPin, Search, X } from "lucide-react";
-import { KejadianAnalisis } from "@/components/kejadian/KejadianAnalisis";
+import { AnalisisTeaser } from "@/components/analisis/AnalisisTeaser";
 import { Button } from "@/components/ui/Button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { StatusChip } from "@/components/ui/StatusChip";
 import { Link } from "@/i18n/routing";
-import { KEJADIAN_MAX_PAGE_SIZE } from "@/lib/kejadian-query";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import { formatStatusLabel, normalizeStatus } from "@/lib/status-vocab";
@@ -213,7 +212,7 @@ export function KejadianTable() {
 
   const analysisFilters = useMemo(
     () => ({
-      q: applied.q,
+      jenis: applied.jenis,
       kabupaten: applied.kabupaten,
       kecamatan: applied.kecamatan,
       status: applied.status,
@@ -221,7 +220,7 @@ export function KejadianTable() {
       to: applied.to,
     }),
     [
-      applied.q,
+      applied.jenis,
       applied.kabupaten,
       applied.kecamatan,
       applied.status,
@@ -229,50 +228,6 @@ export function KejadianTable() {
       applied.to,
     ]
   );
-
-  const {
-    data: analysisRows = [],
-    isLoading: analysisLoading,
-    isError: analysisError,
-  } = useQuery({
-    queryKey: qk.kejadianAnalisis(analysisFilters),
-    queryFn: async () => {
-      const pageSize = KEJADIAN_MAX_PAGE_SIZE;
-      const first = await fetchKejadian(
-        buildQuery({
-          ...DEFAULT_FILTERS,
-          ...analysisFilters,
-          page: 1,
-          pageSize,
-        })
-      );
-      const all: KejadianRow[] = [...first.items];
-      const totalPages = Math.max(1, Math.ceil(first.total / pageSize));
-      if (totalPages > 1) {
-        const rest = await Promise.all(
-          Array.from({ length: totalPages - 1 }, (_, i) =>
-            fetchKejadian(
-              buildQuery({
-                ...DEFAULT_FILTERS,
-                ...analysisFilters,
-                page: i + 2,
-                pageSize,
-              })
-            )
-          )
-        );
-        for (const chunk of rest) all.push(...chunk.items);
-      }
-      return all;
-    },
-    staleTime: 30_000,
-    placeholderData: (prev) => prev,
-  });
-
-  const selectJenis = useCallback((jenis: string) => {
-    setDraft((f) => ({ ...f, jenis }));
-    setApplied((f) => ({ ...f, jenis, page: 1 }));
-  }, []);
 
   const facets = data?.facets;
   const kecamatanOptions = useMemo(() => {
@@ -354,15 +309,7 @@ export function KejadianTable() {
 
   return (
     <div className="space-y-4">
-      <KejadianAnalisis
-        windowRows={analysisRows}
-        selectedJenis={applied.jenis}
-        from={applied.from}
-        to={applied.to}
-        onSelectJenis={selectJenis}
-        isLoading={analysisLoading}
-        isError={analysisError}
-      />
+      <AnalisisTeaser filters={analysisFilters} />
 
       <GlassPanel className="p-4 md:p-5">
         <div className={cn("mb-3 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>

@@ -1,5 +1,5 @@
 import { requireStaffPage } from "@/lib/auth/admin";
-import { canAccessModule } from "@/lib/sik/roles";
+import { canAccessModule, isKabScoped } from "@/lib/sik/roles";
 import { SikForbidden } from "@/components/sik/SikForbidden";
 import { ModerationTable } from "@/components/admin/ModerationTable";
 
@@ -8,5 +8,5 @@ export default async function AdminModerationPage() {
   // so non-moderator staff get the forbidden screen instead of a 403 table.
   const { profile } = await requireStaffPage();
   if (!canAccessModule(profile, "moderasi")) return <SikForbidden />;
-  return <ModerationTable />;
+  return <ModerationTable hideLegacy={isKabScoped(profile)} />;
 }

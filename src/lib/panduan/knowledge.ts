@@ -181,6 +181,22 @@ function staticConceptCards(): KnowledgeCard[] {
       ],
     },
     {
+      sourceId: "concept-analisis-data",
+      title: "Analisis data bencana",
+      bodyId:
+        "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana. Filter mengubah grafik dan URL. Bukan artikel publikasi Tanggapi Aceh. Angka DIBI nasional tidak dijumlahkan ke total halaman itu.",
+      bodyEn:
+        "The Data analysis page slices the same event catalogue as Disaster data. Filters update the charts and the URL. It is not a Tanggapi Aceh publication article. National DIBI figures are not added into that page’s totals.",
+      href: "/analisis-data",
+      labelKey: "linkAnalisisData",
+      terms: [
+        "analisis data",
+        "analisis data bencana",
+        "disaster analysis",
+        "disaster data analysis",
+      ],
+    },
+    {
       sourceId: "method-dibi",
       title: "Metodologi DIBI Aceh",
       bodyId:

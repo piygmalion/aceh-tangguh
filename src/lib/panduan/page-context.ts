@@ -48,6 +48,8 @@ export function pageIntentHint(pathname: string): Exclude<GuideIntentId, "unknow
       return "mitra";
     case "/data-bencana":
       return "kejadian";
+    case "/analisis-data":
+      return "analisisData";
     case "/anggaran-bencana":
       return "anggaran";
     case "/lapor":
@@ -68,7 +70,9 @@ function withHomeResearch(chips: GuideChipKey[]): GuideChipKey[] {
 export function chipsForPathname(pathname: string): GuideChipKey[] {
   const hint = pageIntentHint(pathname);
   if (!hint) return withHomeResearch(DEFAULT_CHIPS);
-  if (hint === "metodologi" || hint === "anggaran") return DEFAULT_CHIPS;
+  if (hint === "metodologi" || hint === "anggaran" || hint === "analisisData") {
+    return DEFAULT_CHIPS;
+  }
   const lead = GUIDE_CHIP_KEYS.find((key) => key === hint);
   const rest = DEFAULT_CHIPS.filter((key) => key !== lead);
   const ordered: GuideChipKey[] = lead ? [lead, ...rest] : rest;
@@ -91,6 +95,8 @@ export function welcomeQueryForPath(pathname: string, locale: GuideLocale): stri
         return "partners";
       case "kejadian":
         return "active incidents";
+      case "analisisData":
+        return "disaster analysis";
       case "anggaran":
         return "disaster budget";
       case "lapor":
@@ -114,6 +120,8 @@ export function welcomeQueryForPath(pathname: string, locale: GuideLocale): stri
       return "mitra";
     case "kejadian":
       return "kejadian aktif";
+    case "analisisData":
+      return "analisis data";
     case "anggaran":
       return "anggaran bencana";
     case "lapor":

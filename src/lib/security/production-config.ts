@@ -39,6 +39,9 @@ export function assertProductionConfig(): void {
   if (!process.env.WEATHER_CRON_SECRET?.trim()) {
     warnings.push("WEATHER_CRON_SECRET (weather refresh cron disabled)");
   }
+  if (!process.env.WEATHER_INOVASI_CRON_SECRET?.trim()) {
+    warnings.push("WEATHER_INOVASI_CRON_SECRET (WeatherNext 3 inovasi cron disabled)");
+  }
   if (!process.env.OVERLAY_CRON_SECRET?.trim()) {
     warnings.push("OVERLAY_CRON_SECRET (overlay live cron disabled)");
   }

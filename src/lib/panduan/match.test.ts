@@ -143,6 +143,19 @@ describe("panduan matcher", () => {
     assert.equal(year.kabupaten, "Aceh Utara");
   });
 
+  it("routes analisis data to analisisData, not publikasi or cuaca", () => {
+    const id = matchGuideIntent("analisis data bencana", "id");
+    assert.equal(id.intent, "analisisData");
+    assert.equal(id.faq?.id, "apa-itu-analisis-data");
+    assert.equal(matchGuideIntent("disaster analysis", "en").intent, "analisisData");
+    assert.equal(matchGuideIntent("analisis cuaca banda aceh", "id").intent, "cuaca");
+    assert.equal(matchGuideIntent("publikasi analisis", "id").intent, "publikasi");
+    const answer = composeGuideAnswer(id, emptyCtx(), "id");
+    assert.match(answer.body, /Data bencana/i);
+    assert.equal(answer.links.some((l) => l.href === "/analisis-data"), true);
+    assert.doesNotMatch(answer.body, /korban jiwa \d+/i);
+  });
+
   it("extracts a village name and does not treat Destana as a village", () => {
     assert.equal(extractDesa("destana desa pande aceh besar"), "Pande");
     assert.equal(extractDesa("desa tangguh di aceh utara"), undefined);

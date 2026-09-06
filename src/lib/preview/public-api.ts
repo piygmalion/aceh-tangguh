@@ -4,6 +4,10 @@ import {
   AREA_LAYER_LEGENDS,
   isAreaLayerKey,
 } from "@/lib/area-layers";
+import {
+  buildKejadianAnalisis,
+  parseAnalisisMetric,
+} from "@/lib/kejadian-analisis";
 import { filterAndPaginateKejadian } from "@/lib/kejadian-query";
 import type { KejadianFixture, KejadianQuery } from "@/lib/kejadian-types";
 import {
@@ -117,6 +121,9 @@ async function resolveStaticGet(input: string): Promise<Response> {
   }
   if (path === "/api/weather") {
     return jsonResponse(await fetchJson("/fixtures/weather-snapshot.json"));
+  }
+  if (path === "/api/weather/inovasi") {
+    return jsonResponse(await fetchJson("/fixtures/weather-inovasi-snapshot.json"));
   }
   if (path === "/api/peringatan-dini") {
     const [weather, sipongi, tatonas] = await Promise.all([
@@ -247,6 +254,27 @@ async function resolveStaticGet(input: string): Promise<Response> {
       pageSize: Number(searchParams.get("pageSize") ?? "10"),
     };
     return jsonResponse(filterAndPaginateKejadian(fixture, query, "fixture"));
+  }
+  if (path === "/api/kejadian/analisis") {
+    const fixture = (await fetchJson(
+      "/fixtures/kejadian-bencana.json"
+    )) as KejadianFixture;
+    return jsonResponse(
+      buildKejadianAnalisis(
+        fixture,
+        {
+          q: searchParams.get("q") ?? undefined,
+          jenis: searchParams.get("jenis") ?? undefined,
+          kabupaten: searchParams.get("kabupaten") ?? undefined,
+          kecamatan: searchParams.get("kecamatan") ?? undefined,
+          status: searchParams.get("status") ?? undefined,
+          from: searchParams.get("from") ?? undefined,
+          to: searchParams.get("to") ?? undefined,
+          metric: parseAnalisisMetric(searchParams.get("metric")),
+        },
+        "fixture"
+      )
+    );
   }
   if (path === "/api/anggaran") {
     const [analisis, kegiatanFile] = await Promise.all([

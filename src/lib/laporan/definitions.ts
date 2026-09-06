@@ -1,4 +1,5 @@
 import formDefinitions from "@/data/laporan/form_definitions.json";
+import { ACEH_BOUNDS_LAPORAN as ACEH_BOUNDS } from "@/lib/aceh-scope";
 import { LAPORAN_JENIS_SLUGS, type LaporanJenisSlug } from "@/lib/sik/juklak";
 
 export type JenisBencana = LaporanJenisSlug;
@@ -53,12 +54,7 @@ export function getPenangananFields(): FormFieldDef[] {
   ].sort((a, b) => (a.urutan ?? 0) - (b.urutan ?? 0));
 }
 
-export const ACEH_BOUNDS = {
-  latMin: 1.5,
-  latMax: 6.5,
-  lonMin: 95.0,
-  lonMax: 98.5,
-};
+export { ACEH_BOUNDS };
 
 export function inAcehBounds(lat: number, lon: number): boolean {
   return (

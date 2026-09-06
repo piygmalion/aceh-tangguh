@@ -5,6 +5,11 @@ import { decryptPii } from "@/lib/laporan/crypto";
 import { queueWaNotification } from "@/lib/laporan/service";
 import { isLaporanStatus, LAPORAN_STATUSES, type LaporanStatus } from "@/lib/laporan/status";
 import { rejectCrossOrigin } from "@/lib/security/origin";
+import {
+  authorizeLaporanList,
+  laporanKabOrFilter,
+  matchesLaporanKabScope,
+} from "@/lib/sik/laporan-scope";
 import { createServiceClient, type TypedSupabaseClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/types";
 
@@ -127,6 +132,8 @@ function toPenangananItem(row: {
 export async function GET(req: NextRequest) {
   const auth = await requireModuleApi("moderasi");
   if (!auth.ok) return auth.response;
+  const scope = authorizeLaporanList(auth.profile);
+  if (!scope.ok) return NextResponse.json({ error: scope.error }, { status: scope.status });
   const svc = requireStaffLaporanClient();
   if (!svc.ok) return svc.response;
 
@@ -137,6 +144,7 @@ export async function GET(req: NextRequest) {
   const page = Math.max(1, Number(sp.get("page") ?? "1") || 1);
   const pageSize = Math.min(100, Math.max(1, Number(sp.get("pageSize") ?? "20") || 20));
   const summary = sp.get("summary") === "1";
+  const kabOr = scope.filter ? laporanKabOrFilter(scope.filter) : null;
 
   if (summary) {
     const counts: Record<LaporanStatus, number> = {
@@ -150,10 +158,12 @@ export async function GET(req: NextRequest) {
     };
     const table = tipe === "penanganan" ? "laporan_penanganan" : "laporan_kejadian";
     for (const s of LAPORAN_STATUSES) {
-      const { count } = await svc.client
+      let countQuery = svc.client
         .from(table)
         .select("id", { count: "exact", head: true })
         .eq("status", s);
+      if (kabOr) countQuery = countQuery.or(kabOr);
+      const { count } = await countQuery;
       counts[s] = count ?? 0;
     }
     return NextResponse.json({
@@ -171,6 +181,7 @@ export async function GET(req: NextRequest) {
       .from("laporan_penanganan")
       .select("*", { count: "exact" })
       .order("submitted_at", { ascending: false });
+    if (kabOr) query = query.or(kabOr);
     if (status && isLaporanStatus(status)) query = query.eq("status", status);
     if (q) {
       query = query.or(
@@ -192,6 +203,7 @@ export async function GET(req: NextRequest) {
     .from("laporan_kejadian")
     .select("*", { count: "exact" })
     .order("submitted_at", { ascending: false });
+  if (kabOr) query = query.or(kabOr);
   if (status && isLaporanStatus(status)) query = query.eq("status", status);
   if (q) {
     query = query.or(
@@ -215,6 +227,8 @@ export async function PATCH(req: NextRequest) {
 
   const auth = await requireModuleApi("moderasi");
   if (!auth.ok) return auth.response;
+  const scope = authorizeLaporanList(auth.profile);
+  if (!scope.ok) return NextResponse.json({ error: scope.error }, { status: scope.status });
   const svc = requireStaffLaporanClient();
   if (!svc.ok) return svc.response;
 
@@ -228,6 +242,23 @@ export async function PATCH(req: NextRequest) {
   const parsed = patchSchema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+  }
+
+  const existingTable =
+    parsed.data.tipe === "penanganan" ? "laporan_penanganan" : "laporan_kejadian";
+  const { data: existing, error: existingError } = await svc.client
+    .from(existingTable)
+    .select("id, kabupaten_kota")
+    .eq("id", parsed.data.id)
+    .maybeSingle();
+  if (existingError) {
+    return NextResponse.json({ error: existingError.message }, { status: 502 });
+  }
+  if (!existing) {
+    return NextResponse.json({ error: "not_found" }, { status: 404 });
+  }
+  if (!matchesLaporanKabScope(auth.profile, existing.kabupaten_kota)) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
   const now = new Date().toISOString();
