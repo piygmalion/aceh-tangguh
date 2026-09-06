@@ -3,7 +3,6 @@ import { ClusterGrid } from "@/components/ClusterGrid";
 import { R3PChartSection } from "@/components/R3PChartSection";
 import { PeringatanDiniSection } from "@/components/PeringatanDiniSection";
 import { WeatherStrip } from "@/components/weather/WeatherStrip";
-import { WeatherInovasiStrip } from "@/components/weather/WeatherInovasiStrip";
 import { HeroSection } from "@/components/HeroSection";
 import { MapTeaserSection } from "@/components/MapTeaserSection";
 import { ParticipationSection } from "@/components/ParticipationSection";
@@ -26,7 +25,6 @@ export default async function HomePage({
         <HeroSection />
         <PeringatanDiniSection />
         <WeatherStrip />
-        <WeatherInovasiStrip />
         <OperationalStatsSection />
         <ClusterGrid />
         <R3PChartSection />

@@ -100,14 +100,18 @@ describe("AN-25 isolation: official weather vs WN3 inovasi", () => {
     assert.doesNotMatch(strip, /\/api\/weather\/inovasi/);
   });
 
-  it("homepage places inovasi strip below official WeatherStrip", () => {
+  it("inovasi lives as a dialog inside WeatherStrip, not a homepage section", () => {
     const page = read("src/app/[locale]/page.tsx");
-    const official = page.indexOf("<WeatherStrip />");
-    const inovasi = page.indexOf("<WeatherInovasiStrip />");
-    assert.ok(official >= 0 && inovasi > official);
+    assert.match(page, /<WeatherStrip \/>/);
+    assert.doesNotMatch(page, /WeatherInovasiStrip/);
+    const official = read("src/components/weather/WeatherStrip.tsx");
+    assert.match(official, /WeatherInovasiStrip/);
+    assert.doesNotMatch(official, /\/api\/weather\/inovasi/);
     const strip = read("src/components/weather/WeatherInovasiStrip.tsx");
-    assert.match(strip, /id="cuaca-inovasi"/);
+    assert.doesNotMatch(strip, /<section/);
+    assert.doesNotMatch(strip, /id="cuaca-inovasi"/);
     assert.match(strip, /weatherInovasi/);
+    assert.match(strip, /\/api\/weather\/inovasi/);
     assert.doesNotMatch(strip, /summarizeWeatherWarning|scoreKab/);
   });
 

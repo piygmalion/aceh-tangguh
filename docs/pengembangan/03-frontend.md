@@ -147,6 +147,18 @@ Jurnal: `jurnal/FE-25.md`. Gelombang 20. Jangan dikode sebelum AN-29. Rute `/ana
 
 Jurnal: `jurnal/FE-26.md`. Gelombang 21. `inariskBahaya*` = `kind: "fill"` + fixture static. `fetchOverlayGeojson` memakai `overlayVectorApiPath`. Popup `kelas` lewat `krbSedang`/`krbTinggi`. Jangan hapus `isInariskRasterKey` / proxy ubin. Jangan DATA-4.
 
+### FE-27 — popup konteks AI di dalam #cuaca
+
+Jurnal: `jurnal/FE-27.md`. Gelombang 22. Dialog dari chip di `WeatherStrip`. Jangan fetch WN3 di `WeatherStrip`. Jangan DATA-4.
+
+### FE-28 — oranye navbar sebagai penanda interaksi
+
+Jurnal: `jurnal/FE-28.md`. Gelombang 22. Oranye hanya hover/fokus/aktif. Locale terpilih tetap sage. Jangan DATA-4.
+
+### FE-29 — kartu keterangan titik peta
+
+Jurnal: `jurnal/FE-29.md`. Gelombang 22. Deny-list PII. Bukan CSV karantina. Jangan DATA-4.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.

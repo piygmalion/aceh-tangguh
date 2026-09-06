@@ -23,6 +23,7 @@ import type {
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS, TYPE_STAMP_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { WeatherIcon } from "./WeatherIcon";
+import { WeatherInovasiStrip } from "./WeatherInovasiStrip";
 
 const AUTOPLAY_MS = 4500;
 const SKELETON_COUNT = 5;
@@ -370,6 +371,7 @@ export function WeatherStrip() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
+            <WeatherInovasiStrip />
             {canCarousel ? (
               <div className="flex items-center gap-1.5">
                 <button

@@ -64,3 +64,4 @@ Batas ulang untuk satu tiket: lima putaran. Jika masih gagal, tulis blocker di j
 - **Gelombang ECC-A** — install selektif setelah AN-ECC-2 selesai. Profil `minimal`, tanpa hooks. Jangan dump katalog. Jangan DATA-4.
 - **Gelombang ECC-S** — skema kerapian (AN-ECC-5). Kode S1 hanya setelah skema `selesai`. Jangan DATA-4. Jangan membuka P2 Juklak. Jangan POST nasional.
 - **Gelombang 21** — Bahaya InaRISK jadi poligon kelas sedang/tinggi di `ACEH_BBOX`. Jangan POST nasional. Jangan mengubah clip patahan. Jangan hapus proxy ubin. DATA-4 tetap tertahan. ID data = DATA-20 (DATA-14 sudah registri kab).
+- **Gelombang 22** — chrome navbar, dialog WeatherNext, LOD R3P kab, kartu titik peta, tilikan staf. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan ingest pengungsian.
