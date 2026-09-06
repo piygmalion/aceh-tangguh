@@ -163,6 +163,10 @@ Jurnal: `jurnal/FE-29.md`. Gelombang 22. Deny-list PII. Bukan CSV karantina. Jan
 
 Jurnal: `jurnal/FE-30.md`. Gelombang 23. Kontrak AN-32. Select `ancaman`, kartu IRBI/KRB + riwayat + analogi. i18n `analisisData.*`. Jangan menimpa FE-26. Jangan menjumlahkan skor ke KPI. Jangan hardcode judul Indonesia. Jangan menimpa FE-27 (dialog cuaca G22).
 
+### FE-31 — Histori Kejadian + Proyeksi Dampak
+
+Jurnal: `jurnal/FE-31.md`. Gelombang 24. Kontrak AN-34. Ganti judul kartu; tampilkan rentang histori + pita skala + replay. Jangan hardcode judul Indonesia. Jangan menjumlahkan skor ke KPI. Jangan menimpa FE-28 (navbar G22).
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.
