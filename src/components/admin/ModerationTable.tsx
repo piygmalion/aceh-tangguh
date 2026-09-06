@@ -9,8 +9,10 @@ import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ReportStatus } from "@/lib/supabase/types";
-import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { OUTLINE_PRIMARY_CLASS, TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
 type Tab = "kejadian" | "penanganan" | "legacy";
@@ -224,13 +226,19 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
   const tabs: Tab[] = hideLegacy
     ? ["kejadian", "penanganan"]
     : ["kejadian", "penanganan", "legacy"];
+  const listEmpty = tab === "legacy" ? legacyItems.length === 0 : items.length === 0;
+
+  function laporanRowLabel(status: string): string {
+    if (status === "submitted" || status === "in_review") return t("statusWaiting");
+    return laporanStatusLabel[status as keyof typeof laporanStatusLabel] ?? status;
+  }
 
   return (
-    <GlassPanel className="p-4 sm:p-6">
+    <GlassPanel className="flex flex-col gap-4 p-4 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold">{t("moderationTitle")}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{t("moderationLead")}</p>
+          <p className={cn("mt-1 text-muted-foreground", TYPE_FLOOR_CLASS)}>{t("moderationLead")}</p>
         </div>
         <form
           className="flex gap-2"
@@ -316,10 +324,61 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
             ))}
       </div>
 
-      {error ? <FieldError className="mt-4">{error}</FieldError> : null}
+      {error ? (
+        <Empty className="border border-dashed" data-testid="moderation-error">
+          <div className="flex flex-col items-center gap-3">
+            <FieldError>{error}</FieldError>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className={OUTLINE_PRIMARY_CLASS}
+              onClick={() => void load()}
+            >
+              {t("retry")}
+            </Button>
+          </div>
+        </Empty>
+      ) : null}
 
-      <div className="mt-4 overflow-x-auto">
-        <table className="min-w-full text-left text-sm">
+      {!error && loading ? (
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <tbody>
+              {[0, 1, 2].map((row) => (
+                <tr key={row} data-testid="moderation-skeleton-row">
+                  <td className="px-2 py-3">
+                    <Skeleton className="h-8 w-full" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+
+      {!error && !loading && listEmpty ? (
+        <Empty className="border border-dashed" data-testid="moderation-empty">
+          <EmptyDescription className={TYPE_FLOOR_CLASS}>
+            {t("emptyKabDescription")}
+          </EmptyDescription>
+          <EmptyContent>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className={OUTLINE_PRIMARY_CLASS}
+              onClick={() => void load()}
+            >
+              {t("retry")}
+            </Button>
+          </EmptyContent>
+        </Empty>
+      ) : null}
+
+      {!error && !loading && !listEmpty ? (
+      <div className="overflow-x-auto">
+        <table className={cn("min-w-full text-left", TYPE_FLOOR_CLASS)}>
           <thead className="text-[var(--text-dim)]">
             <tr>
               <th className="px-2 py-2 font-medium">{t("colStatus")}</th>
@@ -333,21 +392,8 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
-                  {t("loading")}
-                </td>
-              </tr>
-            ) : tab === "legacy" ? (
-              legacyItems.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
-                    {t("empty")}
-                  </td>
-                </tr>
-              ) : (
-                legacyItems.map((item) => (
+            {tab === "legacy"
+              ? legacyItems.map((item) => (
                   <tr key={item.id} className="border-t border-[var(--border)] align-top">
                     <td className="px-2 py-3">
                       <StatusBadge status={item.status} label={legacyStatusLabel[item.status]} />
@@ -356,7 +402,7 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
                     <td className="max-w-xs px-2 py-3 text-[var(--text-dim)]">{item.description}</td>
                     <td className="px-2 py-3 text-[var(--text-dim)]">
                       {item.placeName ?? "—"}
-                      <div className="text-xs opacity-70">
+                      <div className={cn("opacity-70", TYPE_FLOOR_CLASS)}>
                         {item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}
                       </div>
                     </td>
@@ -398,33 +444,22 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
                     </td>
                   </tr>
                 ))
-              )
-            ) : items.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-2 py-8 text-center text-[var(--text-dim)]">
-                  {t("empty")}
-                </td>
-              </tr>
-            ) : (
-              items.map((item) => (
+              : items.map((item) => (
                 <tr key={item.id} className="border-t border-[var(--border)] align-top">
                   <td className="px-2 py-3">
                     <StatusBadge
                       status={item.status}
-                      label={
-                        laporanStatusLabel[item.status as keyof typeof laporanStatusLabel] ??
-                        item.status
-                      }
+                      label={laporanRowLabel(item.status)}
                     />
                     {item.tampilDiPeta ? (
-                      <div className={cn("mt-1 text-[var(--accent)]", TYPE_KICKER_CLASS)}>
+                      <div className={cn("mt-1 text-[var(--primary)]", TYPE_KICKER_CLASS)}>
                         {t("onMap")}
                       </div>
                     ) : null}
                   </td>
                   <td className="px-2 py-3">
                     <div className="font-medium">{item.nomorLaporan}</div>
-                    <div className="text-xs capitalize text-[var(--text-dim)]">
+                    <div className={cn("capitalize text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                       {item.jenisBencana}
                       {item.topic ? ` · ${item.topic}` : ""}
                       {item.skorUrgensi != null ? ` · ${item.skorUrgensi}` : ""}
@@ -435,7 +470,7 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
                   </td>
                   <td className="px-2 py-3 text-[var(--text-dim)]">
                     {[item.desa, item.kecamatan, item.kabupaten].filter(Boolean).join(", ") || "—"}
-                    <div className="text-xs opacity-70">
+                    <div className={cn("opacity-70", TYPE_FLOOR_CLASS)}>
                       {item.latitude.toFixed(4)}, {item.longitude.toFixed(4)}
                     </div>
                   </td>
@@ -448,7 +483,7 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
                         item.kejadianId ? (
                           <Link
                             href={{ pathname: "/admin/sik/kejadian/[id]", params: { id: item.kejadianId } }}
-                            className="text-xs text-[var(--primary)] hover:underline"
+                            className={cn("text-[var(--primary)] hover:underline", TYPE_FLOOR_CLASS)}
                           >
                             {t("navKejadianOps")}
                           </Link>
@@ -505,11 +540,11 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
                     </div>
                   </td>
                 </tr>
-              ))
-            )}
+              ))}
           </tbody>
         </table>
       </div>
+      ) : null}
 
       <div className="mt-4 flex items-center justify-between text-sm text-[var(--text-dim)]">
         <span>

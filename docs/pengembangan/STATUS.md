@@ -341,6 +341,14 @@ Padding/stack/gap `MapFeatureCard` dirapatkan; overlay hidup stale/503 memakai E
 | --- | --- | --- | --- | --- |
 | FE-33 | frontend | Kartu peta + Empty/Skeleton overlay stale/503 | jurnal/FE-33.md | selesai |
 
+## Gelombang 27 — staf kab SoT #3 (empty + pending)
+
+SoT #3 FINAL: Empty + “Belum ada … di kabupaten Anda”; CTA outline primary; chip Menunggu accent ink-on-orange; approved forest; rejected destructive; Skeleton + retry. Tanpa API undangan pending. `npm test` 571 lulus; lint + `tsc` hijau. Browser staf 307 ke login. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-34 | frontend | Empty state + chip undangan pending | jurnal/FE-34.md | selesai |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).
