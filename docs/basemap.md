@@ -108,7 +108,7 @@ npm run build:tiles
 npm run build:aceh-osm
 ```
 
-CI (`.github/workflows/overlay-tiles.yml`) hanya menjalankan `check:tiles` pada PMTiles yang sudah di-commit, plus probe `verify:basemap` (non-blocking). Tidak memasang tippecanoe/Planetiler, tidak rebuild di setiap PR, tidak deploy GitHub Pages.
+CI (`.github/workflows/overlay-tiles.yml`) hanya menjalankan `check:tiles` pada PMTiles yang sudah di-commit, plus probe `verify:basemap` (non-blocking). `verify:tiles-cdn` tidak dipasang di CI (URL publik opsional — false red jika secret belum ada). Tidak memasang tippecanoe/Planetiler, tidak rebuild di setiap PR, tidak deploy GitHub Pages. Jangan menambah upload S3 terjadwal atau on-push.
 
 ## Aceh OSM extract (opsional, preset merek)
 
@@ -147,6 +147,18 @@ bash scripts/sync-tiles-s3.sh
 
 Workflow `.github/workflows/sync-tiles-s3.yml` adalah `workflow_dispatch` saja — tidak ada cron. Tanpa secret, job skip. CORS bucket harus mengizinkan GET/HEAD + Range dari origin aplikasi. Content-Type `application/vnd.pmtiles`, Cache-Control `public, max-age=86400`.
 
+## CDN verify runbook (opt-in, Stage 3)
+
+Production blocking hari ini adalah ops (secret + URL publik + `aceh-osm.pmtiles` belum dibangun), bukan kode sync. **Carto tetap default.** Preset merek Aceh OSM opsional. Jangan hapus `r3p-kab.pmtiles` (LOD z<9). Jangan commit artefak `aceh-osm.pmtiles` (gitignored). Verify ini **lokal/manual** — jangan pasang ke CI terjadwal agar tidak false-red saat URL belum diisi.
+
+CORS bucket/CDN harus mengizinkan **GET, HEAD, Range** dari origin aplikasi (`Access-Control-Allow-Origin` = origin app atau `*`; `Access-Control-Allow-Headers: Range`; expose `Content-Range` / `Accept-Ranges`). Range 206 lebih baik; HTTP 200 (badan penuh) diterima.
+
+1. `npm run build:aceh-osm` (lokal; keluaran `public/tiles/aceh-osm.pmtiles` gitignored — bukan CI).
+2. `npm run sync:tiles -- --dry-run` dengan `TILES_S3_*` + `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` di shell lokal (nilai tidak ditulis di git).
+3. Isi GitHub Actions secrets untuk `.github/workflows/sync-tiles-s3.yml` (`TILES_S3_ENDPOINT`, `TILES_S3_BUCKET`, `TILES_S3_PREFIX`, `TILES_S3_REGION`, `TILES_S3_ACCESS_KEY_ID`, `TILES_S3_SECRET_ACCESS_KEY`). Workflow **dispatch saja** — jangan tambah cron/push upload.
+4. Isi Vercel `NEXT_PUBLIC_TILES_BASE_URL` (prefix publik, tanpa trailing slash). Opsional: `NEXT_PUBLIC_ACEH_OSM_PMTILES` (URL https publik atau `/tiles/aceh-osm.pmtiles`).
+5. `npm run verify:tiles-cdn` — HEAD 2xx + Range `bytes=0-16383` (206/200) untuk `r3p-kab.pmtiles`, `kecamatan-r3p.pmtiles`, `village-r3p.pmtiles`, `irbi-2025.pmtiles`. Tanpa `NEXT_PUBLIC_TILES_BASE_URL`: exit 0, `skip — local /tiles default`. Tidak butuh kredensial AWS.
+
 ## Operasi
 
 ```bash
@@ -155,6 +167,9 @@ node scripts/refresh-sentinel-status.mjs
 
 # Verifikasi CDN (Carto raster + Sentinel tile + STAC; OpenFreeMap opsional)
 node scripts/verify-basemap.mjs
+
+# Overlay S3/R2 publik (skip jika NEXT_PUBLIC_TILES_BASE_URL kosong)
+npm run verify:tiles-cdn
 
 # Sync overlay + Aceh extract ke S3/R2 (skip jika env kosong)
 bash scripts/sync-tiles-s3.sh --dry-run
