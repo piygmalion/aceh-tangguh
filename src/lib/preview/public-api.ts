@@ -186,6 +186,9 @@ async function resolveStaticGet(input: string): Promise<Response> {
       penanganan: { layerId: "laporanPenanganan", count: 0, items: [] },
     });
   }
+  if (path === "/api/laporan/summary") {
+    return jsonResponse({ aduan: 0, ditanggapi: 0, source: "preview" });
+  }
   if (path === "/api/layers/catalog") {
     return jsonResponse({
       items: enabledMapLayersCatalog(),

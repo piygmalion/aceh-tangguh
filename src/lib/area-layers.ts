@@ -1,5 +1,5 @@
 import type { AreaLayerKey, LegendModel } from "@/lib/types";
-import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
+import { CHOROPLETH_DAMAGED_HOME, FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
 
 export const AREA_LAYER_KEYS: AreaLayerKey[] = [
   "villageDistribution",
@@ -9,9 +9,14 @@ export const AREA_LAYER_KEYS: AreaLayerKey[] = [
   "irbi2025",
 ];
 
-/** Retired choropleths — still parse from ?area= but never appear as toolbar radios. */
+/** Stub rectangles only — toolbar may list them, MapViewport must not paint them. */
+export const STUB_AREA_LAYER_KEYS = [
+  "ngoDistribution",
+  "regencyFundAllocation",
+] as const satisfies readonly AreaLayerKey[];
+
+/** Soft-retired in the DB catalog. Toolbar may still list them for Tanggapi chrome. */
 export const RETIRED_AREA_LAYER_KEYS = [
-  "r3pDistribution",
   "ngoDistribution",
   "regencyFundAllocation",
 ] as const satisfies readonly AreaLayerKey[];
@@ -19,8 +24,15 @@ export const RETIRED_AREA_LAYER_KEYS = [
 /** Visible AREA radios. Hardcoded — not derived from map_layers.enabled. */
 export const AREA_TOOLBAR_LAYER_KEYS = [
   "villageDistribution",
+  "r3pDistribution",
+  "ngoDistribution",
+  "regencyFundAllocation",
   "irbi2025",
 ] as const satisfies readonly AreaLayerKey[];
+
+export function isStubAreaLayer(key: string | null | undefined): boolean {
+  return !!key && (STUB_AREA_LAYER_KEYS as readonly string[]).includes(key);
+}
 
 export const AREA_LAYER_FILES: Record<AreaLayerKey, string> = {
   villageDistribution: "villageDistribution.geojson",
@@ -34,17 +46,23 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
   villageDistribution: {
     title: "Distribusi desa (rumah rusak RR+RS+RB)",
     items: [
-      { color: FOREST_SCALE[200], label: "Rendah (≤106)" },
-      { color: FOREST_SCALE[400], label: "Sedang (≤1184)" },
-      { color: FOREST_SCALE[700], label: "Tinggi (>1184)" },
+      { color: CHOROPLETH_DAMAGED_HOME.sangat_rendah, label: "Sangat rendah (≤20)" },
+      { color: CHOROPLETH_DAMAGED_HOME.rendah, label: "Rendah (≤191)" },
+      { color: CHOROPLETH_DAMAGED_HOME.sedang, label: "Sedang (≤731)" },
+      { color: CHOROPLETH_DAMAGED_HOME.tinggi, label: "Tinggi (≤2849)" },
+      { color: CHOROPLETH_DAMAGED_HOME.sangat_tinggi, label: "Sangat tinggi (>2849)" },
+      { color: CHOROPLETH_DAMAGED_HOME.belum_diketahui, label: "Belum diketahui" },
     ],
   },
   r3pDistribution: {
     title: "Distribusi R3P (rumah rusak RR+RS+RB)",
     items: [
-      { color: FOREST_SCALE[200], label: "Rendah (≤1362)" },
-      { color: FOREST_SCALE[400], label: "Sedang (≤10795)" },
-      { color: FOREST_SCALE[700], label: "Tinggi (>10795)" },
+      { color: CHOROPLETH_DAMAGED_HOME.sangat_rendah, label: "Sangat rendah (≤20)" },
+      { color: CHOROPLETH_DAMAGED_HOME.rendah, label: "Rendah (≤191)" },
+      { color: CHOROPLETH_DAMAGED_HOME.sedang, label: "Sedang (≤731)" },
+      { color: CHOROPLETH_DAMAGED_HOME.tinggi, label: "Tinggi (≤2849)" },
+      { color: CHOROPLETH_DAMAGED_HOME.sangat_tinggi, label: "Sangat tinggi (>2849)" },
+      { color: CHOROPLETH_DAMAGED_HOME.belum_diketahui, label: "Belum diketahui" },
     ],
   },
   ngoDistribution: {

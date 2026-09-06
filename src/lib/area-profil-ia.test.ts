@@ -14,6 +14,7 @@ import {
   areaProfilBreadcrumbLevels,
   areaProfilBreadcrumbTarget,
   areaProfilViewOnOpen,
+  desaShowsCensus,
   hasKabupatenQuery,
   kabupatenNameFromSelection,
   profilDesaApiPath,
@@ -41,7 +42,7 @@ function sel(
 }
 
 describe("signed Distribusi area panel IA", () => {
-  it("opens at kabupaten when selection.kabupaten is set, even if the click was a desa", () => {
+  it("opens at the clicked LOD instead of always kabupaten", () => {
     assert.deepEqual(AREA_PROFIL_VIEWS, ["kabupaten", "kecamatan", "desa"]);
     assert.equal(AREA_PROFIL_INITIAL_VIEW, "kabupaten");
     assert.equal(AREA_PROFIL_VIEWS.includes("desa-list" as never), false);
@@ -58,12 +59,39 @@ describe("signed Distribusi area panel IA", () => {
       name: "Bakongan",
       kabupaten: "Aceh Selatan",
       kecamatan: "Bakongan",
+      kodeKecamatan: "110101",
       level: "kecamatan",
     });
+    const kabClick = sel({
+      name: "Aceh Selatan",
+      kabupaten: "Aceh Selatan",
+      level: "kab",
+      kodeKabupaten: "1101",
+    });
 
-    assert.equal(areaProfilViewOnOpen(desaClick), "kabupaten");
-    assert.equal(areaProfilViewOnOpen(kecClick), "kabupaten");
-    assert.equal(desaClick.kabupaten.trim().length > 0, true);
+    assert.equal(areaProfilViewOnOpen(desaClick), "desa");
+    assert.equal(areaProfilViewOnOpen(kecClick), "kecamatan");
+    assert.equal(areaProfilViewOnOpen(kabClick), "kabupaten");
+    assert.equal(
+      desaShowsCensus({
+        korban_meninggal: null,
+        korban_hilang: null,
+        rumah_rr: null,
+        rumah_rs: null,
+        rumah_rb: null,
+      }),
+      true
+    );
+    assert.equal(
+      desaShowsCensus({
+        korban_meninggal: 1,
+        korban_hilang: null,
+        rumah_rr: null,
+        rumah_rs: null,
+        rumah_rb: null,
+      }),
+      false
+    );
   });
 
   it("backs desa → kecamatan → kabupaten → close", () => {
@@ -295,7 +323,7 @@ describe("AreaProfilPanel source lock", () => {
   const id = readFileSync(path.join(ROOT, "messages/id.json"), "utf8");
   const en = readFileSync(path.join(ROOT, "messages/en.json"), "utf8");
 
-  it("drops desa-list and the viewDesa footer", () => {
+  it("opens at the clicked LOD and keeps lists behind Lihat Detail", () => {
     assert.equal(panel.includes("desa-list"), false);
     assert.equal(panel.includes("viewDesa"), false);
     assert.equal(panel.includes("locationLine"), false);
@@ -313,6 +341,11 @@ describe("AreaProfilPanel source lock", () => {
     assert.match(panel, /sortKecamatanListItems/);
     assert.match(panel, /desaCount/);
     assert.match(panel, /Escape/);
+    assert.match(panel, /t\("seeKecamatan"\)/);
+    assert.match(panel, /t\("seeDesa"\)/);
+    assert.match(panel, /t\("backToKecamatan"\)/);
+    assert.match(panel, /desaShowsCensus/);
+    assert.match(panel, /listOpen/);
   });
 
   it("keeps Empty / Belum Diketahui copy and Kab · Kec · Desa crumbs", () => {
@@ -347,7 +380,9 @@ describe("AreaProfilPanel source lock", () => {
     );
   });
 
-  it("keeps the #49 demografi MetricCards on every MetricSections view", () => {
+  it("keeps census 3×3 on desa CensusGrid and Tanggapi footer copy", () => {
+    assert.match(panel, /function CensusGrid/);
+    assert.match(panel, /t\("sensus"\)/);
     assert.match(panel, /t\("kkLaki"\)/);
     assert.match(panel, /metrics\.kk_laki_laki/);
     assert.match(panel, /t\("kkPerempuan"\)/);
@@ -360,8 +395,24 @@ describe("AreaProfilPanel source lock", () => {
     assert.match(panel, /t\("disabilitas"\)/);
     assert.match(panel, /metrics\.penyandang_disabilitas/);
     const idJson = JSON.parse(id) as { profilDesa: Record<string, string> };
+    const enJson = JSON.parse(en) as { profilDesa: Record<string, string> };
     assert.equal(idJson.profilDesa.kkLaki, "KK Laki-laki");
     assert.equal(idJson.profilDesa.disabilitas, "Penyandang Disabilitas");
+    assert.equal(idJson.profilDesa.seeKecamatan, "Lihat Detail Kecamatan");
+    assert.equal(idJson.profilDesa.seeDesa, "Lihat Detail Desa");
+    assert.equal(idJson.profilDesa.backToKecamatan, "Kembali ke Kecamatan");
+    assert.equal(enJson.profilDesa.seeKecamatan, "View subdistrict details");
+  });
+
+  it("paints 6-class fills, hover names, and village load pills", () => {
+    assert.match(viewport, /CHOROPLETH_DAMAGED_HOME/);
+    assert.match(viewport, /belum_diketahui/);
+    assert.match(viewport, /hoverName/);
+    assert.match(viewport, /loadingVillages/);
+    assert.match(viewport, /geojsonReady/);
+    assert.match(viewport, /isStubAreaLayer/);
+    assert.match(viewport, /STATUS_HEX\.AWAS/);
+    assert.match(viewport, /villageClickLevel/);
   });
 
   it("reads the confirmed query keys on the three existing profil-desa routes", () => {

@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
+import { VILLAGE_DISTRIBUTION_QUINTILES } from "./village-distribution-buckets.mjs";
 import {
-  VILLAGE_DISTRIBUTION_TERCILES,
   buildKecamatanProperties,
   groupVillageFeaturesByKodeKecamatan,
   sixDigitKode,
@@ -27,18 +27,23 @@ describe("sixDigitKode", () => {
 });
 
 describe("villageDistributionBucket", () => {
-  it("uses locked desa terciles 106 / 1184, not kab R3P breaks", () => {
-    assert.deepEqual(VILLAGE_DISTRIBUTION_TERCILES, { t1: 106, t2: 1184 });
+  it("uses locked desa quintiles, not kab R3P terciles", () => {
+    assert.deepEqual(VILLAGE_DISTRIBUTION_QUINTILES, {
+      q1: 20,
+      q2: 191,
+      q3: 731,
+      q4: 2849,
+    });
     const legend = JSON.parse(
       readFileSync(resolve(root, "public/fixtures/areas/villageDistribution.legend.json"), "utf8")
     );
-    assert.deepEqual(legend.terciles, VILLAGE_DISTRIBUTION_TERCILES);
-    assert.equal(villageDistributionBucket(0), "rendah");
-    assert.equal(villageDistributionBucket(106), "rendah");
-    assert.equal(villageDistributionBucket(107), "sedang");
-    assert.equal(villageDistributionBucket(1184), "sedang");
-    assert.equal(villageDistributionBucket(1185), "tinggi");
-    assert.notEqual(villageDistributionBucket(200), "tinggi");
+    assert.deepEqual(legend.quintiles, VILLAGE_DISTRIBUTION_QUINTILES);
+    assert.equal(villageDistributionBucket(0), "sangat_rendah");
+    assert.equal(villageDistributionBucket(20), "sangat_rendah");
+    assert.equal(villageDistributionBucket(107), "rendah");
+    assert.equal(villageDistributionBucket(200), "sedang");
+    assert.equal(villageDistributionBucket(1184), "tinggi");
+    assert.equal(villageDistributionBucket(2850), "sangat_tinggi");
   });
 });
 
@@ -111,7 +116,7 @@ describe("groupVillageFeaturesByKodeKecamatan", () => {
     assert.equal(johan.rumah_rs, 6);
     assert.equal(johan.rumah_rb, 1);
     assert.equal(johan.value, 107);
-    assert.equal(johan.bucket, "sedang");
+    assert.equal(johan.bucket, "rendah");
     assert.equal(johan.kecamatan, "Johan Pahlawan");
     assert.equal(johan.kabupaten, "Aceh Barat");
     assert.equal(johan.level, "kecamatan");

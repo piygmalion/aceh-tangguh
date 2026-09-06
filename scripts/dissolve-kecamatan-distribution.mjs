@@ -4,7 +4,7 @@
  *
  * Group key: properties.kode_kecamatan (6-digit BPS) only. Never name.
  * Leftovers without kode stay out. No invented codes.
- * Bucket: sum(rumah_rr+rumah_rs+rumah_rb) + villageDistribution terciles (106 / 1184).
+ * Bucket: sum(rumah_rr+rumah_rs+rumah_rb) + villageDistribution quintiles.
  *
  * Geometry union uses shapely (scripts/lib/unary-union-geoms.py).
  * Usage: node scripts/dissolve-kecamatan-distribution.mjs
@@ -14,8 +14,8 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { VILLAGE_DISTRIBUTION_QUINTILES } from "./lib/village-distribution-buckets.mjs";
 import {
-  VILLAGE_DISTRIBUTION_TERCILES,
   buildKecamatanProperties,
   groupVillageFeaturesByKodeKecamatan,
 } from "./lib/kecamatan-dissolve.mjs";
@@ -49,8 +49,9 @@ const staged = {
     skipped_non_six_digit,
     groups: stagedFeatures.length,
     bucket:
-      `villageDistribution terciles t1=${VILLAGE_DISTRIBUTION_TERCILES.t1} ` +
-      `t2=${VILLAGE_DISTRIBUTION_TERCILES.t2} on sum(rumah_rr+rumah_rs+rumah_rb); ` +
+      `villageDistribution quintiles q1=${VILLAGE_DISTRIBUTION_QUINTILES.q1} ` +
+      `q2=${VILLAGE_DISTRIBUTION_QUINTILES.q2} q3=${VILLAGE_DISTRIBUTION_QUINTILES.q3} ` +
+      `q4=${VILLAGE_DISTRIBUTION_QUINTILES.q4} on sum(rumah_rr+rumah_rs+rumah_rb); ` +
       "same Distribusi scale as desa — not recomputed, not majority",
   },
   features: stagedFeatures,

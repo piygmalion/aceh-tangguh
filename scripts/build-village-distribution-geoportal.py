@@ -56,13 +56,19 @@ def num(v):
     return int(x) if isinstance(x, int) else x
 
 
-def bucket(total) -> str:
+def bucket(total, unknown=False) -> str:
+    if unknown:
+        return "belum_diketahui"
     t = total or 0
-    if t < 100:
+    if t <= 20:
+        return "sangat_rendah"
+    if t <= 191:
         return "rendah"
-    if t < 1000:
+    if t <= 731:
         return "sedang"
-    return "tinggi"
+    if t <= 2849:
+        return "tinggi"
+    return "sangat_tinggi"
 
 
 def flatten_profil(d: dict) -> dict:

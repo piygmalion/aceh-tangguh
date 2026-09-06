@@ -35,7 +35,8 @@ import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
 import type { FilterSpecification, GeoJSONSource, MapLayerMouseEvent } from "maplibre-gl";
-import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
+import { CHOROPLETH_DAMAGED_HOME, STATUS_HEX } from "@/lib/chart-colors";
+import { isStubAreaLayer } from "@/lib/area-layers";
 import { CLUSTER_COLORS, COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
 import { markerIconImageId } from "@/lib/layer-icons";
 import {
@@ -55,6 +56,7 @@ import {
   overlayBeforeId,
   readKabLodFocus,
   unionBounds,
+  villageClickLevel,
   villageLayerFilter,
   villageLodBand,
   villagePanelClickEnabled,
@@ -101,11 +103,14 @@ const POINT_LAYER_IDS = [
 
 export { LAYER_COLORS };
 
-/** Village / R3P / NGO quantity terciles: forest-200 / 400 / 700 (not lime). */
+/** Village / R3P quantity: 5-class + unknown. Old tercile keys still paint. */
 const QUANTITY_FILL: Record<string, string> = {
-  rendah: FOREST_SCALE[200],
-  sedang: FOREST_SCALE[400],
-  tinggi: FOREST_SCALE[700],
+  sangat_rendah: CHOROPLETH_DAMAGED_HOME.sangat_rendah,
+  rendah: CHOROPLETH_DAMAGED_HOME.rendah,
+  sedang: CHOROPLETH_DAMAGED_HOME.sedang,
+  tinggi: CHOROPLETH_DAMAGED_HOME.tinggi,
+  sangat_tinggi: CHOROPLETH_DAMAGED_HOME.sangat_tinggi,
+  belum_diketahui: CHOROPLETH_DAMAGED_HOME.belum_diketahui,
   tahap1: "#E6D3A0",
   tahap2: "#FF8F42",
 };
@@ -127,17 +132,23 @@ function fillColorExpr(layer: AreaLayerKey | null | undefined) {
   return [
     "match",
     ["get", "bucket"],
+    "sangat_rendah",
+    fill.sangat_rendah,
     "rendah",
     fill.rendah,
     "sedang",
     fill.sedang,
     "tinggi",
     fill.tinggi,
+    "sangat_tinggi",
+    fill.sangat_tinggi,
+    "belum_diketahui",
+    fill.belum_diketahui,
     "tahap1",
     fill.tahap1,
     "tahap2",
     fill.tahap2,
-    fill.rendah,
+    fill.belum_diketahui,
   ] as unknown as string;
 }
 
@@ -211,6 +222,17 @@ function overlayLayerId(base: string, prefix?: string): string {
 
 function highlightFilter(sel: VillageClickSelection | null): FilterSpecification {
   if (!sel) return ["==", ["get", "name"], "__none__"];
+  const level = sel.level?.toLowerCase() ?? "";
+  if ((level === "kab" || level === "kabupaten") && sel.kodeKabupaten) {
+    return [
+      "any",
+      ["==", ["get", "kode_kab"], sel.kodeKabupaten],
+      ["==", ["get", "kode_kabupaten"], sel.kodeKabupaten],
+    ];
+  }
+  if (level === "kecamatan" && sel.kodeKecamatan) {
+    return ["==", ["get", "kode_kecamatan"], sel.kodeKecamatan];
+  }
   const byName: FilterSpecification = [
     "all",
     ["==", ["get", "name"], sel.name],
@@ -245,8 +267,8 @@ function AreaHighlightLayers({
         {...before}
         filter={filter}
         paint={{
-          "fill-color": COLOR_TOKENS.gold,
-          "fill-opacity": 0.22,
+          "fill-color": STATUS_HEX.AWAS,
+          "fill-opacity": 0.42,
         }}
       />
       <Layer
@@ -372,15 +394,21 @@ function readVillageSelection(
     : undefined;
   const kodeKabupaten = props.kode_kabupaten
     ? String(props.kode_kabupaten)
-    : undefined;
+    : props.kode_kab
+      ? String(props.kode_kab)
+      : undefined;
+  const level = props.level ? String(props.level) : "desa";
+  const kabName =
+    kabupaten ||
+    (level === "kab" || level === "kabupaten" ? name : "");
   return {
-    name,
-    kabupaten,
+    name: name || kabName || kecamatan,
+    kabupaten: kabName,
     kecamatan,
     kodeDesa,
     kodeKecamatan,
     kodeKabupaten,
-    level: props.level ? String(props.level) : "desa",
+    level,
   };
 }
 
@@ -432,6 +460,8 @@ export function MapViewport({
   );
   const [kabFocus, setKabFocus] = useState<VillageLodFocus | null>(null);
   const [overlaySlot, setOverlaySlot] = useState<string | undefined>();
+  const [hoverName, setHoverName] = useState<string | null>(null);
+  const [geojsonReady, setGeojsonReady] = useState(false);
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const villageClickEnabled = areaLayer === "villageDistribution";
   const useVillageTiles = lodBand === "village";
@@ -543,9 +573,10 @@ export function MapViewport({
     [areaLayer, lodFocus]
   );
 
+  const stubLayer = isStubAreaLayer(areaLayer);
   const villageLod = areaLayer === "villageDistribution";
   const otherPmtilesMeta =
-    areaLayer && areaLayer !== "villageDistribution"
+    !stubLayer && areaLayer && areaLayer !== "villageDistribution"
       ? PMTILES_AREA[areaLayer]
       : undefined;
 
@@ -593,6 +624,7 @@ export function MapViewport({
   const useOtherPmtiles = Boolean(otherPmtilesMeta && otherPmtilesOk && !krbRecolor);
 
   const needAreaGeojson =
+    !stubLayer &&
     areaLayer != null &&
     (krbRecolor ||
       (villageLod
@@ -668,11 +700,21 @@ export function MapViewport({
     };
   }, [data, disasterJenisSet]);
 
-  const { data: areaData } = useQuery({
+  const { data: areaData, isFetching: areaFetching, isSuccess: areaReady } = useQuery({
     queryKey: qk.area(areaLayer ?? "villageDistribution"),
     queryFn: () => fetchArea(areaLayer!),
     enabled: needAreaGeojson,
   });
+
+  useEffect(() => {
+    if (!needAreaGeojson || areaFetching || !areaReady) {
+      setGeojsonReady(false);
+      return;
+    }
+    setGeojsonReady(true);
+    const timer = window.setTimeout(() => setGeojsonReady(false), 2400);
+    return () => window.clearTimeout(timer);
+  }, [needAreaGeojson, areaFetching, areaReady, areaLayer]);
 
   const areaGeojson = useMemo(() => {
     if (!areaData?.features) return null;
@@ -688,7 +730,7 @@ export function MapViewport({
           ...f.properties,
           fillColor:
             bucketFillFor(areaLayer)[String(f.properties?.bucket ?? "")] ??
-            FOREST_SCALE[200],
+            CHOROPLETH_DAMAGED_HOME.belum_diketahui,
         },
       })),
     };
@@ -824,11 +866,21 @@ export function MapViewport({
             });
           }
         }
+        const kabSel = readVillageSelection({
+          ...(props ?? {}),
+          level: "kab",
+          kabupaten: String(props?.kabupaten ?? props?.name ?? ""),
+          name: String(props?.name ?? props?.kabupaten ?? ""),
+        });
+        if (kabSel && onVillageClick) onVillageClick(kabSel);
         return;
       }
       if (!villagePanelClickEnabled(lodBand)) return;
       if (!onVillageClick) return;
-      const sel = readVillageSelection(props);
+      const sel = readVillageSelection({
+        ...(props ?? {}),
+        level: villageClickLevel(lodBand, props),
+      });
       if (sel) onVillageClick(sel);
     },
     [villageClickEnabled, onVillageClick, lodBand, t]
@@ -857,7 +909,21 @@ export function MapViewport({
   );
 
   return (
-    <div className="absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
+    <div className="absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pl-[20.5rem] md:pr-[20.5rem]">
+      {areaFetching ? (
+        <div className="pointer-events-none absolute left-1/2 top-3 z-20 -translate-x-1/2 rounded-full bg-black/70 px-3 py-1 text-xs text-white">
+          {t("loadingVillages")}
+        </div>
+      ) : geojsonReady ? (
+        <div className="pointer-events-none absolute left-1/2 top-3 z-20 -translate-x-1/2 rounded-full bg-black/70 px-3 py-1 text-xs text-white">
+          {t("geojsonReady")}
+        </div>
+      ) : null}
+      {hoverName ? (
+        <div className="pointer-events-none absolute left-1/2 top-11 z-20 -translate-x-1/2 rounded-md bg-white px-2.5 py-1 text-sm font-medium text-zinc-900 shadow">
+          {hoverName}
+        </div>
+      ) : null}
       <Map
         ref={mapRef}
         initialViewState={view}
@@ -874,7 +940,16 @@ export function MapViewport({
         onLoad={onMapLoad}
         onClick={onMapClick}
         onMouseEnter={() => setCursor("pointer")}
-        onMouseLeave={() => setCursor("auto")}
+        onMouseMove={(e) => {
+          const feature = e.features?.find((f) => isAreaFillLayerId(f.layer?.id));
+          const props = feature?.properties as Record<string, unknown> | undefined;
+          const name = String(props?.name ?? props?.kecamatan ?? props?.kabupaten ?? "").trim();
+          setHoverName(name || null);
+        }}
+        onMouseLeave={() => {
+          setCursor("auto");
+          setHoverName(null);
+        }}
         onMove={onMove}
         onMoveEnd={onMoveEnd}
         onError={(e) => {
@@ -1079,7 +1154,7 @@ export function MapViewport({
               minzoom={KECAMATAN_LOD_MIN_ZOOM}
               maxzoom={KECAMATAN_LOD_MAX_ZOOM}
               villageSelection={villageSelection}
-              villageClickEnabled={false}
+              villageClickEnabled={villageClickEnabled && lodBand === "kecamatan"}
             />
           </Source>
         )}
@@ -1126,7 +1201,7 @@ export function MapViewport({
               }
               beforeId={overlaySlot}
               villageSelection={villageSelection}
-              villageClickEnabled={villageClickEnabled && useVillageTiles}
+              villageClickEnabled={villageClickEnabled}
             />
           </Source>
         )}

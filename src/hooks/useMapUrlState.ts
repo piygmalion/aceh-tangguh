@@ -12,6 +12,7 @@ import {
   type OverlayLayerKey,
 } from "@/lib/types";
 import { isBasemapId } from "@/lib/basemap";
+import { resolveMapBasemap } from "@/lib/map-basemap-default";
 import { DISASTER_JENIS, encodeDisasterJenis } from "@/lib/disaster-jenis";
 import {
   canonicalMapUrlPatch,
@@ -49,14 +50,14 @@ export function useMapUrlState() {
     const lat = Number(searchParams.get("lat") ?? DEFAULT_VIEW.latitude);
     const lng = Number(searchParams.get("lng") ?? DEFAULT_VIEW.longitude);
     const z = Number(searchParams.get("z") ?? DEFAULT_VIEW.zoom);
-    const basemap = (searchParams.get("basemap") as BasemapId) || "positron";
+    const basemap = resolveMapBasemap(searchParams.get("basemap"));
     return {
       view: {
         latitude: Number.isFinite(lat) ? lat : DEFAULT_VIEW.latitude,
         longitude: Number.isFinite(lng) ? lng : DEFAULT_VIEW.longitude,
         zoom: Number.isFinite(z) ? z : DEFAULT_VIEW.zoom,
       },
-      basemap: isBasemapId(basemap) ? basemap : "positron",
+      basemap: isBasemapId(basemap) ? basemap : resolveMapBasemap(null),
       preferVector: searchParams.get("vector") === "1",
       areaLayer: resolved.areaLayer,
       markerLayers: resolved.markerLayers,

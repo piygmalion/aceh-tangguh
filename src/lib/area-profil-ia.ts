@@ -34,12 +34,36 @@ export const PROFIL_FORBIDDEN_QUERY_KEYS = [
 
 const KAB_POLYGON_LEVELS = new Set(["kab", "kabupaten"]);
 
-/** Open at kabupaten when selection.kabupaten is set — even if the click was a desa. */
+const DESA_LEVELS = new Set(["desa", "village"]);
+const KEC_LEVELS = new Set(["kecamatan"]);
+const KAB_LEVELS = new Set(["kab", "kabupaten"]);
+
+/** Open at the clicked LOD — desa click stays desa, not kabupaten. */
 export function areaProfilViewOnOpen(
   selection?: VillageClickSelection | null
 ): AreaProfilView {
-  if (selection?.kabupaten?.trim()) return "kabupaten";
+  const level = selection?.level?.trim().toLowerCase() ?? "";
+  if (DESA_LEVELS.has(level) || selection?.kodeDesa?.trim()) return "desa";
+  if (KEC_LEVELS.has(level) || selection?.kodeKecamatan?.trim()) return "kecamatan";
+  if (KAB_LEVELS.has(level)) return "kabupaten";
+  if (selection?.kecamatan?.trim()) return "kecamatan";
   return AREA_PROFIL_INITIAL_VIEW;
+}
+
+export function desaShowsCensus(metrics: {
+  korban_meninggal: number | null;
+  korban_hilang: number | null;
+  rumah_rr: number | null;
+  rumah_rs: number | null;
+  rumah_rb: number | null;
+}): boolean {
+  return (
+    metrics.korban_meninggal == null &&
+    metrics.korban_hilang == null &&
+    metrics.rumah_rr == null &&
+    metrics.rumah_rs == null &&
+    metrics.rumah_rb == null
+  );
 }
 
 export function areaProfilBack(view: AreaProfilView): AreaProfilView | "close" {

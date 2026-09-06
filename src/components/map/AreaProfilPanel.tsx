@@ -10,6 +10,7 @@ import {
   areaProfilBreadcrumbLevels,
   areaProfilBreadcrumbTarget,
   areaProfilViewOnOpen,
+  desaShowsCensus,
   kabupatenNameFromSelection,
   hasKabupatenQuery,
   profilDesaApiPath,
@@ -133,81 +134,78 @@ function MetricCard({
   );
 }
 
-function MetricSections({ metrics }: { metrics: MetricBundle }) {
+function CensusGrid({ metrics }: { metrics: MetricBundle }) {
+  const t = useTranslations("profilDesa");
+  const unknown = t("unknown");
+  return (
+    <section>
+      <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
+        {t("sensus")}
+      </h3>
+      <div className="grid grid-cols-3 gap-2">
+        <MetricCard label={t("dewasa")} value={metrics.dewasa_18_59} unknown={unknown} tone="info" />
+        <MetricCard label={t("remaja")} value={metrics.remaja_13_17} unknown={unknown} tone="info" />
+        <MetricCard label={t("anak")} value={metrics.anak_5_12} unknown={unknown} tone="info" />
+        <MetricCard label={t("balita")} value={metrics.balita_1_4} unknown={unknown} tone="info" />
+        <MetricCard label={t("bayi")} value={metrics.bayi_0_1} unknown={unknown} tone="info" />
+        <MetricCard label={t("lansia")} value={metrics.lansia_60_plus} unknown={unknown} tone="info" />
+        <MetricCard
+          label={t("disabilitas")}
+          value={metrics.penyandang_disabilitas}
+          unknown={unknown}
+          tone="info"
+        />
+        <MetricCard label={t("kkLaki")} value={metrics.kk_laki_laki} unknown={unknown} tone="info" />
+        <MetricCard
+          label={t("kkPerempuan")}
+          value={metrics.kk_perempuan}
+          unknown={unknown}
+          tone="info"
+        />
+      </div>
+    </section>
+  );
+}
+
+function ImpactMetricSections({
+  metrics,
+  includePopulation,
+}: {
+  metrics: MetricBundle;
+  includePopulation: boolean;
+}) {
   const t = useTranslations("profilDesa");
   const unknown = t("unknown");
   return (
     <div className="flex flex-col gap-4">
-      <section>
-        <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
-          {t("populasi")}
-        </h3>
-        <div className="grid grid-cols-2 gap-2">
-          <MetricCard label={t("kk")} value={metrics.kk} unknown={unknown} tone="info" />
-          <MetricCard
-            label={t("jumlahPenduduk")}
-            value={metrics.populasi}
-            unknown={unknown}
-            tone="info"
-          />
-          <MetricCard
-            label={t("kkTerdampak")}
-            value={metrics.kk_terdampak}
-            unknown={unknown}
-            tone="warn"
-          />
-          <MetricCard
-            label={t("popTerdampak")}
-            value={metrics.populasi_terdampak}
-            unknown={unknown}
-            tone="warn"
-          />
-          <MetricCard
-            label={t("kkLaki")}
-            value={metrics.kk_laki_laki}
-            unknown={unknown}
-            tone="info"
-          />
-          <MetricCard
-            label={t("kkPerempuan")}
-            value={metrics.kk_perempuan}
-            unknown={unknown}
-            tone="info"
-          />
-          <MetricCard label={t("bayi")} value={metrics.bayi_0_1} unknown={unknown} tone="info" />
-          <MetricCard
-            label={t("balita")}
-            value={metrics.balita_1_4}
-            unknown={unknown}
-            tone="info"
-          />
-          <MetricCard label={t("anak")} value={metrics.anak_5_12} unknown={unknown} tone="info" />
-          <MetricCard
-            label={t("remaja")}
-            value={metrics.remaja_13_17}
-            unknown={unknown}
-            tone="info"
-          />
-          <MetricCard
-            label={t("dewasa")}
-            value={metrics.dewasa_18_59}
-            unknown={unknown}
-            tone="info"
-          />
-          <MetricCard
-            label={t("lansia")}
-            value={metrics.lansia_60_plus}
-            unknown={unknown}
-            tone="info"
-          />
-          <MetricCard
-            label={t("disabilitas")}
-            value={metrics.penyandang_disabilitas}
-            unknown={unknown}
-            tone="info"
-          />
-        </div>
-      </section>
+      {includePopulation ? (
+        <section>
+          <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
+            {t("populasi")}
+          </h3>
+          <div className="grid grid-cols-2 gap-2">
+            <MetricCard
+              label={t("jumlahPenduduk")}
+              value={metrics.populasi}
+              unknown={unknown}
+              tone="info"
+            />
+            <MetricCard label={t("kk")} value={metrics.kk} unknown={unknown} tone="info" />
+            <MetricCard
+              label={t("popTerdampak")}
+              value={metrics.populasi_terdampak}
+              unknown={unknown}
+              tone="warn"
+            />
+            <MetricCard
+              label={t("kkTerdampak")}
+              value={metrics.kk_terdampak}
+              unknown={unknown}
+              tone="warn"
+            />
+          </div>
+        </section>
+      ) : null}
       <section>
         <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
           {t("korban")}
@@ -387,15 +385,40 @@ export function AreaProfilPanel({
 }) {
   const t = useTranslations("profilDesa");
   const [view, setView] = useState<AreaProfilView>(AREA_PROFIL_INITIAL_VIEW);
+  const [listOpen, setListOpen] = useState(false);
   const [activeKecamatan, setActiveKecamatan] = useState<KecamatanListItem | null>(
     null
   );
   const [activeDesa, setActiveDesa] = useState<DesaListItem | null>(null);
 
   useEffect(() => {
-    setView(areaProfilViewOnOpen(selection));
-    setActiveKecamatan(null);
-    setActiveDesa(null);
+    const next = areaProfilViewOnOpen(selection);
+    setView(next);
+    setListOpen(false);
+    setActiveKecamatan(
+      next === "kecamatan" || next === "desa"
+        ? {
+            kecamatan: selection.kecamatan,
+            kode_kecamatan: selection.kodeKecamatan ?? null,
+            desa_count: 0,
+            badge: "tidak_diketahui",
+            total_rumah_rusak: null,
+          }
+        : null
+    );
+    setActiveDesa(
+      next === "desa"
+        ? {
+            id: selection.kodeDesa || selection.name,
+            kode: selection.kodeDesa ?? null,
+            nama: selection.name,
+            kabupaten: selection.kabupaten,
+            kecamatan: selection.kecamatan,
+            badge: "tidak_diketahui",
+            total_rumah_rusak: null,
+          }
+        : null
+    );
   }, [selection]);
 
   useEffect(() => {
@@ -448,12 +471,14 @@ export function AreaProfilPanel({
     queryFn: () =>
       fetchDesa({
         id: activeDesa?.id,
-        kode: activeDesa?.kode ?? undefined,
-        nama: activeDesa?.nama,
+        kode: activeDesa?.kode ?? selection.kodeDesa,
+        nama: activeDesa?.nama ?? selection.name,
         kabupaten: activeDesa?.kabupaten ?? kabName ?? selection.kabupaten,
         kecamatan: activeDesa?.kecamatan ?? kecamatanName,
       }),
-    enabled: view === "desa" && !!activeDesa,
+    enabled:
+      view === "desa" &&
+      Boolean(activeDesa || selection.kodeDesa || selection.name),
   });
 
   const kab = kabQuery.data;
@@ -523,7 +548,7 @@ export function AreaProfilPanel({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="map-chrome-elevated pointer-events-auto absolute inset-x-2 top-[4.15rem] flex max-h-[min(78vh,40rem)] flex-col overflow-hidden rounded-2xl md:inset-x-auto md:left-14 md:top-[4.5rem] md:w-[24rem]"
+        className="map-chrome-elevated pointer-events-auto absolute inset-x-2 top-[4.15rem] flex max-h-[min(78vh,42rem)] flex-col overflow-hidden rounded-2xl bg-white/95 md:inset-x-auto md:left-1/2 md:top-[5.5rem] md:w-[26rem] md:-translate-x-[10%]"
       >
         <header className="flex items-start gap-3 px-4 py-3">
           <span
@@ -577,7 +602,9 @@ export function AreaProfilPanel({
           ) : view === "kabupaten" ? (
             kab ? (
               <div className="flex flex-col gap-4">
-                <MetricSections metrics={kab.metrics} />
+                <ImpactMetricSections metrics={kab.metrics} includePopulation />
+                {listOpen ? (
+                <>
                 <Separator />
                 <section>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
@@ -615,6 +642,8 @@ export function AreaProfilPanel({
                     <EmptyState />
                   )}
                 </section>
+                </>
+                ) : null}
               </div>
             ) : (
               <EmptyState />
@@ -622,7 +651,13 @@ export function AreaProfilPanel({
           ) : view === "kecamatan" ? (
             kec ? (
               <div className="flex flex-col gap-4">
-                <MetricSections metrics={kec.metrics} />
+                <p className={cn("text-muted-foreground", TYPE_FLOOR_CLASS)}>
+                  {[kec.kecamatan, kec.kabupaten, "Aceh"].filter(Boolean).join(", ")}
+                  {kec.desa_count ? ` · ${t("desaCount", { count: kec.desa_count })}` : ""}
+                </p>
+                <ImpactMetricSections metrics={kec.metrics} includePopulation />
+                {listOpen ? (
+                <>
                 <Separator />
                 <section>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
@@ -659,12 +694,21 @@ export function AreaProfilPanel({
                     <EmptyState />
                   )}
                 </section>
+                </>
+                ) : null}
               </div>
             ) : (
               <EmptyState />
             )
           ) : desaQuery.data ? (
-            <MetricSections metrics={desaQuery.data.metrics} />
+            desaShowsCensus(desaQuery.data.metrics) ? (
+              <CensusGrid metrics={desaQuery.data.metrics} />
+            ) : (
+              <ImpactMetricSections
+                metrics={desaQuery.data.metrics}
+                includePopulation={false}
+              />
+            )
           ) : (
             <EmptyState />
           )}
@@ -673,17 +717,42 @@ export function AreaProfilPanel({
         <Separator />
 
         <footer className="flex items-center gap-2 px-4 py-3">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="rounded-xl"
-            data-icon="inline-start"
-            onClick={goBack}
-          >
-            <ArrowLeft />
-            {t("back")}
-          </Button>
+          {view !== "kabupaten" ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-xl"
+              data-icon="inline-start"
+              onClick={() => {
+                setListOpen(false);
+                goBack();
+              }}
+            >
+              <ArrowLeft />
+              {view === "desa" ? t("backToKecamatan") : t("back")}
+            </Button>
+          ) : null}
+          {view === "kabupaten" ? (
+            <Button
+              type="button"
+              size="sm"
+              className="ml-auto rounded-xl"
+              onClick={() => setListOpen(true)}
+            >
+              {t("seeKecamatan")}
+            </Button>
+          ) : null}
+          {view === "kecamatan" ? (
+            <Button
+              type="button"
+              size="sm"
+              className="ml-auto rounded-xl"
+              onClick={() => setListOpen(true)}
+            >
+              {t("seeDesa")}
+            </Button>
+          ) : null}
         </footer>
       </aside>
     </div>

@@ -37,6 +37,16 @@ export const STATUS_HEX = {
   AWAS: "#B42318",
 } as const;
 
+/** 5-class + unknown home-damage choropleth. Sequential brand HEX, not a rainbow. */
+export const CHOROPLETH_DAMAGED_HOME = {
+  sangat_rendah: "#C5D2B8",
+  rendah: "#8A9A5B",
+  sedang: "#C4A35A",
+  tinggi: "#FF7722",
+  sangat_tinggi: "#B42318",
+  belum_diketahui: "#52524B",
+} as const;
+
 export const KELAS_FILL: Record<string, string> = {
   RENDAH: "var(--status-aman)",
   SEDANG: "var(--status-waspada)",

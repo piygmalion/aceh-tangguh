@@ -293,6 +293,18 @@ Riset ECC atas G0–G19 + pohon kode. Naskah: [06-skema-kerapian.md](06-skema-ke
 | FE-24 | frontend | Cangkang tabel admin bersama | jurnal/FE-24.md | selesai |
 | KOORD-ECC-S | ecc | Review uji + browser | jurnal/KOORD-ECC-S.md | selesai |
 
+## Gelombang peta Tanggapi — distribusi desa
+
+ID lama DATA-11 / BE-16 / FE-20–22 sudah terpakai. Tiket gelombang ini: DATA-20, BE-29, FE-26–28. DATA-4 tetap tertahan.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| DATA-20 | data | Quintile 5 kelas + unknown + rebucket fixture | jurnal/DATA-20.md | selesai |
+| BE-29 | backend | GET `/api/laporan/summary` | jurnal/BE-29.md | selesai |
+| FE-26 | frontend | Cat, hover, klik LOD, satelit | jurnal/FE-26.md | selesai |
+| FE-27 | frontend | Modal tengah ala Tanggapi | jurnal/FE-27.md | selesai |
+| FE-28 | frontend | Widget kiri + Atur Tampilan Peta | jurnal/FE-28.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

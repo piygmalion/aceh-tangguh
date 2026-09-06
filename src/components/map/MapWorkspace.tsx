@@ -8,6 +8,7 @@ import { MapSettings } from "@/components/map/MapSettings";
 import { MapViewport } from "@/components/map/MapViewport";
 import { AreaProfilPanel } from "@/components/map/AreaProfilPanel";
 import { ReportFAB } from "@/components/map/ReportFAB";
+import { MapParticipationPanels } from "@/components/map/MapParticipationPanels";
 import type { VillageClickSelection } from "@/lib/profil-desa";
 
 function MapWorkspaceInner() {
@@ -54,6 +55,7 @@ function MapWorkspaceInner() {
         />
       ) : null}
       <SiteNav />
+      <MapParticipationPanels />
       <MapToolbar
         areaLayer={state.areaLayer}
         krbJenis={state.krbJenis ?? null}

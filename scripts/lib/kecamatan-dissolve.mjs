@@ -6,13 +6,18 @@
  * Do not invent codes.
  *
  * Bucket: sum(rumah_rr + rumah_rs + rumah_rb), then the same villageDistribution
- * tercile breaks as desa (legend t1=106, t2=1184). Not recomputed, not majority.
+ * quintile breaks as desa. Not recomputed, not majority.
  */
+
+import {
+  VILLAGE_DISTRIBUTION_QUINTILES,
+  villageDistributionBucket as classifyVillageTotal,
+} from "./village-distribution-buckets.mjs";
 
 export const SIX_DIGIT_KODE = /^\d{6}$/;
 
-/** Same breaks as public/fixtures/areas/villageDistribution.legend.json terciles. */
-export const VILLAGE_DISTRIBUTION_TERCILES = Object.freeze({ t1: 106, t2: 1184 });
+/** @deprecated use VILLAGE_DISTRIBUTION_QUINTILES — kept so old imports fail loudly in tests. */
+export const VILLAGE_DISTRIBUTION_TERCILES = VILLAGE_DISTRIBUTION_QUINTILES;
 
 /**
  * @param {unknown} value
@@ -25,18 +30,13 @@ export function sixDigitKode(value) {
 }
 
 /**
- * Desa / kecamatan Distribusi bucket — do not invent new breaks.
- * Rendah ≤106, sedang ≤1184, tinggi >1184.
+ * Desa / kecamatan Distribusi bucket — same quintiles as desa.
  *
  * @param {unknown} total
- * @returns {"rendah" | "sedang" | "tinggi"}
+ * @returns {string}
  */
 export function villageDistributionBucket(total) {
-  const t = Number(total);
-  const n = Number.isFinite(t) ? t : 0;
-  if (n <= VILLAGE_DISTRIBUTION_TERCILES.t1) return "rendah";
-  if (n <= VILLAGE_DISTRIBUTION_TERCILES.t2) return "sedang";
-  return "tinggi";
+  return classifyVillageTotal(total);
 }
 
 /**

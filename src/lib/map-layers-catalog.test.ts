@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   AREA_TOOLBAR_LAYER_KEYS,
   RETIRED_AREA_LAYER_KEYS,
+  isStubAreaLayer,
   parseAreaLayerKey,
 } from "./area-layers";
 import {
@@ -20,12 +21,18 @@ import {
 } from "./map-url-aliases";
 
 describe("AREA toolbar radios", () => {
-  it("shows only Desa + IRBI, not retired keys", () => {
+  it("lists Tanggapi distribusi radios including R3P / NGO / dana plus IRBI", () => {
     const keys = AREA_TOOLBAR_OPTIONS.map((opt) => opt.key);
-    assert.deepEqual(keys, ["villageDistribution", "irbi2025"]);
+    assert.deepEqual(keys, [
+      "villageDistribution",
+      "r3pDistribution",
+      "ngoDistribution",
+      "regencyFundAllocation",
+      "irbi2025",
+    ]);
     assert.deepEqual([...AREA_TOOLBAR_LAYER_KEYS], keys);
     for (const retired of RETIRED_AREA_LAYER_KEYS) {
-      assert.equal(keys.includes(retired), false);
+      assert.equal(keys.includes(retired), true);
     }
   });
 
@@ -43,6 +50,11 @@ describe("AREA toolbar radios", () => {
     }
     assert.equal(parseAreaLayerKey("villageDistribution"), "villageDistribution");
     assert.equal(parseAreaLayerKey("not-a-layer"), null);
+    assert.equal(isStubAreaLayer("ngoDistribution"), true);
+    assert.equal(isStubAreaLayer("regencyFundAllocation"), true);
+    assert.equal(isStubAreaLayer("villageDistribution"), false);
+    assert.equal(isStubAreaLayer("r3pDistribution"), false);
+    assert.equal(isStubAreaLayer("irbi2025"), false);
   });
 });
 

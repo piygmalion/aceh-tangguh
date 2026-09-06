@@ -28,6 +28,7 @@ import {
   villageLayerFilter,
   villageLodBand,
   villagePanelClickEnabled,
+  villageClickLevel,
 } from "./village-distribution-lod";
 
 const ACEH_BARAT_KAB = {
@@ -164,9 +165,12 @@ describe("village LOD focus + kode filter", () => {
     assert.equal(isKabAreaFeature(CODED_KECAMATAN, "kecamatan"), false);
     assert.equal(isKabAreaFeature(CODED_KECAMATAN, "kab"), true);
     assert.equal(isKabAreaFeature(CODED_KECAMATAN, "village"), false);
-    assert.equal(villagePanelClickEnabled("kab"), false);
-    assert.equal(villagePanelClickEnabled("kecamatan"), false);
+    assert.equal(villagePanelClickEnabled("kab"), true);
+    assert.equal(villagePanelClickEnabled("kecamatan"), true);
     assert.equal(villagePanelClickEnabled("village"), true);
+    assert.equal(villageClickLevel("kab", CODED_KECAMATAN), "kab");
+    assert.equal(villageClickLevel("kecamatan", { name: "Tangse" }), "kecamatan");
+    assert.equal(villageClickLevel("village", CODED_DESA), "desa");
   });
 
   it("reads kab focus from r3p kode_kab / name and does not invent codes", () => {

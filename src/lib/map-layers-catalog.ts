@@ -87,6 +87,9 @@ export const MARKER_TOOLBAR_GROUPS: MarkerToolbarGroup[] = [
  */
 export const AREA_TOOLBAR_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
+  { key: "r3pDistribution", labelKey: "r3pDistribution" },
+  { key: "ngoDistribution", labelKey: "ngoDistribution" },
+  { key: "regencyFundAllocation", labelKey: "regencyFundAllocation" },
   { key: "irbi2025", labelKey: "irbi2025" },
 ];
 

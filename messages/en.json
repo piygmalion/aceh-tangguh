@@ -193,6 +193,17 @@
     "toolbarOpen": "Open layers panel",
     "toolbarClose": "Close layers panel",
     "toolbarHandle": "Layers panel",
+    "aturTampilan": "Adjust map display",
+    "aduanTerkini": "Latest citizen reports",
+    "aduanEmpty": "No approved citizen reports on the map yet.",
+    "top5Topik": "Top 5 topics",
+    "statistikTanggapi": "Report statistics",
+    "statAduan": "Reports",
+    "statDitanggapi": "Responded",
+    "stubLayerEmpty": "Production geometry for this layer is not available yet.",
+    "sembunyikan": "Hide",
+    "loadingVillages": "Loading village areas…",
+    "geojsonReady": "GeoJSON finished loading",
     "more": "More",
     "activeLayers": "{count} active layers",
     "closeSettings": "Close settings",
@@ -307,7 +318,11 @@
     "loading": "Loading profile…",
     "error": "Failed to load village profile.",
     "damageCount": "{count} damaged houses",
-    "clickedHint": "Clicked village: {name}"
+    "clickedHint": "Clicked village: {name}",
+    "seeKecamatan": "View subdistrict details",
+    "seeDesa": "View village details",
+    "backToKecamatan": "Back to subdistrict",
+    "sensus": "Census data"
   },
   "lapor": {
     "title": "Report an incident",
@@ -513,8 +528,8 @@
       "body": "Village geometry comes from the Aceh geoportal (Peta_Administrasi_Desa / ADMINISTRASI_AR_DESA, 6,508 polygons). Damage figures and official names come from profil_desa in the data-bencana-aceh repository. The join key is the 10-digit kdepum (Kemendagri dots stripped) = BPS kode_desa_kelurahan; ArcGIS feature.id is never the join. Kode is stamped only when a coded profil row already exists — codes are not invented. The four null-kode profil rows stay ?id= lookup only. Official polygons with no profil pair (blank kdepum or a geo-only village) stay leftover without a kode."
     },
     "s4": {
-      "title": "Terciles / color buckets",
-      "body": "Positive values are split into three buckets (low / medium / high) using tercile thresholds. For kab: roughly 1,362 and 10,795. For villages: roughly 106 and 1,184. Those buckets drive polygon fill colors on the map."
+      "title": "Quintiles / color buckets",
+      "body": "Positive damaged-home totals (RR+RS+RB) are split into five classes using one quintile break set at village, subdistrict, and regency: 20 / 191 / 731 / 2849. Zero is very low. Leftover polygons without a BPS village code are unknown. Those buckets drive polygon fill colors on the map."
     },
     "s5": {
       "title": "Limits & updates",

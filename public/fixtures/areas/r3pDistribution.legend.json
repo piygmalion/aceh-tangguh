@@ -3,19 +3,34 @@
   "items": [
     {
       "color": "#C5D2B8",
-      "label": "Rendah (≤1362)"
+      "label": "Sangat rendah (≤20)"
     },
     {
-      "color": "#4F7336",
-      "label": "Sedang (≤10795)"
+      "color": "#8A9A5B",
+      "label": "Rendah (≤191)"
     },
     {
-      "color": "#1F4C15",
-      "label": "Tinggi (>10795)"
+      "color": "#C4A35A",
+      "label": "Sedang (≤731)"
+    },
+    {
+      "color": "#FF7722",
+      "label": "Tinggi (≤2849)"
+    },
+    {
+      "color": "#B42318",
+      "label": "Sangat tinggi (>2849)"
+    },
+    {
+      "color": "#52524B",
+      "label": "Belum diketahui"
     }
   ],
-  "terciles": {
-    "t1": 1362,
-    "t2": 10795
-  }
+  "quintiles": {
+    "q1": 20,
+    "q2": 191,
+    "q3": 731,
+    "q4": 2849
+  },
+  "note": "Same desa quintile breaks applied to kab sums of village RR+RS+RB."
 }

@@ -3,19 +3,41 @@
   "items": [
     {
       "color": "#C5D2B8",
-      "label": "Rendah (≤106)"
+      "label": "Sangat rendah (≤20)"
     },
     {
-      "color": "#4F7336",
-      "label": "Sedang (≤1184)"
+      "color": "#8A9A5B",
+      "label": "Rendah (≤191)"
     },
     {
-      "color": "#1F4C15",
-      "label": "Tinggi (>1184)"
+      "color": "#C4A35A",
+      "label": "Sedang (≤731)"
+    },
+    {
+      "color": "#FF7722",
+      "label": "Tinggi (≤2849)"
+    },
+    {
+      "color": "#B42318",
+      "label": "Sangat tinggi (>2849)"
+    },
+    {
+      "color": "#52524B",
+      "label": "Belum diketahui"
     }
   ],
-  "terciles": {
-    "t1": 106,
-    "t2": 1184
+  "quintiles": {
+    "q1": 20,
+    "q2": 191,
+    "q3": 731,
+    "q4": 2849
+  },
+  "colors": {
+    "sangat_rendah": "#C5D2B8",
+    "rendah": "#8A9A5B",
+    "sedang": "#C4A35A",
+    "tinggi": "#FF7722",
+    "sangat_tinggi": "#B42318",
+    "belum_diketahui": "#52524B"
   }
 }

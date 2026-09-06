@@ -75,9 +75,22 @@ export function isVillageLodZoom(zoom: number): boolean {
   return villageLodBand(zoom) === "village";
 }
 
-/** AreaProfilPanel opens only on the desa mesh, not kab/kecamatan choropleth. */
+/** Panel opens on kab, kecamatan, and desa choropleth clicks. */
 export function villagePanelClickEnabled(band: VillageLodBand): boolean {
-  return band === "village";
+  return band === "kab" || band === "kecamatan" || band === "village";
+}
+
+/** Click level follows the LOD band so kecamatan tiles never open as desa. */
+export function villageClickLevel(
+  band: VillageLodBand,
+  props?: Record<string, unknown> | null
+): "kab" | "kecamatan" | "desa" {
+  if (band === "kab" || isKabAreaFeature(props, band)) return "kab";
+  if (band === "kecamatan") return "kecamatan";
+  const level = String(props?.level ?? "").trim().toLowerCase();
+  if (level === "kab" || level === "kabupaten") return "kab";
+  if (level === "kecamatan") return "kecamatan";
+  return "desa";
 }
 
 export function villageDistributionTiles(zoom: number): PmtilesAreaMeta {

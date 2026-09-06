@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Layers } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, Layers } from "lucide-react";
+import { isStubAreaLayer } from "@/lib/area-layers";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Chip } from "@/components/ui/Chip";
@@ -116,7 +117,9 @@ export function MapToolbar({
   const t = useTranslations("map");
   const overlayHealth = useLiveOverlayHealth(overlays);
   const overlayAlert = strongestLiveOverlayAlert(overlayHealth);
-  const [tab, setTab] = useState<TabKey>(overlays.length ? "geospasial" : "lokasi");
+  const [tab, setTab] = useState<TabKey>(
+    areaLayer ? "distribusi" : overlays.length ? "geospasial" : "lokasi"
+  );
   /** Mobile bottom-sheet open state. Desktop panel is always shown via md: classes. */
   const [expanded, setExpanded] = useState(false);
   const [jenisExpanded, setJenisExpanded] = useState(false);
@@ -125,7 +128,7 @@ export function MapToolbar({
   const { data: areaLegend } = useQuery({
     queryKey: [...qk.area(areaLayer ?? "villageDistribution"), "legend"],
     queryFn: () => fetchAreaLegend(areaLayer!),
-    enabled: areaLayer != null && tab === "legenda",
+    enabled: areaLayer != null && (tab === "legenda" || tab === "distribusi"),
   });
 
   const parentDisasterOn = markerLayers.includes("disasterEvents");
@@ -162,7 +165,7 @@ export function MapToolbar({
           <Layers size={15} />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-semibold">{t("toolbarHandle")}</span>
+          <span className="block text-sm font-semibold">{t("aturTampilan")}</span>
           <span className={cn("block truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {t("activeLayers", { count: activeCount })}
           </span>
@@ -181,7 +184,7 @@ export function MapToolbar({
           <Layers size={15} />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-semibold">{t("toolbarHandle")}</div>
+          <div className="text-sm font-semibold">{t("aturTampilan")}</div>
           <div className={cn("truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {t("activeLayers", { count: activeCount })}
           </div>
@@ -253,9 +256,43 @@ export function MapToolbar({
                     iconSrc={getAreaLayerIconPath(opt.key)}
                     fallbackColor="#1F4C15"
                   />
-                  <span>{t(opt.labelKey)}</span>
+                  <span className="flex-1">{t(opt.labelKey)}</span>
+                  {areaLayer === opt.key ? (
+                    <Eye size={14} className="text-[var(--primary)]" />
+                  ) : (
+                    <EyeOff size={14} className="text-[var(--text-dim)]" />
+                  )}
                 </label>
               ))}
+              {isStubAreaLayer(areaLayer) ? (
+                <p className={cn("px-1 pt-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                  {t("stubLayerEmpty")}
+                </p>
+              ) : null}
+              {areaLegend && !isStubAreaLayer(areaLayer) ? (
+                <div className="mt-3 space-y-1.5 border-t border-[var(--border)] pt-2">
+                  <div className={cn("px-1 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                    {t("legenda")}
+                  </div>
+                  {areaLegend.items.map((item) => (
+                    <div key={item.label} className="flex items-center gap-2 px-1">
+                      <span
+                        className="h-3 w-3 rounded-sm"
+                        style={{ background: item.color }}
+                        aria-hidden
+                      />
+                      <span className={TYPE_FLOOR_CLASS}>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              <button
+                type="button"
+                className="mt-2 w-full rounded-xl border border-[var(--border)] px-3 py-1.5 text-sm"
+                onClick={() => onAreaLayerChange(null)}
+              >
+                {t("sembunyikan")}
+              </button>
               {areaLayer === "irbi2025" && onKrbJenisChange ? (
                 <label className="mt-3 flex flex-col gap-1 px-1 text-sm">
                   <span className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>

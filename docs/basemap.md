@@ -7,7 +7,7 @@ Rencana operasional untuk peta Aceh Tangguh. Bukan glosarium vendor: ini pilihan
 - **Renderer:** MapLibre GL JS (WebGL) + react-map-gl — jalur yang dipakai tim peta FOSS 2024–2026, bukan Leaflet DOM raster.
 - **Overlay wilayah:** PMTiles (tippecanoe) untuk choropleth kab/desa/IRBI, fallback GeoJSON. Geometri tetap di disk (`public/fixtures` + `public/tiles`), bukan PostGIS.
 - **Titik:** sebelumnya HTML `<Marker>` per fitur. Fasilitas pendidikan saja >3.000 titik — itu memaksa layout DOM, bukan GPU.
-- **Basemap default:** raster Carto Positron / Dark + OSM.org streets. Mudah, CORS terbuka, sudah terbukti di sandbox.
+- **Basemap default halaman `/peta`:** Esri World Imagery (`satellite`) bila URL tidak menyebut `?basemap=`. Carto Positron / Dark + OSM.org streets tetap di Pengaturan.
 
 ## Target (yang dikerjakan sekarang)
 
@@ -84,7 +84,7 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 
 Overlay URLs default ke `/tiles/...`. Set `NEXT_PUBLIC_TILES_BASE_URL` (prefix publik S3/R2, tanpa trailing slash) jika arsip di-host di object storage — filename tetap sama (`r3p-kab.pmtiles`, …). Choropleth tetap di disk kecuali URL itu diisi.
 
-Rebuild kecamatan polygons with `node scripts/dissolve-kecamatan-distribution.mjs` (group key = `kode_kecamatan` only; bucket = sum `rumah_rr+rumah_rs+rumah_rb` then the same desa terciles t1=106 / t2=1184). Do not seed `area_feature_meta` from this dissolve.
+Rebuild kecamatan polygons with `node scripts/dissolve-kecamatan-distribution.mjs` (group key = `kode_kecamatan` only; bucket = sum `rumah_rr+rumah_rs+rumah_rb` then the same desa quintiles q1=20 / q2=191 / q3=731 / q4=2849). Leftovers without `kode_desa_kelurahan` are `belum_diketahui`. Do not seed `area_feature_meta` from this dissolve. Rebucket existing fixtures with `node scripts/rebucket-village-distribution.mjs`.
 
 Village tiles carry `properties.kode_desa_kelurahan` (10-digit BPS) **only where the source GeoJSON already has it**. Slug-only leftover polygons stay without a BPS id — the rebuild does not invent codes or remap leftover names. `MapViewport` joins village clicks on that property, not on MVT feature ids. `kode_kecamatan` is kept when present. Do not use tippecanoe `--use-attribute-for-id=` on BPS kode strings (not valid MVT ids; numeric conversion would drop the property and can invent `0` for empty kode).
 

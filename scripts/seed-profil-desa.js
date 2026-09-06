@@ -17,10 +17,11 @@ function n(v) {
 
 function bucket(total) {
   const t = total || 0;
-  if (t <= 0) return "rendah";
-  if (t < 100) return "rendah";
-  if (t < 1000) return "sedang";
-  return "tinggi";
+  if (t <= 20) return "sangat_rendah";
+  if (t <= 191) return "rendah";
+  if (t <= 731) return "sedang";
+  if (t <= 2849) return "tinggi";
+  return "sangat_tinggi";
 }
 
 const src = JSON.parse(fs.readFileSync(SRC, "utf8"));

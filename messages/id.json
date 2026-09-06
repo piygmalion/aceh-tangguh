@@ -193,6 +193,17 @@
     "toolbarOpen": "Buka panel layer",
     "toolbarClose": "Tutup panel layer",
     "toolbarHandle": "Panel layer",
+    "aturTampilan": "Atur Tampilan Peta",
+    "aduanTerkini": "Laporan warga terkini",
+    "aduanEmpty": "Belum ada laporan warga yang disetujui di peta.",
+    "top5Topik": "Top 5 topik",
+    "statistikTanggapi": "Statistik laporan",
+    "statAduan": "Aduan",
+    "statDitanggapi": "Ditanggapi",
+    "stubLayerEmpty": "Geometri produksi untuk layer ini belum tersedia.",
+    "sembunyikan": "Sembunyikan",
+    "loadingVillages": "Memuat wilayah desa…",
+    "geojsonReady": "GeoJSON selesai dimuat",
     "more": "Lainnya",
     "activeLayers": "{count} layer aktif",
     "closeSettings": "Tutup pengaturan",
@@ -307,7 +318,11 @@
     "loading": "Memuat profil…",
     "error": "Gagal memuat profil desa.",
     "damageCount": "{count} rumah rusak",
-    "clickedHint": "Desa yang diklik: {name}"
+    "clickedHint": "Desa yang diklik: {name}",
+    "seeKecamatan": "Lihat Detail Kecamatan",
+    "seeDesa": "Lihat Detail Desa",
+    "backToKecamatan": "Kembali ke Kecamatan",
+    "sensus": "Data Sensus"
   },
   "lapor": {
     "title": "Laporkan kejadian",
@@ -513,8 +528,8 @@
       "body": "Geometri desa diambil dari Geoportal Aceh (Peta_Administrasi_Desa / ADMINISTRASI_AR_DESA, 6.508 poligon). Atribut kerusakan dan nama resmi berasal dari profil_desa di repositori data-bencana-aceh. Kunci join adalah 10 digit kdepum (titik Kemendagri dihapus) = kode_desa_kelurahan BPS; feature.id ArcGIS tidak dipakai. Kode hanya dicap bila baris profil sudah punya kode itu — tidak ada kode yang diciptakan. Empat baris profil tanpa kode tetap lookup ?id= saja. Poligon resmi tanpa pasangan profil (kdepum kosong atau desa geo-only) tetap leftover tanpa kode."
     },
     "s4": {
-      "title": "Tercile / bucket warna",
-      "body": "Nilai positif dibagi tiga bucket (rendah / sedang / tinggi) memakai ambang tercile. Untuk kab: ambang sekitar 1.362 dan 10.795. Untuk desa: sekitar 106 dan 1.184. Bucket ini mewarnai isian poligon di peta."
+      "title": "Quintile / bucket warna",
+      "body": "Nilai positif (rumah rusak RR+RS+RB) dibagi lima kelas memakai ambang quintile yang sama di desa, kecamatan, dan kabupaten: 20 / 191 / 731 / 2849. Nol masuk sangat rendah. Poligon leftover tanpa kode desa BPS masuk belum diketahui. Bucket ini mewarnai isian poligon di peta."
     },
     "s5": {
       "title": "Batasan & pembaruan",
