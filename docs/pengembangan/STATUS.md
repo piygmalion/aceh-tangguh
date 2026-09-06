@@ -303,6 +303,18 @@ Naskah AN-31 mengunci ImageServer `exportImage` amplop `ACEH_BBOX` → poligon s
 | DATA-20 | data | ETL fixture poligon bahaya | jurnal/DATA-20.md | selesai |
 | FE-26 | frontend | Katalog fill + path static bahaya | jurnal/FE-26.md | selesai |
 
+## Gelombang 22 — sisa lokal (chrome, cuaca, peta, tilikan)
+
+Bukan gelombang overlay baru. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan ingest pengungsian/orang. Jangan `upsert_marker_features`.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-28 | frontend | Oranye navbar sebagai penanda interaksi | jurnal/FE-28.md | selesai |
+| FE-27 | frontend | Popup konteks AI di dalam #cuaca | jurnal/FE-27.md | selesai |
+| DATA-21 | data | Dissolve R3P ke kabupaten + PMTiles LOD | jurnal/DATA-21.md | selesai |
+| FE-29 | frontend | Kartu keterangan titik peta | jurnal/FE-29.md | selesai |
+| DATA-22 | data | Tabel staf tilikan kerusakan infra | jurnal/DATA-22.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

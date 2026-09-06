@@ -1,0 +1,77 @@
+{
+  "tables": {
+    "pengungsian_titik": {
+      "rows": 265,
+      "point_rows": 265,
+      "in_bbox": 265,
+      "bbox_pct": 100.0,
+      "unknown_kab": [],
+      "empty_kab": 0,
+      "empty_verified": 0,
+      "kab_ok": true
+    },
+    "pengungsian_haifa": {
+      "rows": 437,
+      "point_rows": 437,
+      "in_bbox": 437,
+      "bbox_pct": 100.0,
+      "unknown_kab": [],
+      "empty_kab": 0,
+      "empty_verified": 0,
+      "kab_ok": true
+    },
+    "tilikan_padal": {
+      "rows": 437,
+      "point_rows": 437,
+      "in_bbox": 437,
+      "bbox_pct": 100.0,
+      "unknown_kab": [],
+      "empty_kab": 0,
+      "empty_verified": 0,
+      "kab_ok": true
+    },
+    "tilikan_jalan": {
+      "rows": 90,
+      "point_rows": 90,
+      "in_bbox": 90,
+      "bbox_pct": 100.0,
+      "unknown_kab": [],
+      "empty_kab": 0,
+      "empty_verified": 0,
+      "kab_ok": true
+    },
+    "tilikan_jembatan": {
+      "rows": 228,
+      "point_rows": 228,
+      "in_bbox": 228,
+      "bbox_pct": 100.0,
+      "unknown_kab": [],
+      "empty_kab": 0,
+      "empty_verified": 0,
+      "kab_ok": true
+    },
+    "tilikan_polsek": {
+      "rows": 254,
+      "point_rows": 36,
+      "in_bbox": 36,
+      "bbox_pct": 14.173228346456693,
+      "unknown_kab": [],
+      "empty_kab": 0,
+      "empty_verified": 0,
+      "kab_ok": true
+    }
+  },
+  "pii_hits": [],
+  "comma_hits": [],
+  "pengungsian_pass": true,
+  "tilikan_assets_pass": true,
+  "fase2_ready": true,
+  "notes": {
+    "dedup_dropped_diskominfo": 1,
+    "dedup_dropped_haifa": 45,
+    "overlap_diskominfo_haifa": 0,
+    "haifa_not_merged": true,
+    "polsek_not_ingestible": true,
+    "fasum_quarantined": true
+  }
+}
