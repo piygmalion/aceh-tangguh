@@ -351,11 +351,11 @@ SoT #3 FINAL: Empty + “Belum ada … di kabupaten Anda”; CTA outline primary
 
 ## Gelombang 28 — PD/cuaca SoT #4 (type floor + CTA WeatherNext)
 
-Kartu Peringatan Dini: lantai 13px, kontras kicker/tautan, tinggi 20rem + gulir isi tetap. Dialog WeatherNext: CTA accent ink-on-orange; flex+gap; bukan section cuaca kedua. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+Kartu Peringatan Dini: lantai 13px, kontras kicker/tautan, tinggi 20rem + gulir isi tetap. Dialog WeatherNext: CTA accent ink-on-orange; flex+gap; bukan section cuaca kedua. `npm test` 573 lulus; lint + `tsc` hijau. Browser id+en: kartu gulir isi; CTA Eksperimen/Experimental membuka dialog delayed. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
-| FE-35 | frontend | Type floor + kontras PD + CTA WeatherNext | jurnal/FE-35.md | siap-kode |
+| FE-35 | frontend | Type floor + kontras PD + CTA WeatherNext | jurnal/FE-35.md | selesai |
 
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
