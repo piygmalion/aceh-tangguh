@@ -3,9 +3,13 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import type { DestanaAktivitasStatus } from "@/lib/sik/destana-program";
+import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 type AktivitasSlot = {
   kode_aktivitas: string;
@@ -112,54 +116,68 @@ export function DestanaProgramForm({
   }
 
   if (!data) {
-    if (error) return <GlassPanel className="p-5">{error}</GlassPanel>;
-    return null;
+    if (error) {
+      return (
+        <Empty className="border border-dashed" data-testid="destana-program-empty">
+          <EmptyDescription className={TYPE_FLOOR_CLASS}>{error}</EmptyDescription>
+        </Empty>
+      );
+    }
+    return (
+      <GlassPanel className="flex flex-col gap-3 p-5" data-testid="destana-program-skeleton">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-20 w-full" />
+      </GlassPanel>
+    );
   }
 
   return (
-    <GlassPanel className="p-5">
+    <GlassPanel className="flex flex-col gap-4 p-5">
       <h2 className="font-semibold">{t("programTitle")}</h2>
-      <p className="mt-1 text-sm text-[var(--text-dim)]">{t("programLead")}</p>
-      <p className="mt-2 text-sm">
+      <p className="text-sm text-[var(--text-dim)]">{t("programLead")}</p>
+      <p className="text-sm">
         {data.penilaian_berikutnya != null
           ? t("penilaianBerikutnya", { tahun: data.penilaian_berikutnya })
           : t("penilaianBerikutnyaKosong")}
       </p>
-      {data.can_write ? null : <p className="mt-2 text-xs text-[var(--text-dim)]">{t("readOnly")}</p>}
-      {error ? <p className="mt-2 text-sm text-[var(--danger)]">{error}</p> : null}
+      {data.can_write ? null : (
+        <p className={cn(TYPE_FLOOR_CLASS, "text-[var(--text-dim)]")}>{t("readOnly")}</p>
+      )}
+      {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <label className="text-sm">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="flex flex-col gap-1 text-sm">
           <span className="text-[var(--text-dim)]">{t("sebaran")}</span>
           <input
-            className="mt-1 w-full rounded border border-[var(--border)] bg-transparent px-2 py-1"
+            className="w-full rounded border border-[var(--border)] bg-transparent px-2 py-1"
             value={data.si.sebaran || kodeDesa}
             readOnly
           />
         </label>
-        <label className="text-sm sm:col-span-2">
+        <label className="flex flex-col gap-1 text-sm sm:col-span-2">
           <span className="text-[var(--text-dim)]">{t("infoUmum")}</span>
           <textarea
-            className="mt-1 w-full rounded border border-[var(--border)] bg-transparent px-2 py-1"
+            className="w-full rounded border border-[var(--border)] bg-transparent px-2 py-1"
             rows={2}
             value={infoUmum}
             disabled={!data.can_write || busy}
             onChange={(e) => setInfoUmum(e.target.value)}
           />
         </label>
-        <label className="text-sm">
+        <label className="flex flex-col gap-1 text-sm">
           <span className="text-[var(--text-dim)]">{t("fasilitator")}</span>
           <input
-            className="mt-1 w-full rounded border border-[var(--border)] bg-transparent px-2 py-1"
+            className="w-full rounded border border-[var(--border)] bg-transparent px-2 py-1"
             value={fasilitator}
             disabled={!data.can_write || busy}
             onChange={(e) => setFasilitator(e.target.value)}
           />
         </label>
-        <label className="text-sm">
+        <label className="flex flex-col gap-1 text-sm">
           <span className="text-[var(--text-dim)]">{t("pembelajaran")}</span>
           <input
-            className="mt-1 w-full rounded border border-[var(--border)] bg-transparent px-2 py-1"
+            className="w-full rounded border border-[var(--border)] bg-transparent px-2 py-1"
             value={pembelajaran}
             disabled={!data.can_write || busy}
             onChange={(e) => setPembelajaran(e.target.value)}
@@ -168,7 +186,6 @@ export function DestanaProgramForm({
       </div>
       {data.can_write ? (
         <Button
-          className="mt-3"
           size="sm"
           disabled={busy}
           onClick={() => void saveSi()}
@@ -179,13 +196,13 @@ export function DestanaProgramForm({
         </Button>
       ) : null}
 
-      <ul className="mt-4 flex flex-col gap-2">
+      <ul className="flex flex-col gap-2">
         {data.aktivitas.map((slot) => (
-          <li key={slot.kode_aktivitas} className="border-t border-[var(--border)] pt-2 text-sm">
+          <li key={slot.kode_aktivitas} className="flex flex-col gap-1 border-t border-[var(--border)] pt-2 text-sm">
             <p>
               <span className="font-mono text-[var(--text-dim)]">{slot.kode_aktivitas}</span> {slot.label}
             </p>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <select
                 className="rounded border border-[var(--border)] bg-transparent px-2 py-1"
                 value={slot.status}
