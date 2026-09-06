@@ -16,11 +16,14 @@ import {
   VILLAGE_OUTLINE_PAINT,
   geometryBounds,
   isAreaFillLayerId,
+  pmtilesKnownMissing,
+  preferVillageFillOnClick,
   isKabAreaFeature,
   isKecamatanLodZoom,
   isVillageLodZoom,
   mergeVillageLodFocus,
   overlayBeforeId,
+  mapSourceProp,
   readKabLodFocus,
   unionBounds,
   villageDistributionTiles,
@@ -151,6 +154,19 @@ describe("overlay beforeId", () => {
     assert.equal(isAreaFillLayerId("area-fill-kecamatan"), true);
     assert.equal(isAreaFillLayerId("area-fill-village"), true);
     assert.equal(isAreaFillLayerId("marker-clusters"), false);
+    assert.equal(pmtilesKnownMissing(undefined, false), false);
+    assert.equal(pmtilesKnownMissing(undefined, true), true);
+    assert.equal(pmtilesKnownMissing(false, true), true);
+    assert.equal(pmtilesKnownMissing(true, true), false);
+    assert.equal(
+      preferVillageFillOnClick(true, ["marker-dots", "area-fill-kab"]),
+      true
+    );
+    assert.equal(preferVillageFillOnClick(true, ["marker-dots"]), false);
+    assert.equal(preferVillageFillOnClick(false, ["area-fill-kab"]), false);
+    assert.deepEqual(mapSourceProp("area-layer-kab"), { source: "area-layer-kab" });
+    assert.deepEqual(mapSourceProp(undefined), {});
+    assert.deepEqual(mapSourceProp(""), {});
   });
 });
 

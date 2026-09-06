@@ -413,6 +413,10 @@ describe("AreaProfilPanel source lock", () => {
     assert.match(viewport, /isStubAreaLayer/);
     assert.match(viewport, /STATUS_HEX\.AWAS/);
     assert.match(viewport, /villageClickLevel/);
+    assert.match(viewport, /preferVillageFillOnClick/);
+    assert.match(viewport, /pmtilesKnownMissing/);
+    assert.match(viewport, /mapSourceProp\(source\)/);
+    assert.match(viewport, /source="area-layer-kab"/);
   });
 
   it("reads the confirmed query keys on the three existing profil-desa routes", () => {

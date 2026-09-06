@@ -52,6 +52,9 @@ import {
   geometryBounds,
   isAreaFillLayerId,
   isKabAreaFeature,
+  mapSourceProp,
+  pmtilesKnownMissing,
+  preferVillageFillOnClick,
   mergeVillageLodFocus,
   overlayBeforeId,
   readKabLodFocus,
@@ -203,9 +206,20 @@ async function fetchArea(key: AreaLayerKey): Promise<AreaResponse> {
 }
 
 async function pmtilesExists(path: string): Promise<boolean> {
+  const url = withBasePath(path);
   try {
-    const res = await fetch(withBasePath(path), { method: "HEAD", cache: "no-store" });
-    return res.ok;
+    const head = await fetch(url, { method: "HEAD", cache: "no-store" });
+    if (head.ok) return true;
+  } catch {
+    // HEAD can abort in the browser; try a 2-byte range GET.
+  }
+  try {
+    const ranged = await fetch(url, {
+      method: "GET",
+      headers: { Range: "bytes=0-1" },
+      cache: "no-store",
+    });
+    return ranged.ok || ranged.status === 206;
   } catch {
     return false;
   }
@@ -247,22 +261,26 @@ function highlightFilter(sel: VillageClickSelection | null): FilterSpecification
 }
 
 function AreaHighlightLayers({
+  source,
   sourceLayer,
   selection,
   beforeId,
 }: {
+  source?: string;
   sourceLayer?: string;
   selection: VillageClickSelection | null;
   beforeId?: string;
 }) {
   const filter = highlightFilter(selection);
   const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
+  const sourceProp = mapSourceProp(source);
   const before = beforeId ? { beforeId } : {};
   return (
     <>
       <Layer
         id="area-highlight-fill"
         type="fill"
+        {...sourceProp}
         {...layerProps}
         {...before}
         filter={filter}
@@ -274,6 +292,7 @@ function AreaHighlightLayers({
       <Layer
         id="area-highlight-line"
         type="line"
+        {...sourceProp}
         {...layerProps}
         {...before}
         filter={filter}
@@ -289,6 +308,7 @@ function AreaHighlightLayers({
 
 function AreaOverlayLayers({
   idPrefix,
+  source,
   sourceLayer,
   areaLayer,
   outlineKind,
@@ -300,6 +320,7 @@ function AreaOverlayLayers({
   villageClickEnabled,
 }: {
   idPrefix?: string;
+  source?: string;
   sourceLayer?: string;
   areaLayer: AreaLayerKey | null;
   outlineKind: "kab" | "kecamatan" | "village";
@@ -311,6 +332,7 @@ function AreaOverlayLayers({
   villageClickEnabled: boolean;
 }) {
   const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
+  const sourceProp = mapSourceProp(source);
   const before = beforeId ? { beforeId } : {};
   const filterProp = filter ? { filter } : {};
   const zoomRange = {
@@ -325,9 +347,9 @@ function AreaOverlayLayers({
           ["linear"],
           ["zoom"],
           6,
-          0.35,
+          0.58,
           10,
-          0.5,
+          0.72,
         ],
       }
     : {
@@ -337,9 +359,9 @@ function AreaOverlayLayers({
           ["linear"],
           ["zoom"],
           6,
-          0.35,
+          0.58,
           10,
-          0.5,
+          0.72,
         ],
       };
   return (
@@ -347,6 +369,7 @@ function AreaOverlayLayers({
       <Layer
         id={overlayLayerId("area-fill", idPrefix)}
         type="fill"
+        {...sourceProp}
         {...layerProps}
         {...before}
         {...filterProp}
@@ -356,6 +379,7 @@ function AreaOverlayLayers({
       <Layer
         id={overlayLayerId("area-outline", idPrefix)}
         type="line"
+        {...sourceProp}
         {...layerProps}
         {...before}
         {...filterProp}
@@ -369,6 +393,7 @@ function AreaOverlayLayers({
       />
       {villageClickEnabled && (
         <AreaHighlightLayers
+          source={source}
           sourceLayer={sourceLayer}
           selection={villageSelection}
           beforeId={beforeId}
@@ -523,7 +548,8 @@ export function MapViewport({
     if (!map) return;
     void loadChromeIcons();
     applyZoomLod(map.getZoom());
-  }, [loadChromeIcons, applyZoomLod]);
+    syncOverlayBeforeId();
+  }, [loadChromeIcons, applyZoomLod, syncOverlayBeforeId]);
 
   useEffect(() => {
     const map = mapRef.current?.getMap();
@@ -589,28 +615,44 @@ export function MapViewport({
     staleTime: 60_000,
   });
 
-  const { data: kabPmtilesOk } = useQuery({
+  const {
+    data: kabPmtilesOk,
+    isFetched: kabPmtilesFetched,
+    isError: kabPmtilesError,
+  } = useQuery({
     queryKey: ["pmtiles-exists", PMTILES_KAB.url],
     queryFn: () => pmtilesExists(PMTILES_KAB.url),
     enabled: villageLod && !krbRecolor,
     staleTime: 60_000,
   });
 
-  const { data: kecamatanPmtilesOk } = useQuery({
+  const {
+    data: kecamatanPmtilesOk,
+    isFetched: kecamatanPmtilesFetched,
+    isError: kecamatanPmtilesError,
+  } = useQuery({
     queryKey: ["pmtiles-exists", PMTILES_KECAMATAN.url],
     queryFn: () => pmtilesExists(PMTILES_KECAMATAN.url),
     enabled: villageLod && !krbRecolor,
     staleTime: 60_000,
   });
 
-  const { data: villagePmtilesOk } = useQuery({
+  const {
+    data: villagePmtilesOk,
+    isFetched: villagePmtilesFetched,
+    isError: villagePmtilesError,
+  } = useQuery({
     queryKey: ["pmtiles-exists", PMTILES_VILLAGE.url],
     queryFn: () => pmtilesExists(PMTILES_VILLAGE.url),
     enabled: villageLod && !krbRecolor,
     staleTime: 60_000,
   });
 
-  const { data: otherPmtilesOk } = useQuery({
+  const {
+    data: otherPmtilesOk,
+    isFetched: otherPmtilesFetched,
+    isError: otherPmtilesError,
+  } = useQuery({
     queryKey: ["pmtiles-exists", otherPmtilesMeta?.url ?? "none"],
     queryFn: () =>
       otherPmtilesMeta ? pmtilesExists(otherPmtilesMeta.url) : Promise.resolve(false),
@@ -629,12 +671,24 @@ export function MapViewport({
     (krbRecolor ||
       (villageLod
         ? lodBand === "village"
-          ? villagePmtilesOk === false
+          ? pmtilesKnownMissing(
+              villagePmtilesOk,
+              villagePmtilesFetched || villagePmtilesError
+            )
           : lodBand === "kecamatan"
-            ? kecamatanPmtilesOk === false
-            : kabPmtilesOk === false
+            ? pmtilesKnownMissing(
+                kecamatanPmtilesOk,
+                kecamatanPmtilesFetched || kecamatanPmtilesError
+              )
+            : pmtilesKnownMissing(
+                kabPmtilesOk,
+                kabPmtilesFetched || kabPmtilesError
+              )
         : otherPmtilesMeta
-          ? otherPmtilesOk === false
+          ? pmtilesKnownMissing(
+              otherPmtilesOk,
+              otherPmtilesFetched || otherPmtilesError
+            )
           : true));
 
   const { data } = useQuery({
@@ -768,6 +822,70 @@ export function MapViewport({
 
   const onMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
+      const fillFeat = e.features?.find((f) => isAreaFillLayerId(f.layer?.id));
+      const areaClickFirst = preferVillageFillOnClick(
+        villageClickEnabled,
+        (e.features ?? []).map((f) => f.layer?.id)
+      );
+
+      if (fillFeat && areaClickFirst) {
+        const fillLayerId = fillFeat.layer?.id ?? "area-fill";
+        const props = fillFeat.properties as Record<string, unknown> | null;
+        if (isKabAreaFeature(props, lodBand)) {
+          const nextFocus = readKabLodFocus(props);
+          if (nextFocus) setKabFocus(nextFocus);
+          const map = mapRef.current?.getMap();
+          if (map) {
+            const kode = String(props?.kode_kab ?? props?.kode_kabupaten ?? "");
+            const name = String(props?.name ?? props?.kabupaten ?? "");
+            const queryLayers = map.getLayer(fillLayerId)
+              ? [fillLayerId]
+              : [...AREA_FILL_LAYER_IDS];
+            const siblings = map
+              .queryRenderedFeatures(undefined, { layers: queryLayers })
+              .filter((f) => {
+                const p = f.properties ?? {};
+                return (
+                  (kode &&
+                    (String(p.kode_kab ?? "") === kode ||
+                      String(p.kode_kabupaten ?? "") === kode)) ||
+                  (name &&
+                    (String(p.name ?? "") === name ||
+                      String(p.kabupaten ?? "") === name))
+                );
+              });
+            const bounds = unionBounds(
+              (siblings.length ? siblings : [fillFeat]).map((f) =>
+                geometryBounds(f.geometry as never)
+              )
+            );
+            if (bounds) {
+              map.fitBounds(bounds, {
+                padding: 48,
+                duration: 600,
+                maxZoom: 10,
+              });
+            }
+          }
+          const kabSel = readVillageSelection({
+            ...(props ?? {}),
+            level: "kab",
+            kabupaten: String(props?.kabupaten ?? props?.name ?? ""),
+            name: String(props?.name ?? props?.kabupaten ?? ""),
+          });
+          if (kabSel && onVillageClick) onVillageClick(kabSel);
+          return;
+        }
+        if (villagePanelClickEnabled(lodBand) && onVillageClick) {
+          const sel = readVillageSelection({
+            ...(props ?? {}),
+            level: villageClickLevel(lodBand, props),
+          });
+          if (sel) onVillageClick(sel);
+        }
+        return;
+      }
+
       const clusterFeat = e.features?.find((f) => f.layer?.id === "marker-clusters");
       if (clusterFeat && clusterFeat.geometry.type === "Point") {
         const source = mapRef.current?.getSource("markers") as GeoJSONSource | undefined;
@@ -826,62 +944,6 @@ export function MapViewport({
         setOverlayPopup(null);
         return;
       }
-
-      if (!villageClickEnabled) return;
-      const feature = e.features?.find((f) => isAreaFillLayerId(f.layer?.id));
-      if (!feature) return;
-      const fillLayerId = feature.layer?.id ?? "area-fill";
-      const props = feature.properties as Record<string, unknown> | null;
-      if (isKabAreaFeature(props, lodBand)) {
-        const nextFocus = readKabLodFocus(props);
-        if (nextFocus) setKabFocus(nextFocus);
-        const map = mapRef.current?.getMap();
-        if (map) {
-          const kode = String(props?.kode_kab ?? props?.kode_kabupaten ?? "");
-          const name = String(props?.name ?? props?.kabupaten ?? "");
-          const queryLayers = map.getLayer(fillLayerId) ? [fillLayerId] : [...AREA_FILL_LAYER_IDS];
-          const siblings = map
-            .queryRenderedFeatures(undefined, { layers: queryLayers })
-            .filter((f) => {
-              const p = f.properties ?? {};
-              return (
-                (kode &&
-                  (String(p.kode_kab ?? "") === kode ||
-                    String(p.kode_kabupaten ?? "") === kode)) ||
-                (name &&
-                  (String(p.name ?? "") === name ||
-                    String(p.kabupaten ?? "") === name))
-              );
-            });
-          const bounds = unionBounds(
-            (siblings.length ? siblings : [feature]).map((f) =>
-              geometryBounds(f.geometry as never)
-            )
-          );
-          if (bounds) {
-            map.fitBounds(bounds, {
-              padding: 48,
-              duration: 600,
-              maxZoom: 10,
-            });
-          }
-        }
-        const kabSel = readVillageSelection({
-          ...(props ?? {}),
-          level: "kab",
-          kabupaten: String(props?.kabupaten ?? props?.name ?? ""),
-          name: String(props?.name ?? props?.kabupaten ?? ""),
-        });
-        if (kabSel && onVillageClick) onVillageClick(kabSel);
-        return;
-      }
-      if (!villagePanelClickEnabled(lodBand)) return;
-      if (!onVillageClick) return;
-      const sel = readVillageSelection({
-        ...(props ?? {}),
-        level: villageClickLevel(lodBand, props),
-      });
-      if (sel) onVillageClick(sel);
     },
     [villageClickEnabled, onVillageClick, lodBand, t]
   );
@@ -1132,6 +1194,7 @@ export function MapViewport({
           <Source id="area-layer-kab" type="vector" url={kabPmtilesUrl}>
             <AreaOverlayLayers
               idPrefix="kab"
+              source="area-layer-kab"
               sourceLayer={PMTILES_KAB.sourceLayer}
               areaLayer={areaLayer}
               outlineKind="kab"
@@ -1146,6 +1209,7 @@ export function MapViewport({
           <Source id="area-layer-kecamatan" type="vector" url={kecamatanPmtilesUrl}>
             <AreaOverlayLayers
               idPrefix="kecamatan"
+              source="area-layer-kecamatan"
               sourceLayer={PMTILES_KECAMATAN.sourceLayer}
               areaLayer={areaLayer}
               outlineKind="kecamatan"
@@ -1162,6 +1226,7 @@ export function MapViewport({
           <Source id="area-layer-village" type="vector" url={villagePmtilesUrl}>
             <AreaOverlayLayers
               idPrefix="village"
+              source="area-layer-village"
               sourceLayer={PMTILES_VILLAGE.sourceLayer}
               areaLayer={areaLayer}
               outlineKind="village"
@@ -1176,6 +1241,7 @@ export function MapViewport({
         {otherPmtilesUrl && otherPmtilesMeta && (
           <Source id="area-layer-pmtiles" type="vector" url={otherPmtilesUrl}>
             <AreaOverlayLayers
+              source="area-layer-pmtiles"
               sourceLayer={otherPmtilesMeta.sourceLayer}
               areaLayer={areaLayer}
               outlineKind="kab"
@@ -1188,6 +1254,7 @@ export function MapViewport({
         {needAreaGeojson && areaGeojson && (
           <Source id="area-layer" type="geojson" data={areaGeojson} generateId>
             <AreaOverlayLayers
+              source="area-layer"
               areaLayer={areaLayer}
               outlineKind={
                 villageLod && lodBand === "village"

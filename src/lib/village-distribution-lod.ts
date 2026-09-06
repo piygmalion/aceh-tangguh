@@ -30,6 +30,33 @@ export function isAreaFillLayerId(id: string | undefined): boolean {
   return !!id && (AREA_FILL_LAYER_IDS as readonly string[]).includes(id);
 }
 
+/** After the HEAD/GET probe settles, missing tiles must fall back to GeoJSON. */
+export function pmtilesKnownMissing(
+  ok: boolean | undefined,
+  settled: boolean
+): boolean {
+  return settled && ok !== true;
+}
+
+/** Choropleth click wins over markers so kab/kec/desa modals can open. */
+export function preferVillageFillOnClick(
+  villageClickEnabled: boolean,
+  layerIds: Array<string | undefined>
+): boolean {
+  return villageClickEnabled && layerIds.some((id) => isAreaFillLayerId(id));
+}
+
+/**
+ * react-map-gl `<Source>` only injects `source` onto direct `<Layer>` children.
+ * Wrappers must forward it or MapLibre adds a fill with no source.
+ */
+export function mapSourceProp(
+  source?: string
+): { source: string } | Record<string, never> {
+  if (!source) return {};
+  return { source };
+}
+
 /** z<9 villageDistribution LOD — do not delete r3p-kab; retirement is a follow-up. */
 export const PMTILES_KAB = {
   url: overlayPmtilesUrl("r3p-kab.pmtiles"),
