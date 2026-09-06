@@ -201,7 +201,10 @@ function scenarioFromKelas(kelas: string | null | undefined): ProyeksiDampak["sc
 function corridorGroups(cards: DampakCard[]): CorridorGroup[] {
   const map = new Map<string, DampakCard[]>();
   for (const row of cards) {
-    const label = parseSungaiLabel(cardText(row)) ?? (row.kecamatan.trim() || "");
+    const kec = row.kecamatan.trim();
+    const label =
+      parseSungaiLabel(cardText(row)) ??
+      (kec && kec !== "-" ? kec : "");
     if (!label) continue;
     const cur = map.get(label) ?? [];
     cur.push(row);
