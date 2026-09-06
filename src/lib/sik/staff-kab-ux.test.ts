@@ -47,6 +47,7 @@ describe("FE-34 staf kab SoT-3 FINAL UX", () => {
     assert.match(moderasi, /from ["']@\/components\/ui\/skeleton["']/);
     assert.match(moderasi, /data-testid="moderation-skeleton-row"/);
     assert.match(moderasi, /FieldError/);
+    assert.match(moderasi, /data\?\.error/);
     assert.match(moderasi, /emptyKabDescription/);
     assert.match(moderasi, /TYPE_FLOOR_CLASS/);
     assert.match(moderasi, /hideLegacy/);

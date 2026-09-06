@@ -128,15 +128,17 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
       const res = await fetch(`/api/admin/reports?${params.toString()}`, {
         cache: "no-store",
       });
+      const data = (await res.json().catch(() => null)) as
+        | { items?: LegacyItem[]; total?: number; error?: string }
+        | null;
       if (!res.ok) {
-        setError(t("loadError"));
+        setError(data?.error || t("loadError"));
         setLoading(false);
         return;
       }
-      const data = (await res.json()) as { items: LegacyItem[]; total: number };
-      setLegacyItems(data.items);
+      setLegacyItems(data?.items ?? []);
       setItems([]);
-      setTotal(data.total);
+      setTotal(data?.total ?? 0);
       setLoading(false);
       return;
     }
@@ -146,15 +148,17 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
     const res = await fetch(`/api/admin/laporan?${params.toString()}`, {
       cache: "no-store",
     });
+    const data = (await res.json().catch(() => null)) as
+      | { items?: LaporanItem[]; total?: number; error?: string }
+      | null;
     if (!res.ok) {
-      setError(t("loadError"));
+      setError(data?.error || t("loadError"));
       setLoading(false);
       return;
     }
-    const data = (await res.json()) as { items: LaporanItem[]; total: number };
-    setItems(data.items);
+    setItems(data?.items ?? []);
     setLegacyItems([]);
-    setTotal(data.total);
+    setTotal(data?.total ?? 0);
     setLoading(false);
   }
 
