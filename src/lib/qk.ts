@@ -34,4 +34,6 @@ export const qk = {
     ["sik", "stats", year, kabupaten, jenis] as const,
   overlay: (key: OverlayLayerKey) => ["overlay", key] as const,
   overlayPort: (kode: string) => ["overlay", "port", kode] as const,
+  featureCard: (id: string, layer?: string) =>
+    ["layers", "feature-card", id, layer ?? ""] as const,
 };

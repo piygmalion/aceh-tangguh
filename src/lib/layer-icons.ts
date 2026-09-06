@@ -1,4 +1,5 @@
 import type { AreaLayerKey, MarkerLayerKey, OverlayLayerKey } from "@/lib/types";
+import { overlayCatalogEntry } from "@/lib/overlay-layers";
 import { withBasePath } from "@/lib/preview/env";
 
 export const FLAT_ICON_BASE = "/icons/flat";
@@ -121,6 +122,10 @@ export function markerIconImageId(
   return `layer:${layer}`;
 }
 
+export function overlayIconImageId(key: OverlayLayerKey): string {
+  return `overlay:${key}`;
+}
+
 export type MapSymbolIcon = { id: string; url: string };
 
 /** Existing flat glyphs only — no new art. Used as map-pin faces after disc composite. */
@@ -139,6 +144,13 @@ export function listMapSymbolIcons(): MapSymbolIcon[] {
     seen.add(id);
     const url = getDisasterJenisIconPath(jenis);
     if (url) out.push({ id, url });
+  }
+  for (const key of Object.keys(OVERLAY_LAYER_ICON_FILES) as OverlayLayerKey[]) {
+    if (overlayCatalogEntry(key)?.kind !== "point") continue;
+    const id = overlayIconImageId(key);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push({ id, url: getOverlayLayerIconPath(key) });
   }
   return out;
 }

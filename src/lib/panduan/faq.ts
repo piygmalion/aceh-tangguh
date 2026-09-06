@@ -149,6 +149,35 @@ export function isGuideFaqIntent(value: string): value is Exclude<GuideIntentId,
   return GUIDE_INTENTS.has(value as Exclude<GuideIntentId, "unknown">);
 }
 
+export function isGuideFaqEntry(value: unknown): value is GuideFaqEntry {
+  if (!value || typeof value !== "object") return false;
+  const row = value as Partial<GuideFaqEntry>;
+  if (typeof row.id !== "string" || !row.id.trim()) return false;
+  if (typeof row.intent !== "string" || !isGuideFaqIntent(row.intent)) return false;
+  if (!row.patterns || !Array.isArray(row.patterns.id) || !Array.isArray(row.patterns.en)) {
+    return false;
+  }
+  if (typeof row.bodyId !== "string" || typeof row.bodyEn !== "string") return false;
+  if (typeof row.href !== "string" || !isGuideHref(row.href)) return false;
+  if (typeof row.labelKey !== "string" || !row.labelKey.trim()) return false;
+  return true;
+}
+
+/** Accept curated entries or CMS rows; drop kejadian/stats payloads. */
+export function parseFaqCatalogItems(items: unknown[]): GuideFaqEntry[] {
+  const out: GuideFaqEntry[] = [];
+  for (const item of items) {
+    if (isGuideFaqEntry(item)) {
+      out.push(item);
+      continue;
+    }
+    if (!item || typeof item !== "object") continue;
+    const mapped = faqFromCmsRow(item as Parameters<typeof faqFromCmsRow>[0]);
+    if (mapped) out.push(mapped);
+  }
+  return out;
+}
+
 export function matchGuideFaq(
   query: string,
   locale: GuideLocale,
@@ -157,6 +186,7 @@ export function matchGuideFaq(
   const text = normalizeGuideQuery(query);
   if (!text) return undefined;
   for (const entry of catalog) {
+    if (!isGuideFaqEntry(entry)) continue;
     const patterns = locale === "en" ? [...entry.patterns.en, ...entry.patterns.id] : [...entry.patterns.id, ...entry.patterns.en];
     if (patterns.some((pattern) => includesPattern(text, pattern))) {
       return {
@@ -176,9 +206,10 @@ export function intentForFaq(id: string, catalog: GuideFaqEntry[] = STATIC_GUIDE
   return catalog.find((entry) => entry.id === id)?.intent;
 }
 
-export function mergeFaqCatalog(cms: GuideFaqEntry[]): GuideFaqEntry[] {
-  const seen = new Set(cms.map((entry) => entry.id));
-  return [...cms, ...STATIC_GUIDE_FAQ.filter((entry) => !seen.has(entry.id))];
+export function mergeFaqCatalog(cms: unknown[]): GuideFaqEntry[] {
+  const valid = parseFaqCatalogItems(cms);
+  const seen = new Set(valid.map((entry) => entry.id));
+  return [...valid, ...STATIC_GUIDE_FAQ.filter((entry) => !seen.has(entry.id))];
 }
 
 export function faqFromCmsRow(row: {

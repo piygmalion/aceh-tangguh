@@ -3,6 +3,7 @@ import type { Geometry, Position } from "geojson";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import type { VillageClickSelection } from "@/lib/profil-desa";
 import { overlayPmtilesUrl } from "@/lib/tiles-url";
+import type { AreaLayerKey } from "@/lib/types";
 
 /** Below this zoom, villageDistribution paints r3p-kab only. */
 export const KECAMATAN_LOD_MIN_ZOOM = 9;
@@ -30,7 +31,14 @@ export function isAreaFillLayerId(id: string | undefined): boolean {
   return !!id && (AREA_FILL_LAYER_IDS as readonly string[]).includes(id);
 }
 
-/** z<9 villageDistribution LOD — do not delete r3p-kab; retirement is a follow-up. */
+/** Desa and R3P share the kab → kecamatan → desa PMTiles stack. */
+export function isAdminLodArea(
+  key: AreaLayerKey | null | undefined,
+): key is "villageDistribution" | "r3pDistribution" {
+  return key === "villageDistribution" || key === "r3pDistribution";
+}
+
+/** z<9 admin-LOD paints r3p-kab. */
 export const PMTILES_KAB = {
   url: overlayPmtilesUrl("r3p-kab.pmtiles"),
   sourceLayer: "r3p",

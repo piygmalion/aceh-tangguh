@@ -24,6 +24,10 @@ import { annotateDisasterDesa, desaByIdFromKejadian } from "@/lib/map-marker-chr
 import { enabledMapLayersCatalog } from "@/lib/map-layers-catalog";
 import { expandMarkerLayerKeys } from "@/lib/map-url-aliases";
 import { isOverlayLayerKey, OVERLAY_STATIC_FIXTURES } from "@/lib/overlay-layers";
+import {
+  resolveFeatureCardFromCollection,
+  type FeatureCard,
+} from "@/lib/feature-card";
 import type { WeatherApiResponse } from "@/lib/weather-types";
 import { isStaticExport, withBasePath } from "./env";
 import { LIVE_STATS_FALLBACK } from "./fallbacks";
@@ -69,6 +73,29 @@ function filterMarkersByKeys(
       set.has(String(f.properties?.layer ?? ""))
     ),
   };
+}
+
+async function resolveStaticFeatureCard(
+  id: string,
+  layer?: string,
+): Promise<FeatureCard | null> {
+  const overlayKey = layer && isOverlayLayerKey(layer) ? layer : undefined;
+  if (overlayKey) {
+    const fixture = OVERLAY_STATIC_FIXTURES[overlayKey];
+    if (!fixture) return null;
+    const fc = (await fetchJson(fixture)) as FeatureCollection;
+    return resolveFeatureCardFromCollection(fc, id, overlayKey);
+  }
+  const markers = (await fetchJson("/fixtures/markers.geojson")) as FeatureCollection;
+  const fromMarkers = resolveFeatureCardFromCollection(markers, id, layer);
+  if (fromMarkers) return fromMarkers;
+  for (const [key, fixture] of Object.entries(OVERLAY_STATIC_FIXTURES)) {
+    if (!fixture) continue;
+    const fc = (await fetchJson(fixture)) as FeatureCollection;
+    const card = resolveFeatureCardFromCollection(fc, id, key);
+    if (card) return card;
+  }
+  return null;
 }
 
 async function loadAreaLayer(key: string): Promise<Response> {
@@ -233,6 +260,14 @@ async function resolveStaticGet(input: string): Promise<Response> {
       : [];
     const filtered = keys.length ? filterMarkersByKeys(annotated, keys) : annotated;
     return jsonResponse({ ...filtered, source: "fixture" });
+  }
+  if (path.startsWith("/api/layers/features/")) {
+    const id = decodeURIComponent(path.slice("/api/layers/features/".length)).trim();
+    if (!id) return jsonResponse({ error: "Missing id" }, 400);
+    const layer = searchParams.get("layer")?.trim() || undefined;
+    const card = await resolveStaticFeatureCard(id, layer);
+    if (!card) return jsonResponse({ error: "not_found", id }, 404);
+    return jsonResponse(card);
   }
   if (path.startsWith("/api/layers/areas/")) {
     const key = path.slice("/api/layers/areas/".length);

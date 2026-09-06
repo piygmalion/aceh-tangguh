@@ -3,9 +3,9 @@ import type { BasemapId, MarkerLayerKey } from "@/lib/types";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import { isTruncatedAcehLongitude, isTruncatedCoordQuality } from "@/lib/coord-quality";
 
-/** Haloed GPU dots for z < 10 (and through the z=10 gap until icons at 11). */
-export const MAP_DOT_MAX_ZOOM = 11;
-export const MAP_ICON_MIN_ZOOM = 11;
+/** Haloed GPU dots while chrome icons are still loading. Unclustered pins use icons at every zoom. */
+export const MAP_DOT_MAX_ZOOM = 0;
+export const MAP_ICON_MIN_ZOOM = 0;
 /** MapLibre circle-radius — 7px haloed dots. */
 export const MAP_DOT_RADIUS_PX = 7;
 export const MAP_DOT_STROKE_PX = 1.5;

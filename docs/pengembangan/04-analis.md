@@ -214,19 +214,19 @@ Jurnal: `jurnal/AN-31.md`. Gelombang 21. Tulisan, bukan kode UI/API. Kontrak Ima
 
 ### AN-32 — naskah IRBI/KRB pada Analisis data
 
-Jurnal: `jurnal/AN-32.md`. Gelombang 22. Tulisan, bukan kode UI. Dua variabel kab × ancaman; analogi historis; isolasi KPI. Jangan memakai AN-31. Jangan DATA-4.
+Jurnal: `jurnal/AN-32.md`. Gelombang 23. Tulisan, bukan kode UI. Dua variabel kab × ancaman; analogi historis; isolasi KPI. Jangan memakai AN-31. Jangan DATA-4.
 
 ### AN-33 — uji penerimaan IRBI/KRB analisis
 
-Jurnal: `jurnal/AN-33.md`. Gelombang 22. Setelah FE-27. Pidie Jaya × gempabumi = TINGGI 26,4; copy bukan prediksi; KPI tidak memuat skor IRBI. Tutup STATUS G22. DATA-4 tetap tertahan.
+Jurnal: `jurnal/AN-33.md`. Gelombang 23. Setelah FE-30. Pidie Jaya × gempabumi = TINGGI 26,4; copy bukan prediksi; KPI tidak memuat skor IRBI. Tutup STATUS G23. DATA-4 tetap tertahan.
 
 ### AN-34 — naskah Histori Kejadian + Proyeksi Dampak
 
-Jurnal: `jurnal/AN-34.md`. Gelombang 23. Tulisan. Proyeksi empiris dari katalog; IRBI hanya pemilih skenario. Jangan PAGER. Jangan DATA-4.
+Jurnal: `jurnal/AN-34.md`. Gelombang 24. Tulisan. Proyeksi empiris dari katalog; IRBI hanya pemilih skenario. Jangan PAGER. Jangan DATA-4.
 
 ### AN-35 — uji penerimaan Proyeksi Dampak
 
-Jurnal: `jurnal/AN-35.md`. Gelombang 23. Setelah FE-28. Label, parser magnitudo/air, Pidie Jaya × banjir jiwa historis, gempa pita M tanpa rumah karangan.
+Jurnal: `jurnal/AN-35.md`. Gelombang 24. Setelah FE-31. Label, parser magnitudo/air, Pidie Jaya × banjir jiwa historis, gempa pita M tanpa rumah karangan.
 
 ## Tiket gelombang ECC-S — kerapian
 

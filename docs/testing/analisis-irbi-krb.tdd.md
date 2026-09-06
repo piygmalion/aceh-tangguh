@@ -1,6 +1,6 @@
 # TDD evidence — IRBI/KRB on Analisis data
 
-Source plan: `/opt/cursor/artifacts/plans/analisis_irbi_krb_53ce1dfa.plan.md` (journal IDs AN-32 / FE-27 / AN-33; plan labels AN-31 / FE-26 / AN-32 collide with Gelombang 21).
+Source plan: `/opt/cursor/artifacts/plans/analisis_irbi_krb_53ce1dfa.plan.md` (journal IDs AN-32 / FE-30 / AN-33 after merge; branch first used FE-27, but main G22 already claimed FE-27 for cuaca).
 
 ## User journeys
 

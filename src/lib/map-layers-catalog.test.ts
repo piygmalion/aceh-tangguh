@@ -20,13 +20,21 @@ import {
 } from "./map-url-aliases";
 
 describe("AREA toolbar radios", () => {
-  it("shows only Desa + IRBI, not retired keys", () => {
+  it("shows Desa + R3P + IRBI, not retired keys", () => {
     const keys = AREA_TOOLBAR_OPTIONS.map((opt) => opt.key);
-    assert.deepEqual(keys, ["villageDistribution", "irbi2025"]);
+    assert.deepEqual(keys, [
+      "villageDistribution",
+      "r3pDistribution",
+      "irbi2025",
+    ]);
     assert.deepEqual([...AREA_TOOLBAR_LAYER_KEYS], keys);
     for (const retired of RETIRED_AREA_LAYER_KEYS) {
       assert.equal(keys.includes(retired), false);
     }
+    const r3p = MAP_LAYERS_CATALOG.find((item) => item.key === "r3pDistribution");
+    assert.ok(r3p);
+    assert.equal(r3p?.enabled, true);
+    assert.equal(r3p?.meta.retired, undefined);
   });
 
   it("still parses retired ?area= URLs", () => {
@@ -42,6 +50,7 @@ describe("AREA toolbar radios", () => {
       assert.equal(resolved.areaLayer, key);
     }
     assert.equal(parseAreaLayerKey("villageDistribution"), "villageDistribution");
+    assert.equal(parseAreaLayerKey("r3pDistribution"), "r3pDistribution");
     assert.equal(parseAreaLayerKey("not-a-layer"), null);
   });
 });
