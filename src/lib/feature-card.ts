@@ -23,6 +23,7 @@ import {
 } from "./coord-quality";
 import { formatStatusLabel, normalizeStatus, statusTone } from "./status-vocab";
 import { isOverlayLayerKey } from "./overlay-layers";
+import { isValidKodeDesa10, readKodeDesa10 } from "./tanggapi-distribusi";
 import type { MarkerLayerKey, OverlayLayerKey } from "./types";
 
 export const FEATURE_CARD_EMPTY = "Tidak ada informasi";
@@ -77,6 +78,10 @@ export type FeatureCard = {
   details: FeatureCardDetail[];
   coordQuality?: "truncated" | "offshore" | null;
   stack?: FeatureCardStackItem[];
+  /** 10-digit desa code from properties when present. Never invented. */
+  kodeDesa?: string;
+  kecamatan?: string;
+  kabupaten?: string;
 };
 
 type FieldRole = "address" | "media" | "contact" | "detail" | "updated";
@@ -713,6 +718,11 @@ export function toFeatureCard(
     (part) => part && part !== FEATURE_CARD_EMPTY,
   );
   const subtitle = subtitleParts.length ? subtitleParts.join(" • ") : undefined;
+  const kodeDesa = readKodeDesa10(props);
+  const kecamatan = !isEmptyCardValue(props.kecamatan) ? String(props.kecamatan).trim() : undefined;
+  const kabupaten = !isEmptyCardValue(props.kabupaten ?? props.kabupaten_kota)
+    ? String(props.kabupaten ?? props.kabupaten_kota).trim()
+    : undefined;
 
   return {
     id,
@@ -727,6 +737,9 @@ export function toFeatureCard(
     details,
     coordQuality: coordQualityOf(props),
     stack: options.stack?.length ? options.stack : undefined,
+    ...(kodeDesa && isValidKodeDesa10(kodeDesa) ? { kodeDesa } : {}),
+    ...(kecamatan ? { kecamatan } : {}),
+    ...(kabupaten ? { kabupaten } : {}),
   };
 }
 

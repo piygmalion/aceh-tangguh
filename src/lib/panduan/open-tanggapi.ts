@@ -1,6 +1,8 @@
 export const TANGGAPI_OPEN_EVENT = "aceh:open-tanggapi";
 export const TANGGAPI_OPEN_STORAGE = "aceh:open-tanggapi";
 export const TANGGAPI_BUBBLE_STORAGE = "aceh:tanggapi-bubble-seen";
+/** Optional location seed for CTA opens. Documented in FE-37. Not a backend API. */
+export const TANGGAPI_SEED_STORAGE = "aceh:tanggapi-seed";
 
 function writeOpenFlag() {
   try {
@@ -10,10 +12,32 @@ function writeOpenFlag() {
   }
 }
 
-export function requestOpenTanggapi(): void {
+function writeSeed(seed?: string) {
+  try {
+    const text = seed?.trim() ?? "";
+    if (text) sessionStorage.setItem(TANGGAPI_SEED_STORAGE, text);
+    else sessionStorage.removeItem(TANGGAPI_SEED_STORAGE);
+  } catch {
+    // Private mode — panel still opens without a seed.
+  }
+}
+
+export function requestOpenTanggapi(seed?: string): void {
   if (typeof window === "undefined") return;
   writeOpenFlag();
+  writeSeed(seed);
   window.dispatchEvent(new CustomEvent(TANGGAPI_OPEN_EVENT));
+}
+
+export function consumeTanggapiSeed(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const seed = sessionStorage.getItem(TANGGAPI_SEED_STORAGE);
+    sessionStorage.removeItem(TANGGAPI_SEED_STORAGE);
+    return seed?.trim() || null;
+  } catch {
+    return null;
+  }
 }
 
 export function consumeOpenTanggapi(): boolean {

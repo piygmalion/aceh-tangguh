@@ -11,6 +11,7 @@ import { mergeFaqCatalog, STATIC_GUIDE_FAQ, type GuideFaqEntry } from "@/lib/pan
 import { shouldUseGroundedLlm } from "@/lib/panduan/llm-gate";
 import {
   consumeOpenTanggapi,
+  consumeTanggapiSeed,
   hasSeenTanggapiBubble,
   markTanggapiBubbleSeen,
   TANGGAPI_OPEN_EVENT,
@@ -239,6 +240,8 @@ export function GuideBot() {
   const handleOpen = useCallback(() => {
     dismissBubble();
     setOpen(true);
+    const seed = consumeTanggapiSeed();
+    if (seed) setInput(seed);
     if (messages.length === 0) void pushWelcome();
   }, [dismissBubble, messages.length, pushWelcome]);
 
@@ -251,12 +254,11 @@ export function GuideBot() {
   }, [open, visible]);
 
   useEffect(() => {
-    if (!visible) return;
     if (consumeOpenTanggapi()) handleOpen();
     const onOpen = () => handleOpen();
     window.addEventListener(TANGGAPI_OPEN_EVENT, onOpen);
     return () => window.removeEventListener(TANGGAPI_OPEN_EVENT, onOpen);
-  }, [handleOpen, visible]);
+  }, [handleOpen]);
 
   const handleQuery = useCallback(
     async (text: string) => {
@@ -355,7 +357,7 @@ export function GuideBot() {
     if (answer.tour) goTour(answer.tour.href, answer.tour.hash);
   };
 
-  if (!visible) return null;
+  if (!visible && !open) return null;
 
   return (
     <div className="pointer-events-none fixed bottom-[max(5rem,calc(env(safe-area-inset-bottom)+4.5rem))] right-3 z-[55] flex flex-col items-end gap-2 sm:right-6">
@@ -391,7 +393,7 @@ export function GuideBot() {
         ) : null}
       </AnimatePresence>
       <AnimatePresence>
-        {showBubble && !open ? (
+        {visible && showBubble && !open ? (
           <motion.div
             key="bubble"
             initial={{ opacity: 0, y: 6 }}
@@ -429,17 +431,19 @@ export function GuideBot() {
           </motion.div>
         ) : null}
       </AnimatePresence>
-      <button
-        ref={fabRef}
-        type="button"
-        aria-label={open ? t("close") : t("open")}
-        aria-expanded={open}
-        aria-controls={open ? dialogId : undefined}
-        onClick={() => (open ? setOpen(false) : handleOpen())}
-        className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[var(--primary)] text-[var(--primary-fg)] shadow-[var(--shadow-elevated)] transition duration-200 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]"
-      >
-        {open ? <X size={22} /> : <TanggapiAvatar size="fab" />}
-      </button>
+      {visible ? (
+        <button
+          ref={fabRef}
+          type="button"
+          aria-label={open ? t("close") : t("open")}
+          aria-expanded={open}
+          aria-controls={open ? dialogId : undefined}
+          onClick={() => (open ? setOpen(false) : handleOpen())}
+          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[var(--primary)] text-[var(--primary-fg)] shadow-[var(--shadow-elevated)] transition duration-200 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]"
+        >
+          {open ? <X size={22} /> : <TanggapiAvatar size="fab" />}
+        </button>
+      ) : null}
     </div>
   );
 }

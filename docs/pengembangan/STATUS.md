@@ -373,6 +373,14 @@ Polish UI Destana saja. Lantai 13px; stack flex/gap; Empty/Skeleton pada daftar 
 | --- | --- | --- | --- | --- |
 | FE-36 | frontend | Type floor + Empty/Skeleton Destana | jurnal/FE-36.md | selesai |
 
+## Gelombang 30 — Tanggapi × Distribusi desa
+
+CTA “Tanya Tanggapi” hanya pada view desa AreaProfil (setelah kab→kec→desa) dan pada MapFeatureCard jika `kode_desa` 10 digit. Seed lokasi whitelist lewat `aceh:tanggapi-seed`. IA #50 tidak diubah. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-37 | frontend | Tanggapi CTA on Distribusi/AreaProfil desa | jurnal/FE-37.md | siap-kode |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).

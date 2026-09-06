@@ -2,8 +2,14 @@
 
 import { Clock, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/Chip";
 import { MapLayerIcon } from "@/components/map/MapLayerIcon";
+import { requestOpenTanggapi } from "@/lib/panduan/open-tanggapi";
+import {
+  buildTanggapiSeedPrompt,
+  shouldShowTanggapiCta,
+} from "@/lib/tanggapi-distribusi";
 import type { FeatureCard, FeatureCardDetail, FeatureCardTone } from "@/lib/feature-card";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { LAYER_COLORS } from "@/lib/layer-colors";
@@ -90,6 +96,7 @@ export function MapFeatureCard({
   onSelectStack?: (id: string) => void;
 }) {
   const t = useTranslations("map");
+  const tPanduan = useTranslations("panduan");
 
   const title = card?.title ?? (loading ? t("cardLoading") : t("cardError"));
   const layer = card?.layer ?? "disasterEvents";
@@ -206,6 +213,28 @@ export function MapFeatureCard({
             ))}
           </div>
         </section>
+      ) : null}
+
+      {shouldShowTanggapiCta({ kodeDesa: card?.kodeDesa }) ? (
+        <Button
+          type="button"
+          variant="accent"
+          className={cn(
+            "h-8 self-start px-3 text-[var(--accent-fg)]",
+            TYPE_FLOOR_CLASS,
+          )}
+          onClick={() => {
+            const seed = buildTanggapiSeedPrompt({
+              kode_desa: card?.kodeDesa,
+              nama: card?.title,
+              kecamatan: card?.kecamatan,
+              kabupaten: card?.kabupaten,
+            });
+            requestOpenTanggapi(seed);
+          }}
+        >
+          {tPanduan("askHero")}
+        </Button>
       ) : null}
 
       {card?.stack && card.stack.length > 1 ? (

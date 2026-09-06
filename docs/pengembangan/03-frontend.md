@@ -187,6 +187,10 @@ Jurnal: `jurnal/FE-35.md`. Gelombang 28. Kartu Peringatan Dini: lantai 13px, kon
 
 Jurnal: `jurnal/FE-36.md`. Gelombang 29. Tiga komponen Destana: `text-xs` → `TYPE_FLOOR_CLASS`; `flex`+`gap-*`; Empty/Skeleton pada kosong/loading yang telanjang. `Button` shadcn tetap; bukan putih-di-oranye. Jangan API/RLS Destana. Jangan menimpa FE-35.
 
+### FE-37 — Tanggapi CTA pada Distribusi / AreaProfil desa
+
+Jurnal: `jurnal/FE-37.md`. Gelombang 30. CTA “Tanya Tanggapi” hanya view desa (setelah kab→kec→desa) dan pada MapFeatureCard hanya jika kode 10 digit. Seed whitelist lokasi lewat `sessionStorage` `aceh:tanggapi-seed`. `requestOpenTanggapi` yang sudah ada. Accent ink-on-orange; lantai 13px. Jangan menimpa IA #50. Jangan menimpa FE-36.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.
