@@ -343,11 +343,11 @@ Padding/stack/gap `MapFeatureCard` dirapatkan; overlay hidup stale/503 memakai E
 
 ## Gelombang 27 — staf kab SoT #3 (empty + pending)
 
-Empty + salinan gesekan pada moderasi laporan dan undangan staf kab. Chip pending ink/forest. Tanpa endpoint baru; tanpa memperluas scope kab. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+Empty + salinan gesekan pada moderasi laporan dan undangan staf kab. Chip pending ink/forest. Tanpa endpoint baru; tanpa memperluas scope kab. `npm test` 572 lulus; lint + `tsc` hijau. Browser staf 307 ke login (tidak ada sesi). DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
-| FE-34 | frontend | Empty state + chip undangan pending | jurnal/FE-34.md | siap-kode |
+| FE-34 | frontend | Empty state + chip undangan pending | jurnal/FE-34.md | selesai |
 
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
