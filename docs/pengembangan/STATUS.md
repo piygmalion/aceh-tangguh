@@ -309,9 +309,9 @@ Dua variabel kabupaten × jenis ancaman IRBI/KRB di `/analisis-data`. Analogi hi
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
-| AN-32 | analis | Naskah kab × ancaman + analogi | jurnal/AN-32.md | siap-kode |
-| FE-27 | frontend | Panel Ancaman × riwayat | jurnal/FE-27.md | draf |
-| AN-33 | analis | Uji penerimaan IRBI/KRB analisis | jurnal/AN-33.md | draf |
+| AN-32 | analis | Naskah kab × ancaman + analogi | jurnal/AN-32.md | selesai |
+| FE-27 | frontend | Panel Ancaman × riwayat | jurnal/FE-27.md | selesai |
+| AN-33 | analis | Uji penerimaan IRBI/KRB analisis | jurnal/AN-33.md | selesai |
 
 ## Gelombang kemudian
 
