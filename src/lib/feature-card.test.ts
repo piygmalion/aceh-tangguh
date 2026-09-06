@@ -168,10 +168,17 @@ describe("feature-card mapper", () => {
         jenis_bencana: "Banjir",
         jiwa_terdampak: 10,
         hari_tanggal: "Januari 2022",
+        kode_desa_kelurahan: "1101012001",
+        kecamatan: "Bakongan",
+        kabupaten: "Aceh Selatan",
       }),
     );
     assert.equal(event.details.find((d) => d.key === "jenisBencana")?.value, "Banjir");
     assert.equal(event.updatedAt, "Januari 2022");
+    assert.equal(event.kodeDesa, "1101012001");
+    assert.equal(event.kecamatan, "Bakongan");
+    assert.equal(event.kabupaten, "Aceh Selatan");
+    assert.equal(event.details.some((d) => d.key === "kodeDesa"), false);
 
     const laporan = toFeatureCard(
       point("laporan-kejadian-1", "laporanKejadian", {

@@ -47,6 +47,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { requestOpenTanggapi } from "@/lib/panduan/open-tanggapi";
+import {
+  buildTanggapiSeedPrompt,
+  shouldShowTanggapiCta,
+} from "@/lib/tanggapi-distribusi";
 import { cn } from "@/lib/utils";
 
 async function fetchKabupaten(
@@ -413,6 +418,7 @@ export function AreaProfilPanel({
   onClose: () => void;
 }) {
   const t = useTranslations("profilDesa");
+  const tPanduan = useTranslations("panduan");
   const [view, setView] = useState<AreaProfilView>(AREA_PROFIL_INITIAL_VIEW);
   const [activeKecamatan, setActiveKecamatan] = useState<KecamatanListItem | null>(
     null
@@ -713,6 +719,31 @@ export function AreaProfilPanel({
             <ArrowLeft />
             {t("back")}
           </Button>
+          {shouldShowTanggapiCta({
+            view,
+            kodeDesa: desaQuery.data?.kode_desa ?? activeDesa?.kode,
+          }) ? (
+            <Button
+              type="button"
+              variant="accent"
+              size="sm"
+              className={cn("rounded-xl text-[var(--accent-fg)]", TYPE_FLOOR_CLASS)}
+              onClick={() => {
+                const seed = buildTanggapiSeedPrompt({
+                  kode_desa: desaQuery.data?.kode_desa ?? activeDesa?.kode,
+                  nama: desaQuery.data?.title ?? activeDesa?.nama,
+                  kecamatan: desaQuery.data?.kecamatan ?? activeDesa?.kecamatan,
+                  kabupaten:
+                    desaQuery.data?.kabupaten ?? activeDesa?.kabupaten ?? kabName,
+                  kode_kecamatan: desaQuery.data?.kode_kecamatan,
+                  kode_kabupaten: desaQuery.data?.kode_kabupaten,
+                });
+                requestOpenTanggapi(seed);
+              }}
+            >
+              {tPanduan("askHero")}
+            </Button>
+          ) : null}
         </footer>
       </aside>
     </div>

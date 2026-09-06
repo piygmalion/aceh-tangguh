@@ -10,7 +10,13 @@ export {
   isResearchQuestion,
   shouldUseGroundedLlm,
 } from "./llm-gate";
-export { requestOpenTanggapi, consumeOpenTanggapi, TANGGAPI_OPEN_EVENT } from "./open-tanggapi";
+export {
+  requestOpenTanggapi,
+  consumeOpenTanggapi,
+  consumeTanggapiSeed,
+  TANGGAPI_OPEN_EVENT,
+  TANGGAPI_SEED_STORAGE,
+} from "./open-tanggapi";
 export { retrieveKnowledgeChunks, retrieveGuideChunks } from "./retrieve";
 export { askGroundedLlm, isGroundedAskEnabled } from "./ask";
 export { STATIC_GUIDE_FAQ, matchGuideFaq } from "./faq";

@@ -2,11 +2,13 @@ import assert from "node:assert/strict";
 import { afterEach, describe, it } from "node:test";
 import {
   consumeOpenTanggapi,
+  consumeTanggapiSeed,
   hasSeenTanggapiBubble,
   markTanggapiBubbleSeen,
   requestOpenTanggapi,
   TANGGAPI_BUBBLE_STORAGE,
   TANGGAPI_OPEN_STORAGE,
+  TANGGAPI_SEED_STORAGE,
 } from "./open-tanggapi";
 
 function mockSession() {
@@ -58,5 +60,21 @@ describe("tanggapi open + bubble session", () => {
     assert.equal(hasSeenTanggapiBubble(), false);
     assert.equal(consumeOpenTanggapi(), true);
     assert.equal(consumeOpenTanggapi(), false);
+  });
+
+  it("stores an optional seed without mixing it with the open flag", () => {
+    const data = mockSession();
+    requestOpenTanggapi("Desa Keude Bakongan (kode_desa_kelurahan 1101012001)");
+    assert.equal(data.get(TANGGAPI_OPEN_STORAGE), "1");
+    assert.equal(
+      data.get(TANGGAPI_SEED_STORAGE),
+      "Desa Keude Bakongan (kode_desa_kelurahan 1101012001)",
+    );
+    assert.equal(
+      consumeTanggapiSeed(),
+      "Desa Keude Bakongan (kode_desa_kelurahan 1101012001)",
+    );
+    assert.equal(consumeTanggapiSeed(), null);
+    assert.equal(data.get(TANGGAPI_OPEN_STORAGE), "1");
   });
 });
