@@ -363,7 +363,7 @@ export function PeringatanDiniSection() {
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className={cn("mb-2 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
+            <p className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {t("kicker")}
             </p>
             <h2 className="section-h2">{t("title")}</h2>
@@ -373,7 +373,10 @@ export function PeringatanDiniSection() {
           </div>
           <a
             href="#cuaca"
-            className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-[var(--accent-soft)] transition-colors hover:text-[var(--text)]"
+            className={cn(
+              "inline-flex shrink-0 items-center gap-2 font-semibold text-[var(--text)] transition-colors hover:text-[var(--primary)]",
+              TYPE_FLOOR_CLASS,
+            )}
           >
             {t("archiveLink")}
             <span aria-hidden>→</span>
