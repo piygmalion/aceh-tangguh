@@ -331,9 +331,9 @@ Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
-| AN-34 | analis | Naskah Histori + Proyeksi Dampak | jurnal/AN-34.md | siap-kode |
-| FE-31 | frontend | Panel Histori + Proyeksi Dampak | jurnal/FE-31.md | draf |
-| AN-35 | analis | Uji penerimaan proyeksi | jurnal/AN-35.md | draf |
+| AN-34 | analis | Naskah Histori + Proyeksi Dampak | jurnal/AN-34.md | selesai |
+| FE-31 | frontend | Panel Histori + Proyeksi Dampak | jurnal/FE-31.md | selesai |
+| AN-35 | analis | Uji penerimaan proyeksi | jurnal/AN-35.md | selesai |
 
 ## Gelombang kemudian
 

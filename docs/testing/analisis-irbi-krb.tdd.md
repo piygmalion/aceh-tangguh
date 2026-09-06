@@ -32,7 +32,9 @@ Source plan: `/opt/cursor/artifacts/plans/analisis_irbi_krb_53ce1dfa.plan.md` (j
 
 ## Coverage and gaps
 
-Full `npm test` is the project runner (no separate coverage script): 515 pass / 0 fail.
+Full `npm test` is the project runner (no separate coverage script): 523 pass / 0 fail after G24.
+
+G24 RED `0c09143` (missing `proyeksi-dampak`); GREEN `d6cd7ce` + corridor fix `20ec6d7`. Parser + Pidie Jaya flood jiwa + earthquake magnitude bands covered in `src/lib/proyeksi-dampak.test.ts`.
 
 Browser 2026-09-06 on `next dev` :3000 (FE-30 / AN-33):
 
