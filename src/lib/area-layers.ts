@@ -11,7 +11,6 @@ export const AREA_LAYER_KEYS: AreaLayerKey[] = [
 
 /** Retired choropleths — still parse from ?area= but never appear as toolbar radios. */
 export const RETIRED_AREA_LAYER_KEYS = [
-  "r3pDistribution",
   "ngoDistribution",
   "regencyFundAllocation",
 ] as const satisfies readonly AreaLayerKey[];
@@ -19,6 +18,7 @@ export const RETIRED_AREA_LAYER_KEYS = [
 /** Visible AREA radios. Hardcoded — not derived from map_layers.enabled. */
 export const AREA_TOOLBAR_LAYER_KEYS = [
   "villageDistribution",
+  "r3pDistribution",
   "irbi2025",
 ] as const satisfies readonly AreaLayerKey[];
 

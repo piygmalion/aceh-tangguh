@@ -158,14 +158,14 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleEn:
       "PRRPKA / PRRKA — Aceh Authority Master Plan for Accelerated Post-Disaster Rehabilitation and Reconstruction",
     source:
-      "Keputusan Gubernur Aceh Nomor 300.2/666/2026 tentang Rencana Induk Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh Tahun 2026–2028 (PRRPKA / PRRKA). Homepage fixtures: prrpka_aceh.json (23 kab/kota) + prrpka_ringkasan.json. Map choropleth r3pDistribution is retired (map_layers.enabled=false, meta.retired=true).",
+      "Keputusan Gubernur Aceh Nomor 300.2/666/2026 tentang Rencana Induk Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh Tahun 2026–2028 (PRRPKA / PRRKA). Homepage fixtures: prrpka_aceh.json (23 kab/kota) + prrpka_ringkasan.json. Map choropleth r3pDistribution is live (kab → kecamatan → desa LOD).",
     license:
       "Dokumen publik Pemerintah Aceh — attribute Kepgub Aceh No. 300.2/666/2026",
     date: "2026–2028 (Kepgub 2026; fixture 2026-08-24)",
     format:
-      "JSON (prrpka_aceh.json + prrpka_ringkasan.json) + PDF Kepgub; r3pDistribution choropleth retired (enabled=false)",
+      "JSON (prrpka_aceh.json + prrpka_ringkasan.json) + PDF Kepgub; map r3pDistribution choropleth (enabled=true)",
     usedFor:
-      "Homepage PRRPKA slideshow (JITUPASNA, kebutuhan RR, perumahan PRRP/R3P/BNBA, pendanaan PRRKA, kesenjangan tingkat, sektor). Fixture-driven API `/api/prrpka/summary` — no Supabase seed table. Map layer r3pDistribution is retired (enabled=false).",
+      "Homepage PRRPKA slideshow (JITUPASNA, kebutuhan RR, perumahan PRRP/R3P/BNBA, pendanaan PRRKA, kesenjangan tingkat, sektor). Fixture-driven API `/api/prrpka/summary` — no Supabase seed table. Map layer r3pDistribution is live with kab → kecamatan → desa LOD.",
     href: "/docs/Kepgub_Renduk_PRRPKA_26-28.pdf",
   },
   {

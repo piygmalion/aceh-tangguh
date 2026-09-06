@@ -87,6 +87,7 @@ export const MARKER_TOOLBAR_GROUPS: MarkerToolbarGroup[] = [
  */
 export const AREA_TOOLBAR_OPTIONS: { key: AreaLayerKey; labelKey: string }[] = [
   { key: "villageDistribution", labelKey: "villageDistribution" },
+  { key: "r3pDistribution", labelKey: "r3pDistribution" },
   { key: "irbi2025", labelKey: "irbi2025" },
 ];
 
@@ -117,13 +118,14 @@ export const MAP_LAYERS_CATALOG: MapLayerCatalogEntry[] = [
     kind: "area",
     title_id: "Distribusi R3P",
     title_en: "R3P distribution",
-    description: "Choropleth kab/kota R3P (RR+RS+RB).",
+    description:
+      "Choropleth R3P rumah rusak (RR+RS+RB) with kab → kecamatan → desa zoom LOD.",
     source_path: "/fixtures/areas/r3pDistribution.geojson",
     source_type: "pmtiles",
     pmtiles_path: overlayPmtilesUrl("r3p-kab.pmtiles"),
-    enabled: false,
+    enabled: true,
     sort_order: 20,
-    meta: { toolbar: "distribusi", retired: true },
+    meta: { toolbar: "distribusi" },
   },
   {
     key: "irbi2025",
