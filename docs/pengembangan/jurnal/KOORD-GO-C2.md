@@ -2,7 +2,7 @@
 
 Agent: koordinator (GO C #2; skrip di wilayah data)
 Gelombang: GO C (lanjutan Stage 3 / #66)
-Status: draf
+Status: selesai
 
 ## Niat
 
@@ -36,20 +36,49 @@ Satu PR dari `main` terbaru. Bukan merge. Bukan Destana / UI / SIK / AreaProfil.
 
 ## Perubahan
 
-|
+| Berkas | Isi |
+| --- | --- |
+| `scripts/lib/verify-tiles-cdn.mjs` | URL join, skip, HEAD/Range, CORS, `runVerifyTilesCdn` |
+| `scripts/lib/verify-tiles-cdn.test.mjs` | 13 uji offline (mock fetch + CLI skip) |
+| `scripts/verify-tiles-cdn.mjs` | CLI; `npm run verify:tiles-cdn` |
+| `docs/basemap.md` | Runbook 5 langkah |
+| `.github/workflows/*` | tidak diubah |
 
 ## Bukti
 
 ```
+TDD RED: node --import tsx --test scripts/lib/verify-tiles-cdn.test.mjs
+  ERR_MODULE_NOT_FOUND verify-tiles-cdn.mjs (commit 0dc57d7)
+
+TDD GREEN: 13/13 pass (commit 3964f75)
+
+npm run verify:tiles-cdn  (NEXT_PUBLIC_TILES_BASE_URL unset)
+  skip — local /tiles default
+  NEXT_PUBLIC_ACEH_OSM_PMTILES unset (optional brand extract)
+  exit 0
+
+npm run check:tiles
+  irbi / kecamatan / r3p-kab / village ok
+  aceh-osm.pmtiles skip (not built)
+  required archives including r3p-kab present
+
+npm test
+  tests 586  pass 586  fail 0
+
+sync-tiles-s3.yml: workflow_dispatch only (no schedule/push)
+overlay-tiles.yml: tidak memanggil verify:tiles-cdn
+PR #86 terbuka, tidak di-merge
+DATA-4 / POST nasional / P2 / Destana / SIK / AreaProfil tidak dikode
+nilai secret tidak tertulis
 ```
 
 ## Bacaan ulang bukti versus kriteria
 
-- [ ] `verify:tiles-cdn` + helper skip / URL / HEAD+Range (mock)
-- [ ] Runbook 5 langkah + Carto default + CORS + jangan hapus r3p-kab
-- [ ] CI tidak menambah upload terjadwal; sync tetap workflow_dispatch
-- [ ] `check:tiles` hijau; PR terbuka, tidak di-merge
+- [x] `verify:tiles-cdn` + helper skip / URL / HEAD+Range (mock)
+- [x] Runbook 5 langkah + Carto default + CORS + jangan hapus r3p-kab
+- [x] CI tidak menambah upload terjadwal; sync tetap workflow_dispatch
+- [x] `check:tiles` hijau; PR terbuka, tidak di-merge
 
 ## Keputusan
 
-lanjut
+selesai
