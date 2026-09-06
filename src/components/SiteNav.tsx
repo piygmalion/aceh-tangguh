@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthMenu } from "@/components/admin/AuthMenu";
 import { ReportLaporDropdown } from "@/components/laporan/ReportLaporDropdown";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { NAV_ACCENT_HOVER, NAV_UTILITY_HOVER, navInteractiveClass } from "@/lib/nav-chrome";
 import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
@@ -17,18 +18,6 @@ type NavItem = {
   href: "/peta" | "/data-bencana" | "/analisis-data" | "/anggaran-bencana" | "/publikasi" | "/destana" | "/nomor-penting" | "/pelatihan" | "/mitra";
   label: string;
 };
-
-function navLinkClass(active: boolean, shape: "pill" | "row") {
-  const base =
-    shape === "pill"
-      ? "rounded-full px-3.5 py-2 transition duration-200"
-      : "rounded-xl px-3 py-2.5 text-sm transition";
-  return `${base} ${
-    active
-      ? "bg-[var(--primary-dim)] font-medium text-[var(--primary)]"
-      : "text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
-  }`;
-}
 
 function NavGroup({
   label,
@@ -40,15 +29,32 @@ function NavGroup({
   isActive: (href: string) => boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const groupActive = items.some((item) => isActive(item.href));
 
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
-    <div className="relative">
+    <div ref={rootRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className={cn("inline-flex items-center gap-1 text-sm", navLinkClass(groupActive, "pill"))}
+        className={cn("inline-flex items-center gap-1 text-sm", navInteractiveClass({ active: groupActive, open, shape: "pill" }))}
       >
         {label}
         <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
@@ -60,7 +66,7 @@ function NavGroup({
               key={item.key}
               href={item.href}
               onClick={() => setOpen(false)}
-              className={`block ${navLinkClass(isActive(item.href), "row")}`}
+              className={`block ${navInteractiveClass({ active: isActive(item.href), shape: "row" })}`}
             >
               {item.label}
             </Link>
@@ -129,18 +135,21 @@ export function SiteNav() {
         <div className="flex items-center justify-between gap-3">
           <Link
             href="/"
-            className="shrink-0 rounded-lg px-1.5 py-1 text-sm font-semibold tracking-wide md:text-base"
+            className={cn(
+              "shrink-0 rounded-lg px-1.5 py-1 text-sm font-semibold tracking-wide text-[var(--text)] md:text-base",
+              NAV_ACCENT_HOVER
+            )}
           >
             Aceh Tangguh
           </Link>
 
           <nav className="hidden items-center gap-1 text-sm lg:flex" aria-label="Primary" data-nav-ia="desktop">
-            <Link href={peta.href} className={navLinkClass(isActive(peta.href), "pill")}>
+            <Link href={peta.href} className={navInteractiveClass({ active: isActive(peta.href), shape: "pill" })}>
               {peta.label}
             </Link>
             <NavGroup label={t("data")} items={dataItems} isActive={isActive} />
             <NavGroup label={t("siaga")} items={siagaItems} isActive={isActive} />
-            <ReportLaporDropdown className={laporActive ? "ring-2 ring-[var(--ring)]/30 rounded-full" : ""} />
+            <ReportLaporDropdown active={laporActive} />
           </nav>
 
           <div className="flex items-center gap-2">
@@ -151,7 +160,10 @@ export function SiteNav() {
             <AuthMenu />
             <button
               type="button"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] lg:hidden"
+              className={cn(
+                "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] lg:hidden",
+                NAV_UTILITY_HOVER
+              )}
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={open ? t("closeMenu") : t("openMenu")}
@@ -171,7 +183,7 @@ export function SiteNav() {
               <Link
                 href={peta.href}
                 onClick={() => setOpen(false)}
-                className={navLinkClass(isActive(peta.href), "row")}
+                className={navInteractiveClass({ active: isActive(peta.href), shape: "row" })}
               >
                 {peta.label}
               </Link>
@@ -183,7 +195,7 @@ export function SiteNav() {
                   key={item.key}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={navLinkClass(isActive(item.href), "row")}
+                  className={navInteractiveClass({ active: isActive(item.href), shape: "row" })}
                 >
                   {item.label}
                 </Link>
@@ -196,13 +208,13 @@ export function SiteNav() {
                   key={item.key}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={navLinkClass(isActive(item.href), "row")}
+                  className={navInteractiveClass({ active: isActive(item.href), shape: "row" })}
                 >
                   {item.label}
                 </Link>
               ))}
               <div className="px-1 py-2">
-                <ReportLaporDropdown />
+                <ReportLaporDropdown active={laporActive} />
               </div>
             </nav>
             <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--glass-border)] pt-3 sm:hidden">
