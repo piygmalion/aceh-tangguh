@@ -34,29 +34,28 @@ function mockResponse(status, headers = {}) {
 }
 
 describe("overlay CDN file list", () => {
-  it("matches OVERLAY_PMTILES_FILES and keeps r3p-kab for LOD z<9", () => {
+  it("matches OVERLAY_PMTILES_FILES and does not require r3p-kab", () => {
     assert.deepEqual(OVERLAY_PMTILES_FILES, [
-      "r3p-kab.pmtiles",
       "kecamatan-r3p.pmtiles",
       "village-r3p.pmtiles",
       "irbi-2025.pmtiles",
     ]);
     assert.deepEqual(OVERLAY_PMTILES_FILES, Object.values(APP_OVERLAY_FILES));
-    assert.ok(OVERLAY_PMTILES_FILES.includes("r3p-kab.pmtiles"));
+    assert.equal(OVERLAY_PMTILES_FILES.includes("r3p-kab.pmtiles"), false);
   });
 });
 
 describe("joinPublicTilesUrl", () => {
   it("joins a public prefix to the overlay filename", () => {
     assert.equal(
-      joinPublicTilesUrl("https://cdn.example/tiles/", "r3p-kab.pmtiles"),
-      "https://cdn.example/tiles/r3p-kab.pmtiles"
+      joinPublicTilesUrl("https://cdn.example/tiles/", "kecamatan-r3p.pmtiles"),
+      "https://cdn.example/tiles/kecamatan-r3p.pmtiles"
     );
     assert.equal(
       joinPublicTilesUrl("https://cdn.example/tiles", "/tiles/village-r3p.pmtiles"),
       "https://cdn.example/tiles/village-r3p.pmtiles"
     );
-    assert.equal(joinPublicTilesUrl("", "r3p-kab.pmtiles"), "/tiles/r3p-kab.pmtiles");
+    assert.equal(joinPublicTilesUrl("", "kecamatan-r3p.pmtiles"), "/tiles/kecamatan-r3p.pmtiles");
     assert.equal(joinPublicTilesUrl("  ", "irbi-2025.pmtiles"), "/tiles/irbi-2025.pmtiles");
   });
 });
@@ -76,14 +75,14 @@ describe("resolveOverlayCdnTargets", () => {
   it("builds HEAD targets for every overlay when a public prefix is set", () => {
     const resolved = resolveOverlayCdnTargets("https://tiles.example.com/aceh/");
     assert.equal(resolved.action, "verify");
-    assert.equal(resolved.targets.length, 4);
+    assert.equal(resolved.targets.length, 3);
     assert.deepEqual(
       resolved.targets.map((row) => row.file),
       OVERLAY_PMTILES_FILES
     );
     assert.equal(
       resolved.targets[0].url,
-      "https://tiles.example.com/aceh/r3p-kab.pmtiles"
+      "https://tiles.example.com/aceh/kecamatan-r3p.pmtiles"
     );
   });
 });
@@ -190,13 +189,12 @@ describe("runVerifyTilesCdn remote probes (mock fetch)", () => {
     const heads = calls.filter((c) => c.method === "HEAD").map((c) => c.url);
     const ranges = calls.filter((c) => c.method === "GET");
     assert.deepEqual(heads, [
-      "https://tiles.example.com/aceh/r3p-kab.pmtiles",
       "https://tiles.example.com/aceh/kecamatan-r3p.pmtiles",
       "https://tiles.example.com/aceh/village-r3p.pmtiles",
       "https://tiles.example.com/aceh/irbi-2025.pmtiles",
       "https://cdn.example.com/aceh-osm.pmtiles",
     ]);
-    assert.equal(ranges.length, 5);
+    assert.equal(ranges.length, 4);
     assert.ok(ranges.every((c) => c.headers.Range === DEFAULT_RANGE_HEADER));
   });
 
@@ -219,13 +217,13 @@ describe("runVerifyTilesCdn remote probes (mock fetch)", () => {
     const result = await runVerifyTilesCdn({
       env: { NEXT_PUBLIC_TILES_BASE_URL: "https://tiles.example.com/aceh" },
       fetchImpl: async (url, init = {}) => {
-        if (String(url).includes("r3p-kab") && init.method === "HEAD") return mockResponse(404);
+        if (String(url).includes("kecamatan-r3p") && init.method === "HEAD") return mockResponse(404);
         return mockResponse(init.method === "HEAD" ? 200 : 206);
       },
       log: (line) => lines.push(String(line)),
     });
     assert.equal(result.exitCode, 1);
-    assert.ok(lines.some((line) => /FAIL.*r3p-kab/.test(line)));
+    assert.ok(lines.some((line) => /FAIL.*kecamatan-r3p/.test(line)));
   });
 
   it("fails opaque CORS/Range errors and documents expected CORS", async () => {

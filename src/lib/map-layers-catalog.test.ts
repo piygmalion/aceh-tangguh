@@ -35,6 +35,8 @@ describe("AREA toolbar radios", () => {
     assert.ok(r3p);
     assert.equal(r3p?.enabled, true);
     assert.equal(r3p?.meta.retired, undefined);
+    assert.equal(r3p?.pmtiles_path?.includes("r3p-kab.pmtiles"), false);
+    assert.match(String(r3p?.pmtiles_path), /kecamatan-r3p\.pmtiles$/);
   });
 
   it("still parses retired ?area= URLs", () => {

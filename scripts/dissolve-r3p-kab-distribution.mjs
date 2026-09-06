@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 /**
+ * DEPRECATED (offline only). r3p-kab.pmtiles is retired — admin LOD0 is
+ * kecamatan-r3p. Not called from `npm run build:tiles`. Keep for fixture
+ * rebuilds of r3pDistribution.geojson if needed offline.
+ *
  * Dissolve kecamatanDistribution.geojson → r3pDistribution.geojson.
  *
  * Group key: kode_kabupaten / kode_kab (4-digit BPS). Never invent codes.

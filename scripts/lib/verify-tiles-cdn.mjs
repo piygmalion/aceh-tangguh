@@ -6,7 +6,6 @@
 
 /** Same filenames as `OVERLAY_PMTILES_FILES` in `src/lib/tiles-url.ts`. */
 export const OVERLAY_PMTILES_FILES = [
-  "r3p-kab.pmtiles",
   "kecamatan-r3p.pmtiles",
   "village-r3p.pmtiles",
   "irbi-2025.pmtiles",

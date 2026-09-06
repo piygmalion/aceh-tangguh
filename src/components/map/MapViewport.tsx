@@ -41,8 +41,6 @@ import { markerIconImageId } from "@/lib/layer-icons";
 import {
   AREA_FILL_LAYER_IDS,
   KECAMATAN_LOD_MAX_ZOOM,
-  KECAMATAN_LOD_MIN_ZOOM,
-  PMTILES_KAB,
   PMTILES_KECAMATAN,
   PMTILES_VILLAGE,
   VILLAGE_LOD_MIN_ZOOM,
@@ -137,14 +135,6 @@ function fillColorExpr(layer: AreaLayerKey | null | undefined) {
 const PMTILES_AREA: Partial<
   Record<AreaLayerKey, { url: string; sourceLayer: string }>
 > = {
-  r3pDistribution: {
-    url: overlayPmtilesUrl("r3p-kab.pmtiles"),
-    sourceLayer: "r3p",
-  },
-  villageDistribution: {
-    url: overlayPmtilesUrl("village-r3p.pmtiles"),
-    sourceLayer: "village",
-  },
   irbi2025: {
     url: overlayPmtilesUrl("irbi-2025.pmtiles"),
     sourceLayer: "irbi",
@@ -554,13 +544,6 @@ export function MapViewport({
     staleTime: 60_000,
   });
 
-  const { data: kabPmtilesOk } = useQuery({
-    queryKey: ["pmtiles-exists", PMTILES_KAB.url],
-    queryFn: () => pmtilesExists(PMTILES_KAB.url),
-    enabled: villageLod && !krbRecolor,
-    staleTime: 60_000,
-  });
-
   const { data: kecamatanPmtilesOk } = useQuery({
     queryKey: ["pmtiles-exists", PMTILES_KECAMATAN.url],
     queryFn: () => pmtilesExists(PMTILES_KECAMATAN.url),
@@ -583,7 +566,6 @@ export function MapViewport({
     staleTime: 60_000,
   });
 
-  const useKabPmtiles = Boolean(villageLod && kabPmtilesOk && !krbRecolor);
   const useKecamatanPmtiles = Boolean(villageLod && kecamatanPmtilesOk && !krbRecolor);
   const useVillagePmtiles = Boolean(villageLod && villagePmtilesOk && !krbRecolor);
   const useOtherPmtiles = Boolean(otherPmtilesMeta && otherPmtilesOk && !krbRecolor);
@@ -594,9 +576,7 @@ export function MapViewport({
       (villageLod
         ? lodBand === "village"
           ? villagePmtilesOk === false
-          : lodBand === "kecamatan"
-            ? kecamatanPmtilesOk === false
-            : kabPmtilesOk === false
+          : kecamatanPmtilesOk === false
         : otherPmtilesMeta
           ? otherPmtilesOk === false
           : true));
@@ -704,10 +684,6 @@ export function MapViewport({
     return fc.features.length ? fc : null;
   }, [areaLayer, krbData]);
 
-  const kabPmtilesUrl = useMemo(
-    () => (useKabPmtiles ? pmtilesProtocolUrl(PMTILES_KAB.url) : null),
-    [useKabPmtiles]
-  );
   const kecamatanPmtilesUrl = useMemo(
     () => (useKecamatanPmtiles ? pmtilesProtocolUrl(PMTILES_KECAMATAN.url) : null),
     [useKecamatanPmtiles]
@@ -726,7 +702,7 @@ export function MapViewport({
 
   useEffect(() => {
     syncOverlayBeforeId();
-  }, [sortedKeys, overlays, areaLayer, useKabPmtiles, useKecamatanPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
+  }, [sortedKeys, overlays, areaLayer, useKecamatanPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
 
   const onMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -1081,20 +1057,6 @@ export function MapViewport({
             />
           </Source>
         )}
-        {kabPmtilesUrl && (
-          <Source id="area-layer-kab" type="vector" url={kabPmtilesUrl}>
-            <AreaOverlayLayers
-              idPrefix="kab"
-              sourceLayer={PMTILES_KAB.sourceLayer}
-              areaLayer={areaLayer}
-              outlineKind="kab"
-              beforeId={overlaySlot}
-              maxzoom={KECAMATAN_LOD_MIN_ZOOM}
-              villageSelection={villageSelection}
-              villageClickEnabled={villageClickEnabled && lodBand === "kab"}
-            />
-          </Source>
-        )}
         {kecamatanPmtilesUrl && (
           <Source id="area-layer-kecamatan" type="vector" url={kecamatanPmtilesUrl}>
             <AreaOverlayLayers
@@ -1104,7 +1066,6 @@ export function MapViewport({
               outlineKind="kecamatan"
               filter={villageFilter}
               beforeId={overlaySlot}
-              minzoom={KECAMATAN_LOD_MIN_ZOOM}
               maxzoom={KECAMATAN_LOD_MAX_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={false}
@@ -1145,13 +1106,11 @@ export function MapViewport({
               outlineKind={
                 villageLod && lodBand === "village"
                   ? "village"
-                  : villageLod && lodBand === "kecamatan"
+                  : villageLod
                     ? "kecamatan"
                     : "kab"
               }
-              filter={
-                villageLod && lodBand !== "kab" ? villageFilter : undefined
-              }
+              filter={villageLod ? villageFilter : undefined}
               beforeId={overlaySlot}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled && useVillageTiles}

@@ -14,9 +14,12 @@ import { classifyOsmFeature, nameProps } from "./osm-to-openmaptiles.mjs";
 const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "../..");
 
 describe("required overlay archives stay on disk", () => {
-  it("keeps r3p-kab.pmtiles for villageDistribution LOD z<9", async () => {
-    await access(resolve(ROOT, "public/tiles/r3p-kab.pmtiles"));
+  it("requires kecamatan + village + irbi, not retired r3p-kab", async () => {
+    await access(resolve(ROOT, "public/tiles/kecamatan-r3p.pmtiles"));
+    await access(resolve(ROOT, "public/tiles/village-r3p.pmtiles"));
+    await access(resolve(ROOT, "public/tiles/irbi-2025.pmtiles"));
     assert.notEqual(ACEH_OSM_ARCHIVE, "r3p-kab.pmtiles");
+    assert.notEqual(ACEH_OSM_ARCHIVE, "kecamatan-r3p.pmtiles");
   });
 });
 

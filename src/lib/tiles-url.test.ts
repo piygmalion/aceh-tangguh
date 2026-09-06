@@ -35,19 +35,21 @@ describe("overlay PMTiles URLs", () => {
   it("defaults to /tiles/<file> when NEXT_PUBLIC_TILES_BASE_URL is unset", () => {
     setEnv("NEXT_PUBLIC_TILES_BASE_URL", undefined);
     assert.equal(publicTilesBaseUrl(), "");
-    assert.equal(overlayPmtilesUrl("r3p-kab.pmtiles"), "/tiles/r3p-kab.pmtiles");
+    assert.equal(overlayPmtilesUrl("kecamatan-r3p.pmtiles"), "/tiles/kecamatan-r3p.pmtiles");
     assert.equal(overlayPmtilesUrl("/tiles/village-r3p.pmtiles"), "/tiles/village-r3p.pmtiles");
     assert.equal(overlayPmtilesUrl(OVERLAY_PMTILES_FILES.kecamatan), "/tiles/kecamatan-r3p.pmtiles");
+    assert.equal(overlayPmtilesUrl(OVERLAY_PMTILES_FILES.village), "/tiles/village-r3p.pmtiles");
     assert.equal(overlayPmtilesUrl(OVERLAY_PMTILES_FILES.irbi), "/tiles/irbi-2025.pmtiles");
-    assert.equal(overlayPmtilesFilename("/tiles/r3p-kab.pmtiles"), "r3p-kab.pmtiles");
+    assert.equal(overlayPmtilesFilename("/tiles/kecamatan-r3p.pmtiles"), "kecamatan-r3p.pmtiles");
+    assert.equal("kab" in OVERLAY_PMTILES_FILES, false);
   });
 
   it("prefixes overlay archives with NEXT_PUBLIC_TILES_BASE_URL when set", () => {
     setEnv("NEXT_PUBLIC_TILES_BASE_URL", "https://tiles.example.com/aceh/");
     assert.equal(publicTilesBaseUrl(), "https://tiles.example.com/aceh");
     assert.equal(
-      overlayPmtilesUrl("r3p-kab.pmtiles"),
-      "https://tiles.example.com/aceh/r3p-kab.pmtiles"
+      overlayPmtilesUrl("kecamatan-r3p.pmtiles"),
+      "https://tiles.example.com/aceh/kecamatan-r3p.pmtiles"
     );
     assert.equal(
       overlayPmtilesUrl("/tiles/kecamatan-r3p.pmtiles"),
