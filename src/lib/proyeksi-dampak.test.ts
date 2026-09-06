@@ -115,6 +115,7 @@ describe("buildProyeksiDampak", () => {
       card({
         id: "sim",
         kabupaten: "Simeulue",
+        kecamatan: "Simeulue Barat",
         kronologi: "Gempa bumi M5,9 mengguncang pantai barat",
       }),
       card({
@@ -134,6 +135,7 @@ describe("buildProyeksiDampak", () => {
     const mags = result.scale.map((row) => row.value);
     assert.deepEqual(mags.sort((a, b) => a - b), [5.9, 6.2]);
     assert.ok(result.scale.some((row) => row.band === "gte6" && row.value === 6.2));
+    assert.deepEqual(result.corridors, []);
   });
 
   it("does not derive fatalities from an IRBI score", () => {
