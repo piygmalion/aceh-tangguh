@@ -47,12 +47,14 @@ function CardShell({
   href,
   external,
   tone,
+  header,
   children,
   ariaLabel,
 }: {
   href: string;
   external?: boolean;
   tone: PeringatanTone;
+  header: ReactNode;
   children: ReactNode;
   ariaLabel: string;
 }) {
@@ -62,7 +64,18 @@ function CardShell({
       : tone === "warn"
         ? "hover:ring-[var(--warn)]/50"
         : "hover:ring-[var(--primary)]/40";
-  const className = `glass flex h-full min-h-[16rem] flex-col gap-2 rounded-2xl p-6 transition hover:ring-1 ${ring}`;
+  const className = cn(
+    "glass flex h-[20rem] flex-col gap-2 overflow-hidden rounded-2xl p-4 transition hover:ring-1",
+    ring,
+  );
+  const body = (
+    <>
+      <div className="shrink-0">{header}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+        {children}
+      </div>
+    </>
+  );
 
   if (external) {
     return (
@@ -73,14 +86,14 @@ function CardShell({
         aria-label={ariaLabel}
         className={className}
       >
-        {children}
+        {body}
       </a>
     );
   }
 
   return (
     <a href={href} aria-label={ariaLabel} className={className}>
-      {children}
+      {body}
     </a>
   );
 }
@@ -141,14 +154,20 @@ function CuacaCard({ card }: { card: CuacaWarningCard }) {
   const stamp = formatStamp(card.fetched_at, locale);
 
   return (
-    <CardShell href={card.href} tone={card.tone} ariaLabel={t("cuaca.aria")}>
-      <CardHeader
-        icon={<CloudRain className="h-3.5 w-3.5 shrink-0 text-[var(--info)]" />}
-        source={t("cuaca.source")}
-        tone={card.tone}
-        stamp={stamp}
-        stale={card.stale}
-      />
+    <CardShell
+      href={card.href}
+      tone={card.tone}
+      ariaLabel={t("cuaca.aria")}
+      header={
+        <CardHeader
+          icon={<CloudRain className="h-3.5 w-3.5 shrink-0 text-[var(--info)]" />}
+          source={t("cuaca.source")}
+          tone={card.tone}
+          stamp={stamp}
+          stale={card.stale}
+        />
+      }
+    >
       {card.empty ? (
         <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
           <EmptyDescription className="text-left text-foreground">
@@ -196,14 +215,16 @@ function MagmaCardView({ card }: { card: MagmaCard }) {
       external
       tone={card.tone}
       ariaLabel={t("magma.aria")}
+      header={
+        <CardHeader
+          icon={<Mountain className="h-3.5 w-3.5 shrink-0 text-[var(--warn)]" />}
+          source={t("magma.source")}
+          tone={card.tone}
+          stamp={stamp}
+          stale={card.stale}
+        />
+      }
     >
-      <CardHeader
-        icon={<Mountain className="h-3.5 w-3.5 shrink-0 text-[var(--warn)]" />}
-        source={t("magma.source")}
-        tone={card.tone}
-        stamp={stamp}
-        stale={card.stale}
-      />
       {card.empty || !ev ? (
         <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
           <EmptyDescription className="text-left text-foreground">
@@ -239,14 +260,16 @@ function SipongiCardView({ card }: { card: SipongiCard }) {
       external
       tone={card.tone}
       ariaLabel={t("sipongi.aria")}
+      header={
+        <CardHeader
+          icon={<Flame className="h-3.5 w-3.5 shrink-0 text-[var(--danger)]" />}
+          source={t("sipongi.source")}
+          tone={card.tone}
+          stamp={stamp}
+          stale={card.stale}
+        />
+      }
     >
-      <CardHeader
-        icon={<Flame className="h-3.5 w-3.5 shrink-0 text-[var(--danger)]" />}
-        source={t("sipongi.source")}
-        tone={card.tone}
-        stamp={stamp}
-        stale={card.stale}
-      />
       {card.empty ? (
         <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
           <EmptyDescription className="text-left text-foreground">
@@ -281,14 +304,16 @@ function TatonasCardView({ card }: { card: TatonasCard }) {
       external
       tone={card.tone}
       ariaLabel={t("tatonas.aria")}
+      header={
+        <CardHeader
+          icon={<Droplets className="h-3.5 w-3.5 shrink-0 text-[var(--info)]" />}
+          source={t("tatonas.source")}
+          tone={card.tone}
+          stamp={stamp}
+          stale={card.stale}
+        />
+      }
     >
-      <CardHeader
-        icon={<Droplets className="h-3.5 w-3.5 shrink-0 text-[var(--info)]" />}
-        source={t("tatonas.source")}
-        tone={card.tone}
-        stamp={stamp}
-        stale={card.stale}
-      />
       {card.empty ? (
         <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
           <EmptyDescription className="text-left text-foreground">
@@ -300,7 +325,7 @@ function TatonasCardView({ card }: { card: TatonasCard }) {
           {card.highlights.map((h) => (
             <div key={`${h.uid}-${h.pos_name}`} className="flex flex-col gap-0.5">
               <Field label={t("tatonas.pos")} value={h.pos_name} />
-              <Field label={t("tatonas.jenis")} value={t(`tatonas.kind.${h.logger_kind}`)} />
+              <Field label={t("tatonas.jenis")} value={h.logger_kind.toUpperCase()} />
               <Field
                 label={t("tatonas.nilai")}
                 value={
@@ -334,9 +359,9 @@ export function PeringatanDiniSection() {
   });
 
   return (
-    <section id="status" className="relative z-[1] scroll-mt-28 px-4 py-20 md:py-28">
+    <section id="status" className="relative z-[1] scroll-mt-28 px-4 py-12 md:py-16">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className={cn("mb-2 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
               {t("kicker")}
@@ -358,7 +383,7 @@ export function PeringatanDiniSection() {
         {isLoading ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4" aria-hidden>
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-[16rem] rounded-2xl" />
+              <Skeleton key={i} className="h-[20rem] rounded-2xl" />
             ))}
           </div>
         ) : null}
