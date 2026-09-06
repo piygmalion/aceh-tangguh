@@ -85,4 +85,26 @@ describe("analisis data acceptance (AN-30)", () => {
     assert.equal(/data\.total\s*\+\s*.*irbi|irbi.*\+\s*data\.total/i.test(workspace), false);
     assert.equal(/data\.total\s*\+\s*.*irbi|irbi.*\+\s*data\.total/i.test(panel), false);
   });
+
+  it("FE-32: ancaman chips/notes use type floor, one title, flex gap", () => {
+    const panel = read("src/components/analisis/AnalisisAncamanPanel.tsx");
+    assert.match(panel, /TYPE_FLOOR_CLASS/);
+    assert.match(panel, /function KelasChip/);
+    const kelasChip = panel.slice(
+      panel.indexOf("function KelasChip"),
+      panel.indexOf("function scenarioLabel")
+    );
+    assert.match(kelasChip, /TYPE_FLOOR_CLASS/);
+    assert.equal(/text-xs/.test(kelasChip), false);
+    assert.equal(/text-xs/.test(panel), false, "panel still uses text-xs (12px)");
+    const titleHits = panel.match(/t\("ancamanTitle"\)/g) ?? [];
+    assert.equal(titleHits.length, 1, "ancamanTitle should appear once");
+    assert.match(panel, /<h3[^>]*>\{t\("ancamanTitle"\)\}<\/h3>/);
+    const leftover = panel
+      .split("\n")
+      .filter((line) => /space-[xy]-/.test(line) && !/space-[xy]-0/.test(line));
+    assert.deepEqual(leftover, [], "AnalisisAncamanPanel still uses space-y-* / space-x-*");
+    assert.match(panel, /<GlassPanel/);
+    assert.match(panel, /data-analisis-ancaman="analog-disclaimer"/);
+  });
 });

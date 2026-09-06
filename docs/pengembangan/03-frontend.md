@@ -167,6 +167,10 @@ Jurnal: `jurnal/FE-30.md`. Gelombang 23. Kontrak AN-32. Select `ancaman`, kartu 
 
 Jurnal: `jurnal/FE-31.md`. Gelombang 24. Kontrak AN-34. Ganti judul kartu; tampilkan rentang histori + pita skala + replay. Jangan hardcode judul Indonesia. Jangan menjumlahkan skor ke KPI. Jangan menimpa FE-28 (navbar G22).
 
+### FE-32 — polish Analisis ancaman (type floor, judul, flex gap)
+
+Jurnal: `jurnal/FE-32.md`. Gelombang 25. Hanya `AnalisisAncamanPanel` + uji penerimaan. Chip/catatan naik ke `TYPE_FLOOR_CLASS` (13px). Satu `ancamanTitle` di `h3`. `flex` + `gap-*` mengganti `space-y-*` / `space-x-*` di panel dan tiga kartu. Jangan mengubah IRBI/KRB, rumus proyeksi, layer peta, SIK, Destana, atau navbar. Jangan hapus `GlassPanel` atau disclaimer empiris.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.
