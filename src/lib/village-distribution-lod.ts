@@ -2,12 +2,19 @@ import type { FilterSpecification } from "maplibre-gl";
 import type { Geometry, Position } from "geojson";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import type { VillageClickSelection } from "@/lib/profil-desa";
+import { overlayPmtilesUrl } from "@/lib/tiles-url";
 
 /** Below this zoom, villageDistribution paints r3p-kab only. */
-export const VILLAGE_LOD_MIN_ZOOM = 9;
+export const KECAMATAN_LOD_MIN_ZOOM = 9;
+
+/** Exclusive max zoom for kecamatan tiles (village mesh starts here). */
+export const KECAMATAN_LOD_MAX_ZOOM = 11;
+
+/** Desa fill starts here — no village mesh at z9–10. */
+export const VILLAGE_LOD_MIN_ZOOM = 11;
 
 /** Desa outlines start with the village-fill switch so polygons are not a blob. */
-export const VILLAGE_OUTLINE_MIN_ZOOM = 9;
+export const VILLAGE_OUTLINE_MIN_ZOOM = 11;
 
 export const BASEMAP_LABEL_PLACE_LAYER = "basemap-label-place";
 export const MARKER_CLUSTERS_LAYER = "marker-clusters";
@@ -15,6 +22,7 @@ export const MARKER_CLUSTERS_LAYER = "marker-clusters";
 export const AREA_FILL_LAYER_IDS = [
   "area-fill",
   "area-fill-kab",
+  "area-fill-kecamatan",
   "area-fill-village",
 ] as const;
 
@@ -22,15 +30,23 @@ export function isAreaFillLayerId(id: string | undefined): boolean {
   return !!id && (AREA_FILL_LAYER_IDS as readonly string[]).includes(id);
 }
 
+/** z<9 villageDistribution LOD — do not delete r3p-kab; retirement is a follow-up. */
 export const PMTILES_KAB = {
-  url: "/tiles/r3p-kab.pmtiles",
+  url: overlayPmtilesUrl("r3p-kab.pmtiles"),
   sourceLayer: "r3p",
 } as const;
 
+export const PMTILES_KECAMATAN = {
+  url: overlayPmtilesUrl("kecamatan-r3p.pmtiles"),
+  sourceLayer: "kecamatan",
+} as const;
+
 export const PMTILES_VILLAGE = {
-  url: "/tiles/village-r3p.pmtiles",
+  url: overlayPmtilesUrl("village-r3p.pmtiles"),
   sourceLayer: "village",
 } as const;
+
+export type VillageLodBand = "kab" | "kecamatan" | "village";
 
 export type PmtilesAreaMeta = {
   url: string;
@@ -45,12 +61,30 @@ export type VillageLodFocus = {
 
 export type LngLatBoundsTuple = [[number, number], [number, number]];
 
+export function villageLodBand(zoom: number): VillageLodBand {
+  if (zoom < KECAMATAN_LOD_MIN_ZOOM) return "kab";
+  if (zoom < VILLAGE_LOD_MIN_ZOOM) return "kecamatan";
+  return "village";
+}
+
+export function isKecamatanLodZoom(zoom: number): boolean {
+  return villageLodBand(zoom) === "kecamatan";
+}
+
 export function isVillageLodZoom(zoom: number): boolean {
-  return zoom >= VILLAGE_LOD_MIN_ZOOM;
+  return villageLodBand(zoom) === "village";
+}
+
+/** AreaProfilPanel opens only on the desa mesh, not kab/kecamatan choropleth. */
+export function villagePanelClickEnabled(band: VillageLodBand): boolean {
+  return band === "village";
 }
 
 export function villageDistributionTiles(zoom: number): PmtilesAreaMeta {
-  return isVillageLodZoom(zoom) ? PMTILES_VILLAGE : PMTILES_KAB;
+  const band = villageLodBand(zoom);
+  if (band === "kab") return PMTILES_KAB;
+  if (band === "kecamatan") return PMTILES_KECAMATAN;
+  return PMTILES_VILLAGE;
 }
 
 /**
@@ -198,7 +232,7 @@ function kecMatchExpr(kodeKecamatan: string): MapFilter {
   ] as MapFilter;
 }
 
-/** MapLibre filter for village-r3p. Undefined = no filter (all features). */
+/** MapLibre filter for kecamatan-r3p / village-r3p. Undefined = no filter. */
 export function villageLayerFilter(
   focus: VillageLodFocus | null
 ): FilterSpecification | undefined {
@@ -242,7 +276,7 @@ export const VILLAGE_OUTLINE_PAINT = {
   ],
 } as const;
 
-export function areaOutlinePaint(kind: "kab" | "village") {
+export function areaOutlinePaint(kind: "kab" | "kecamatan" | "village") {
   return kind === "village" ? VILLAGE_OUTLINE_PAINT : KAB_OUTLINE_PAINT;
 }
 
@@ -318,8 +352,9 @@ export function unionBounds(
 
 export function isKabAreaFeature(
   props: Record<string, unknown> | null | undefined,
-  villageTilesActive: boolean
+  lod: VillageLodBand | boolean
 ): boolean {
-  if (!villageTilesActive) return true;
+  const band: VillageLodBand = typeof lod === "boolean" ? (lod ? "village" : "kab") : lod;
+  if (band === "kab") return true;
   return String(props?.level ?? "") === "kab";
 }

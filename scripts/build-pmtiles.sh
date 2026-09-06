@@ -2,8 +2,9 @@
 # Rebuild overlay vector PMTiles for R3P kab + village choropleth layers.
 # Requires: tippecanoe (apt install tippecanoe)
 # Overlay archives only — Carto raster stays the default basemap.
-# tippecanoe --layer must stay r3p / village / irbi (MapViewport source-layer).
-# After build, check:tiles enforces 500 KB per MVT tile + village archive < 4 MB.
+# tippecanoe --layer must stay r3p / kecamatan / village / irbi (MapViewport source-layer).
+# After build, check:tiles enforces 500 KB per MVT tile + village archive < 4 MB
+# and kecamatan archive < 2 MB.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 AREAS="$ROOT/public/fixtures/areas"
@@ -24,6 +25,25 @@ tippecanoe \
   -y name -y value -y bucket -y kode_kab -y rumah_rr -y rumah_rs -y rumah_rb \
   "$AREAS/r3pDistribution.geojson"
 
+echo "==> Building kecamatan-r3p.pmtiles"
+# Dissolve of villageDistribution by kode_kecamatan (6-digit BPS) only.
+# Do not pass --use-attribute-for-id=kode_kecamatan: string BPS codes are
+# not valid MVT ids. Stamp kode only from the GeoJSON; never invent codes.
+tippecanoe \
+  -o "$OUT/kecamatan-r3p.pmtiles" \
+  --force \
+  --layer=kecamatan \
+  --name="Aceh R3P kecamatan" \
+  --attribution="Aceh Tangguh / dissolve villageDistribution by kode_kecamatan" \
+  --minimum-zoom=5 \
+  --maximum-zoom=11 \
+  --drop-densest-as-needed \
+  --extend-zooms-if-still-dropping \
+  -y name -y value -y bucket -y kabupaten -y kecamatan \
+  -y kode_kecamatan -y kode_kabupaten -y kode_kab -y level \
+  -y rumah_rr -y rumah_rs -y rumah_rb \
+  "$AREAS/kecamatanDistribution.geojson"
+
 echo "==> Building village-r3p.pmtiles (aggressive simplify for web)"
 # Keep BPS kode as a property only. Do not pass --use-attribute-for-id=
 # kode_desa_kelurahan: tippecanoe rejects the 10-digit string as a
@@ -36,7 +56,7 @@ tippecanoe \
   --force \
   --layer=village \
   --name="Aceh R3P village" \
-  --attribution="Aceh Tangguh / Compiled R3P + village borders" \
+  --attribution="Aceh Tangguh / profil_desa + geoportal.acehprov.go.id Peta_Administrasi_Desa" \
   --minimum-zoom=5 \
   --maximum-zoom=12 \
   --simplification=12 \
@@ -67,3 +87,4 @@ ls -lh "$OUT"/*.pmtiles
 echo "==> Checking per-tile sizes (500 KB limit, not archive size)"
 node "$ROOT/scripts/check-tiles.mjs"
 echo "Done. MapViewport will prefer these when present under /tiles/."
+echo "Aceh OSM basemap extract is separate: npm run build:aceh-osm (not this script)."

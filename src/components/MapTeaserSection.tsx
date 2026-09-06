@@ -3,18 +3,20 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { badgeVariants } from "@/components/ui/badge";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { Separator } from "@/components/ui/separator";
 import { SITE_MEDIA } from "@/lib/media";
 import { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
 const TEASER_CHIP_CLASS: Record<(typeof DEFAULT_LAYERS)[number], string> = {
-  disasterEvents: "bg-amber-500/25 text-amber-100",
-  facHealth: "bg-rose-500/25 text-rose-100",
-  laporanKejadian: "bg-emerald-500/25 text-emerald-100",
+  disasterEvents: "border-transparent bg-warn/25 text-[var(--hero-fg)]",
+  facHealth: "border-transparent bg-danger/25 text-[var(--hero-fg)]",
+  laporanKejadian: "border-transparent bg-primary/25 text-[var(--hero-fg)]",
 };
 
 const TEASER_CHIP_LABEL: Record<
@@ -56,9 +58,9 @@ export function MapTeaserSection() {
             <div className="relative z-[1] flex flex-1 flex-col justify-between p-5 text-white/90 sm:p-7">
               <div>
                 <div className="mb-1 flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full bg-red-400/80" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400/80" />
-                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/80" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-danger/80" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-warn/80" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-primary/80" />
                   <span className={cn("ml-3 rounded-md bg-white/10 px-2.5 py-1 tracking-wide text-white/70 backdrop-blur", TYPE_FLOOR_CLASS)}>
                     Aceh · z7
                   </span>
@@ -73,7 +75,12 @@ export function MapTeaserSection() {
                   <Link
                     key={key}
                     href={{ pathname: "/peta", query: { layers: key } }}
-                    className={`rounded-full px-3 py-1 text-xs backdrop-blur ${TEASER_CHIP_CLASS[key]}`}
+                    className={cn(
+                      badgeVariants({ variant: "outline" }),
+                      "rounded-full backdrop-blur",
+                      TYPE_FLOOR_CLASS,
+                      TEASER_CHIP_CLASS[key]
+                    )}
                   >
                     {t(TEASER_CHIP_LABEL[key])}
                   </Link>
@@ -81,13 +88,18 @@ export function MapTeaserSection() {
               </div>
             </div>
 
-            <div className="relative z-[1] hidden w-56 shrink-0 border-l border-white/10 bg-black/35 p-4 text-xs text-white/70 backdrop-blur-md md:block">
+            <Separator
+              orientation="vertical"
+              className="relative z-[1] hidden h-auto self-stretch bg-white/10 md:block"
+            />
+
+            <div className="relative z-[1] hidden w-56 shrink-0 bg-black/35 p-4 text-[length:var(--type-floor)] text-white/70 backdrop-blur-md md:block">
               <div className={cn("mb-3 text-white/80", TYPE_KICKER_CLASS)}>
                 Toolbar
               </div>
-              <div className="space-y-2">
+              <div className="flex flex-col gap-2">
                 <div className="rounded-lg bg-white/10 px-3 py-2.5">{tm("distribusi")}</div>
-                <div className="rounded-lg border border-emerald-400/30 bg-emerald-500/20 px-3 py-2.5 text-emerald-100">
+                <div className="rounded-lg border border-primary/30 bg-primary/20 px-3 py-2.5 text-[var(--hero-fg)]">
                   {tm("lokasi")}
                 </div>
                 <div className="rounded-lg bg-white/10 px-3 py-2.5">{tm("legenda")}</div>
@@ -97,8 +109,8 @@ export function MapTeaserSection() {
           <BorderBeam
             size={120}
             duration={10}
-            colorFrom="#2e9e4e"
-            colorTo="#81c784"
+            colorFrom="var(--primary)"
+            colorTo="var(--accent-soft)"
             borderWidth={1.5}
           />
         </GlassPanel>
@@ -107,7 +119,7 @@ export function MapTeaserSection() {
       <div className="mt-7">
         <Link
           href="/peta"
-          className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--primary)] px-6 text-sm font-semibold text-white transition hover:opacity-90"
+          className="inline-flex h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
         >
           {t("cta")}
         </Link>

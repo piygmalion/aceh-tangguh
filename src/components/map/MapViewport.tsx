@@ -26,6 +26,11 @@ import type {
   OverlayLayerKey,
 } from "@/lib/types";
 import { getBasemapStyle, isBrandBasemapId } from "@/lib/basemap";
+import {
+  ACEH_OSM_PMTILES_FILENAME,
+  configuredAcehOsmPmtilesUrl,
+  overlayPmtilesUrl,
+} from "@/lib/tiles-url";
 import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { type VillageClickSelection } from "@/lib/profil-desa";
@@ -35,7 +40,10 @@ import { CLUSTER_COLORS, COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
 import { markerIconImageId } from "@/lib/layer-icons";
 import {
   AREA_FILL_LAYER_IDS,
+  KECAMATAN_LOD_MAX_ZOOM,
+  KECAMATAN_LOD_MIN_ZOOM,
   PMTILES_KAB,
+  PMTILES_KECAMATAN,
   PMTILES_VILLAGE,
   VILLAGE_LOD_MIN_ZOOM,
   VILLAGE_OUTLINE_MIN_ZOOM,
@@ -43,12 +51,14 @@ import {
   geometryBounds,
   isAreaFillLayerId,
   isKabAreaFeature,
-  isVillageLodZoom,
   mergeVillageLodFocus,
   overlayBeforeId,
   readKabLodFocus,
   unionBounds,
   villageLayerFilter,
+  villageLodBand,
+  villagePanelClickEnabled,
+  type VillageLodBand,
   type VillageLodFocus,
 } from "@/lib/village-distribution-lod";
 import {
@@ -136,15 +146,15 @@ const PMTILES_AREA: Partial<
   Record<AreaLayerKey, { url: string; sourceLayer: string }>
 > = {
   r3pDistribution: {
-    url: "/tiles/r3p-kab.pmtiles",
+    url: overlayPmtilesUrl("r3p-kab.pmtiles"),
     sourceLayer: "r3p",
   },
   villageDistribution: {
-    url: "/tiles/village-r3p.pmtiles",
+    url: overlayPmtilesUrl("village-r3p.pmtiles"),
     sourceLayer: "village",
   },
   irbi2025: {
-    url: "/tiles/irbi-2025.pmtiles",
+    url: overlayPmtilesUrl("irbi-2025.pmtiles"),
     sourceLayer: "irbi",
   },
 };
@@ -270,7 +280,7 @@ function AreaOverlayLayers({
   idPrefix?: string;
   sourceLayer?: string;
   areaLayer: AreaLayerKey | null;
-  outlineKind: "kab" | "village";
+  outlineKind: "kab" | "kecamatan" | "village";
   filter?: FilterSpecification;
   beforeId?: string;
   minzoom?: number;
@@ -417,17 +427,18 @@ export function MapViewport({
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
   const [chromeIconsReady, setChromeIconsReady] = useState(false);
-  const [useVillageTiles, setUseVillageTiles] = useState(() =>
-    isVillageLodZoom(view.zoom)
+  const [lodBand, setLodBand] = useState<VillageLodBand>(() =>
+    villageLodBand(view.zoom)
   );
   const [kabFocus, setKabFocus] = useState<VillageLodFocus | null>(null);
   const [overlaySlot, setOverlaySlot] = useState<string | undefined>();
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const villageClickEnabled = areaLayer === "villageDistribution";
+  const useVillageTiles = lodBand === "village";
 
   const applyZoomLod = useCallback((zoom: number) => {
-    const next = isVillageLodZoom(zoom);
-    setUseVillageTiles((prev) => (prev === next ? prev : next));
+    const next = villageLodBand(zoom);
+    setLodBand((prev) => (prev === next ? prev : next));
   }, []);
 
   const syncOverlayBeforeId = useCallback(() => {
@@ -445,13 +456,25 @@ export function MapViewport({
     setVectorFailed(false);
   }, [basemap, preferVector]);
 
+  const acehOsmConfigured = configuredAcehOsmPmtilesUrl();
+  const acehOsmCandidate =
+    acehOsmConfigured ?? overlayPmtilesUrl(ACEH_OSM_PMTILES_FILENAME);
+  const { data: acehOsmPresent } = useQuery({
+    queryKey: ["pmtiles-exists", acehOsmCandidate],
+    queryFn: () => pmtilesExists(acehOsmCandidate),
+    enabled: isBrandBasemapId(basemap) && !acehOsmConfigured,
+    staleTime: 60_000,
+  });
+
   const mapStyle = useMemo(
     () =>
       getBasemapStyle(basemap, {
         preferVector: preferVector && !vectorFailed,
         rasterFallback: vectorFailed,
+        acehOsmUrl: acehOsmConfigured,
+        localAcehOsmPresent: acehOsmConfigured ? undefined : acehOsmPresent === true,
       }),
-    [basemap, preferVector, vectorFailed]
+    [basemap, preferVector, vectorFailed, acehOsmConfigured, acehOsmPresent]
   );
 
   const haloStroke = useMemo(() => markerHaloStroke(basemap), [basemap]);
@@ -542,6 +565,13 @@ export function MapViewport({
     staleTime: 60_000,
   });
 
+  const { data: kecamatanPmtilesOk } = useQuery({
+    queryKey: ["pmtiles-exists", PMTILES_KECAMATAN.url],
+    queryFn: () => pmtilesExists(PMTILES_KECAMATAN.url),
+    enabled: villageLod && !krbRecolor,
+    staleTime: 60_000,
+  });
+
   const { data: villagePmtilesOk } = useQuery({
     queryKey: ["pmtiles-exists", PMTILES_VILLAGE.url],
     queryFn: () => pmtilesExists(PMTILES_VILLAGE.url),
@@ -558,6 +588,7 @@ export function MapViewport({
   });
 
   const useKabPmtiles = Boolean(villageLod && kabPmtilesOk && !krbRecolor);
+  const useKecamatanPmtiles = Boolean(villageLod && kecamatanPmtilesOk && !krbRecolor);
   const useVillagePmtiles = Boolean(villageLod && villagePmtilesOk && !krbRecolor);
   const useOtherPmtiles = Boolean(otherPmtilesMeta && otherPmtilesOk && !krbRecolor);
 
@@ -565,9 +596,11 @@ export function MapViewport({
     areaLayer != null &&
     (krbRecolor ||
       (villageLod
-        ? useVillageTiles
+        ? lodBand === "village"
           ? villagePmtilesOk === false
-          : kabPmtilesOk === false
+          : lodBand === "kecamatan"
+            ? kecamatanPmtilesOk === false
+            : kabPmtilesOk === false
         : otherPmtilesMeta
           ? otherPmtilesOk === false
           : true));
@@ -671,6 +704,10 @@ export function MapViewport({
     () => (useKabPmtiles ? pmtilesProtocolUrl(PMTILES_KAB.url) : null),
     [useKabPmtiles]
   );
+  const kecamatanPmtilesUrl = useMemo(
+    () => (useKecamatanPmtiles ? pmtilesProtocolUrl(PMTILES_KECAMATAN.url) : null),
+    [useKecamatanPmtiles]
+  );
   const villagePmtilesUrl = useMemo(
     () => (useVillagePmtiles ? pmtilesProtocolUrl(PMTILES_VILLAGE.url) : null),
     [useVillagePmtiles]
@@ -685,7 +722,7 @@ export function MapViewport({
 
   useEffect(() => {
     syncOverlayBeforeId();
-  }, [sortedKeys, overlays, areaLayer, useKabPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
+  }, [sortedKeys, overlays, areaLayer, useKabPmtiles, useKecamatanPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
 
   const onMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -753,7 +790,7 @@ export function MapViewport({
       if (!feature) return;
       const fillLayerId = feature.layer?.id ?? "area-fill";
       const props = feature.properties as Record<string, unknown> | null;
-      if (isKabAreaFeature(props, useVillageTiles)) {
+      if (isKabAreaFeature(props, lodBand)) {
         const nextFocus = readKabLodFocus(props);
         if (nextFocus) setKabFocus(nextFocus);
         const map = mapRef.current?.getMap();
@@ -789,11 +826,12 @@ export function MapViewport({
         }
         return;
       }
+      if (!villagePanelClickEnabled(lodBand)) return;
       if (!onVillageClick) return;
       const sel = readVillageSelection(props);
       if (sel) onVillageClick(sel);
     },
-    [villageClickEnabled, onVillageClick, useVillageTiles, t]
+    [villageClickEnabled, onVillageClick, lodBand, t]
   );
 
   const onMove = useCallback(
@@ -1023,9 +1061,25 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="kab"
               beforeId={overlaySlot}
-              maxzoom={VILLAGE_LOD_MIN_ZOOM}
+              maxzoom={KECAMATAN_LOD_MIN_ZOOM}
               villageSelection={villageSelection}
-              villageClickEnabled={villageClickEnabled && !useVillageTiles}
+              villageClickEnabled={villageClickEnabled && lodBand === "kab"}
+            />
+          </Source>
+        )}
+        {kecamatanPmtilesUrl && (
+          <Source id="area-layer-kecamatan" type="vector" url={kecamatanPmtilesUrl}>
+            <AreaOverlayLayers
+              idPrefix="kecamatan"
+              sourceLayer={PMTILES_KECAMATAN.sourceLayer}
+              areaLayer={areaLayer}
+              outlineKind="kecamatan"
+              filter={villageFilter}
+              beforeId={overlaySlot}
+              minzoom={KECAMATAN_LOD_MIN_ZOOM}
+              maxzoom={KECAMATAN_LOD_MAX_ZOOM}
+              villageSelection={villageSelection}
+              villageClickEnabled={false}
             />
           </Source>
         )}
@@ -1060,8 +1114,16 @@ export function MapViewport({
           <Source id="area-layer" type="geojson" data={areaGeojson} generateId>
             <AreaOverlayLayers
               areaLayer={areaLayer}
-              outlineKind={villageLod && useVillageTiles ? "village" : "kab"}
-              filter={villageLod && useVillageTiles ? villageFilter : undefined}
+              outlineKind={
+                villageLod && lodBand === "village"
+                  ? "village"
+                  : villageLod && lodBand === "kecamatan"
+                    ? "kecamatan"
+                    : "kab"
+              }
+              filter={
+                villageLod && lodBand !== "kab" ? villageFilter : undefined
+              }
               beforeId={overlaySlot}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled && useVillageTiles}

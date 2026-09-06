@@ -5,9 +5,19 @@ import {
   RETIRED_AREA_LAYER_KEYS,
   parseAreaLayerKey,
 } from "./area-layers";
-import { AREA_TOOLBAR_OPTIONS, MAP_LAYERS_CATALOG } from "./map-layers-catalog";
+import {
+  AREA_TOOLBAR_OPTIONS,
+  LIVE_MARKER_LAYER_KEYS,
+  MAP_LAYERS_CATALOG,
+  MARKER_TOOLBAR_GROUPS,
+  RETIRED_MARKER_LAYER_KEYS,
+} from "./map-layers-catalog";
 import { LAYER_ICON_FILES, OVERLAY_LAYER_ICON_FILES } from "./layer-icons";
-import { parseMarkerLayers, resolveMapUrlAliases } from "./map-url-aliases";
+import {
+  CLUSTER_TO_LAYERS,
+  parseMarkerLayers,
+  resolveMapUrlAliases,
+} from "./map-url-aliases";
 
 describe("AREA toolbar radios", () => {
   it("shows only Desa + IRBI, not retired keys", () => {
@@ -33,6 +43,35 @@ describe("AREA toolbar radios", () => {
     }
     assert.equal(parseAreaLayerKey("villageDistribution"), "villageDistribution");
     assert.equal(parseAreaLayerKey("not-a-layer"), null);
+  });
+});
+
+describe("retired marker layers stay off the toolbar", () => {
+  it("locks tendPoints with poskos / missingPersons", () => {
+    assert.deepEqual([...RETIRED_MARKER_LAYER_KEYS], [
+      "poskos",
+      "tendPoints",
+      "missingPersons",
+    ]);
+    for (const key of RETIRED_MARKER_LAYER_KEYS) {
+      const row = MAP_LAYERS_CATALOG.find((item) => item.key === key);
+      assert.ok(row);
+      assert.equal(row?.enabled, false);
+      assert.equal(row?.meta.retired, true);
+      assert.equal(LIVE_MARKER_LAYER_KEYS.includes(key), false);
+    }
+    const toolbarKeys = MARKER_TOOLBAR_GROUPS.flatMap((g) =>
+      g.options.map((o) => o.key)
+    );
+    assert.equal(toolbarKeys.includes("tendPoints"), false);
+    assert.deepEqual(CLUSTER_TO_LAYERS.pengungsian.markerLayers, [
+      "disasterEvents",
+      "laporanKejadian",
+    ]);
+  });
+
+  it("still parses retired ?layers=tendPoints URLs", () => {
+    assert.deepEqual(parseMarkerLayers("tendPoints"), ["tendPoints"]);
   });
 });
 

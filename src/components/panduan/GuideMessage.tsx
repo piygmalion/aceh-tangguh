@@ -42,14 +42,8 @@ export function GuideMessage({
           {answer.links.map((item) => (
             <Chip
               key={`${item.href}:${item.hash ?? ""}:${item.labelKey}`}
-              tone={item.accent ? "warn" : "ok"}
-              className={cn(
-                TYPE_FLOOR_CLASS,
-                "font-semibold",
-                item.accent
-                  ? "border-transparent bg-[var(--accent)] text-white hover:bg-[var(--accent-hover)]"
-                  : ""
-              )}
+              tone={item.accent ? "accent" : "ok"}
+              className={cn(TYPE_FLOOR_CLASS, "font-semibold")}
               onClick={() => onLink(item.href, item.hash)}
             >
               {t(item.labelKey)}

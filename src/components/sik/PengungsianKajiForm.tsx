@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   PENGUNGSI_BAND,
   PENGUNGSI_BAND_LABEL,
@@ -201,12 +202,19 @@ export function PengungsianKajiForm({
         ))}
       </div>
 
-      <Button className="mt-4" size="sm" disabled={busy || locked || tempat.length === 0} onClick={() => void save()}>
+      <Button
+        className="mt-4"
+        size="sm"
+        disabled={busy || locked || tempat.length === 0}
+        onClick={() => void save()}
+        data-icon={busy ? "inline-start" : undefined}
+      >
+        {busy ? <Spinner /> : null}
         {locked ? "Terkunci (statis)" : busy ? "Menyimpan…" : "Simpan kaji pos"}
       </Button>
 
       {history.length > 0 ? (
-        <ul className="mt-3 space-y-1 text-sm">
+        <ul className="mt-3 flex flex-col gap-1 text-sm">
           {history.map((row) => {
             const j = normalizePengungsiJiwa(row.jiwa);
             const r = normalizeRentanPengungsi(row.rentan);

@@ -156,13 +156,21 @@ export const BASEMAP_BRAND: Record<BrandBasemapId, BasemapStyle> = {
 
 export function getBasemapStyle(
   id: BasemapId,
-  opts?: { preferVector?: boolean; rasterFallback?: boolean }
+  opts?: {
+    preferVector?: boolean;
+    rasterFallback?: boolean;
+    acehOsmUrl?: string | null;
+    localAcehOsmPresent?: boolean;
+  }
 ): BasemapStyle {
   if (isBrandBasemapId(id)) {
     if (opts?.rasterFallback === true) {
       return BASEMAP_RASTER[BRAND_RASTER_FALLBACK[id]];
     }
-    return BASEMAP_BRAND[id];
+    return buildBrandBasemapStyle(id, {
+      acehOsmUrl: opts?.acehOsmUrl,
+      localAcehOsmPresent: opts?.localAcehOsmPresent,
+    });
   }
   // rasterFallback kept so older call sites that meant “use Carto” still work.
   const useVector = opts?.preferVector === true && opts?.rasterFallback !== true;

@@ -35,7 +35,12 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} data-theme="dark" className={plusJakarta.variable} suppressHydrationWarning>
+    <html
+      lang={locale}
+      data-theme="dark"
+      className={`${plusJakarta.variable} dark`}
+      suppressHydrationWarning
+    >
       <body className={plusJakarta.className}>
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>

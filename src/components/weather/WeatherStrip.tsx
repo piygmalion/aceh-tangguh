@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { Chip } from "@/components/ui/Chip";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import {
   buildIrbiByKabMap,
@@ -415,13 +417,15 @@ export function WeatherStrip() {
               aria-hidden
             >
               {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
-                <span key={i} className="skeleton h-[8.5rem] rounded-2xl" />
+                <Skeleton key={i} className="h-[8.5rem] rounded-2xl" />
               ))}
             </div>
           ) : null}
 
           {isError ? (
-            <span className="text-sm text-[var(--text-dim)]">{t("error")}</span>
+            <Empty className="border-0 p-2 md:p-2">
+              <EmptyDescription>{t("error")}</EmptyDescription>
+            </Empty>
           ) : null}
 
           {!isLoading && !isError && total > 0 ? (

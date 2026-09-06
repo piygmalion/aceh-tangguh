@@ -302,6 +302,8 @@ describe("AreaProfilPanel source lock", () => {
     assert.match(panel, /useState<AreaProfilView>\(AREA_PROFIL_INITIAL_VIEW\)/);
     assert.match(panel, /areaProfilViewOnOpen/);
     assert.match(panel, /areaProfilBreadcrumbLevels/);
+    assert.match(panel, /from ["']@\/components\/ui\/button["']/);
+    assert.equal(/button-legacy/.test(panel), false);
     assert.match(panel, /TYPE_FLOOR_CLASS/);
     assert.match(panel, /clickedHint/);
     assert.match(panel, /t\("empty"\)/);

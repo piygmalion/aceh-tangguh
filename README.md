@@ -57,7 +57,7 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    ```
    bun run seed:area-meta
    ```
-   `villageDistribution` is not included there. Seed it only for the intersection of GeoJSON 10-digit `properties.kode_desa_kelurahan` ∩ coded `profil_desa` rows (join on that kode, never `feature.id`). Do **not** run `--apply` against production until the coordinator reviews:
+   `villageDistribution` is not included there. Geometry is rebuilt from Geoportal Aceh `Peta_Administrasi_Desa` + `data-bencana-aceh` `profil_desa` (`npm run build:village-geoportal`). Seed `area_feature_meta` only for the intersection of GeoJSON 10-digit `properties.kode_desa_kelurahan` ∩ coded `profil_desa` rows (join on that kode, never `feature.id`). Do **not** run `--apply` against production until the coordinator reviews:
    ```
    npm run seed:village-area-meta -- --dry-run
    npm run seed:village-area-meta -- --apply
@@ -136,7 +136,7 @@ bun run build:tiles
 # or: bash scripts/build-pmtiles.sh
 ```
 
-Per-tile size cap: **500 KB** (not the `.pmtiles` file size). Second gate: `village-r3p.pmtiles` archive **under 4 MB** (~2.9 MB today is fine).
+Per-tile size cap: **500 KB** (not the `.pmtiles` file size). Archive gates: `village-r3p.pmtiles` **under 4 MB**; `kecamatan-r3p.pmtiles` **under 2 MB**.
 
 ```
 npm run check:tiles
@@ -145,10 +145,21 @@ npm run check:tiles
 Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
 
 - `public/tiles/r3p-kab.pmtiles` — `r3p` — from `fixtures/areas/r3pDistribution.geojson`
+- `public/tiles/kecamatan-r3p.pmtiles` — `kecamatan` — from `fixtures/areas/kecamatanDistribution.geojson` (dissolve by `kode_kecamatan`)
 - `public/tiles/village-r3p.pmtiles` — `village` — from `fixtures/areas/villageDistribution.geojson` (simplified)
 - `public/tiles/irbi-2025.pmtiles` — `irbi` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
 
-`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS.
+`villageDistribution` LOD: **z<9** kab, **z 9–10** kecamatan, **z≥11** desa. Rebuild the dissolve with `node scripts/dissolve-kecamatan-distribution.mjs` (requires shapely).
+
+`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS. Set `NEXT_PUBLIC_TILES_BASE_URL` to serve the same filenames from S3/R2. **Do not delete `r3p-kab.pmtiles`** — villageDistribution LOD z<9 still paints it. Retiring that archive is a follow-up after an LOD0 replacement.
+
+Optional Aceh OSM basemap extract (brand presets only, never the default):
+
+```
+npm run build:aceh-osm
+```
+
+Writes `public/tiles/aceh-osm.pmtiles` (gitignored; Aceh bbox only — no planet). Point brand styles at it with `NEXT_PUBLIC_ACEH_OSM_PMTILES` or drop the file under `/tiles`. Opt-in upload: `bash scripts/sync-tiles-s3.sh --dry-run` (skips if S3 env is missing). See `docs/basemap.md`.
 
 ## Basemap (Carto raster + Sentinel)
 
@@ -197,6 +208,19 @@ bun run flag:coords
 `ACEH-2023-0005` (offshore Singkil epicentre ~1.91°N) is included on `disasterEvents` with `coord_quality=offshore_or_out_of_bbox` so the map count matches kejadian (427). The map does not clamp an Aceh bbox.
 
 After fixture changes, re-seed Supabase `marker_features` via the existing `upsert_marker_features` RPC (coordinator; requires `service_role`).
+
+### SIK Aceh master (`sik_aceh.db`)
+
+Optional enrichment of `kejadian_bencana` / `disasterEvents` from the local SIK SQLite. Geometry stays on disk; the `.db` is gitignored (`data/sik/sik_aceh.db`). Dry-run default. `--write-fixtures` is refused when GPS points disagree by more than ~100 m.
+
+```
+python3 scripts/import-sik-aceh.py
+python3 scripts/import-sik-aceh.py --write-fixtures
+node scripts/seed-sik-supabase.mjs          # dry-run
+node scripts/seed-sik-supabase.mjs --apply  # coordinator only
+```
+
+Mapping and conflict rules: `scripts/sik/SCHEMA.md`. Do not run `--apply` against production until the coordinator reviews.
 
 Rebuild (does not run in CI; inputs under `/workspace/drive-aceh-data/`):
 

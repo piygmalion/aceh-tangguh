@@ -40,7 +40,7 @@ export default async function SumberDataPage({
               <li
                 key={entry.id}
                 id={entry.id}
-                className="rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)]/40 p-5"
+                className="scroll-mt-28 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)]/40 p-5"
               >
                 <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
                 <dl className="mt-3 grid gap-2 text-sm text-[var(--text-dim)] sm:grid-cols-[8rem_1fr]">

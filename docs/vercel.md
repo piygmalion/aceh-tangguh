@@ -14,7 +14,7 @@ Preview online memakai **Next.js Node di Vercel**, bukan GitHub Pages / static e
 
 ## 2. Supabase (sudah terhubung di Vercel)
 
-`.env.production` memuat `NEXT_PUBLIC_SUPABASE_URL` + anon JWT proyek `whojoxrbcdyotrpolgav`. `next build` di Vercel membacanya, jadi `/api/stats/live` dan loader domain memakai Supabase (bukan fixture) tanpa env dashboard.
+Klien Supabase memakai default proyek `whojoxrbcdyotrpolgav` di `src/lib/supabase/public-env.ts` (plus `.env.production`). Vercel Functions sering tidak memuat file `.env*` di runtime, jadi default di kode yang membuat `/api/stats/live` memakai Supabase.
 
 Cek: `GET https://aceh-tangguh.vercel.app/api/stats/live` harus `"source":"supabase"`.
 

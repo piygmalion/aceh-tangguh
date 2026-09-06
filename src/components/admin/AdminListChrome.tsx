@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
 /** Shared staff-table chrome only. Does not encode moderation or Juklak fields. */

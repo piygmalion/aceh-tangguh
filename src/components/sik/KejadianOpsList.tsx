@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { AdminListChrome, AdminPager, AdminTableStatusRow } from "@/components/admin/AdminListChrome";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import type { KejadianOperasiRow } from "@/lib/sik/db-tables";
 
 export function KejadianOpsList() {

@@ -80,7 +80,8 @@ html[data-theme="light"] {
   --type-hero-leading: 1.12;
 }
 
-html[data-theme="dark"] {
+html[data-theme="dark"],
+.dark {
   color-scheme: dark;
 
   --paper: #F7F7F4;
@@ -717,4 +718,48 @@ html[data-theme="dark"] .map-layer-icon-disc {
   font-size: 1rem;
   padding: 0.25rem 0.45rem;
   color: var(--text-dim);
+}
+
+/*
+ * shadcn/ui semantic aliases.
+ * HEX lives on Aceh tokens above. These only reference them — do not invent brand colors.
+ * --primary, --accent, --border, --ring, --chart-* stay as Aceh HEX (not redeclared).
+ */
+:root,
+html[data-theme="light"],
+html[data-theme="dark"],
+.dark {
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--bg-raised);
+  --card-foreground: var(--text);
+  --popover: var(--bg-raised);
+  --popover-foreground: var(--text);
+  --primary-foreground: var(--primary-fg);
+  --secondary: var(--bg-muted);
+  --secondary-foreground: var(--text);
+  --muted: var(--bg-muted);
+  --muted-foreground: var(--text-dim);
+  --accent-foreground: var(--accent-fg);
+  --destructive: var(--awas);
+  --destructive-foreground: var(--paper);
+  --input: var(--border);
+  --radius: 0.75rem;
+  --sidebar: var(--bg-raised);
+  --sidebar-foreground: var(--text);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-fg);
+  --sidebar-accent: var(--bg-muted);
+  --sidebar-accent-foreground: var(--text);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

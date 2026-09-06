@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
+import { FieldError, FieldGroup } from "@/components/ui/field";
+import { Spinner } from "@/components/ui/spinner";
 import { FormFieldRenderer } from "@/components/laporan/FormFieldRenderer";
 import { GpsCapture, type LokasiValue } from "@/components/laporan/GpsCapture";
 import { ReporterFields, type ReporterValue } from "@/components/laporan/ReporterFields";
@@ -87,23 +89,23 @@ export function ReportPenangananForm() {
   }
 
   return (
-    <div className="space-y-6 rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)] p-6">
+    <div className="flex flex-col gap-6 rounded-2xl border border-input bg-card p-6">
       <div>
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <p className="mt-1 text-sm text-[var(--text-dim)]">{t("subtitle")}</p>
-        <p className="mt-2 text-xs text-[var(--text-dim)]">{t("notOnMap")}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{t("notOnMap")}</p>
       </div>
 
       {step === 0 && (
-        <div className="space-y-4">
+        <FieldGroup className="gap-4">
           <GpsCapture value={lokasi} onChange={setLokasi} />
           <ReporterFields value={pelapor} onChange={setPelapor} />
           <Button type="button" onClick={() => setStep(1)} className="w-full">{t("next")}</Button>
-        </div>
+        </FieldGroup>
       )}
 
       {step === 1 && (
-        <div className="space-y-4">
+        <FieldGroup className="gap-4">
           <FormFieldRenderer
             fields={fields.filter((f) => !["foto", "video", "addendum", "kebutuhan_mendesak", "akses_kendaraan_roda_empat"].includes(f.field_key))}
             values={jawaban}
@@ -114,11 +116,11 @@ export function ReportPenangananForm() {
             <Button type="button" variant="outline" onClick={() => setStep(0)}>{t("back")}</Button>
             <Button type="button" onClick={() => setStep(2)} className="flex-1">{t("next")}</Button>
           </div>
-        </div>
+        </FieldGroup>
       )}
 
       {step === 2 && (
-        <div className="space-y-4">
+        <FieldGroup className="gap-4">
           <FormFieldRenderer
             fields={fields.filter((f) => ["foto", "video", "addendum"].includes(f.field_key))}
             values={jawaban}
@@ -127,12 +129,21 @@ export function ReportPenangananForm() {
           />
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={() => setStep(1)}>{t("back")}</Button>
-            <Button type="button" disabled={busy} onClick={submit} className="flex-1">{t("submit")}</Button>
+            <Button
+              type="button"
+              disabled={busy}
+              onClick={submit}
+              className="flex-1"
+              data-icon={busy ? "inline-start" : undefined}
+            >
+              {busy ? <Spinner /> : null}
+              {t("submit")}
+            </Button>
           </div>
-        </div>
+        </FieldGroup>
       )}
 
-      {status && <p className="text-sm text-[var(--text-dim)]">{status}</p>}
+      {status ? <FieldError className="text-muted-foreground">{status}</FieldError> : null}
     </div>
   );
 }

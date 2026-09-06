@@ -40,6 +40,19 @@ export const DATA_SOURCES: DataSourceEntry[] = [
       "Data Utama — map layer Kejadian bencana (427 points). ACEH-2023-0005 (Gempa Bumi, Aceh Singkil, lat 1.91 / lon 97.83) is included with coord_quality=offshore_or_out_of_bbox and approx=true — the map does not clamp an Aceh bbox, so the epicentre stays visible if you pan south. Rekapitulasi Tahunan excluded. Integer lon/lat (if any) are flagged truncated_integer; decimals are not invented.",
   },
   {
+    id: "sik-aceh",
+    titleId: "SIK Aceh — master SQLite (pengayaan)",
+    titleEn: "SIK Aceh — master SQLite (enrichment)",
+    source:
+      "Local master sik_aceh.db (operator path: data bencana aceh/database/master). Copied to data/sik/sik_aceh.db (gitignored). Not a public dump.",
+    license:
+      "Operational BPBA / SIK Aceh compilation — do not republish the raw SQLite",
+    date: "Imported on demand via python3 scripts/import-sik-aceh.py (dry-run default)",
+    format: "SQLite → kejadian_bencana payload + disasterEvents GeoJSON",
+    usedFor:
+      "Enrich the existing 427-event bencana layer and /data-bencana table. Join desa only on 10-digit kode_desa_kelurahan. New events use SIK- ids. Does not seed laporan_*, does not write polygons to Postgres, does not invent GPS.",
+  },
+  {
     id: "fasyankes",
     titleId: "Fasilitas kesehatan (fasyankes terdampak)",
     titleEn: "Health facilities (affected fasyankes)",
@@ -264,13 +277,13 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleId: "Batas desa/gampong Aceh",
     titleEn: "Aceh village / gampong borders",
     source:
-      "pararawendy/border-desa-indonesia-geojson (province ACEH) with GADM 4.1 admin4 fill-ins",
+      "Geoportal Aceh Peta_Administrasi_Desa (ADMINISTRASI_AR_DESA) joined to data-bencana-aceh profil_desa on 10-digit kdepum / kode_desa_kelurahan",
     license:
-      "See upstream repos (pararawendy border-desa; GADM for fill-ins)",
-    date: "Assembled 2026-08-22",
-    format: "GeoJSON (~7869 features)",
+      "Geoportal Aceh provincial administrative boundaries; profil attributes from data-bencana-aceh",
+    date: "Geoportal layer 2026-08; profil snapshot 2026-08-23",
+    format: "GeoJSON (6508 official desa polygons)",
     usedFor: "Village-level R3P choropleth geometry",
-    href: "https://github.com/pararawendy/border-desa-indonesia-geojson",
+    href: "https://geoportal.acehprov.go.id/server/rest/services/Hosted/Peta_Administrasi_Desa/FeatureServer/0",
   },
   {
     id: "basemap-carto",
@@ -465,5 +478,61 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     format: "JPEG / MP4",
     usedFor: "Homepage hero, teaser, and transparency section imagery",
     href: "https://unsplash.com/license",
+  },
+];
+
+/**
+ * Footer “Sumber data” column — Data + Designer lock.
+ * Five DB-backed catalog rows first. DIBI / MAGMA / Sipongi / Geoportal
+ * exist in DATA_SOURCES but are not listed here (optional extras only).
+ * Do not invent sources or URLs; hashes match existing `/sumber-data#id`.
+ */
+export const FOOTER_SUMBER_IDS = [
+  "irbi-2025",
+  "compiled-r3p",
+  "publikasi-kegiatan",
+  "publikasi-btt",
+  "analisis-anggaran-2026",
+] as const;
+
+export type FooterSumberId = (typeof FOOTER_SUMBER_IDS)[number];
+
+export type FooterSumberLink = {
+  id: FooterSumberId;
+  labelId: string;
+  labelEn: string;
+  hash: string;
+};
+
+export const FOOTER_SUMBER: FooterSumberLink[] = [
+  {
+    id: "irbi-2025",
+    labelId: "BNPB IRBI",
+    labelEn: "BNPB IRBI",
+    hash: "irbi-2025",
+  },
+  {
+    id: "compiled-r3p",
+    labelId: "Spreadsheet R3P",
+    labelEn: "R3P spreadsheet",
+    hash: "compiled-r3p",
+  },
+  {
+    id: "publikasi-kegiatan",
+    labelId: "BPBA",
+    labelEn: "BPBA",
+    hash: "publikasi-kegiatan",
+  },
+  {
+    id: "publikasi-btt",
+    labelId: "Tanggapi",
+    labelEn: "Tanggapi",
+    hash: "publikasi-btt",
+  },
+  {
+    id: "analisis-anggaran-2026",
+    labelId: "PERGUB APBA",
+    labelEn: "PERGUB APBA",
+    hash: "analisis-anggaran-2026",
   },
 ];

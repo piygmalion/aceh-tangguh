@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ACEH_KABUPATEN } from "@/lib/sik/juklak";
 

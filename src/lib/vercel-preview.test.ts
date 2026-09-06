@@ -69,4 +69,14 @@ describe("Vercel Node preview (not static export)", () => {
     assert.match(assigned, /NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ/);
     assert.doesNotMatch(assigned, /SERVICE_ROLE|LAPORAN_PII|LAPORAN_CRON|WEATHER_CRON/);
   });
+
+  it("defaults Vercel Functions to the Aceh Tangguh Supabase project", () => {
+    const helper = read("src/lib/supabase/public-env.ts");
+    const server = read("src/lib/supabase/server.ts");
+    assert.match(helper, /whojoxrbcdyotrpolgav\.supabase\.co/);
+    assert.match(helper, /ACEH_TANGGUH_SUPABASE_ANON_KEY/);
+    assert.match(server, /supabaseUrl\(\)/);
+    assert.match(server, /supabaseAnonKey\(\)/);
+    assert.doesNotMatch(helper, /SERVICE_ROLE/);
+  });
 });

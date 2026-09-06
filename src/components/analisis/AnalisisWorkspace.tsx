@@ -17,7 +17,7 @@ import {
   YAxis,
 } from "recharts";
 import { AnalisisKabMap } from "@/components/analisis/AnalisisKabMap";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { useAnalisisUrlState } from "@/hooks/useAnalisisUrlState";
 import { presetRange, type AnalisisPreset } from "@/lib/analisis-url";
