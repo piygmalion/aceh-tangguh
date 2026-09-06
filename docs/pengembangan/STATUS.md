@@ -303,6 +303,16 @@ Naskah AN-31 mengunci ImageServer `exportImage` amplop `ACEH_BBOX` → poligon s
 | DATA-20 | data | ETL fixture poligon bahaya | jurnal/DATA-20.md | selesai |
 | FE-26 | frontend | Katalog fill + path static bahaya | jurnal/FE-26.md | selesai |
 
+## Gelombang 22 — IRBI/KRB pada Analisis data
+
+Dua variabel kabupaten × jenis ancaman IRBI/KRB di `/analisis-data`. Analogi historis rumah rusak, bukan prediksi. Angka IRBI/KRB tidak dijumlahkan ke KPI katalog. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menimpa AN-31/FE-26.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-32 | analis | Naskah kab × ancaman + analogi | jurnal/AN-32.md | siap-kode |
+| FE-27 | frontend | Panel Ancaman × riwayat | jurnal/FE-27.md | draf |
+| AN-33 | analis | Uji penerimaan IRBI/KRB analisis | jurnal/AN-33.md | draf |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

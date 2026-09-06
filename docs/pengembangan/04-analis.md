@@ -212,6 +212,14 @@ Jurnal: `jurnal/AN-30.md`. Gelombang 20. Setelah BE-28 / FE-25. Agregat, kosong 
 
 Jurnal: `jurnal/AN-31.md`. Gelombang 21. Tulisan, bukan kode UI/API. Kontrak ImageServer `exportImage` amplop `ACEH_BBOX` → poligon sedang/tinggi. ID data = DATA-20 (DATA-14 sudah registri kab ECC-S2). Jangan menimpa AN-19 / DATA-11 / FE-17. Jangan DATA-4.
 
+### AN-32 — naskah IRBI/KRB pada Analisis data
+
+Jurnal: `jurnal/AN-32.md`. Gelombang 22. Tulisan, bukan kode UI. Dua variabel kab × ancaman; analogi historis; isolasi KPI. Jangan memakai AN-31. Jangan DATA-4.
+
+### AN-33 — uji penerimaan IRBI/KRB analisis
+
+Jurnal: `jurnal/AN-33.md`. Gelombang 22. Setelah FE-27. Pidie Jaya × gempabumi = TINGGI 26,4; copy bukan prediksi; KPI tidak memuat skor IRBI. Tutup STATUS G22. DATA-4 tetap tertahan.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan membuka P2 Juklak.

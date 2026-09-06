@@ -163,6 +163,10 @@ Jurnal: `jurnal/FE-21.md`. `routing.ts` + taut dari daftar kejadian. Jangan meng
 
 `WeatherGrid` yatim; namespace `hazards` yatim; `useLocale()` pada dasbor yang masih `id-ID` keras.
 
+### FE-27 — panel Ancaman × riwayat di Analisis data
+
+Jurnal: `jurnal/FE-27.md`. Gelombang 22. Kontrak AN-32. Select `ancaman`, kartu IRBI/KRB + riwayat + analogi. i18n `analisisData.*`. Jangan menimpa FE-26. Jangan menjumlahkan skor ke KPI. Jangan hardcode judul Indonesia.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Jangan commit. Jika UI berubah, verifikasi di browser sebelum menutup.

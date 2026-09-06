@@ -58,4 +58,30 @@ describe("analisis URL state", () => {
     const range = presetRange("thisYear", new Date(Date.UTC(2026, 8, 6)));
     assert.deepEqual(range, { from: "2026-01-01", to: "2026-12-31" });
   });
+
+  it("accepts a valid KRB ancaman and drops invented codes", () => {
+    const ok = parseAnalisisSearchParams(
+      new URLSearchParams("kab=Pidie%20Jaya&ancaman=gempabumi")
+    );
+    assert.equal(ok.ancaman, "gempabumi");
+    const bad = parseAnalisisSearchParams(new URLSearchParams("ancaman=zona3"));
+    assert.equal(bad.ancaman, "");
+  });
+
+  it("serializes ancaman when set", () => {
+    const params = analisisStateToParams({
+      jenis: "",
+      kab: "Pidie Jaya",
+      kec: "",
+      from: "",
+      to: "",
+      metric: "kejadian",
+      compareKab: "",
+      compareYear: "",
+      view: "",
+      ancaman: "gempabumi",
+    });
+    assert.equal(params.get("ancaman"), "gempabumi");
+    assert.equal(params.get("kab"), "Pidie Jaya");
+  });
 });
