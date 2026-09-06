@@ -1,6 +1,6 @@
 # TDD evidence — IRBI/KRB on Analisis data
 
-Source plan: `/opt/cursor/artifacts/plans/analisis_irbi_krb_53ce1dfa.plan.md` (journal IDs AN-32 / FE-27 / AN-33; plan labels AN-31 / FE-26 / AN-32 collide with Gelombang 21).
+Source plan: `/opt/cursor/artifacts/plans/analisis_irbi_krb_53ce1dfa.plan.md` (journal IDs AN-32 / FE-30 / AN-33; plan labels AN-31 / FE-26 / AN-32 collide with Gelombang 21; FE-27 on main is weather).
 
 ## User journeys
 
@@ -32,7 +32,14 @@ Source plan: `/opt/cursor/artifacts/plans/analisis_irbi_krb_53ce1dfa.plan.md` (j
 
 ## Coverage and gaps
 
-Full `npm test` is the project runner (no separate coverage script). Browser verification of `/id/analisis-data?kab=Pidie%20Jaya&ancaman=gempabumi` and `/en/disaster-analysis` is recorded in FE-27 / AN-33 after GUI testing.
+Full `npm test` is the project runner (no separate coverage script): 515 pass / 0 fail.
+
+Browser 2026-09-06 on `next dev` :3000 (FE-30 / AN-33):
+
+- Gold URL shows TINGGI, 26,4, kode 11.18; history “Tidak ada di katalog”; analog none; KPI Kejadian = 8.
+- `ancaman=banjir` shows catalogue history (8); `likuefaksi` shows “Tidak ada di katalog”; Reset shows no invented class.
+- `/en/disaster-analysis` shows “not a forecast” and TINGGI 26.4.
+- `/id/data-bencana` teaser remains `AnalisisTeaser` and links to `/analisis-data`.
 
 ## Merge evidence
 
