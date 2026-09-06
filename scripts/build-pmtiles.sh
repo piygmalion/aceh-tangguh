@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# Rebuild overlay vector PMTiles for R3P kab + village choropleth layers.
+# Rebuild overlay vector PMTiles for R3P kecamatan + village choropleth layers.
 # Requires: tippecanoe (apt install tippecanoe)
 # Overlay archives only — Carto raster stays the default basemap.
-# tippecanoe --layer must stay r3p / kecamatan / village / irbi (MapViewport source-layer).
+# tippecanoe --layer must stay kecamatan / village / irbi (MapViewport source-layer).
+# r3p-kab.pmtiles is retired (LOD0 is kecamatan). Offline rebuild:
+#   npm run build:r3p-kab-tiles  (deprecated; not required).
 # After build, check:tiles enforces 500 KB per MVT tile + village archive < 4 MB
 # and kecamatan archive < 2 MB.
 set -euo pipefail
@@ -10,20 +12,6 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 AREAS="$ROOT/public/fixtures/areas"
 OUT="$ROOT/public/tiles"
 mkdir -p "$OUT"
-
-echo "==> Building r3p-kab.pmtiles"
-tippecanoe \
-  -o "$OUT/r3p-kab.pmtiles" \
-  --force \
-  --layer=r3p \
-  --name="Aceh R3P kab" \
-  --attribution="Aceh Tangguh / Compiled R3P + GADM" \
-  --minimum-zoom=0 \
-  --maximum-zoom=9 \
-  --drop-densest-as-needed \
-  --extend-zooms-if-still-dropping \
-  -y name -y value -y bucket -y kode_kab -y rumah_rr -y rumah_rs -y rumah_rb \
-  "$AREAS/r3pDistribution.geojson"
 
 echo "==> Building kecamatan-r3p.pmtiles"
 # Dissolve of villageDistribution by kode_kecamatan (6-digit BPS) only.
@@ -35,7 +23,7 @@ tippecanoe \
   --layer=kecamatan \
   --name="Aceh R3P kecamatan" \
   --attribution="Aceh Tangguh / dissolve villageDistribution by kode_kecamatan" \
-  --minimum-zoom=5 \
+  --minimum-zoom=0 \
   --maximum-zoom=11 \
   --drop-densest-as-needed \
   --extend-zooms-if-still-dropping \

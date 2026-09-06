@@ -27,7 +27,6 @@ export const ACEH_OSM_REQUIRED_LAYERS = [
 export const ACEH_OSM_OPTIONAL_LAYERS = ["landuse", "park"] as const;
 
 export const OVERLAY_PMTILES_FILES = {
-  kab: "r3p-kab.pmtiles",
   kecamatan: "kecamatan-r3p.pmtiles",
   village: "village-r3p.pmtiles",
   irbi: "irbi-2025.pmtiles",

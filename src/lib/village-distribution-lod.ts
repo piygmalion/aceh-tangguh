@@ -5,13 +5,16 @@ import type { VillageClickSelection } from "@/lib/profil-desa";
 import { overlayPmtilesUrl } from "@/lib/tiles-url";
 import type { AreaLayerKey } from "@/lib/types";
 
-/** Below this zoom, villageDistribution paints r3p-kab only. */
-export const KECAMATAN_LOD_MIN_ZOOM = 9;
+/**
+ * Kecamatan overview has no min zoom — r3p-kab LOD0 is retired.
+ * Stretch kecamatan-r3p to cover z<11 (including former kab band z<9).
+ */
+export const KECAMATAN_LOD_MIN_ZOOM = 0;
 
 /** Exclusive max zoom for kecamatan tiles (village mesh starts here). */
 export const KECAMATAN_LOD_MAX_ZOOM = 11;
 
-/** Desa fill starts here — no village mesh at z9–10. */
+/** Desa fill starts here. Below this zoom the overlay is kecamatan only. */
 export const VILLAGE_LOD_MIN_ZOOM = 11;
 
 /** Desa outlines start with the village-fill switch so polygons are not a blob. */
@@ -38,12 +41,7 @@ export function isAdminLodArea(
   return key === "villageDistribution" || key === "r3pDistribution";
 }
 
-/** z<9 admin-LOD paints r3p-kab. */
-export const PMTILES_KAB = {
-  url: overlayPmtilesUrl("r3p-kab.pmtiles"),
-  sourceLayer: "r3p",
-} as const;
-
+/** z<11 admin-LOD paints kecamatan-r3p (kab archive retired). */
 export const PMTILES_KECAMATAN = {
   url: overlayPmtilesUrl("kecamatan-r3p.pmtiles"),
   sourceLayer: "kecamatan",
@@ -54,7 +52,8 @@ export const PMTILES_VILLAGE = {
   sourceLayer: "village",
 } as const;
 
-export type VillageLodBand = "kab" | "kecamatan" | "village";
+/** Overview band is kecamatan (not the retired kab archive). */
+export type VillageLodBand = "kecamatan" | "village";
 
 export type PmtilesAreaMeta = {
   url: string;
@@ -70,7 +69,6 @@ export type VillageLodFocus = {
 export type LngLatBoundsTuple = [[number, number], [number, number]];
 
 export function villageLodBand(zoom: number): VillageLodBand {
-  if (zoom < KECAMATAN_LOD_MIN_ZOOM) return "kab";
   if (zoom < VILLAGE_LOD_MIN_ZOOM) return "kecamatan";
   return "village";
 }
@@ -83,16 +81,13 @@ export function isVillageLodZoom(zoom: number): boolean {
   return villageLodBand(zoom) === "village";
 }
 
-/** AreaProfilPanel opens only on the desa mesh, not kab/kecamatan choropleth. */
+/** AreaProfilPanel opens only on the desa mesh, not kecamatan overview. */
 export function villagePanelClickEnabled(band: VillageLodBand): boolean {
   return band === "village";
 }
 
 export function villageDistributionTiles(zoom: number): PmtilesAreaMeta {
-  const band = villageLodBand(zoom);
-  if (band === "kab") return PMTILES_KAB;
-  if (band === "kecamatan") return PMTILES_KECAMATAN;
-  return PMTILES_VILLAGE;
+  return villageLodBand(zoom) === "kecamatan" ? PMTILES_KECAMATAN : PMTILES_VILLAGE;
 }
 
 /**
@@ -358,11 +353,14 @@ export function unionBounds(
   ];
 }
 
+/**
+ * Kab click is still fitBounds-only. Overview band is kecamatan, not the
+ * retired r3p-kab archive — only features with `level=kab` count as kab.
+ * Boolean `false` means overview (kecamatan); `true` means village mesh.
+ */
 export function isKabAreaFeature(
   props: Record<string, unknown> | null | undefined,
-  lod: VillageLodBand | boolean
+  _lod: VillageLodBand | boolean
 ): boolean {
-  const band: VillageLodBand = typeof lod === "boolean" ? (lod ? "village" : "kab") : lod;
-  if (band === "kab") return true;
   return String(props?.level ?? "") === "kab";
 }

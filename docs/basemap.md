@@ -67,22 +67,19 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 
 ## Overlay PMTiles (bukan basemap)
 
-`public/tiles/*.pmtiles` adalah **overlay vektor** (R3P kab, kecamatan, village, IRBI) yang dibangun tippecanoe dari `public/fixtures/areas/*.geojson`. Geometri tetap di disk — **bukan PostGIS**. **Carto raster tetap basemap default.** Jangan ganti default ke OpenFreeMap atau self-host planet PMTiles. Keputusan yang tetap ditolak: Cesium/globe, terrain DEM, Mapbox token, TiTiler di runtime. GitHub Pages auto-deploy tetap mati; workflow overlay tidak menghidupkannya.
+`public/tiles/*.pmtiles` adalah **overlay vektor** (R3P kecamatan, village, IRBI) yang dibangun tippecanoe dari `public/fixtures/areas/*.geojson`. Geometri tetap di disk — **bukan PostGIS**. **Carto raster tetap basemap default.** Jangan ganti default ke OpenFreeMap atau self-host planet PMTiles. Keputusan yang tetap ditolak: Cesium/globe, terrain DEM, Mapbox token, TiTiler di runtime. GitHub Pages auto-deploy tetap mati; workflow overlay tidak menghidupkannya.
 
 `MapViewport` membaca `source-layer` yang sama dengan `tippecanoe --layer`:
 
 | Arsip | Source-layer | Sumber |
 |---|---|---|
-| `r3p-kab.pmtiles` | `r3p` | `r3pDistribution.geojson` |
 | `kecamatan-r3p.pmtiles` | `kecamatan` | `kecamatanDistribution.geojson` (dissolve by `kode_kecamatan`) |
 | `village-r3p.pmtiles` | `village` | `villageDistribution.geojson` |
 | `irbi-2025.pmtiles` | `irbi` | `irbi2025.geojson` |
 
-`villageDistribution` uses three archives as zoom LOD (tiles only, no remount, no retile): **z<9** paints `r3p-kab` only; **z 9–10** paints `kecamatan-r3p` only (no village mesh); **z≥11** paints `village-r3p` (desa fill + outlines). After a kab/kec selection, kecamatan and village features filter on existing `kode_kecamatan` (6-digit) / `kode_kab` / `kode_kabupaten` / `kode_desa_kelurahan` — never kecamatan name. Leftovers without `kode_kecamatan` stay **out** of the kecamatan dissolve (no invented codes) and remain on village tiles only. Overlay fill/outline/highlight use `beforeId=marker-clusters` when that layer exists, else `basemap-label-place`; Carto raster omits `beforeId` when neither is mounted.
+`villageDistribution` / `r3pDistribution` use two archives as zoom LOD (tiles only, no remount, no retile): **z<11** paints `kecamatan-r3p` only (source-layer `kecamatan`; covers former kab overview); **z≥11** paints `village-r3p` (desa fill + outlines). `r3p-kab.pmtiles` is **retired** — it was an overlay choropleth for admin LOD at z<9, not the basemap. After a kab/kec selection, kecamatan and village features filter on existing `kode_kecamatan` (6-digit) / `kode_kab` / `kode_kabupaten` / `kode_desa_kelurahan` — never kecamatan name. Leftovers without `kode_kecamatan` stay **out** of the kecamatan dissolve (no invented codes) and remain on village tiles only. Overlay fill/outline/highlight use `beforeId=marker-clusters` when that layer exists, else `basemap-label-place`; Carto raster omits `beforeId` when neither is mounted.
 
-**Jangan hapus `public/tiles/r3p-kab.pmtiles`.** LOD z<9 masih memakainya (`village-distribution-lod.ts`). Menghapusnya mematahkan choropleth kab di overview. **Pensiun r3p-kab adalah follow-up** setelah ada pengganti LOD0 (dissolve kab by `kode_kabupaten`) atau GO eksplisit untuk meregangkan kecamatan ke zoom rendah.
-
-Overlay URLs default ke `/tiles/...`. Set `NEXT_PUBLIC_TILES_BASE_URL` (prefix publik S3/R2, tanpa trailing slash) jika arsip di-host di object storage — filename tetap sama (`r3p-kab.pmtiles`, …). Choropleth tetap di disk kecuali URL itu diisi.
+Overlay URLs default ke `/tiles/...`. Set `NEXT_PUBLIC_TILES_BASE_URL` (prefix publik S3/R2, tanpa trailing slash) jika arsip di-host di object storage — filename tetap sama (`kecamatan-r3p.pmtiles`, …). Choropleth tetap di disk kecuali URL itu diisi.
 
 Rebuild kecamatan polygons with `node scripts/dissolve-kecamatan-distribution.mjs` (group key = `kode_kecamatan` only; bucket = sum `rumah_rr+rumah_rs+rumah_rb` then the same desa terciles t1=106 / t2=1184). Do not seed `area_feature_meta` from this dissolve.
 
@@ -149,7 +146,7 @@ Workflow `.github/workflows/sync-tiles-s3.yml` adalah `workflow_dispatch` saja �
 
 ## CDN verify runbook (opt-in, Stage 3)
 
-Production blocking hari ini adalah ops (secret + URL publik + `aceh-osm.pmtiles` belum dibangun), bukan kode sync. **Carto tetap default.** Preset merek Aceh OSM opsional. Jangan hapus `r3p-kab.pmtiles` (LOD z<9). Jangan commit artefak `aceh-osm.pmtiles` (gitignored). Verify ini **lokal/manual** — jangan pasang ke CI terjadwal agar tidak false-red saat URL belum diisi.
+Production blocking hari ini adalah ops (secret + URL publik + `aceh-osm.pmtiles` belum dibangun), bukan kode sync. **Carto tetap default.** Preset merek Aceh OSM opsional. `r3p-kab.pmtiles` is retired (LOD0 is kecamatan). Jangan commit artefak `aceh-osm.pmtiles` (gitignored). Verify ini **lokal/manual** — jangan pasang ke CI terjadwal agar tidak false-red saat URL belum diisi.
 
 CORS bucket/CDN harus mengizinkan **GET, HEAD, Range** dari origin aplikasi (`Access-Control-Allow-Origin` = origin app atau `*`; `Access-Control-Allow-Headers: Range`; expose `Content-Range` / `Accept-Ranges`). Range 206 lebih baik; HTTP 200 (badan penuh) diterima.
 
@@ -157,7 +154,7 @@ CORS bucket/CDN harus mengizinkan **GET, HEAD, Range** dari origin aplikasi (`Ac
 2. `npm run sync:tiles -- --dry-run` dengan `TILES_S3_*` + `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` di shell lokal (nilai tidak ditulis di git).
 3. Isi GitHub Actions secrets untuk `.github/workflows/sync-tiles-s3.yml` (`TILES_S3_ENDPOINT`, `TILES_S3_BUCKET`, `TILES_S3_PREFIX`, `TILES_S3_REGION`, `TILES_S3_ACCESS_KEY_ID`, `TILES_S3_SECRET_ACCESS_KEY`). Workflow **dispatch saja** — jangan tambah cron/push upload.
 4. Isi Vercel `NEXT_PUBLIC_TILES_BASE_URL` (prefix publik, tanpa trailing slash). Opsional: `NEXT_PUBLIC_ACEH_OSM_PMTILES` (URL https publik atau `/tiles/aceh-osm.pmtiles`).
-5. `npm run verify:tiles-cdn` — HEAD 2xx + Range `bytes=0-16383` (206/200) untuk `r3p-kab.pmtiles`, `kecamatan-r3p.pmtiles`, `village-r3p.pmtiles`, `irbi-2025.pmtiles`. Tanpa `NEXT_PUBLIC_TILES_BASE_URL`: exit 0, `skip — local /tiles default`. Tidak butuh kredensial AWS.
+5. `npm run verify:tiles-cdn` — HEAD 2xx + Range `bytes=0-16383` (206/200) untuk `kecamatan-r3p.pmtiles`, `village-r3p.pmtiles`, `irbi-2025.pmtiles`. Tanpa `NEXT_PUBLIC_TILES_BASE_URL`: exit 0, `skip — local /tiles default`. Tidak butuh kredensial AWS.
 
 ## Operasi
 

@@ -6,9 +6,7 @@ import {
   BASEMAP_LABEL_PLACE_LAYER,
   KAB_OUTLINE_PAINT,
   KECAMATAN_LOD_MAX_ZOOM,
-  KECAMATAN_LOD_MIN_ZOOM,
   MARKER_CLUSTERS_LAYER,
-  PMTILES_KAB,
   PMTILES_KECAMATAN,
   PMTILES_VILLAGE,
   VILLAGE_LOD_MIN_ZOOM,
@@ -94,23 +92,23 @@ function stringify(value: unknown): string {
 }
 
 describe("villageDistribution LOD tiles", () => {
-  it("uses r3p-kab below z9, kecamatan-r3p at z9–10, village-r3p at z11+", () => {
-    assert.equal(KECAMATAN_LOD_MIN_ZOOM, 9);
+  it("uses kecamatan-r3p below z11 and village-r3p at z11+ (r3p-kab retired)", () => {
     assert.equal(KECAMATAN_LOD_MAX_ZOOM, 11);
     assert.equal(VILLAGE_LOD_MIN_ZOOM, 11);
-    assert.equal(villageLodBand(8.99), "kab");
+    assert.equal(villageLodBand(7), "kecamatan");
+    assert.equal(villageLodBand(8.99), "kecamatan");
     assert.equal(villageLodBand(9), "kecamatan");
     assert.equal(villageLodBand(10.99), "kecamatan");
     assert.equal(villageLodBand(11), "village");
+    assert.equal(isKecamatanLodZoom(7), true);
     assert.equal(isKecamatanLodZoom(9), true);
     assert.equal(isKecamatanLodZoom(11), false);
     assert.equal(isVillageLodZoom(8.99), false);
-    assert.equal(isVillageLodZoom(9), false);
     assert.equal(isVillageLodZoom(10.99), false);
     assert.equal(isVillageLodZoom(11), true);
-    assert.deepEqual(villageDistributionTiles(7), PMTILES_KAB);
-    assert.equal(villageDistributionTiles(7).url, "/tiles/r3p-kab.pmtiles");
-    assert.equal(villageDistributionTiles(7).sourceLayer, "r3p");
+    assert.deepEqual(villageDistributionTiles(7), PMTILES_KECAMATAN);
+    assert.equal(villageDistributionTiles(7).url, "/tiles/kecamatan-r3p.pmtiles");
+    assert.equal(villageDistributionTiles(7).sourceLayer, "kecamatan");
     assert.deepEqual(villageDistributionTiles(9), PMTILES_KECAMATAN);
     assert.equal(villageDistributionTiles(10).sourceLayer, "kecamatan");
     assert.deepEqual(villageDistributionTiles(11), PMTILES_VILLAGE);
@@ -159,17 +157,16 @@ describe("overlay beforeId", () => {
 });
 
 describe("village LOD focus + kode filter", () => {
-  it("treats r3p features as kab clicks only on the kab LOD band", () => {
-    assert.equal(isKabAreaFeature(ACEH_BARAT_KAB, "kab"), true);
+  it("treats level=kab as fitBounds-only; overview band is kecamatan, not kab archive", () => {
+    assert.equal(isKabAreaFeature(ACEH_BARAT_KAB, "kecamatan"), true);
     assert.equal(isKabAreaFeature(ACEH_BARAT_KAB, false), true);
     assert.equal(isKabAreaFeature(ACEH_BARAT_KAB, "village"), true);
     assert.equal(isKabAreaFeature(CODED_DESA, "village"), false);
     assert.equal(isKabAreaFeature(CODED_DESA, true), false);
-    assert.equal(isKabAreaFeature(CODED_DESA, "kab"), true);
+    assert.equal(isKabAreaFeature(CODED_DESA, "kecamatan"), false);
     assert.equal(isKabAreaFeature(CODED_KECAMATAN, "kecamatan"), false);
-    assert.equal(isKabAreaFeature(CODED_KECAMATAN, "kab"), true);
+    assert.equal(isKabAreaFeature(CODED_KECAMATAN, false), false);
     assert.equal(isKabAreaFeature(CODED_KECAMATAN, "village"), false);
-    assert.equal(villagePanelClickEnabled("kab"), false);
     assert.equal(villagePanelClickEnabled("kecamatan"), false);
     assert.equal(villagePanelClickEnabled("village"), true);
   });

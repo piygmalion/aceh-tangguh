@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-"""Build public/tiles/r3p-kab.pmtiles from r3pDistribution.geojson.
+"""DEPRECATED (offline only). Build public/tiles/r3p-kab.pmtiles.
 
-Preferred path is tippecanoe (scripts/build-pmtiles.sh). This is the Windows
+r3p-kab is retired from the live overlay LOD. Not called from
+`npm run build:tiles`. Keep for offline fixture rebuilds.
+
+Preferred path was tippecanoe (scripts/build-pmtiles.sh). This is the Windows
 fallback when tippecanoe is not installed. Source-layer must stay `r3p`.
 
 Requires: shapely, mapbox-vector-tile, pmtiles

@@ -144,14 +144,13 @@ npm run check:tiles
 
 Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
 
-- `public/tiles/r3p-kab.pmtiles` — `r3p` — from `fixtures/areas/r3pDistribution.geojson`
 - `public/tiles/kecamatan-r3p.pmtiles` — `kecamatan` — from `fixtures/areas/kecamatanDistribution.geojson` (dissolve by `kode_kecamatan`)
 - `public/tiles/village-r3p.pmtiles` — `village` — from `fixtures/areas/villageDistribution.geojson` (simplified)
 - `public/tiles/irbi-2025.pmtiles` — `irbi` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
 
-`villageDistribution` LOD: **z<9** kab, **z 9–10** kecamatan, **z≥11** desa. Rebuild the dissolve with `node scripts/dissolve-kecamatan-distribution.mjs` (requires shapely).
+`villageDistribution` / `r3pDistribution` LOD: **z<11** kecamatan only, **z≥11** desa. `r3p-kab.pmtiles` is retired (was kab choropleth at z<9). Rebuild the dissolve with `node scripts/dissolve-kecamatan-distribution.mjs` (requires shapely). Offline kab dissolve (`npm run dissolve:r3p-kab`) is deprecated and not part of `build:tiles`.
 
-`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS. Set `NEXT_PUBLIC_TILES_BASE_URL` to serve the same filenames from S3/R2. **Do not delete `r3p-kab.pmtiles`** — villageDistribution LOD z<9 still paints it. Retiring that archive is a follow-up after an LOD0 replacement.
+`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS. Set `NEXT_PUBLIC_TILES_BASE_URL` to serve the same filenames from S3/R2.
 
 Optional Aceh OSM basemap extract (brand presets only, never the default):
 

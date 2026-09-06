@@ -5,11 +5,11 @@
  * Checks Mapbox vector tiles *inside* committed archives under public/tiles/.
  * Per-tile limit: 500 KB (Mapbox vector tile payload). Archive size is not that
  * limit — village-r3p.pmtiles ~2.9 MB is fine. Second gate: that archive < 4 MB.
- * Known overlays must keep MapViewport source-layers: r3p, kecamatan, village, irbi.
+ * Known overlays must keep MapViewport source-layers: kecamatan, village, irbi.
  * Optional Aceh OSM basemap extract (`aceh-osm.pmtiles`) is checked for header +
  * OpenMapTiles source-layers only when present — never rebuilt here, never a
  * planet archive. Carto raster remains the default basemap. Geometry stays on
- * disk, not PostGIS. r3p-kab.pmtiles stays required (villageDistribution LOD z<9).
+ * disk, not PostGIS. r3p-kab.pmtiles is retired (LOD0 is kecamatan-r3p).
  *
  * Usage:
  *   node scripts/check-tiles.mjs
@@ -32,8 +32,6 @@ const DEFAULT_LIMIT_BYTES = 500 * 1024;
 
 /** @type {Record<string, { sourceLayer: string, maxArchiveBytes?: number }>} */
 const EXPECTED_OVERLAYS = {
-  // Required. villageDistribution LOD z<9 paints this archive — do not delete.
-  "r3p-kab.pmtiles": { sourceLayer: "r3p" },
   "kecamatan-r3p.pmtiles": {
     sourceLayer: "kecamatan",
     maxArchiveBytes: 2 * 1024 * 1024,
@@ -291,8 +289,8 @@ if (cliPaths.length === 0) {
     failed += 1;
     console.log(`==> public/tiles/${name}`);
     console.log(
-      name === "r3p-kab.pmtiles"
-        ? "    FAIL  required overlay missing — do not delete; villageDistribution LOD z<9 still paints r3p-kab"
+      name === "kecamatan-r3p.pmtiles" || name === "village-r3p.pmtiles" || name === "irbi-2025.pmtiles"
+        ? `    FAIL  required overlay missing — ${name} is required (kecamatan/village/irbi)`
         : "    FAIL  required overlay missing",
     );
     console.log("");
@@ -410,7 +408,7 @@ if (failed) {
   process.exit(1);
 }
 console.log(
-  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; required archives including r3p-kab present; village/kecamatan archive budgets and source-layers ok).`,
+  `All overlay PMTiles passed (per-tile ≤ ${formatBytes(LIMIT_BYTES)}; required archives kecamatan/village/irbi present; village/kecamatan archive budgets and source-layers ok).`,
 );
 if (warned) {
   console.log(`${warned} warning(s) — see above.`);
