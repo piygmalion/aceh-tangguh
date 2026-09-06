@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSuperAdminApi } from "@/lib/auth/admin";
 import { rejectCrossOrigin } from "@/lib/security/origin";
 import { ACEH_KABUPATEN } from "@/lib/sik/juklak";
-import { authorizeStaffInvite, isDuplicateKabSlot } from "@/lib/sik/staff-invite";
+import {
+  authorizeStaffInvite,
+  inviteStatusFromAuthUser,
+  isDuplicateKabSlot,
+} from "@/lib/sik/staff-invite";
 import { createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -36,19 +40,23 @@ export async function GET() {
   });
   if (usersError) return NextResponse.json({ error: usersError.message }, { status: 502 });
 
-  const emailById = new Map(
-    (usersPage.users ?? []).map((user) => [user.id, user.email ?? null]),
-  );
+  const userById = new Map((usersPage.users ?? []).map((user) => [user.id, user]));
 
   const slots = ACEH_KABUPATEN.map((kab) => {
     const row = (profiles ?? []).find((item) => item.kode_kabupaten === kab.kode);
+    const user = row ? userById.get(row.user_id) : undefined;
+    const occupied = Boolean(row);
     return {
       kode: kab.kode,
       nama: kab.nama,
-      occupied: Boolean(row),
+      occupied,
       userId: row?.user_id ?? null,
       displayName: row?.display_name ?? null,
-      email: row ? (emailById.get(row.user_id) ?? null) : null,
+      email: occupied ? (user?.email ?? null) : null,
+      inviteStatus: inviteStatusFromAuthUser({
+        occupied,
+        lastSignInAt: user?.last_sign_in_at ?? null,
+      }),
     };
   });
 
@@ -117,6 +125,7 @@ export async function POST(req: NextRequest) {
         userId: invited.data.user.id,
         displayName: decided.invite.displayName,
         email: decided.invite.email,
+        inviteStatus: inviteStatusFromAuthUser({ occupied: true, lastSignInAt: null }),
       },
     },
     { status: 201 },

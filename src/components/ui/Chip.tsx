@@ -5,6 +5,9 @@ const tones = {
   neutral:
     "bg-[var(--bg-muted)] text-[var(--text)] border border-[var(--border)]",
   ok: "bg-[var(--primary-dim)] text-[var(--primary)] border border-transparent",
+  /** Pending / in-scope status — ink on forest-200, not a leftover green-yellow token. */
+  forest:
+    "bg-[var(--forest-200)] text-[var(--ink)] border border-[var(--forest-400)]",
   warn: "bg-[var(--warn-dim)] text-[var(--warn)] border border-transparent",
   danger: "bg-[var(--danger-dim)] text-[var(--danger)] border border-transparent",
   info: "bg-[var(--info-dim)] text-[var(--info)] border border-transparent",

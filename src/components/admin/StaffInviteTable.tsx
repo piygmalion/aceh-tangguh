@@ -3,8 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Chip } from "@/components/ui/Chip";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { ACEH_KABUPATEN } from "@/lib/sik/juklak";
+import type { StaffInviteStatus } from "@/lib/sik/staff-invite";
+import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
 
 type Slot = {
   kode: string;
@@ -12,6 +17,7 @@ type Slot = {
   occupied: boolean;
   email: string | null;
   displayName: string | null;
+  inviteStatus?: StaffInviteStatus;
 };
 
 const EMPTY_SLOTS: Slot[] = ACEH_KABUPATEN.map((kab) => ({
@@ -20,7 +26,12 @@ const EMPTY_SLOTS: Slot[] = ACEH_KABUPATEN.map((kab) => ({
   occupied: false,
   email: null,
   displayName: null,
+  inviteStatus: "vacant",
 }));
+
+function slotStatus(slot: Slot): StaffInviteStatus {
+  return slot.inviteStatus ?? (slot.occupied ? "pending" : "vacant");
+}
 
 export function StaffInviteTable() {
   const t = useTranslations("admin");
@@ -76,16 +87,16 @@ export function StaffInviteTable() {
     await load();
   }
 
-  const empty = slots.filter((slot) => !slot.occupied);
+  const vacant = slots.filter((slot) => !slot.occupied);
   const filled = slots.filter((slot) => slot.occupied).length;
 
   return (
-    <GlassPanel className="p-4 sm:p-6">
-      <p className="text-sm text-[var(--text-dim)]">
+    <GlassPanel className="flex flex-col gap-5 p-4 sm:p-6">
+      <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
         {t("staffProgress", { filled, total: 23 })}
       </p>
-      <form className="mt-4 grid gap-3 sm:grid-cols-2" onSubmit={(event) => void invite(event)}>
-        <label className="flex flex-col gap-1 text-sm">
+      <form className="grid gap-3 sm:grid-cols-2" onSubmit={(event) => void invite(event)}>
+        <label className={cn("flex flex-col gap-1", TYPE_FLOOR_CLASS)}>
           {t("staffKabupaten")}
           <select
             className="h-11 rounded-xl border border-[var(--glass-border)] bg-transparent px-3"
@@ -93,14 +104,14 @@ export function StaffInviteTable() {
             onChange={(event) => setKode(event.target.value)}
             required
           >
-            {empty.map((slot) => (
+            {vacant.map((slot) => (
               <option key={slot.kode} value={slot.kode}>
                 {slot.kode} · {slot.nama}
               </option>
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className={cn("flex flex-col gap-1", TYPE_FLOOR_CLASS)}>
           {t("staffEmail")}
           <input
             type="email"
@@ -111,7 +122,7 @@ export function StaffInviteTable() {
             autoComplete="off"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm sm:col-span-2">
+        <label className={cn("flex flex-col gap-1 sm:col-span-2", TYPE_FLOOR_CLASS)}>
           {t("staffDisplayName")}
           <input
             type="text"
@@ -121,14 +132,39 @@ export function StaffInviteTable() {
           />
         </label>
         <div className="sm:col-span-2">
-          <Button type="submit" size="sm" disabled={!empty.length || !kode || !email.trim() || Boolean(pending)}>
+          <Button
+            type="submit"
+            size="sm"
+            variant="accent"
+            disabled={!vacant.length || !kode || !email.trim() || Boolean(pending)}
+          >
             {pending ? t("staffInviting") : t("staffInvite")}
           </Button>
         </div>
       </form>
-      {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
-      <div className="mt-5 overflow-x-auto">
-        <table className="min-w-full text-left text-sm">
+      {error ? <p className={cn("text-[var(--danger)]", TYPE_FLOOR_CLASS)}>{error}</p> : null}
+      {!loading && filled === 0 ? (
+        <Empty className="border border-dashed" data-testid="staff-empty">
+          <EmptyHeader className="flex flex-col gap-2">
+            <EmptyTitle>{t("staffEmptyTitle")}</EmptyTitle>
+            <EmptyDescription className={TYPE_FLOOR_CLASS}>
+              {t("staffEmptyDescription")}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : null}
+      {!loading && vacant.length === 0 ? (
+        <Empty className="border border-dashed" data-testid="staff-full">
+          <EmptyHeader className="flex flex-col gap-2">
+            <EmptyTitle>{t("staffFullTitle")}</EmptyTitle>
+            <EmptyDescription className={TYPE_FLOOR_CLASS}>
+              {t("staffFullDescription")}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : null}
+      <div className="overflow-x-auto">
+        <table className={cn("min-w-full text-left", TYPE_FLOOR_CLASS)}>
           <thead>
             <tr className="text-[var(--text-dim)]">
               <th className="py-2 pr-3 font-medium">{t("staffColKode")}</th>
@@ -144,15 +180,37 @@ export function StaffInviteTable() {
                 </td>
               </tr>
             ) : (
-              slots.map((slot) => (
-                <tr key={slot.kode} className="border-t border-[var(--glass-border)]">
-                  <td className="py-2 pr-3 font-mono">{slot.kode}</td>
-                  <td className="py-2 pr-3">{slot.nama}</td>
-                  <td className="py-2">
-                    {slot.occupied ? slot.email || t("staffInvited") : t("staffVacant")}
-                  </td>
-                </tr>
-              ))
+              slots.map((slot) => {
+                const status = slotStatus(slot);
+                return (
+                  <tr key={slot.kode} className="border-t border-[var(--glass-border)]">
+                    <td className="py-2 pr-3 font-mono">{slot.kode}</td>
+                    <td className="py-2 pr-3">{slot.nama}</td>
+                    <td className="py-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {status === "pending" ? (
+                          <Chip tone="forest" className={TYPE_FLOOR_CLASS}>
+                            {t("staffPending")}
+                          </Chip>
+                        ) : null}
+                        {status === "active" ? (
+                          <Chip tone="ok" className={TYPE_FLOOR_CLASS}>
+                            {t("staffActive")}
+                          </Chip>
+                        ) : null}
+                        {status === "vacant" ? (
+                          <Chip tone="neutral" className={TYPE_FLOOR_CLASS}>
+                            {t("staffVacant")}
+                          </Chip>
+                        ) : null}
+                        {slot.email ? (
+                          <span className="text-[var(--text-dim)]">{slot.email}</span>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
