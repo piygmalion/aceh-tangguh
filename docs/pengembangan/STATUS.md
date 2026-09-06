@@ -357,6 +357,14 @@ Kartu Peringatan Dini: lantai 13px, kontras kicker/tautan, tinggi 20rem + gulir 
 | --- | --- | --- | --- | --- |
 | FE-35 | frontend | Type floor + kontras PD + CTA WeatherNext | jurnal/FE-35.md | selesai |
 
+## GO C #2 — tile CDN verify + runbook (lanjutan Stage 3 / #66)
+
+Scaffold S3/R2 sudah di main. Tiket ini hanya verify publik + runbook ops. Carto tetap default. `r3p-kab.pmtiles` tetap. `aceh-osm.pmtiles` tidak di-build/commit. Sync tetap `workflow_dispatch`. `npm test` 586 lulus; `check:tiles` hijau. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| KOORD-GO-C2 | koordinator | Opt-in `verify:tiles-cdn` + runbook 5 langkah | jurnal/KOORD-GO-C2.md | selesai |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).

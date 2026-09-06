@@ -24,6 +24,7 @@
     "check:tiles": "node scripts/check-tiles.mjs",
     "refresh:sentinel": "node scripts/refresh-sentinel-status.mjs",
     "verify:basemap": "node scripts/verify-basemap.mjs",
+    "verify:tiles-cdn": "node scripts/verify-tiles-cdn.mjs",
     "seed:area-meta": "bun scripts/seed-area-meta-from-fixtures.mjs",
     "seed:village-area-meta": "node scripts/seed-village-area-meta.mjs",
     "update:profil-sheet": "node scripts/update-profil-from-sheet.mjs",
