@@ -1,6 +1,6 @@
 "use client";
 
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
 import { overlayVectorApiPath } from "@/lib/overlay-paths";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -109,9 +109,22 @@ export async function fetchOverlayGeojson(
   });
 }
 
-export function useLiveOverlayHealth(
-  overlays: OverlayLayerKey[],
-): Partial<Record<LiveOverlayStatusKey, OverlayHealth>> {
+export function liveOverlayKeysForRetry(
+  overlays: readonly OverlayLayerKey[],
+): LiveOverlayStatusKey[] {
+  return LIVE_OVERLAY_STATUS_KEYS.filter((key) => overlays.includes(key));
+}
+
+export type LiveOverlayStatus = {
+  healthByKey: Partial<Record<LiveOverlayStatusKey, OverlayHealth>>;
+  alert: OverlayHealth | null;
+  pending: boolean;
+  fetching: boolean;
+  refetch: () => void;
+};
+
+export function useLiveOverlayStatus(overlays: OverlayLayerKey[]): LiveOverlayStatus {
+  const queryClient = useQueryClient();
   const queries = useQueries({
     queries: LIVE_OVERLAY_STATUS_KEYS.map((key) => ({
       queryKey: qk.overlay(key),
@@ -121,17 +134,38 @@ export function useLiveOverlayHealth(
     })),
   });
 
-  const out: Partial<Record<LiveOverlayStatusKey, OverlayHealth>> = {};
+  const healthByKey: Partial<Record<LiveOverlayStatusKey, OverlayHealth>> = {};
+  let pending = false;
+  let fetching = false;
   LIVE_OVERLAY_STATUS_KEYS.forEach((key, index) => {
     if (!overlays.includes(key)) return;
     const query = queries[index];
+    if (query.isPending) pending = true;
+    if (query.isFetching) fetching = true;
     if (query.isError) {
-      out[key] = "failed";
+      healthByKey[key] = "failed";
       return;
     }
-    if (query.data) out[key] = query.data.health;
+    if (query.data) healthByKey[key] = query.data.health;
   });
-  return out;
+
+  return {
+    healthByKey,
+    alert: strongestLiveOverlayAlert(healthByKey),
+    pending,
+    fetching,
+    refetch: () => {
+      for (const key of liveOverlayKeysForRetry(overlays)) {
+        void queryClient.invalidateQueries({ queryKey: qk.overlay(key) });
+      }
+    },
+  };
+}
+
+export function useLiveOverlayHealth(
+  overlays: OverlayLayerKey[],
+): Partial<Record<LiveOverlayStatusKey, OverlayHealth>> {
+  return useLiveOverlayStatus(overlays).healthByKey;
 }
 
 export function strongestLiveOverlayAlert(

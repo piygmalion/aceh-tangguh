@@ -333,6 +333,14 @@ Tiga follow-up UI dari glance #70. Logika IRBI/KRB dan rumus proyeksi tidak diub
 | --- | --- | --- | --- | --- |
 | FE-32 | frontend | Type floor + judul + flex gap panel ancaman | jurnal/FE-32.md | selesai |
 
+## Gelombang 26 — peta operasional SoT #2 (kartu + overlay stale/503)
+
+Padding/stack/gap `MapFeatureCard` dirapatkan; overlay hidup stale/503 memakai Empty/Skeleton + “Data tertunda” + Coba lagi. Ukuran marker/ikon/chrome tidak diubah. Tidak retile / PMTiles / titik karangan. AreaProfil, Distribusi, SIK, basemap tidak disentuh. `npm test` 569 lulus; lint + `tsc` hijau. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-33 | frontend | Kartu peta + Empty/Skeleton overlay stale/503 | jurnal/FE-33.md | selesai |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).
