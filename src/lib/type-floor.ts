@@ -27,3 +27,7 @@ export const TYPE_HERO_DISPLAY_CLASS = "type-hero-display";
 
 export const TYPE_STACK =
   'var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
+/** Outline primary CTA — forest, not accent orange. */
+export const OUTLINE_PRIMARY_CLASS =
+  "border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]";

@@ -9,9 +9,10 @@ import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { StatusBadge } from "@/components/admin/StatusBadge";
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { ReportStatus } from "@/lib/supabase/types";
-import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { OUTLINE_PRIMARY_CLASS, TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
 type Tab = "kejadian" | "penanganan" | "legacy";
@@ -225,9 +226,15 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
   const tabs: Tab[] = hideLegacy
     ? ["kejadian", "penanganan"]
     : ["kejadian", "penanganan", "legacy"];
+  const listEmpty = tab === "legacy" ? legacyItems.length === 0 : items.length === 0;
+
+  function laporanRowLabel(status: string): string {
+    if (status === "submitted" || status === "in_review") return t("statusWaiting");
+    return laporanStatusLabel[status as keyof typeof laporanStatusLabel] ?? status;
+  }
 
   return (
-    <GlassPanel className="p-4 sm:p-6">
+    <GlassPanel className="flex flex-col gap-4 p-4 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold">{t("moderationTitle")}</h1>
@@ -317,23 +324,56 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
             ))}
       </div>
 
-      {error ? <FieldError className="mt-4">{error}</FieldError> : null}
-
-      {loading ? (
-        <p className={cn("mt-4 text-center text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-          {t("loading")}
-        </p>
-      ) : (tab === "legacy" ? legacyItems.length === 0 : items.length === 0) ? (
-        <Empty className="mt-4 border border-dashed" data-testid="moderation-empty">
-          <EmptyHeader className="flex flex-col gap-2">
-            <EmptyTitle>{hideLegacy ? t("emptyKabTitle") : t("emptyTitle")}</EmptyTitle>
-            <EmptyDescription className={TYPE_FLOOR_CLASS}>
-              {hideLegacy ? t("emptyKabDescription") : t("emptyFilterDescription")}
-            </EmptyDescription>
-          </EmptyHeader>
+      {error ? (
+        <Empty className="border border-dashed" data-testid="moderation-error">
+          <div className="flex flex-col items-center gap-3">
+            <FieldError>{error}</FieldError>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className={OUTLINE_PRIMARY_CLASS}
+              onClick={() => void load()}
+            >
+              {t("retry")}
+            </Button>
+          </div>
         </Empty>
-      ) : (
-      <div className="mt-4 overflow-x-auto">
+      ) : null}
+
+      {!error && loading ? (
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <tbody>
+              {[0, 1, 2].map((row) => (
+                <tr key={row} data-testid="moderation-skeleton-row">
+                  <td className="px-2 py-3">
+                    <Skeleton className="h-8 w-full" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : !error && listEmpty ? (
+        <Empty className="border border-dashed" data-testid="moderation-empty">
+          <EmptyDescription className={TYPE_FLOOR_CLASS}>
+            {t("emptyKabDescription")}
+          </EmptyDescription>
+          <EmptyContent>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className={OUTLINE_PRIMARY_CLASS}
+              onClick={() => void load()}
+            >
+              {t("retry")}
+            </Button>
+          </EmptyContent>
+        </Empty>
+      ) : !error ? (
+      <div className="overflow-x-auto">
         <table className={cn("min-w-full text-left", TYPE_FLOOR_CLASS)}>
           <thead className="text-[var(--text-dim)]">
             <tr>
@@ -405,10 +445,7 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
                   <td className="px-2 py-3">
                     <StatusBadge
                       status={item.status}
-                      label={
-                        laporanStatusLabel[item.status as keyof typeof laporanStatusLabel] ??
-                        item.status
-                      }
+                      label={laporanRowLabel(item.status)}
                     />
                     {item.tampilDiPeta ? (
                       <div className={cn("mt-1 text-[var(--primary)]", TYPE_KICKER_CLASS)}>

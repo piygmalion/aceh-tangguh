@@ -177,7 +177,7 @@ Jurnal: `jurnal/FE-33.md`. Gelombang 26. Rapikan padding/stack/gap `MapFeatureCa
 
 ### FE-34 — staf kab SoT #3 (empty state + undangan pending)
 
-Jurnal: `jurnal/FE-34.md`. Gelombang 27. Empty shadcn + i18n pada `ModerationTable` dan `StaffInviteTable` jika tidak ada data di lingkup. Chip pending ink/forest (`tone="forest"`), bukan lime; oranye hanya tombol Undang. Lantai tipe 13px; `flex`/`gap-*` bukan `space-y-*`. Jangan memperluas `matchesKabScope` / `hideLegacy`. Jangan endpoint baru. Label `inviteStatus` boleh pada GET `/api/admin/users` yang sudah ada. Jangan menimpa FE-33.
+Jurnal: `jurnal/FE-34.md`. Gelombang 27. SoT #3 FINAL: Empty + EmptyDescription “Belum ada … di kabupaten Anda”; CTA outline primary (Undang / Muat ulang), bukan accent. Chip laporan `submitted`/`in_review` = “Menunggu” accent ink-on-orange; approved = forest; rejected = destructive. Skeleton + FieldError/Empty dashed + retry. Slot staf = occupied/vacant pada GET users yang sudah ada — jangan enum undangan pending. Jangan menimpa FE-33.
 
 ## Tiket gelombang ECC-S — kerapian
 

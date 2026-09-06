@@ -68,14 +68,3 @@ export function isDuplicateKabSlot(
 ): boolean {
   return existingKodes.some((value) => value?.trim() === kode);
 }
-
-export type StaffInviteStatus = "vacant" | "pending" | "active";
-
-/** Label only. Occupied + no sign-in = pending invite; does not change access rules. */
-export function inviteStatusFromAuthUser(input: {
-  occupied: boolean;
-  lastSignInAt?: string | null;
-}): StaffInviteStatus {
-  if (!input.occupied) return "vacant";
-  return input.lastSignInAt?.trim() ? "active" : "pending";
-}
