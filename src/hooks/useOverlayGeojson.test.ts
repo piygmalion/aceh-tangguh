@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   classifyOverlayHealth,
+  liveOverlayKeysForRetry,
   parseOverlayResponse,
   strongestLiveOverlayAlert,
 } from "./useOverlayGeojson";
@@ -97,6 +98,16 @@ describe("classifyOverlayHealth", () => {
       }),
       "upstream",
     );
+  });
+});
+
+describe("liveOverlayKeysForRetry", () => {
+  it("returns only active live overlay keys", () => {
+    assert.deepEqual(
+      liveOverlayKeysForRetry(["inariskBahayaGempa", "bmkgQuakes", "maritimeWaters"]),
+      ["bmkgQuakes"],
+    );
+    assert.deepEqual(liveOverlayKeysForRetry(["maritimePorts"]), []);
   });
 });
 
