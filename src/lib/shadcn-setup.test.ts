@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "path";
 import { describe, it } from "node:test";
 
@@ -25,9 +25,10 @@ describe("shadcn Fase 1 setup", () => {
 
   it("avoids Button.tsx / button.tsx Windows case collision", () => {
     const ui = path.join(ROOT, "src/components/ui");
-    assert.equal(existsSync(path.join(ui, "Button.tsx")), false);
-    assert.equal(existsSync(path.join(ui, "button.tsx")), true);
-    assert.equal(existsSync(path.join(ui, "button-legacy.tsx")), false);
+    const names = readdirSync(ui);
+    assert.equal(names.includes("Button.tsx"), false);
+    assert.equal(names.includes("button.tsx"), true);
+    assert.equal(names.includes("button-legacy.tsx"), false);
   });
 
   it("keeps Aceh HEX as source of truth and bridges shadcn aliases", () => {
