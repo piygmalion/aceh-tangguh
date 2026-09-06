@@ -73,8 +73,11 @@ describe("analisis data acceptance (AN-30)", () => {
     assert.match(ns("en").analogDisclaimer, /not a forecast/i);
     assert.match(ns("id").historyNo, /tidak ada di katalog/i);
     const workspace = read("src/components/analisis/AnalisisWorkspace.tsx");
-    assert.match(workspace, /buildAncamanRiwayat/);
+    const panel = read("src/components/analisis/AnalisisAncamanPanel.tsx");
+    assert.match(panel, /buildAncamanRiwayat/);
+    assert.match(workspace, /AnalisisAncamanPanel/);
     assert.match(workspace, /ancaman/);
     assert.equal(/data\.total\s*\+\s*.*irbi|irbi.*\+\s*data\.total/i.test(workspace), false);
+    assert.equal(/data\.total\s*\+\s*.*irbi|irbi.*\+\s*data\.total/i.test(panel), false);
   });
 });

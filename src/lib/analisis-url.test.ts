@@ -23,6 +23,7 @@ describe("analisis URL state", () => {
       compareKab: "Aceh Utara",
       compareYear: "",
       view: "jenis",
+      ancaman: "",
     });
   });
 
@@ -46,6 +47,7 @@ describe("analisis URL state", () => {
       compareKab: "",
       compareYear: "2024",
       view: "",
+      ancaman: "",
     });
     assert.equal(params.get("jenis"), "Longsor");
     assert.equal(params.get("kab"), "Pidie");

@@ -16,18 +16,21 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { AnalisisAncamanPanel, irbiKabOptions } from "@/components/analisis/AnalisisAncamanPanel";
 import { AnalisisKabMap } from "@/components/analisis/AnalisisKabMap";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { useAnalisisUrlState } from "@/hooks/useAnalisisUrlState";
+import { disasterJenisToKrbJenis } from "@/lib/analisis-ancaman";
 import { presetRange, type AnalisisPreset } from "@/lib/analisis-url";
+import { KRB_JENIS_KODE } from "@/lib/krb-by-kab";
+import { fetchPublicApi } from "@/lib/preview/public-api";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import { encodeDisasterJenis } from "@/lib/disaster-jenis";
 import {
   parseAnalisisMetric,
   type KejadianAnalisisPayload,
 } from "@/lib/kejadian-analisis";
-import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import { Link } from "@/i18n/routing";
 import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
@@ -148,6 +151,23 @@ export function AnalisisWorkspace() {
     staleTime: 10 * 60_000,
   });
 
+  const { data: irbiKabs } = useQuery({
+    queryKey: qk.irbi,
+    queryFn: async () => {
+      const res = await fetchPublicApi("/api/irbi");
+      if (!res.ok) throw new Error("irbi");
+      return (await res.json()) as { kabupaten_kota: Array<{ kabupaten_kota?: string }> };
+    },
+    staleTime: 60_000,
+  });
+  const kabOptions = useMemo(() => {
+    const fromFacets = data?.facets.kabupaten ?? [];
+    const fromIrbi = irbiKabOptions(irbiKabs?.kabupaten_kota);
+    return Array.from(new Set([...fromFacets, ...fromIrbi, state.kab].filter(Boolean))).sort(
+      (a, b) => a.localeCompare(b, "id")
+    );
+  }, [data, irbiKabs, state.kab]);
+
   const fmt = (n: number) => n.toLocaleString(locale === "id" ? "id-ID" : "en-US");
   const unit =
     state.metric === "rumah"
@@ -228,6 +248,7 @@ export function AnalisisWorkspace() {
           <FilterFields
             state={state}
             data={data}
+            kabOptions={kabOptions}
             kecamatanOptions={kecamatanOptions}
             replace={replace}
             reset={reset}
@@ -243,6 +264,7 @@ export function AnalisisWorkspace() {
           <FilterFields
             state={state}
             data={data}
+            kabOptions={kabOptions}
             kecamatanOptions={kecamatanOptions}
             replace={replace}
             reset={reset}
@@ -252,6 +274,13 @@ export function AnalisisWorkspace() {
           />
         </div>
       </GlassPanel>
+
+      <AnalisisAncamanPanel
+        kab={state.kab}
+        ancaman={state.ancaman}
+        from={state.from}
+        to={state.to}
+      />
 
       {isError ? (
         <p className="text-sm text-[var(--danger)]">{t("error")}</p>
@@ -521,6 +550,7 @@ function CompareCard({
 function FilterFields({
   state,
   data,
+  kabOptions,
   kecamatanOptions,
   replace,
   reset,
@@ -530,6 +560,7 @@ function FilterFields({
 }: {
   state: ReturnType<typeof useAnalisisUrlState>["state"];
   data: KejadianAnalisisPayload | undefined;
+  kabOptions: string[];
   kecamatanOptions: string[];
   replace: ReturnType<typeof useAnalisisUrlState>["replace"];
   reset: () => void;
@@ -538,6 +569,7 @@ function FilterFields({
   copied: boolean;
 }) {
   const t = useTranslations("analisisData");
+  const ti = useTranslations("irbi");
   return (
     <div className="mt-3 space-y-3 lg:mt-0">
       <div className="flex flex-wrap gap-2">
@@ -586,7 +618,7 @@ function FilterFields({
             onChange={(e) => replace({ kab: e.target.value })}
           >
             <option value="">{t("all")}</option>
-            {(data?.facets.kabupaten ?? []).map((kab) => (
+            {kabOptions.map((kab) => (
               <option key={kab} value={kab}>
                 {kab}
               </option>
@@ -613,12 +645,35 @@ function FilterFields({
           <select
             className={inputClass}
             value={state.jenis}
-            onChange={(e) => replace({ jenis: e.target.value, view: "jenis" })}
+            onChange={(e) => {
+              const jenis = e.target.value;
+              const mapped = disasterJenisToKrbJenis(jenis);
+              replace({
+                jenis,
+                view: "jenis",
+                ...(mapped ? { ancaman: mapped } : {}),
+              });
+            }}
           >
             <option value="">{t("all")}</option>
             {(data?.facets.jenis ?? []).map((jenis) => (
               <option key={jenis} value={jenis}>
                 {jenis}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block text-sm">
+          <span className="mb-1 block text-[var(--text-dim)]">{t("ancaman")}</span>
+          <select
+            className={inputClass}
+            value={state.ancaman}
+            onChange={(e) => replace({ ancaman: e.target.value })}
+          >
+            <option value="">{t("allAncaman")}</option>
+            {KRB_JENIS_KODE.map((kode) => (
+              <option key={kode} value={kode}>
+                {ti(`hazard_${kode}` as "hazard_gempabumi")}
               </option>
             ))}
           </select>
