@@ -349,6 +349,14 @@ SoT #3 FINAL: Empty + “Belum ada … di kabupaten Anda”; CTA outline primary
 | --- | --- | --- | --- | --- |
 | FE-34 | frontend | Empty state + chip undangan pending | jurnal/FE-34.md | selesai |
 
+## Gelombang 28 — PD/cuaca SoT #4 (type floor + CTA WeatherNext)
+
+Kartu Peringatan Dini: lantai 13px, kontras kicker/tautan, tinggi 20rem + gulir isi tetap. Dialog WeatherNext: CTA accent ink-on-orange; flex+gap; bukan section cuaca kedua. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-35 | frontend | Type floor + kontras PD + CTA WeatherNext | jurnal/FE-35.md | siap-kode |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).

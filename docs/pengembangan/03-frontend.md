@@ -179,6 +179,10 @@ Jurnal: `jurnal/FE-33.md`. Gelombang 26. Rapikan padding/stack/gap `MapFeatureCa
 
 Jurnal: `jurnal/FE-34.md`. Gelombang 27. SoT #3 FINAL: Empty + EmptyDescription “Belum ada … di kabupaten Anda”; CTA outline primary (Undang / Muat ulang), bukan accent. Chip laporan `submitted`/`in_review` = “Menunggu” accent ink-on-orange; approved = forest; rejected = destructive. Skeleton + FieldError/Empty dashed + retry. Slot staf = occupied/vacant pada GET users yang sudah ada — jangan enum undangan pending. Jangan menimpa FE-33.
 
+### FE-35 — PD/cuaca SoT #4 (type floor, kontras, CTA WeatherNext)
+
+Jurnal: `jurnal/FE-35.md`. Gelombang 28. Kartu Peringatan Dini: lantai 13px, kontras (bukan `--accent-soft`), tinggi `h-[20rem]` + gulir isi tetap. Dialog WeatherNext di strip BMKG: `Button variant="accent"` ink-on-orange; `flex`+`gap-*`; bukan section beranda. Jangan DATA-4 / loggerKind. Jangan mengarang titik. Jangan menimpa FE-34.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.
