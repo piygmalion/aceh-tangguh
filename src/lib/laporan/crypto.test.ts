@@ -73,6 +73,26 @@ test("public peta columns omit jawaban_json and pelapor fields", () => {
   }
 });
 
+test("feature-card mapper allowlist matches public peta columns", async () => {
+  const { isDeniedFeatureCardKey, toFeatureCard } = await import("../feature-card");
+  assert.equal(isDeniedFeatureCardKey("jawaban_json"), true);
+  assert.equal(isDeniedFeatureCardKey("pelapor_id"), true);
+  const card = toFeatureCard({
+    type: "Feature",
+    id: "laporan-kejadian-x",
+    geometry: { type: "Point", coordinates: [96.7, 5.5] },
+    properties: {
+      layer: "laporanKejadian",
+      title: "KJD-1",
+      jenis_bencana: "Banjir",
+      jawaban_json: { pelapor: "rahasia" },
+      pelapor_id: "p1",
+    },
+  });
+  assert.equal(JSON.stringify(card).includes("jawaban_json"), false);
+  assert.equal(JSON.stringify(card).includes("rahasia"), false);
+});
+
 describe("PII key rotation", { concurrency: 1 }, () => {
   snapshotPiiEnv();
   afterEach(restorePiiEnv);

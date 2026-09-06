@@ -9,6 +9,7 @@ import { MapViewport } from "@/components/map/MapViewport";
 import { AreaProfilPanel } from "@/components/map/AreaProfilPanel";
 import { ReportFAB } from "@/components/map/ReportFAB";
 import type { VillageClickSelection } from "@/lib/profil-desa";
+import { isAdminLodArea } from "@/lib/village-distribution-lod";
 
 function MapWorkspaceInner() {
   const {
@@ -27,7 +28,7 @@ function MapWorkspaceInner() {
     useState<VillageClickSelection | null>(null);
 
   useEffect(() => {
-    if (state.areaLayer !== "villageDistribution") {
+    if (!isAdminLodArea(state.areaLayer)) {
       setVillageSelection(null);
     }
   }, [state.areaLayer]);
@@ -47,9 +48,10 @@ function MapWorkspaceInner() {
         onVillageClick={setVillageSelection}
         overlays={state.overlays}
       />
-      {villageSelection && state.areaLayer === "villageDistribution" ? (
+      {villageSelection && isAdminLodArea(state.areaLayer) ? (
         <AreaProfilPanel
           selection={villageSelection}
+          variant={state.areaLayer === "r3pDistribution" ? "r3p" : "desa"}
           onClose={() => setVillageSelection(null)}
         />
       ) : null}

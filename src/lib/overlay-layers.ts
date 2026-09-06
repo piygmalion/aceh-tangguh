@@ -220,6 +220,10 @@ export function overlayCircleLayerId(key: OverlayLayerKey): string {
   return `overlay-${key}-circle`;
 }
 
+export function overlaySymbolLayerId(key: OverlayLayerKey): string {
+  return `overlay-${key}-symbol`;
+}
+
 export function overlayRasterLayerId(key: OverlayLayerKey): string {
   return `overlay-${key}-raster`;
 }
@@ -227,17 +231,27 @@ export function overlayRasterLayerId(key: OverlayLayerKey): string {
 export function overlayKeyFromLayerId(id: string | undefined): OverlayLayerKey | null {
   if (!id?.startsWith("overlay-")) return null;
   const rest = id.slice("overlay-".length);
-  const match = /^(.*)-(fill|line|circle|raster)$/.exec(rest);
+  const match = /^(.*)-(fill|line|circle|raster|symbol)$/.exec(rest);
   if (!match) return null;
   return isOverlayLayerKey(match[1]) ? match[1] : null;
 }
 
-export function overlayInteractiveLayerIds(keys: OverlayLayerKey[]): string[] {
+export function overlayInteractiveLayerIds(
+  keys: OverlayLayerKey[],
+  opts?: { pointAsSymbol?: boolean },
+): string[] {
   const ids: string[] = [];
   for (const key of keys) {
     const kind = overlayCatalogEntry(key)?.kind;
     if (!kind || kind === "raster") continue;
-    if (kind === "point") ids.push(overlayCircleLayerId(key));
+    if (kind === "point") {
+      // Both ids: clicks stay live while chrome icons swap circle → symbol.
+      if (opts?.pointAsSymbol) {
+        ids.push(overlaySymbolLayerId(key), overlayCircleLayerId(key));
+      } else {
+        ids.push(overlayCircleLayerId(key), overlaySymbolLayerId(key));
+      }
+    }
     if (kind === "fill") {
       ids.push(overlayFillLayerId(key));
       ids.push(overlayLineLayerId(key));

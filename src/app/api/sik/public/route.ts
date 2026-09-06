@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
+import { loadPublishedFaqCms } from "@/lib/panduan/faq-cms";
 import { loadKejadianOperasiPublik } from "@/lib/sik/public";
 import { permintaanPelatihanSchema } from "@/lib/sik/schemas";
 import { guardPublicPost } from "@/lib/security/public-post";
@@ -54,6 +55,10 @@ export async function GET(req: NextRequest) {
     if (!client) return NextResponse.json({ items: [] });
     const { data } = await client.from("disabilitas_agregat").select("*");
     return NextResponse.json({ items: data ?? [] });
+  }
+
+  if (kind === "panduan-faq") {
+    return NextResponse.json({ items: await loadPublishedFaqCms() });
   }
 
   const ops = await loadKejadianOperasiPublik();

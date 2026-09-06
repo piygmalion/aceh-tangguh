@@ -334,6 +334,10 @@ describe("AreaProfilPanel source lock", () => {
     assert.equal(enJson.profilDesa.crumbKec, "Kec");
     assert.equal(enJson.profilDesa.crumbDesa, "Desa");
     assert.equal(enJson.profilDesa.unknown, "Unknown");
+    assert.equal(idJson.profilDesa.r3pKicker, "R3P");
+    assert.equal(enJson.profilDesa.r3pKicker, "R3P");
+    assert.match(panel, /variant === ["']r3p["']/);
+    assert.match(panel, /leadWith/);
   });
 
   it("forwards existing kode_kabupaten from map clicks without inventing codes", () => {

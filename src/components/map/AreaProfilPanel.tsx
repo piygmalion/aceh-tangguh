@@ -133,11 +133,16 @@ function MetricCard({
   );
 }
 
-function MetricSections({ metrics }: { metrics: MetricBundle }) {
+function MetricSections({
+  metrics,
+  leadWith = "populasi",
+}: {
+  metrics: MetricBundle;
+  leadWith?: "populasi" | "kerusakan";
+}) {
   const t = useTranslations("profilDesa");
   const unknown = t("unknown");
-  return (
-    <div className="flex flex-col gap-4">
+  const populasi = (
       <section>
         <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
           {t("populasi")}
@@ -208,6 +213,8 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
           />
         </div>
       </section>
+  );
+  const korban = (
       <section>
         <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
           {t("korban")}
@@ -227,6 +234,8 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
           />
         </div>
       </section>
+  );
+  const kerusakan = (
       <section>
         <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
           {t("kerusakan")}
@@ -243,6 +252,22 @@ function MetricSections({ metrics }: { metrics: MetricBundle }) {
           />
         </div>
       </section>
+  );
+  return (
+    <div className="flex flex-col gap-4">
+      {leadWith === "kerusakan" ? (
+        <>
+          {kerusakan}
+          {populasi}
+          {korban}
+        </>
+      ) : (
+        <>
+          {populasi}
+          {korban}
+          {kerusakan}
+        </>
+      )}
     </div>
   );
 }
@@ -380,9 +405,11 @@ function ListRow({
 
 export function AreaProfilPanel({
   selection,
+  variant = "desa",
   onClose,
 }: {
   selection: VillageClickSelection;
+  variant?: "desa" | "r3p";
   onClose: () => void;
 }) {
   const t = useTranslations("profilDesa");
@@ -470,12 +497,14 @@ export function AreaProfilPanel({
       : view === "kecamatan"
         ? (kec?.badge ?? activeKecamatan?.badge ?? null)
         : (kab?.badge ?? null);
-  const kicker =
+  const levelKicker =
     view === "desa"
       ? t("desaLabel")
       : view === "kecamatan"
         ? t("kecamatanLabel")
         : t("kabupatenLabel");
+  const kicker = variant === "r3p" ? `${t("r3pKicker")} · ${levelKicker}` : levelKicker;
+  const metricLead = variant === "r3p" ? "kerusakan" : "populasi";
   const showClickedHint = Boolean(selection.name) && view !== "desa";
 
   const goBack = () => {
@@ -577,7 +606,7 @@ export function AreaProfilPanel({
           ) : view === "kabupaten" ? (
             kab ? (
               <div className="flex flex-col gap-4">
-                <MetricSections metrics={kab.metrics} />
+                <MetricSections metrics={kab.metrics} leadWith={metricLead} />
                 <Separator />
                 <section>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
@@ -622,7 +651,7 @@ export function AreaProfilPanel({
           ) : view === "kecamatan" ? (
             kec ? (
               <div className="flex flex-col gap-4">
-                <MetricSections metrics={kec.metrics} />
+                <MetricSections metrics={kec.metrics} leadWith={metricLead} />
                 <Separator />
                 <section>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
@@ -664,7 +693,7 @@ export function AreaProfilPanel({
               <EmptyState />
             )
           ) : desaQuery.data ? (
-            <MetricSections metrics={desaQuery.data.metrics} />
+            <MetricSections metrics={desaQuery.data.metrics} leadWith={metricLead} />
           ) : (
             <EmptyState />
           )}

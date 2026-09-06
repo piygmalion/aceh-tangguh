@@ -95,4 +95,57 @@ describe("static preview public API", () => {
     const res = await fetchPublicApi("/api/layers/meta/");
     assert.equal(res.status, 400);
   });
+
+  it("serves GET /api/layers/features/:id from marker fixtures", async () => {
+    setStaticExport(true);
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      const href = String(input);
+      if (href.includes("/fixtures/markers.geojson")) {
+        const raw = readFileSync(
+          path.join(process.cwd(), "public/fixtures/markers.geojson"),
+          "utf8",
+        );
+        return new Response(raw, { headers: { "Content-Type": "application/json" } });
+      }
+      return origFetch(input);
+    }) as typeof fetch;
+    try {
+      const res = await fetchPublicApi("/api/layers/features/FSK-000001?layer=facHealth");
+      assert.equal(res.status, 200);
+      const card = (await res.json()) as { id?: string; layer?: string; title?: string };
+      assert.equal(card.id, "FSK-000001");
+      assert.equal(card.layer, "facHealth");
+      assert.ok(card.title);
+    } finally {
+      globalThis.fetch = origFetch;
+    }
+  });
+
+  it("returns 404 for an unknown feature id", async () => {
+    setStaticExport(true);
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      const href = String(input);
+      if (href.includes("/fixtures/")) {
+        if (href.includes("markers.geojson")) {
+          const raw = readFileSync(
+            path.join(process.cwd(), "public/fixtures/markers.geojson"),
+            "utf8",
+          );
+          return new Response(raw, { headers: { "Content-Type": "application/json" } });
+        }
+        return new Response(JSON.stringify({ type: "FeatureCollection", features: [] }), {
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return origFetch(input);
+    }) as typeof fetch;
+    try {
+      const res = await fetchPublicApi("/api/layers/features/not-a-real-id");
+      assert.equal(res.status, 404);
+    } finally {
+      globalThis.fetch = origFetch;
+    }
+  });
 });
