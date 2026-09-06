@@ -69,9 +69,9 @@ function DetailCard({
   label: string;
 }) {
   return (
-    <div className={cn("rounded-xl border px-3 py-2.5", detailToneClass(item.tone))}>
+    <div className={cn("flex flex-col gap-1 rounded-xl border px-2.5 py-2", detailToneClass(item.tone))}>
       <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{label}</div>
-      <div className="mt-1 text-[0.9375rem] font-semibold leading-snug">{item.value}</div>
+      <div className="text-[0.9375rem] font-semibold leading-snug">{item.value}</div>
     </div>
   );
 }
@@ -100,7 +100,7 @@ export function MapFeatureCard({
     : "";
 
   return (
-    <article className="map-feature-card" data-testid="map-feature-card">
+    <article className="map-feature-card flex flex-col gap-2" data-testid="map-feature-card">
       <header className="flex items-start justify-between gap-2">
         <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{category}</div>
         <button
@@ -113,17 +113,17 @@ export function MapFeatureCard({
         </button>
       </header>
 
-      <div className="mt-2 flex items-start gap-2.5">
+      <div className="flex items-start gap-2.5">
         <MapLayerIcon
           iconSrc={cardIconSrc(layer)}
           fallbackColor={cardFallbackColor(layer)}
         />
-        <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <h3 className="text-[1.05rem] font-semibold leading-snug text-[var(--text)]">
             {title}
           </h3>
           {card?.subtitle ? (
-            <p className={cn("mt-0.5 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+            <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
               {card.subtitle}
             </p>
           ) : null}
@@ -142,32 +142,32 @@ export function MapFeatureCard({
       </div>
 
       {loading ? (
-        <p className={cn("mt-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("cardLoading")}</p>
+        <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("cardLoading")}</p>
       ) : null}
       {error && !card ? (
-        <p className={cn("mt-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("cardError")}</p>
+        <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("cardError")}</p>
       ) : null}
 
       {card?.address ? (
-        <div className="map-chrome-inset mt-3 rounded-xl px-3 py-2.5 text-[0.875rem] leading-snug text-[var(--text)]">
+        <div className="map-chrome-inset rounded-xl px-2.5 py-2 text-[0.875rem] leading-snug text-[var(--text)]">
           {card.address}
         </div>
       ) : null}
 
       {card?.coordQuality === "truncated" ? (
-        <Chip tone="warn" className={cn("mt-2 px-2 py-0.5", TYPE_FLOOR_CLASS)}>
+        <Chip tone="warn" className={cn("px-2 py-0.5", TYPE_FLOOR_CLASS)}>
           {t("coordApprox")}
         </Chip>
       ) : null}
       {card?.coordQuality === "offshore" ? (
-        <Chip tone="info" className={cn("mt-2 px-2 py-0.5", TYPE_FLOOR_CLASS)}>
+        <Chip tone="info" className={cn("px-2 py-0.5", TYPE_FLOOR_CLASS)}>
           {t("coordOffshore")}
         </Chip>
       ) : null}
 
       {card && card.media.length > 0 ? (
-        <section className="mt-3">
-          <div className={cn("mb-1.5 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+        <section className="flex flex-col gap-1.5">
+          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("media")}
           </div>
           <div className="flex gap-2 overflow-x-auto">
@@ -184,8 +184,8 @@ export function MapFeatureCard({
       ) : null}
 
       {card && card.details.length > 0 ? (
-        <section className="mt-3">
-          <div className={cn("mb-1.5 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+        <section className="flex flex-col gap-1.5">
+          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("detail")}
           </div>
           <div className="grid grid-cols-1 gap-2">
@@ -209,7 +209,7 @@ export function MapFeatureCard({
       ) : null}
 
       {card?.stack && card.stack.length > 1 ? (
-        <ul className="mt-3 max-h-36 space-y-1 overflow-auto">
+        <ul className="flex max-h-36 flex-col gap-1 overflow-auto">
           <li className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
             {t("stackTitle", { count: card.stack.length })}
           </li>

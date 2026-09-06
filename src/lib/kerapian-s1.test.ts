@@ -85,6 +85,7 @@ const MAP_OVERLAY_KEYS = [
   "overlayLiveFailed",
   "overlayLiveStaleHint",
   "overlayLiveUpstreamHint",
+  "overlayLiveRetry",
   "overlayAttribution",
   "overlayForecastLoading",
   "overlayForecastMissing",

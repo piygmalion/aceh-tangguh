@@ -171,6 +171,10 @@ Jurnal: `jurnal/FE-31.md`. Gelombang 24. Kontrak AN-34. Ganti judul kartu; tampi
 
 Jurnal: `jurnal/FE-32.md`. Gelombang 25. Hanya `AnalisisAncamanPanel` + uji penerimaan. Chip/catatan naik ke `TYPE_FLOOR_CLASS` (13px). Satu `ancamanTitle` di `h3`. `flex` + `gap-*` mengganti `space-y-*` / `space-x-*` di panel dan tiga kartu. Jangan mengubah IRBI/KRB, rumus proyeksi, layer peta, SIK, Destana, atau navbar. Jangan hapus `GlassPanel` atau disclaimer empiris.
 
+### FE-33 — peta operasional SoT #2 (kartu + overlay stale/503)
+
+Jurnal: `jurnal/FE-33.md`. Gelombang 26. Rapikan padding/stack/gap `MapFeatureCard` saja. Overlay hidup stale/503 memakai Empty/Skeleton + `overlayLiveStale` + `overlayLiveRetry` (accent ink-on-orange). Jangan mengubah ukuran marker/ikon/chrome. Jangan retile / PMTiles / mengarang titik. Jangan AreaProfilPanel, Distribusi Tanggapi-chrome, SIK, atau basemap. Jangan menimpa FE-32.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.

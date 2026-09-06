@@ -5,10 +5,10 @@ import { ChevronDown, Layers } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Chip } from "@/components/ui/Chip";
+import { OverlayLiveStatus } from "@/components/map/OverlayLiveStatus";
 import {
   isLiveOverlayStatusKey,
-  strongestLiveOverlayAlert,
-  useLiveOverlayHealth,
+  useLiveOverlayStatus,
   type OverlayHealth,
 } from "@/hooks/useOverlayGeojson";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -114,8 +114,13 @@ export function MapToolbar({
   onToggleOverlay?: (k: OverlayLayerKey) => void;
 }) {
   const t = useTranslations("map");
-  const overlayHealth = useLiveOverlayHealth(overlays);
-  const overlayAlert = strongestLiveOverlayAlert(overlayHealth);
+  const {
+    healthByKey: overlayHealth,
+    alert: overlayAlert,
+    pending: overlayPending,
+    fetching: overlayFetching,
+    refetch: refetchLiveOverlays,
+  } = useLiveOverlayStatus(overlays);
   const [tab, setTab] = useState<TabKey>(overlays.length ? "geospasial" : "lokasi");
   /** Mobile bottom-sheet open state. Desktop panel is always shown via md: classes. */
   const [expanded, setExpanded] = useState(false);
@@ -471,28 +476,13 @@ export function MapToolbar({
           )}
 
           {tab === "geospasial" && (
-            <div className="space-y-3">
-              {overlayAlert === "upstream" ? (
-                <p
-                  role="status"
-                  className={cn(
-                    "rounded-xl border border-[var(--danger)]/30 bg-[var(--danger-dim)] px-2.5 py-2 leading-snug text-[var(--danger)]",
-                    TYPE_FLOOR_CLASS,
-                  )}
-                >
-                  {t("overlayLiveUpstreamHint")}
-                </p>
-              ) : overlayAlert === "stale" ? (
-                <p
-                  role="status"
-                  className={cn(
-                    "rounded-xl border border-[var(--warn)]/30 bg-[var(--warn-dim)] px-2.5 py-2 leading-snug text-[var(--warn)]",
-                    TYPE_FLOOR_CLASS,
-                  )}
-                >
-                  {t("overlayLiveStaleHint")}
-                </p>
-              ) : null}
+            <div className="flex flex-col gap-3">
+              <OverlayLiveStatus
+                alert={overlayAlert}
+                pending={overlayPending}
+                fetching={overlayFetching}
+                onRetry={refetchLiveOverlays}
+              />
               {OVERLAY_TOOLBAR_GROUPS.map((group) => (
                 <fieldset
                   key={group.group}
