@@ -67,4 +67,14 @@ describe("analisis data acceptance (AN-30)", () => {
     assert.equal(table.includes("KejadianAnalisis"), false);
     assert.match(table, /AnalisisTeaser/);
   });
+
+  it("AN-33: analog copy is not a forecast and KPI total stays kejadian-only", () => {
+    assert.match(ns("id").analogDisclaimer, /bukan prediksi/i);
+    assert.match(ns("en").analogDisclaimer, /not a forecast/i);
+    assert.match(ns("id").historyNo, /tidak ada di katalog/i);
+    const workspace = read("src/components/analisis/AnalisisWorkspace.tsx");
+    assert.match(workspace, /buildAncamanRiwayat/);
+    assert.match(workspace, /ancaman/);
+    assert.equal(/data\.total\s*\+\s*.*irbi|irbi.*\+\s*data\.total/i.test(workspace), false);
+  });
 });
