@@ -69,6 +69,7 @@ describe("FE-35 PD/cuaca SoT-4 UX", () => {
 
     assert.match(dialog, /from ["']@\/components\/ui\/button["']/);
     assert.match(dialog, /variant="accent"/);
+    assert.match(dialog, /text-\[var\(--accent-fg\)\]/);
     assert.match(dialog, /DialogTrigger/);
     assert.match(dialog, /TYPE_FLOOR_CLASS/);
     assert.equal(WHITE_ON_ORANGE.test(dialog), false, "dialog still white-on-orange");

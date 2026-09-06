@@ -57,7 +57,7 @@ export function WeatherInovasiStrip() {
           variant="accent"
           size="sm"
           aria-label={t("triggerAria")}
-          className="rounded-full"
+          className="rounded-full text-[var(--accent-fg)]"
         >
           {t("trigger")}
         </Button>
