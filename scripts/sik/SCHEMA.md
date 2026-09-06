@@ -64,6 +64,6 @@ New rows get `SIK-{sik_id}`. Existing `ACEH-…` ids are never reused for new ev
 - Skip `Rekapitulasi Tahunan`
 - Do not invent GPS or kab centroids
 - Integer existing GPS + decimal SIK in the Aceh bbox → upgrade
-- Two decimal GPS > 100 m apart → quarantine (blocks `--write-fixtures`)
+- Two decimal GPS > 100 m apart → quarantine (`decimal_gps_gt_100m`). Keeps existing GPS. Blocks `--write-fixtures` unless `--accept-gps-quarantine` is set. The flag never overwrites with SIK decimal >100 m; it only records the quarantine count in `metadata.sik_merge.gpsConflicts`.
 - Fill-null only for attributes; conflicts stay in `payload.sik`
 - Desa join is 10-digit BPS only — names never invent a kode

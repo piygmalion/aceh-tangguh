@@ -2,7 +2,7 @@
 
 Agent: data
 Gelombang: GO SIK apply GPS (langkah 3; langkah 1 dry-run tertahan di VM)
-Status: draf
+Status: selesai
 
 ## Niat
 
@@ -34,21 +34,51 @@ Niat bisa dijalankan tanpa tebakan GPS: dry-run sungguhan hanya jika berkas db a
 
 ## Perubahan
 
-|
+| Berkas | Isi |
+| --- | --- |
+| `scripts/lib/sik-merge.mjs` | `quarantineKeepsExistingGps` — true hanya jika koordinat baris = `conflict.existing` |
+| `scripts/lib/sik-apply.mjs` | `--accept-gps-quarantine`; gerbang tetap menolak tanpa bendera atau jika SIK menimpa; `sik_merge.gpsConflicts` |
+| `scripts/import-sik-aceh.py` | Teruskan `--accept-gps-quarantine` ke apply |
+| `scripts/lib/sik-merge.test.mjs` | Keep GPS, refuse tanpa bendera, tulis+metadata dengan bendera, jalur Python |
+| `scripts/sik/SCHEMA.md`, `data/sik/README.md`, `README.md` | Dokumentasi bendera |
 
 ## Bukti
 
+Langkah 1 dry-run pada VM Cloud (tanpa `--write-fixtures`, tanpa `--apply`):
+
 ```
+$ python3 scripts/import-sik-aceh.py --db data/sik/sik_aceh.db
+{
+  "error": "sik_db_missing",
+  "path": "data/sik/sik_aceh.db",
+  "hint": "Copy the local master to data/sik/sik_aceh.db (gitignored)."
+}
+exit 2
 ```
+
+`data/sik/` hanya berisi `README.md`. Tidak ada hitungan matched/new/fillNull/gpsUpgrades/gpsConflicts/attributeConflicts dari master sungguhan — jangan dikarang. Operator harus menyalin `sik_aceh.db` lalu mengulang dry-run lokal.
+
+Langkah 3 (fixture sintetis, bukan GPS karangan untuk produksi):
+
+```
+$ node --test scripts/lib/sik-merge.test.mjs
+# tests 16
+# pass 16
+# fail 0
+```
+
+Tanpa bendera: exit 2, fixture tidak berubah. Dengan `--accept-gps-quarantine`: tulis fill-null, `arah_di_peta` tetap 5.2/96.1 (bukan 5.3/96.2), `metadata.sik_merge.gpsConflicts === 1`, `accepted_gps_quarantine === true`. Helper `quarantineKeepsExistingGps` false jika koordinat sudah tertukar ke SIK.
+
+Tidak ada `seed-sik-supabase.mjs --apply`. Fixture `public/fixtures/kejadian-bencana.json` tidak ditulis.
 
 ## Bacaan ulang bukti versus kriteria
 
-- [ ] Dry-run langkah 1: db ada → hitungan matched/new/fillNull/gpsUpgrades/gpsConflicts/attributeConflicts + id `decimal_gps_gt_100m`; db absen → blocker jelas
-- [ ] `--write-fixtures` tanpa `--accept-gps-quarantine` tetap ditolak jika ada GPS quarantine
-- [ ] `--accept-gps-quarantine` mengizinkan tulis hanya jika GPS existing dipertahankan
-- [ ] `sik_merge.gpsConflicts` mencatat jumlah quarantine
-- [ ] Tidak ada `--apply` produksi; tidak ada GPS karangan
+- [x] Dry-run langkah 1: db absen → `sik_db_missing` exit 2; hitungan master tidak dikarang
+- [x] `--write-fixtures` tanpa `--accept-gps-quarantine` tetap ditolak jika ada GPS quarantine
+- [x] `--accept-gps-quarantine` mengizinkan tulis hanya jika GPS existing dipertahankan
+- [x] `sik_merge.gpsConflicts` mencatat jumlah quarantine
+- [x] Tidak ada `--apply` produksi; tidak ada GPS karangan
 
 ## Keputusan
 
-lanjut
+selesai (bendera). Dry-run master tetap menunggu salinan `data/sik/sik_aceh.db` di mesin operator.
