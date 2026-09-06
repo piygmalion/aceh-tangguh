@@ -143,6 +143,30 @@ Jurnal: `jurnal/FE-19.md`. Gelombang 19. Jangan dikode sebelum AN-24. Strip di b
 
 Jurnal: `jurnal/FE-25.md`. Gelombang 20. Jangan dikode sebelum AN-29. Rute `/analisis-data` · `/disaster-analysis`. Namespace `analisisData`. Teaser mengganti panel `KejadianAnalisis` di Data bencana. Jangan menabrak FE-20 (ECC-S). Jangan DATA-4.
 
+### FE-26 — katalog fill + path static bahaya
+
+Jurnal: `jurnal/FE-26.md`. Gelombang 21. `inariskBahaya*` = `kind: "fill"` + fixture static. `fetchOverlayGeojson` memakai `overlayVectorApiPath`. Popup `kelas` lewat `krbSedang`/`krbTinggi`. Jangan hapus `isInariskRasterKey` / proxy ubin. Jangan DATA-4.
+
+### FE-27 — popup konteks AI di dalam #cuaca
+
+Jurnal: `jurnal/FE-27.md`. Gelombang 22. Dialog dari chip di `WeatherStrip`. Jangan fetch WN3 di `WeatherStrip`. Jangan DATA-4.
+
+### FE-28 — oranye navbar sebagai penanda interaksi
+
+Jurnal: `jurnal/FE-28.md`. Gelombang 22. Oranye hanya hover/fokus/aktif. Locale terpilih tetap sage. Jangan DATA-4.
+
+### FE-29 — kartu keterangan titik peta
+
+Jurnal: `jurnal/FE-29.md`. Gelombang 22. Deny-list PII. Bukan CSV karantina. Jangan DATA-4.
+
+### FE-30 — panel Ancaman × riwayat di Analisis data
+
+Jurnal: `jurnal/FE-30.md`. Gelombang 23. Kontrak AN-32. Select `ancaman`, kartu IRBI/KRB + riwayat + analogi. i18n `analisisData.*`. Jangan menimpa FE-26. Jangan menjumlahkan skor ke KPI. Jangan hardcode judul Indonesia. Jangan menimpa FE-27 (dialog cuaca G22).
+
+### FE-31 — Histori Kejadian + Proyeksi Dampak
+
+Jurnal: `jurnal/FE-31.md`. Gelombang 24. Kontrak AN-34. Ganti judul kartu; tampilkan rentang histori + pita skala + replay. Jangan hardcode judul Indonesia. Jangan menjumlahkan skor ke KPI. Jangan menimpa FE-28 (navbar G22).
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.

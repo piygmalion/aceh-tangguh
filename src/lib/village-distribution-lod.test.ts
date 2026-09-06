@@ -15,6 +15,7 @@ import {
   VILLAGE_OUTLINE_MIN_ZOOM,
   VILLAGE_OUTLINE_PAINT,
   geometryBounds,
+  isAdminLodArea,
   isAreaFillLayerId,
   isKabAreaFeature,
   isKecamatanLodZoom,
@@ -114,6 +115,10 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(villageDistributionTiles(10).sourceLayer, "kecamatan");
     assert.deepEqual(villageDistributionTiles(11), PMTILES_VILLAGE);
     assert.equal(villageDistributionTiles(11).sourceLayer, "village");
+    assert.equal(isAdminLodArea("villageDistribution"), true);
+    assert.equal(isAdminLodArea("r3pDistribution"), true);
+    assert.equal(isAdminLodArea("irbi2025"), false);
+    assert.equal(isAdminLodArea(null), false);
   });
 
   it("starts desa outlines at z11 and uses a forest token, not #14532d", () => {

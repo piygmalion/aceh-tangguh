@@ -58,37 +58,37 @@ export const OVERLAY_CATALOG: OverlayCatalogEntry[] = [
   },
   {
     key: "inariskBahayaGempa",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.orange,
   },
   {
     key: "inariskBahayaTsunami",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.teal,
   },
   {
     key: "inariskBahayaLongsor",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.gold,
   },
   {
     key: "inariskBahayaBanjir",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.teal,
   },
   {
     key: "inariskBahayaKarhutla",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.awas,
   },
   {
     key: "inariskBahayaGunungApi",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.awas,
   },
@@ -184,6 +184,12 @@ export const OVERLAY_STATIC_FIXTURES: Partial<Record<OverlayLayerKey, string>> =
   seismicSensors: "/fixtures/overlays/sensor-seismic-aceh.geojson",
   inariskSumateraFault: "/fixtures/overlays/sumatera-fault-aceh.geojson",
   inariskMegathrust: "/fixtures/overlays/megathrust-aceh.geojson",
+  inariskBahayaGempa: "/fixtures/overlays/bahaya-gempa-aceh.geojson",
+  inariskBahayaTsunami: "/fixtures/overlays/bahaya-tsunami-aceh.geojson",
+  inariskBahayaLongsor: "/fixtures/overlays/bahaya-longsor-aceh.geojson",
+  inariskBahayaBanjir: "/fixtures/overlays/bahaya-banjir-aceh.geojson",
+  inariskBahayaKarhutla: "/fixtures/overlays/bahaya-karhutla-aceh.geojson",
+  inariskBahayaGunungApi: "/fixtures/overlays/bahaya-gunungapi-aceh.geojson",
 };
 
 export const MARITIME_WAVE_LEGEND: { color: string; labelKey: string }[] = [
@@ -214,6 +220,10 @@ export function overlayCircleLayerId(key: OverlayLayerKey): string {
   return `overlay-${key}-circle`;
 }
 
+export function overlaySymbolLayerId(key: OverlayLayerKey): string {
+  return `overlay-${key}-symbol`;
+}
+
 export function overlayRasterLayerId(key: OverlayLayerKey): string {
   return `overlay-${key}-raster`;
 }
@@ -221,17 +231,27 @@ export function overlayRasterLayerId(key: OverlayLayerKey): string {
 export function overlayKeyFromLayerId(id: string | undefined): OverlayLayerKey | null {
   if (!id?.startsWith("overlay-")) return null;
   const rest = id.slice("overlay-".length);
-  const match = /^(.*)-(fill|line|circle|raster)$/.exec(rest);
+  const match = /^(.*)-(fill|line|circle|raster|symbol)$/.exec(rest);
   if (!match) return null;
   return isOverlayLayerKey(match[1]) ? match[1] : null;
 }
 
-export function overlayInteractiveLayerIds(keys: OverlayLayerKey[]): string[] {
+export function overlayInteractiveLayerIds(
+  keys: OverlayLayerKey[],
+  opts?: { pointAsSymbol?: boolean },
+): string[] {
   const ids: string[] = [];
   for (const key of keys) {
     const kind = overlayCatalogEntry(key)?.kind;
     if (!kind || kind === "raster") continue;
-    if (kind === "point") ids.push(overlayCircleLayerId(key));
+    if (kind === "point") {
+      // Both ids: clicks stay live while chrome icons swap circle → symbol.
+      if (opts?.pointAsSymbol) {
+        ids.push(overlaySymbolLayerId(key), overlayCircleLayerId(key));
+      } else {
+        ids.push(overlayCircleLayerId(key), overlaySymbolLayerId(key));
+      }
+    }
     if (kind === "fill") {
       ids.push(overlayFillLayerId(key));
       ids.push(overlayLineLayerId(key));

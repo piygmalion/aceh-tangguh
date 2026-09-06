@@ -8,6 +8,7 @@ import {
   overlayInteractiveLayerIds,
   overlayKeyFromLayerId,
   overlayLineLayerId,
+  overlaySymbolLayerId,
   parseOverlayLayers,
 } from "./overlay-layers";
 
@@ -31,10 +32,21 @@ describe("overlay layer URL tokens", () => {
     const ids = overlayInteractiveLayerIds(["maritimePorts", "maritimeWaters", "inariskBahayaGempa"]);
     assert.deepEqual(ids, [
       overlayCircleLayerId("maritimePorts"),
+      overlaySymbolLayerId("maritimePorts"),
       overlayFillLayerId("maritimeWaters"),
       overlayLineLayerId("maritimeWaters"),
+      overlayFillLayerId("inariskBahayaGempa"),
+      overlayLineLayerId("inariskBahayaGempa"),
     ]);
     assert.equal(overlayKeyFromLayerId(ids[0]), "maritimePorts");
     assert.equal(overlayKeyFromLayerId("marker-dots"), null);
+    const symbolIds = overlayInteractiveLayerIds(["maritimePorts"], {
+      pointAsSymbol: true,
+    });
+    assert.deepEqual(symbolIds, [
+      overlaySymbolLayerId("maritimePorts"),
+      overlayCircleLayerId("maritimePorts"),
+    ]);
+    assert.equal(overlayKeyFromLayerId(symbolIds[0]), "maritimePorts");
   });
 });

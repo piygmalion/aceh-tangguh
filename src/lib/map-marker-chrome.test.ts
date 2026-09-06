@@ -41,9 +41,9 @@ function asPointFeature(
 }
 
 describe("signed map-chrome sizes", () => {
-  it("keeps haloed 7px dots below z=11 and 24/28 pins from z=11", () => {
-    assert.equal(MAP_DOT_MAX_ZOOM, 11);
-    assert.equal(MAP_ICON_MIN_ZOOM, 11);
+  it("keeps 7px fallback dots and 24/28 pins for unclustered points at every zoom", () => {
+    assert.equal(MAP_DOT_MAX_ZOOM, 0);
+    assert.equal(MAP_ICON_MIN_ZOOM, 0);
     assert.equal(MAP_DOT_RADIUS_PX, 7);
     assert.equal(MAP_DOT_STROKE_PX, 1.5);
     assert.equal(MAP_PAPER_STROKE, COLOR_TOKENS.paper);

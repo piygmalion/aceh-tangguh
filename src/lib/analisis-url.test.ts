@@ -23,6 +23,7 @@ describe("analisis URL state", () => {
       compareKab: "Aceh Utara",
       compareYear: "",
       view: "jenis",
+      ancaman: "",
     });
   });
 
@@ -46,6 +47,7 @@ describe("analisis URL state", () => {
       compareKab: "",
       compareYear: "2024",
       view: "",
+      ancaman: "",
     });
     assert.equal(params.get("jenis"), "Longsor");
     assert.equal(params.get("kab"), "Pidie");
@@ -57,5 +59,31 @@ describe("analisis URL state", () => {
   it("presetRange tahun-ini returns the UTC calendar year", () => {
     const range = presetRange("thisYear", new Date(Date.UTC(2026, 8, 6)));
     assert.deepEqual(range, { from: "2026-01-01", to: "2026-12-31" });
+  });
+
+  it("accepts a valid KRB ancaman and drops invented codes", () => {
+    const ok = parseAnalisisSearchParams(
+      new URLSearchParams("kab=Pidie%20Jaya&ancaman=gempabumi")
+    );
+    assert.equal(ok.ancaman, "gempabumi");
+    const bad = parseAnalisisSearchParams(new URLSearchParams("ancaman=zona3"));
+    assert.equal(bad.ancaman, "");
+  });
+
+  it("serializes ancaman when set", () => {
+    const params = analisisStateToParams({
+      jenis: "",
+      kab: "Pidie Jaya",
+      kec: "",
+      from: "",
+      to: "",
+      metric: "kejadian",
+      compareKab: "",
+      compareYear: "",
+      view: "",
+      ancaman: "gempabumi",
+    });
+    assert.equal(params.get("ancaman"), "gempabumi");
+    assert.equal(params.get("kab"), "Pidie Jaya");
   });
 });

@@ -6,6 +6,7 @@ import {
   BASEMAP_OPTIONS,
   BASEMAP_RASTER,
   BRAND_RASTER_FALLBACK,
+  cartoBasemapKeyPresent,
   getBasemapStyle,
   isBasemapId,
   isBrandBasemapId,
@@ -33,8 +34,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
+function firstRasterTile(style: unknown): string {
+  assert.ok(isRecord(style));
+  const sources = style.sources as Record<string, { tiles?: string[] }>;
+  return sources.raster.tiles?.[0] ?? "";
+}
+
 describe("getBasemapStyle default remains Carto", () => {
-  it("treats omitted / unknown ids as not brand, and positron is Carto raster", () => {
+  it("treats omitted / unknown ids as not brand, and positron is keyed Carto or OSM", () => {
     assert.equal(isBasemapId("positron"), true);
     assert.equal(isBasemapId("brand-light"), true);
     assert.equal(isBasemapId("not-a-map"), false);
@@ -43,8 +50,37 @@ describe("getBasemapStyle default remains Carto", () => {
     assert.ok(isRecord(style));
     assert.equal(style.version, 8);
     assert.equal(style.name, "positron-raster");
-    const sources = style.sources as Record<string, { tiles?: string[] }>;
-    assert.match(sources.raster.tiles?.[0] ?? "", /cartocdn\.com\/light_all/);
+    const tile = firstRasterTile(style);
+    if (cartoBasemapKeyPresent()) {
+      assert.match(tile, /cartocdn\.com\/light_all/);
+      assert.match(tile, /[?&]key=/);
+    } else {
+      assert.match(tile, /tile\.openstreetmap\.org/);
+      assert.equal(tile.includes("cartocdn.com"), false);
+    }
+  });
+
+  it("never emits unkeyed Carto tile URLs for positron or dark", () => {
+    const prev = process.env.NEXT_PUBLIC_CARTO_API_KEY;
+    try {
+      delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
+      for (const id of ["positron", "dark"] as const) {
+        const tile = firstRasterTile(getBasemapStyle(id));
+        assert.equal(tile.includes("cartocdn.com"), false);
+        assert.match(tile, /tile\.openstreetmap\.org/);
+      }
+
+      process.env.NEXT_PUBLIC_CARTO_API_KEY = "test-not-a-real-key";
+      const positron = firstRasterTile(getBasemapStyle("positron"));
+      const dark = firstRasterTile(getBasemapStyle("dark"));
+      assert.match(positron, /cartocdn\.com\/light_all/);
+      assert.match(dark, /cartocdn\.com\/dark_all/);
+      assert.match(positron, /[?&]key=/);
+      assert.match(dark, /[?&]key=/);
+    } finally {
+      if (prev === undefined) delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
+      else process.env.NEXT_PUBLIC_CARTO_API_KEY = prev;
+    }
   });
 
   it("does not swap the default to a brand or remote OpenFreeMap style URL", () => {

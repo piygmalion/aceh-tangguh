@@ -46,7 +46,7 @@ export function GuideMessage({
               className={cn(TYPE_FLOOR_CLASS, "font-semibold")}
               onClick={() => onLink(item.href, item.hash)}
             >
-              {t(item.labelKey)}
+              {t.has(item.labelKey) ? t(item.labelKey) : item.labelKey}
             </Chip>
           ))}
         </div>

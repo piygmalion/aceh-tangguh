@@ -9,6 +9,7 @@ import {
   matchGuideIntent,
   shouldShowGuideBot,
 } from "./match";
+import { mergeFaqCatalog, parseFaqCatalogItems } from "./faq";
 import { chipsForPathname, welcomeQueryForPath } from "./page-context";
 import type { GuideContext } from "./types";
 import { sanitizeUnknownQuery } from "./unknown";
@@ -171,6 +172,44 @@ describe("panduan matcher", () => {
     assert.equal(chipsForPathname("/").at(-1), "lapor");
     assert.equal(welcomeQueryForPath("/destana", "id"), "destana");
     assert.equal(welcomeQueryForPath("/", "id"), "apa itu aceh tangguh");
+  });
+
+  it("answers the three screenshot queries without an empty body", () => {
+    const cuaca = matchGuideIntent("bagaimana cuaca hari ini", "id");
+    assert.equal(cuaca.intent, "cuaca");
+    const cuacaAnswer = composeGuideAnswer(cuaca, { failed: ["weather", "peringatan"] }, "id");
+    assert.ok(cuacaAnswer.body.trim().length >= 12);
+    assert.match(cuacaAnswer.body, /tertunda|cuaca/i);
+    assert.doesNotMatch(cuacaAnswer.body, /korban jiwa \d+/i);
+
+    const lapor = matchGuideIntent("saya mau melapor", "id");
+    assert.equal(lapor.intent, "lapor");
+    const laporAnswer = composeGuideAnswer(lapor, emptyCtx(), "id");
+    assert.ok(laporAnswer.body.trim().length >= 12);
+    assert.equal(laporAnswer.links.some((item) => item.href === "/lapor/kejadian"), true);
+
+    const banding = matchGuideIntent("bandingkan data kabupaten", "id");
+    const bandingAnswer = composeGuideAnswer(banding, emptyCtx(), "id");
+    assert.ok(bandingAnswer.body.trim().length >= 12);
+    assert.doesNotMatch(bandingAnswer.body, /korban jiwa \d+/i);
+  });
+
+  it("drops kejadian-shaped FAQ payloads so matcher still answers", () => {
+    const junk = [
+      {
+        id: "64655b98-0afa-47a4-805f-8ee1a32f65f8",
+        jenis_bencana: "Kebakaran gedung dan permukiman",
+        kabupaten: "Banda Aceh",
+      },
+    ];
+    assert.equal(parseFaqCatalogItems(junk).length, 0);
+    const catalog = mergeFaqCatalog(junk);
+    assert.ok(catalog.every((entry) => Array.isArray(entry.patterns.id)));
+    const cuaca = matchGuideIntent("bagaimana cuaca hari ini", "id", { faq: catalog });
+    assert.equal(cuaca.intent, "cuaca");
+    assert.doesNotThrow(() =>
+      matchGuideIntent("saya mau melapor", "id", { faq: junk as never })
+    );
   });
 
   it("sanitizes unknown logs and keeps the LLM gate closed", () => {

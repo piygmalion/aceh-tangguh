@@ -88,8 +88,9 @@ function rasterStyle(opts: {
 
 /**
  * Optional OpenFreeMap vector styles. Not the default — the sandbox has already
- * failed to load this CDN (empty map). Enable with `?vector=1`; Carto raster is
- * the fallback if the style fetch fails.
+ * failed to load this CDN (empty map). Enable with `?vector=1`. Raster fallback
+ * is keyed Carto, or OSM.org if `NEXT_PUBLIC_CARTO_API_KEY` is unset (unkeyed
+ * Carto tiles are watermarked).
  */
 export const BASEMAP_VECTOR_URLS: Partial<Record<BasemapId, string>> = {
   positron: "https://tiles.openfreemap.org/styles/positron",
@@ -97,30 +98,45 @@ export const BASEMAP_VECTOR_URLS: Partial<Record<BasemapId, string>> = {
   streets: "https://tiles.openfreemap.org/styles/liberty",
 };
 
-/** Default operational styles: Carto/OSM raster XYZ, Esri, Sentinel-2 Cloudless. */
-export const BASEMAP_RASTER: Record<RasterBasemapId, BasemapStyle> = {
-  positron: rasterStyle({
-    name: "positron-raster",
-    tiles: [
-      "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-      "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-      "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-    ],
-    attribution: "© CARTO © OpenStreetMap",
-  }),
-  dark: rasterStyle({
-    name: "dark-raster",
-    tiles: [
-      "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-      "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-      "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-    ],
-    attribution: "© CARTO © OpenStreetMap",
-  }),
+const OSM_RASTER_TILES = ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
+const OSM_RASTER_ATTRIBUTION = "© OpenStreetMap contributors";
+
+/** Browser-visible Carto basemap key. Never log the value. */
+export function cartoBasemapKeyPresent(): boolean {
+  return Boolean(process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim());
+}
+
+function cartoTileUrls(style: "light_all" | "dark_all"): string[] {
+  const key = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim() ?? "";
+  const q = `?key=${encodeURIComponent(key)}`;
+  return ["a", "b", "c"].map(
+    (s) => `https://${s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}.png${q}`
+  );
+}
+
+function cartoOrOsmRaster(opts: {
+  name: string;
+  cartoStyle: "light_all" | "dark_all";
+}): Record<string, unknown> {
+  if (cartoBasemapKeyPresent()) {
+    return rasterStyle({
+      name: opts.name,
+      tiles: cartoTileUrls(opts.cartoStyle),
+      attribution: "© CARTO © OpenStreetMap",
+    });
+  }
+  return rasterStyle({
+    name: opts.name,
+    tiles: OSM_RASTER_TILES,
+    attribution: OSM_RASTER_ATTRIBUTION,
+  });
+}
+
+const STATIC_RASTER = {
   streets: rasterStyle({
     name: "streets-raster",
-    tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-    attribution: "© OpenStreetMap contributors",
+    tiles: OSM_RASTER_TILES,
+    attribution: OSM_RASTER_ATTRIBUTION,
   }),
   satellite: rasterStyle({
     name: "satellite",
@@ -136,12 +152,52 @@ export const BASEMAP_RASTER: Record<RasterBasemapId, BasemapStyle> = {
       "Sentinel-2 cloudless © EOX (modified Copernicus Sentinel data 2024)",
     maxzoom: 14,
   }),
+} as const;
+
+let rasterCatalogKey = "\0";
+let rasterCatalog: Record<RasterBasemapId, BasemapStyle> | null = null;
+
+export function getBasemapRasterCatalog(): Record<RasterBasemapId, BasemapStyle> {
+  const key = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim() ?? "";
+  if (!rasterCatalog || rasterCatalogKey !== key) {
+    rasterCatalogKey = key;
+    rasterCatalog = {
+      positron: cartoOrOsmRaster({
+        name: "positron-raster",
+        cartoStyle: "light_all",
+      }),
+      dark: cartoOrOsmRaster({ name: "dark-raster", cartoStyle: "dark_all" }),
+      streets: STATIC_RASTER.streets,
+      satellite: STATIC_RASTER.satellite,
+      sentinel: STATIC_RASTER.sentinel,
+    };
+  }
+  return rasterCatalog;
+}
+
+/** Default operational styles: keyed Carto or OSM raster, Esri, Sentinel-2. */
+export const BASEMAP_RASTER: Record<RasterBasemapId, BasemapStyle> = {
+  get positron() {
+    return getBasemapRasterCatalog().positron;
+  },
+  get dark() {
+    return getBasemapRasterCatalog().dark;
+  },
+  get streets() {
+    return getBasemapRasterCatalog().streets;
+  },
+  get satellite() {
+    return getBasemapRasterCatalog().satellite;
+  },
+  get sentinel() {
+    return getBasemapRasterCatalog().sentinel;
+  },
 };
 
 /** @deprecated Alias — raster is the default, not a fallback. */
 export const BASEMAP_RASTER_FALLBACKS = BASEMAP_RASTER;
 
-/** Carto raster to use if a brand vector style/source fails. */
+/** Keyed Carto (or OSM if no key) if a brand vector style/source fails. */
 export const BRAND_RASTER_FALLBACK: Record<BrandBasemapId, RasterBasemapId> = {
   "brand-light": "positron",
   "brand-dark": "dark",
@@ -175,13 +231,12 @@ export function getBasemapStyle(
   // rasterFallback kept so older call sites that meant “use Carto” still work.
   const useVector = opts?.preferVector === true && opts?.rasterFallback !== true;
   if (useVector) {
-    const vector = BASEMAP_VECTOR_URLS[id];
-    if (vector) return vector;
+    return BASEMAP_VECTOR_URLS[id] ?? BASEMAP_RASTER[id];
   }
   return BASEMAP_RASTER[id];
 }
 
-/** Default export used by the map: Carto rasters stay default; brand styles are extra. */
+/** Default export used by the map: keyed Carto or OSM rasters; brand styles are extra. */
 export const BASEMAP_STYLES: Record<BasemapId, BasemapStyle> = {
   ...BASEMAP_RASTER,
   ...BASEMAP_BRAND,

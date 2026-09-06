@@ -293,6 +293,48 @@ Riset ECC atas G0–G19 + pohon kode. Naskah: [06-skema-kerapian.md](06-skema-ke
 | FE-24 | frontend | Cangkang tabel admin bersama | jurnal/FE-24.md | selesai |
 | KOORD-ECC-S | ecc | Review uji + browser | jurnal/KOORD-ECC-S.md | selesai |
 
+## Gelombang 21 — Bahaya InaRISK poligon kelas
+
+Naskah AN-31 mengunci ImageServer `exportImage` amplop `ACEH_BBOX` → poligon sedang/tinggi. ID data = DATA-20 karena DATA-14 sudah registri kab. Jangan menimpa AN-19 / DATA-11 / FE-17. Jangan POST nasional. Jangan mengubah clip patahan. Jangan hapus proxy ubin. DATA-4 tetap tertahan.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-31 | analis | Naskah bahaya InaRISK jadi poligon kelas | jurnal/AN-31.md | selesai |
+| DATA-20 | data | ETL fixture poligon bahaya | jurnal/DATA-20.md | selesai |
+| FE-26 | frontend | Katalog fill + path static bahaya | jurnal/FE-26.md | selesai |
+
+## Gelombang 22 — sisa lokal (chrome, cuaca, peta, tilikan)
+
+Bukan gelombang overlay baru. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan ingest pengungsian/orang. Jangan `upsert_marker_features`.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-28 | frontend | Oranye navbar sebagai penanda interaksi | jurnal/FE-28.md | selesai |
+| FE-27 | frontend | Popup konteks AI di dalam #cuaca | jurnal/FE-27.md | selesai |
+| DATA-21 | data | Dissolve R3P ke kabupaten + PMTiles LOD | jurnal/DATA-21.md | selesai |
+| FE-29 | frontend | Kartu keterangan titik peta | jurnal/FE-29.md | selesai |
+| DATA-22 | data | Tabel staf tilikan kerusakan infra | jurnal/DATA-22.md | selesai |
+
+## Gelombang 23 — IRBI/KRB pada Analisis data
+
+Dua variabel kabupaten × jenis ancaman IRBI/KRB di `/analisis-data`. Analogi historis rumah rusak, bukan prediksi. Angka IRBI/KRB tidak dijumlahkan ke KPI katalog. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menimpa AN-31/FE-26. UI frontend = FE-30 (ID FE-27 di main sudah dialog cuaca).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-32 | analis | Naskah kab × ancaman + analogi | jurnal/AN-32.md | selesai |
+| FE-30 | frontend | Panel Ancaman × riwayat | jurnal/FE-30.md | selesai |
+| AN-33 | analis | Uji penerimaan IRBI/KRB analisis | jurnal/AN-33.md | selesai |
+
+## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
+
+Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-34 | analis | Naskah Histori + Proyeksi Dampak | jurnal/AN-34.md | selesai |
+| FE-31 | frontend | Panel Histori + Proyeksi Dampak | jurnal/FE-31.md | selesai |
+| AN-35 | analis | Uji penerimaan proyeksi | jurnal/AN-35.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

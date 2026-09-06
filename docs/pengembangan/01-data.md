@@ -113,6 +113,18 @@ Jurnal: `jurnal/DATA-18.md`. Hapus atau dokumentasikan `boundaries-aceh-stub.geo
 
 Kontrak: [jurnal/AN-27.md](jurnal/AN-27.md) (`siap-kode`). Jangan mengubah `matchesKabScope`. Jangan menukar `kode_sik` staf. Jangan memakai `toDottedKabKode` sebagai identitas (empat pasang Tamiang/Jaya dan Langsa/Lhokseumawe). Jangan menebak kode perangkat.
 
+### DATA-20 — ETL fixture poligon bahaya InaRISK
+
+Jurnal: `jurnal/DATA-20.md`. Gelombang 21. Kontrak AN-31. Enam ImageServer `exportImage` amplop `ACEH_BBOX` → poligon sedang/tinggi. Jangan POST nasional. Jangan menimpa patahan. Jangan hapus proxy ubin. Jangan DATA-4.
+
+### DATA-21 — dissolve R3P ke kabupaten + PMTiles LOD
+
+Jurnal: `jurnal/DATA-21.md`. Gelombang 22. Agregat 4 digit saja. Jangan mengarang kode. Jangan DATA-4.
+
+### DATA-22 — tabel staf tilikan kerusakan infra
+
+Jurnal: `jurnal/DATA-22.md`. Gelombang 22. RLS `is_staff()`. Bukan layer publik. Jangan ingest pengungsian. Jangan DATA-4.
+
 ## Saat menutup tiket
 
 Perbarui baris tiket di [STATUS.md](STATUS.md). Jangan commit.

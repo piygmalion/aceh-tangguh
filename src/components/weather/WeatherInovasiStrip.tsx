@@ -3,6 +3,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Chip } from "@/components/ui/Chip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
@@ -41,30 +49,32 @@ export function WeatherInovasiStrip() {
   const points = usable ? data.body.kabupaten_kota : [];
 
   return (
-    <section
-      id="cuaca-inovasi"
-      aria-label={t("title")}
-      className="scroll-mt-28 border-b border-[var(--glass-border)] px-4 py-6"
-    >
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h2 className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
-              {t("title")}
-            </h2>
-            <p className={cn("mt-1 max-w-2xl text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-              {t("lead")}
-            </p>
-          </div>
-          <Chip tone="warn">{t("pill")}</Chip>
-        </div>
-
-        {isLoading ? (
-          <p className={cn("mt-4 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-            {t("delayed")}
-          </p>
-        ) : usable ? (
-          <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+    <Dialog>
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          aria-label={t("triggerAria")}
+          className="inline-flex items-center gap-2 rounded-full border border-transparent bg-[var(--warn-dim)] px-3.5 py-1.5 text-sm font-medium text-[var(--warn)] transition duration-200 hover:brightness-110"
+        >
+          {t("trigger")}
+        </button>
+      </DialogTrigger>
+      <DialogContent className="max-h-[90vh] overflow-y-auto border-[var(--glass-border)] bg-[var(--bg-raised)] p-6 text-[var(--text)] sm:max-w-2xl">
+        <DialogHeader className="flex flex-col gap-2 space-y-0 text-left sm:flex-row sm:items-start sm:justify-between">
+          <DialogTitle className={cn("pr-8 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+            {t("title")}
+          </DialogTitle>
+          <Chip tone="warn" className="shrink-0">
+            {t("pill")}
+          </Chip>
+        </DialogHeader>
+        <DialogDescription className={cn("text-left text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+          {t("lead")}
+        </DialogDescription>
+        {isLoading || !usable ? (
+          <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("delayed")}</p>
+        ) : (
+          <ul className="grid gap-2 sm:grid-cols-2">
             {points.map((row) => (
               <li
                 key={row.slug}
@@ -83,16 +93,9 @@ export function WeatherInovasiStrip() {
               </li>
             ))}
           </ul>
-        ) : (
-          <p className={cn("mt-4 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-            {t("delayed")}
-          </p>
         )}
-
-        <p className={cn("mt-4 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-          {t("attribution")}
-        </p>
-      </div>
-    </section>
+        <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("attribution")}</p>
+      </DialogContent>
+    </Dialog>
   );
 }

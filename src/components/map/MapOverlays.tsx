@@ -4,13 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import type { FeatureCollection } from "geojson";
 import { useMemo } from "react";
 import { Layer, Popup, Source } from "react-map-gl/maplibre";
-import { useTranslations } from "next-intl";
-import { Chip } from "@/components/ui/Chip";
+import { MapFeatureCard, fetchFeatureCard } from "@/components/map/MapFeatureCard";
+import { toFeatureCard } from "@/lib/feature-card";
 import { fetchOverlayGeojson } from "@/hooks/useOverlayGeojson";
-import { fetchPublicApi } from "@/lib/preview/public-api";
 import { isStaticExport, withBasePath } from "@/lib/preview/env";
 import { qk } from "@/lib/qk";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
+import { overlayIconImageId } from "@/lib/layer-icons";
 import {
   overlayCatalogEntry,
   overlayCircleLayerId,
@@ -21,15 +21,15 @@ import {
   overlayLineLayerId,
   overlayRasterLayerId,
   overlaySourceId,
+  overlaySymbolLayerId,
 } from "@/lib/overlay-layers";
 import type { OverlayLayerKey } from "@/lib/types";
-import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
-import { cn } from "@/lib/utils";
 
 const EMPTY_FC: FeatureCollection = { type: "FeatureCollection", features: [] };
 
 export type OverlayHit = {
   key: OverlayLayerKey;
+  id: string;
   lng: number;
   lat: number;
   title: string;
@@ -43,20 +43,6 @@ export type OverlayHit = {
   windFrom?: string | null;
   windSpeed?: number | null;
   stale?: boolean;
-};
-
-type PortForecast = {
-  kode: string;
-  name: string;
-  issued: string | null;
-  stale: boolean;
-  slot: {
-    weather?: string;
-    wave_cat?: string;
-    wave_height?: number;
-    wind_from?: string;
-    wind_speed?: number;
-  } | null;
 };
 
 function asText(value: unknown): string | null {
@@ -82,6 +68,7 @@ export { overlayInteractiveLayerIds };
 
 export function pickOverlayHit(
   features: Array<{
+    id?: string | number;
     layer?: { id?: string };
     geometry?: { type?: string; coordinates?: unknown };
     properties?: Record<string, unknown> | null;
@@ -105,12 +92,20 @@ export function pickOverlayHit(
     }
     const props = feature.properties ?? {};
     const kode = asText(props.code) ?? asText(props.kode_bmkg) ?? asText(props.kode);
+    const id =
+      asText(props.featureId) ??
+      asText(props.id) ??
+      kode ??
+      asText(feature.id) ??
+      asText(props.title) ??
+      key;
     return {
       key,
+      id,
       lng,
       lat,
       title: asText(props.title) ?? asText(props.name) ?? asText(props.perairan) ?? key,
-      status: asText(props.status) ?? asText(props.wave_cat) ?? asText(props.weather) ?? undefined,
+      status: asText(props.kelas) ?? asText(props.status) ?? asText(props.wave_cat) ?? asText(props.weather) ?? undefined,
       subtitle: asText(props.Segment) ?? asText(props.stakeholder) ?? asText(props.wilayah) ?? undefined,
       href: asText(props.href) ?? undefined,
       kode,
@@ -125,22 +120,14 @@ export function pickOverlayHit(
   return null;
 }
 
-async function fetchPortForecast(kode: string): Promise<PortForecast> {
-  const res = await fetchPublicApi(
-    `/api/overlay/maritime/pelabuhan/${encodeURIComponent(kode)}`,
-  );
-  if (!res.ok) {
-    return { kode, name: kode, issued: null, stale: true, slot: null };
-  }
-  return (await res.json()) as PortForecast;
-}
-
 function OverlayVector({
   overlayKey,
   beforeId,
+  iconsReady,
 }: {
   overlayKey: OverlayLayerKey;
   beforeId?: string;
+  iconsReady: boolean;
 }) {
   const kind = overlayCatalogEntry(overlayKey)?.kind ?? "point";
   const color = overlayColor(overlayKey);
@@ -159,6 +146,13 @@ function OverlayVector({
         properties: {
           ...f.properties,
           layer: overlayKey,
+          featureId: String(
+            f.id ??
+              (f.properties as { id?: unknown; code?: unknown; kode_bmkg?: unknown } | null)?.id ??
+              (f.properties as { code?: unknown } | null)?.code ??
+              (f.properties as { kode_bmkg?: unknown } | null)?.kode_bmkg ??
+              "",
+          ),
           color: (f.properties as { fillColor?: string } | null)?.fillColor || color,
         },
       })),
@@ -170,17 +164,30 @@ function OverlayVector({
   if (kind === "point") {
     return (
       <Source id={overlaySourceId(overlayKey)} type="geojson" data={geojson} generateId>
-        <Layer
-          id={overlayCircleLayerId(overlayKey)}
-          type="circle"
-          paint={{
-            "circle-color": ["coalesce", ["get", "color"], color],
-            "circle-radius": overlayKey === "maritimePorts" ? 7 : 6,
-            "circle-stroke-width": 1.5,
-            "circle-stroke-color": COLOR_TOKENS.paper,
-            "circle-opacity": 0.92,
-          }}
-        />
+        {iconsReady ? (
+          <Layer
+            id={overlaySymbolLayerId(overlayKey)}
+            type="symbol"
+            layout={{
+              "icon-image": overlayIconImageId(overlayKey),
+              "icon-size": 1,
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+            }}
+          />
+        ) : (
+          <Layer
+            id={overlayCircleLayerId(overlayKey)}
+            type="circle"
+            paint={{
+              "circle-color": ["coalesce", ["get", "color"], color],
+              "circle-radius": overlayKey === "maritimePorts" ? 7 : 6,
+              "circle-stroke-width": 1.5,
+              "circle-stroke-color": COLOR_TOKENS.paper,
+              "circle-opacity": 0.92,
+            }}
+          />
+        )}
       </Source>
     );
   }
@@ -260,6 +267,29 @@ function OverlayRaster({
   );
 }
 
+function overlayFallbackCard(hit: OverlayHit) {
+  return toFeatureCard({
+    type: "Feature",
+    id: hit.id,
+    geometry: { type: "Point", coordinates: [hit.lng, hit.lat] },
+    properties: {
+      layer: hit.key,
+      title: hit.title,
+      status: hit.status,
+      featureId: hit.id,
+      code: hit.kode,
+      kode_bmkg: hit.kode,
+      weather: hit.weather,
+      wave_cat: hit.waveCat,
+      wave_height: hit.waveHeight,
+      wind_from: hit.windFrom,
+      wind_speed: hit.windSpeed,
+      stale: hit.stale,
+      href: hit.href,
+    },
+  });
+}
+
 function OverlayPopup({
   hit,
   onClose,
@@ -267,99 +297,34 @@ function OverlayPopup({
   hit: OverlayHit;
   onClose: () => void;
 }) {
-  const t = useTranslations("map");
-  const needForecast = hit.key === "maritimePorts" && Boolean(hit.kode);
-  const { data, isFetching } = useQuery({
-    queryKey: qk.overlayPort(hit.kode ?? ""),
-    queryFn: () => fetchPortForecast(hit.kode!),
-    enabled: needForecast,
-    staleTime: 5 * 60_000,
+  const { data, isFetching, isError } = useQuery({
+    queryKey: qk.featureCard(hit.id, hit.key),
+    queryFn: () => fetchFeatureCard(hit.id, hit.key),
+    staleTime: 60_000,
   });
-
-  const slot = data?.slot;
-  const name = data?.name || hit.title;
-  const stale = data?.stale ?? hit.stale ?? false;
-  const weather = slot?.weather ?? hit.weather;
-  const waveCat = slot?.wave_cat ?? hit.waveCat;
-  const waveHeight =
-    typeof slot?.wave_height === "number" ? slot.wave_height : hit.waveHeight;
-  const windFrom = slot?.wind_from ?? hit.windFrom;
-  const windSpeed =
-    typeof slot?.wind_speed === "number" ? slot.wind_speed : hit.windSpeed;
 
   const lng = Number.isFinite(hit.lng) ? hit.lng : 96.5;
   const lat = Number.isFinite(hit.lat) ? hit.lat : 4.3;
+  const card = data ?? (isError ? overlayFallbackCard(hit) : null);
 
   return (
     <Popup
       longitude={lng}
       latitude={lat}
       anchor="top"
+      offset={14}
+      maxWidth="22rem"
+      className="map-feature-popup"
+      closeButton={false}
       onClose={onClose}
       closeOnClick={false}
     >
-      <div className="max-w-[16rem] text-sm">
-        <div className="font-semibold text-[var(--text)]">{name}</div>
-        <div className={cn("mt-0.5 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-          {t(hit.key)}
-        </div>
-        {hit.subtitle ? (
-          <div className={cn("mt-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-            {hit.subtitle}
-          </div>
-        ) : null}
-        {needForecast && isFetching ? (
-          <p className={cn("mt-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-            {t("overlayForecastLoading")}
-          </p>
-        ) : null}
-        {weather ? (
-          <p className="mt-2 text-[var(--text)]">{weather}</p>
-        ) : null}
-        {waveCat ? (
-          <p className={cn("mt-1 text-[var(--text)]", TYPE_FLOOR_CLASS)}>
-            {t("overlayWaveCat", { value: waveCat })}
-          </p>
-        ) : null}
-        {typeof waveHeight === "number" ? (
-          <p className={cn("text-[var(--text)]", TYPE_FLOOR_CLASS)}>
-            {t("overlayWaveHeight", { value: waveHeight })}
-          </p>
-        ) : null}
-        {windFrom || typeof windSpeed === "number" ? (
-          <p className={cn("text-[var(--text)]", TYPE_FLOOR_CLASS)}>
-            {t("overlayWind", {
-              from: windFrom ?? "—",
-              speed: typeof windSpeed === "number" ? String(windSpeed) : "—",
-            })}
-          </p>
-        ) : null}
-        {needForecast && !isFetching && !slot && !weather && !waveCat ? (
-          <p className={cn("mt-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-            {t("overlayForecastMissing")}
-          </p>
-        ) : null}
-        {stale ? (
-          <Chip tone="warn" className={cn("mt-2 px-2 py-0.5", TYPE_FLOOR_CLASS)}>
-            {t("overlayStale")}
-          </Chip>
-        ) : null}
-        {hit.key === "maritimePorts" || hit.key === "maritimeWaters" ? (
-          <p className={cn("mt-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-            {t("overlayBmkgCredit")}
-          </p>
-        ) : null}
-        {hit.href ? (
-          <a
-            href={hit.href}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-1.5 inline-block text-xs text-[var(--primary)] underline"
-          >
-            {hit.href}
-          </a>
-        ) : null}
-      </div>
+      <MapFeatureCard
+        card={card}
+        loading={isFetching && !data}
+        error={isError && !data}
+        onClose={onClose}
+      />
     </Popup>
   );
 }
@@ -369,11 +334,13 @@ export function MapOverlays({
   beforeId,
   popup,
   onPopupClose,
+  iconsReady = false,
 }: {
   keys: OverlayLayerKey[];
   beforeId?: string;
   popup: OverlayHit | null;
   onPopupClose: () => void;
+  iconsReady?: boolean;
 }) {
   const skipRaster = isStaticExport();
   return (
@@ -385,7 +352,14 @@ export function MapOverlays({
           if (skipRaster) return null;
           return <OverlayRaster key={key} overlayKey={key} beforeId={beforeId} />;
         }
-        return <OverlayVector key={key} overlayKey={key} beforeId={beforeId} />;
+        return (
+          <OverlayVector
+            key={key}
+            overlayKey={key}
+            beforeId={beforeId}
+            iconsReady={iconsReady}
+          />
+        );
       })}
       {popup ? <OverlayPopup hit={popup} onClose={onPopupClose} /> : null}
     </>

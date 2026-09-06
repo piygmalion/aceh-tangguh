@@ -32,8 +32,11 @@ describe("AN-19 overlay vector paths", () => {
     assert.doesNotMatch(hook, /fetchPublicApi\(`\/api\/overlay\/\$\{key\}`\)/);
   });
 
-  it("rejects raster bahaya keys", () => {
-    assert.throws(() => overlayVectorApiPath("inariskBahayaGempa"));
+  it("maps InaRISK bahaya class polygons to static fixtures", () => {
+    assert.equal(
+      overlayVectorApiPath("inariskBahayaGempa"),
+      "/api/overlay/static/inariskBahayaGempa",
+    );
   });
 
   it("404 /api/overlay/{static-key} hints the AN-19 path", () => {

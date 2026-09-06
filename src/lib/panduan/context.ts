@@ -96,7 +96,7 @@ export async function loadGuideContext(
 ): Promise<GuideContext> {
   const keys =
     keysOverride ??
-    (match.intent === "unknown" ? [] : CONTEXT_FOR_INTENT[match.intent]);
+    (match.intent === "unknown" ? [] : (CONTEXT_FOR_INTENT[match.intent] ?? []));
   const need = new Set<GuideContextKey>(keys);
 
   const ctx: GuideContext = { failed: [] };

@@ -19,7 +19,7 @@ import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { chipsForPathname, type GuideChipKey, welcomeQueryForPath } from "@/lib/panduan/page-context";
 import { HOME_TOUR_STEPS } from "@/lib/panduan/tour-steps";
-import type { GuideHref, GuideLocale, GuideSlots } from "@/lib/panduan/types";
+import type { GuideAnswer, GuideHref, GuideLocale, GuideSlots } from "@/lib/panduan/types";
 import { shouldShowGuideBot } from "@/lib/panduan/match";
 import { logUnknownIntent } from "@/lib/panduan/unknown";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -44,6 +44,17 @@ const CHIP_QUERY: Record<GuideChipKey, { id: string; en: string }> = {
 
 function nextId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function safeFallbackAnswer(locale: GuideLocale): GuideAnswer {
+  return {
+    intent: "unknown",
+    body:
+      locale === "en"
+        ? "Tanggapi could not finish that answer. Open emergency contacts, or call 112 in an emergency. I do not invent casualty figures."
+        : "Tanggapi belum bisa merangkai jawaban itu. Buka nomor penting, atau hubungi 112 jika darurat. Saya tidak mengarang angka korban.",
+    links: [{ href: "/nomor-penting", labelKey: "linkNomor" }],
+  };
 }
 
 const FOCUSABLE =
@@ -198,19 +209,31 @@ export function GuideBot() {
   }, []);
 
   const pushWelcome = useCallback(async () => {
-    const query = welcomeQueryForPath(pathname, locale);
-    const match = matchGuideIntent(query, locale, { ...sessionRef.current, faq });
-    const ctx = await loadGuideContext(match, locale);
-    const answer = composeGuideAnswer(match, ctx, locale);
-    rememberSlots(match);
-    setMessages([
-      {
-        id: nextId("bot"),
-        role: "bot",
-        body: answer.body,
-        answer,
-      },
-    ]);
+    try {
+      const query = welcomeQueryForPath(pathname, locale);
+      const match = matchGuideIntent(query, locale, { ...sessionRef.current, faq });
+      const ctx = await loadGuideContext(match, locale);
+      const answer = composeGuideAnswer(match, ctx, locale);
+      rememberSlots(match);
+      setMessages([
+        {
+          id: nextId("bot"),
+          role: "bot",
+          body: answer.body,
+          answer,
+        },
+      ]);
+    } catch {
+      const fallback = safeFallbackAnswer(locale);
+      setMessages([
+        {
+          id: nextId("bot"),
+          role: "bot",
+          body: fallback.body,
+          answer: fallback,
+        },
+      ]);
+    }
   }, [faq, locale, pathname, rememberSlots]);
 
   const handleOpen = useCallback(() => {
@@ -270,26 +293,44 @@ export function GuideBot() {
 
         setTourIndex(null);
         if (shouldUseGroundedLlm(match)) {
-          const grounded = await askGroundedLlm({
-            query,
-            locale,
-            pathname,
-            slots: sessionRef.current,
-          });
-          if (grounded) {
-            setMessages((current) => [
-              ...current,
-              { id: nextId("bot"), role: "bot", body: grounded.body, answer: grounded },
-            ]);
-            return;
+          try {
+            const grounded = await askGroundedLlm({
+              query,
+              locale,
+              pathname,
+              slots: sessionRef.current,
+            });
+            if (grounded) {
+              setMessages((current) => [
+                ...current,
+                { id: nextId("bot"), role: "bot", body: grounded.body, answer: grounded },
+              ]);
+              return;
+            }
+          } catch {
+            // V1 below — do not leave the user bubble unanswered.
           }
         }
 
-        const ctx = await loadGuideContext(match, locale);
-        const answer = composeGuideAnswer(match, ctx, locale);
+        try {
+          const ctx = await loadGuideContext(match, locale);
+          const answer = composeGuideAnswer(match, ctx, locale);
+          setMessages((current) => [
+            ...current,
+            { id: nextId("bot"), role: "bot", body: answer.body, answer },
+          ]);
+        } catch {
+          const fallback = composeGuideAnswer(match, { failed: [] }, locale);
+          setMessages((current) => [
+            ...current,
+            { id: nextId("bot"), role: "bot", body: fallback.body, answer: fallback },
+          ]);
+        }
+      } catch {
+        const fallback = safeFallbackAnswer(locale);
         setMessages((current) => [
           ...current,
-          { id: nextId("bot"), role: "bot", body: answer.body, answer },
+          { id: nextId("bot"), role: "bot", body: fallback.body, answer: fallback },
         ]);
       } finally {
         setBusy(false);

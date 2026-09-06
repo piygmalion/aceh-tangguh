@@ -9,7 +9,7 @@ import type { OverlayLayerKey } from "@/lib/types";
 
 const EMPTY_FC: FeatureCollection = { type: "FeatureCollection", features: [] };
 
-/** Live overlay keys that must surface BE-1 stale / upstream — not InaRISK raster. */
+/** Live overlay keys that must surface BE-1 stale / upstream — not static InaRISK fixtures. */
 export const LIVE_OVERLAY_STATUS_KEYS = [
   "bmkgQuakes",
   "magmaQuakes",

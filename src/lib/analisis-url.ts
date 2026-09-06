@@ -1,4 +1,5 @@
 import { parseAnalisisMetric, type AnalisisMetric } from "./kejadian-analisis";
+import { parseKrbJenis } from "./krb-by-kab";
 
 export type AnalisisView = "jenis" | "kab" | "waktu";
 
@@ -12,6 +13,7 @@ export type AnalisisUrlState = {
   compareKab: string;
   compareYear: string;
   view: AnalisisView | "";
+  ancaman: string;
 };
 
 export const EMPTY_ANALISIS_STATE: AnalisisUrlState = {
@@ -24,6 +26,7 @@ export const EMPTY_ANALISIS_STATE: AnalisisUrlState = {
   compareKab: "",
   compareYear: "",
   view: "",
+  ancaman: "",
 };
 
 function isoDay(value: string | null): string {
@@ -54,6 +57,7 @@ export function parseAnalisisSearchParams(
     compareKab: params.get("compareKab")?.trim() ?? "",
     compareYear: parseYear(params.get("compareYear")),
     view: parseView(params.get("view")),
+    ancaman: parseKrbJenis(params.get("ancaman")) ?? "",
   };
 }
 
@@ -68,6 +72,7 @@ export function analisisStateToParams(state: AnalisisUrlState): URLSearchParams 
   if (state.compareKab) params.set("compareKab", state.compareKab);
   if (state.compareYear) params.set("compareYear", state.compareYear);
   if (state.view) params.set("view", state.view);
+  if (state.ancaman) params.set("ancaman", state.ancaman);
   return params;
 }
 
