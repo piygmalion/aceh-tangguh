@@ -238,6 +238,21 @@ export type KejadianAnalisisQuery = KejadianQuery & {
   metric?: AnalisisMetric;
 };
 
+export type AnalisisImpactCard = {
+  id: string;
+  date: string;
+  kabupaten: string;
+  kecamatan: string;
+  penyebab: string;
+  kronologi: string;
+  rr: number;
+  rs: number;
+  rb: number;
+  jiwaTerdampak: number;
+  kkTerdampak: number;
+  pengungsi: number;
+};
+
 export type KejadianAnalisisPayload = {
   source: "supabase" | "fixture";
   total: number;
@@ -251,6 +266,7 @@ export type KejadianAnalisisPayload = {
   facets: KejadianFacets;
   sample: KejadianAnalisisSample[];
   rumahImpacts: RumahRusakCounts[];
+  impactCards: AnalisisImpactCard[];
   latestDate: string | null;
 };
 
@@ -358,6 +374,26 @@ export function monthlySeries(
   return points;
 }
 
+const IMPACT_CARD_LIMIT = 150;
+
+export function readDampakCard(row: KejadianRow): AnalisisImpactCard {
+  const rumah = readRumahRusak(row);
+  return {
+    id: row.id,
+    date: row.hari_tanggal,
+    kabupaten: kabLabel(row),
+    kecamatan: (row.lokasi?.kecamatan || "").trim(),
+    penyebab: row.penyebab ?? "",
+    kronologi: row.kronologi ?? "",
+    rr: rumah.rr,
+    rs: rumah.rs,
+    rb: rumah.rb,
+    jiwaTerdampak: asCount(row.jiwa_terdampak),
+    kkTerdampak: asCount(row.kk_terdampak),
+    pengungsi: asCount(row.pengungsi),
+  };
+}
+
 function sampleRows(rows: KejadianRow[]): KejadianAnalisisSample[] {
   return rows.slice(0, ANALISIS_SAMPLE_LIMIT).map((item) => ({
     id: item.id,
@@ -398,6 +434,7 @@ export function buildKejadianAnalisis(
     facets: buildFacets(data.kejadian),
     sample: sampleRows(filtered),
     rumahImpacts: filtered.map(readRumahRusak),
+    impactCards: filtered.slice(0, IMPACT_CARD_LIMIT).map(readDampakCard),
     latestDate: filtered[0]?.hari_tanggal ?? null,
   };
 }

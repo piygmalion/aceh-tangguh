@@ -8,8 +8,8 @@ import { Link } from "@/i18n/routing";
 import {
   buildAncamanRiwayat,
   krbJenisToDisasterJenis,
-  type AnalogRange,
 } from "@/lib/analisis-ancaman";
+import type { ProyeksiDampak, ProyeksiRange } from "@/lib/proyeksi-dampak";
 import { fetchKrb } from "@/lib/krb-by-kab";
 import type { KejadianAnalisisPayload } from "@/lib/kejadian-analisis";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -65,12 +65,107 @@ function KelasChip({ kelas }: { kelas: string }) {
   );
 }
 
+function scenarioLabel(
+  t: (key: "proyeksiScenarioParah" | "proyeksiScenarioRingan" | "proyeksiScenarioKhas") => string,
+  scenario: ProyeksiDampak["scenario"]
+): string {
+  if (scenario === "parah") return t("proyeksiScenarioParah");
+  if (scenario === "ringan") return t("proyeksiScenarioRingan");
+  return t("proyeksiScenarioKhas");
+}
+
+function ProyeksiBody({ proyeksi }: { proyeksi: ProyeksiDampak }) {
+  const t = useTranslations("analisisData");
+  const locale = useLocale();
+  const loc = locale === "id" ? "id-ID" : "en-US";
+  const empty =
+    proyeksi.grain === "none" &&
+    !proyeksi.housing &&
+    !proyeksi.jiwa &&
+    proyeksi.scale.length === 0;
+  return (
+    <div className="mt-2 space-y-2" data-analisis-ancaman="proyeksi">
+      <div className="text-sm font-medium">
+        {proyeksi.grain === "kabupaten"
+          ? t("analogLocal")
+          : proyeksi.grain === "provinsi"
+            ? t("analogProvince")
+            : t("analogNone")}
+      </div>
+      <div className="text-xs text-[var(--text-dim)]">
+        {t("proyeksiScenario", { scenario: scenarioLabel(t, proyeksi.scenario) })}
+      </div>
+      <div className="text-sm tabular-nums">{t("analogN", { count: proyeksi.n })}</div>
+      {empty ? null : (
+        <>
+          <AnalogLine label={t("analogRr")} range={proyeksi.housing} />
+          <AnalogLine label={t("proyeksiJiwa")} range={proyeksi.jiwa} />
+          <AnalogLine label={t("proyeksiKk")} range={proyeksi.kk} />
+          <AnalogLine label={t("proyeksiPengungsi")} range={proyeksi.pengungsi} />
+        </>
+      )}
+      {proyeksi.scale.length > 0 ? (
+        <div className="space-y-1">
+          <div className="text-sm font-medium">{t("proyeksiScale")}</div>
+          <ul className="space-y-1 text-sm">
+            {proyeksi.scale.map((peer) => (
+              <li key={peer.id} className="tabular-nums">
+                {t("proyeksiScalePeer", {
+                  value: peer.value.toLocaleString(loc, { maximumFractionDigits: 1 }),
+                  kabupaten: peer.kabupaten,
+                  rumah: peer.rumah.toLocaleString(loc),
+                  jiwa: peer.jiwaTerdampak.toLocaleString(loc),
+                })}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {proyeksi.corridors.length > 0 ? (
+        <div className="space-y-1">
+          <div className="text-sm font-medium">{t("proyeksiCorridor")}</div>
+          <ul className="space-y-1 text-sm">
+            {proyeksi.corridors.map((row) => (
+              <li key={row.label} className="tabular-nums">
+                {t("proyeksiCorridorRow", {
+                  label: row.label,
+                  count: row.n,
+                  jiwa: row.jiwaMedian.toLocaleString(loc),
+                })}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {proyeksi.replay.last ? (
+        <div className="text-sm text-[var(--text-dim)]">
+          {t("proyeksiReplayLast", {
+            date: proyeksi.replay.last.date,
+            kabupaten: proyeksi.replay.last.kabupaten,
+            jiwa: proyeksi.replay.last.jiwaTerdampak.toLocaleString(loc),
+          })}
+        </div>
+      ) : null}
+      {proyeksi.replay.worst &&
+      proyeksi.replay.worst.id !== proyeksi.replay.last?.id ? (
+        <div className="text-sm text-[var(--text-dim)]">
+          {t("proyeksiReplayWorst", {
+            date: proyeksi.replay.worst.date,
+            kabupaten: proyeksi.replay.worst.kabupaten,
+            jiwa: proyeksi.replay.worst.jiwaTerdampak.toLocaleString(loc),
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function AnalogLine({
   label,
   range,
 }: {
   label: string;
-  range: AnalogRange | null;
+  range: ProyeksiRange | null;
 }) {
   const t = useTranslations("analisisData");
   const locale = useLocale();
@@ -83,6 +178,7 @@ function AnalogLine({
       {t("analogRange", {
         min: range.min.toLocaleString(loc),
         median: range.median.toLocaleString(loc),
+        p75: range.p75.toLocaleString(loc),
         max: range.max.toLocaleString(loc),
       })}
     </div>
@@ -178,6 +274,8 @@ export function AnalisisAncamanPanel({
         kejadianTerakhir: localHistory?.latestDate ?? localHistory?.sample[0]?.hari_tanggal ?? null,
         localImpacts: localHistory?.rumahImpacts ?? [],
         provincialImpacts: provincialHistory?.rumahImpacts ?? [],
+        localCards: localHistory?.impactCards ?? [],
+        provincialCards: provincialHistory?.impactCards ?? [],
       },
     });
   }, [irbi, krb, kab, ancaman, localHistory, provincialHistory]);
@@ -360,27 +458,8 @@ export function AnalisisAncamanPanel({
             </div>
             {analogPending ? (
               <p className="mt-2 text-sm text-[var(--text-dim)]">{t("loading")}</p>
-            ) : result.analog.grain === "none" ? (
-              <>
-                <p className="mt-2 text-sm text-[var(--text-dim)]">{t("analogNone")}</p>
-                <div className="mt-1 text-sm tabular-nums">
-                  {t("analogN", { count: result.analog.n })}
-                </div>
-              </>
             ) : (
-              <div className="mt-2 space-y-1">
-                <div className="text-sm font-medium">
-                  {result.analog.grain === "kabupaten"
-                    ? t("analogLocal")
-                    : t("analogProvince")}
-                </div>
-                <div className="text-sm tabular-nums">
-                  {t("analogN", { count: result.analog.n })}
-                </div>
-                <AnalogLine label={t("analogRr")} range={result.analog.rr} />
-                <AnalogLine label={t("analogRs")} range={result.analog.rs} />
-                <AnalogLine label={t("analogRb")} range={result.analog.rb} />
-              </div>
+              <ProyeksiBody proyeksi={result.proyeksi} />
             )}
             <p
               className="mt-2 text-xs text-[var(--text-dim)]"
