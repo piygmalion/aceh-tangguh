@@ -4,15 +4,18 @@
  *
  *   node scripts/lib/sik-apply.mjs --extracted path.json
  *   node scripts/lib/sik-apply.mjs --extracted path.json --write-fixtures
+ *   node scripts/lib/sik-apply.mjs --extracted path.json --write-fixtures --accept-gps-quarantine
  *
- * GPS quarantines block --write-fixtures. Attribute conflicts are recorded
- * in payload.sik and do not block the write.
+ * GPS quarantines block --write-fixtures unless --accept-gps-quarantine is
+ * set AND every quarantine row still keeps existing GPS (SIK decimal >100 m
+ * is never written). Attribute conflicts are recorded in payload.sik and
+ * do not block the write.
  */
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import { spawnSync } from "child_process";
-import { mergeSikIntoKejadian } from "./sik-merge.mjs";
+import { mergeSikIntoKejadian, quarantineKeepsExistingGps } from "./sik-merge.mjs";
 import { rebuildDisasterEventLayer } from "./sik-markers.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -28,6 +31,7 @@ function argValue(argv, flag, fallback) {
 function parseArgs(argv) {
   return {
     writeFixtures: argv.includes("--write-fixtures"),
+    acceptGpsQuarantine: argv.includes("--accept-gps-quarantine"),
     extracted: argValue(argv, "--extracted", resolve(root, "scripts/_/sik-extracted.json")),
     kejadianPath: argValue(argv, "--kejadian", resolve(root, "public/fixtures/kejadian-bencana.json")),
     markersPath: argValue(argv, "--markers", resolve(root, "public/fixtures/markers.geojson")),
@@ -64,6 +68,7 @@ function main() {
         result: report.result,
         report: args.reportPath,
         writeFixtures: args.writeFixtures,
+        acceptGpsQuarantine: args.acceptGpsQuarantine,
       },
       null,
       2
@@ -76,10 +81,19 @@ function main() {
   }
 
   if (report.gpsConflicts.length) {
-    console.error(
-      `Refusing --write-fixtures: ${report.gpsConflicts.length} GPS quarantine(s). See ${args.reportPath}`
-    );
-    process.exit(2);
+    const keepsExisting = quarantineKeepsExistingGps(kejadian, report.gpsConflicts);
+    if (!args.acceptGpsQuarantine) {
+      console.error(
+        `Refusing --write-fixtures: ${report.gpsConflicts.length} GPS quarantine(s). Re-run with --accept-gps-quarantine to keep existing GPS. See ${args.reportPath}`
+      );
+      process.exit(2);
+    }
+    if (!keepsExisting) {
+      console.error(
+        `Refusing --write-fixtures: --accept-gps-quarantine requires keeping existing GPS; SIK overwrite detected. See ${args.reportPath}`
+      );
+      process.exit(2);
+    }
   }
 
   const nextFixture = {
@@ -94,7 +108,10 @@ function main() {
         new: report.new,
         fillNull: report.fillNull,
         gpsUpgrades: report.gpsUpgrades,
+        gpsConflicts: report.gpsConflicts.length,
         attributeConflicts: report.attributeConflicts.length,
+        accepted_gps_quarantine:
+          Boolean(args.acceptGpsQuarantine) && report.gpsConflicts.length > 0,
       },
     },
     kejadian,

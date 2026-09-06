@@ -5,9 +5,11 @@ Usage:
   python3 scripts/import-sik-aceh.py
   python3 scripts/import-sik-aceh.py --db data/sik/sik_aceh.db
   python3 scripts/import-sik-aceh.py --write-fixtures
+  python3 scripts/import-sik-aceh.py --write-fixtures --accept-gps-quarantine
 
 Default is dry-run (print inspect + merge counts). --write-fixtures is
-blocked when the merge reports GPS quarantines.
+blocked when the merge reports GPS quarantines unless
+--accept-gps-quarantine is set and existing GPS is kept.
 """
 from __future__ import annotations
 
@@ -191,6 +193,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Inspect and merge sik_aceh.db")
     parser.add_argument("--db", default=str(DEFAULT_DB), help="Path to sik_aceh.db")
     parser.add_argument("--write-fixtures", action="store_true")
+    parser.add_argument(
+        "--accept-gps-quarantine",
+        action="store_true",
+        help="Allow --write-fixtures when GPS conflicts keep existing coords (SIK decimal >100 m is not written).",
+    )
     parser.add_argument("--kejadian", default=None)
     parser.add_argument("--markers", default=None)
     args = parser.parse_args()
@@ -250,6 +257,8 @@ def main() -> int:
     cmd = ["node", str(APPLY), "--extracted", str(EXTRACTED)]
     if args.write_fixtures:
         cmd.append("--write-fixtures")
+    if args.accept_gps_quarantine:
+        cmd.append("--accept-gps-quarantine")
     if args.kejadian:
         cmd.extend(["--kejadian", args.kejadian])
     if args.markers:

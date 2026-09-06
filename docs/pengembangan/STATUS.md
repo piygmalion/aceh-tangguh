@@ -383,6 +383,14 @@ Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang
 | FE-31 | frontend | Panel Histori + Proyeksi Dampak | jurnal/FE-31.md | selesai |
 | AN-35 | analis | Uji penerimaan proyeksi | jurnal/AN-35.md | selesai |
 
+## GO SIK apply GPS — karantina desimal >100 m
+
+Kebijakan terkunci: konflik GPS memakai GPS existing; `attributeConflicts` tidak memblokir tulis. Langkah 1 = dry-run import (tanpa `--write-fixtures` / `--apply`). Langkah 3 = bendera `--accept-gps-quarantine`. VM Cloud: `sik_aceh.db` absen. Koordinator (tip `60f64a0`, mesin lain): matched 427, gpsConflicts 20. Jangan merge ke produksi dari tiket ini. Jangan `--apply`. DATA-4 tetap tertahan.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| DATA-23 | data | `--accept-gps-quarantine` keep-existing GPS | jurnal/DATA-23.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

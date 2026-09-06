@@ -15,11 +15,14 @@ python3 scripts/import-sik-aceh.py
 python3 scripts/import-sik-aceh.py --db data/sik/sik_aceh.db
 ```
 
-Write fixtures only after the conflict report has **zero GPS quarantines**:
+Write fixtures only after the conflict report has **zero GPS quarantines**, or with an explicit accept that **keeps existing GPS**:
 
 ```
 python3 scripts/import-sik-aceh.py --write-fixtures
+python3 scripts/import-sik-aceh.py --write-fixtures --accept-gps-quarantine
 ```
+
+`--accept-gps-quarantine` does not overwrite decimal GPS that disagree by more than 100 m. Without the flag, GPS quarantines still block `--write-fixtures`. Attribute conflicts are recorded and do not block the write.
 
 Supabase upsert is a separate dry-run by default — see `scripts/seed-sik-supabase.mjs`.
 

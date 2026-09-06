@@ -18,6 +18,7 @@ import {
   mergeSikIntoKejadian,
   naturalKey,
   newSikEventId,
+  quarantineKeepsExistingGps,
   tenDigitKode,
 } from "./sik-merge.mjs";
 import { kejadianToDisasterFeature, rebuildDisasterEventLayer } from "./sik-markers.mjs";
@@ -195,6 +196,62 @@ describe("sik merge rules", () => {
       ]
     );
     assert.equal(report.gpsConflicts.length, 1);
+    assert.equal(report.gpsConflicts[0].reason, "decimal_gps_gt_100m");
+    assert.equal(report.gpsConflicts[0].id, "ACEH-KEEP");
+    assert.ok(report.gpsConflicts[0].meters > 100);
+  });
+
+  it("keeps existing GPS on decimal_gps_gt_100m quarantine", () => {
+    const { kejadian, report } = mergeSikIntoKejadian(
+      [
+        {
+          id: "ACEH-KEEP",
+          jenis_bencana: "Longsor",
+          hari_tanggal: "2023-02-02",
+          lokasi: { kabupaten: "Pidie", desa: "A" },
+          arah_di_peta: { latitude: 5.2, longitude: 96.1 },
+        },
+      ],
+      [
+        {
+          sik_id: "ACEH-KEEP",
+          jenis_bencana: "Longsor",
+          hari_tanggal: "2023-02-02",
+          kabupaten: "Pidie",
+          desa: "A",
+          latitude: 5.3,
+          longitude: 96.2,
+          jiwa_terdampak: 11,
+        },
+      ]
+    );
+    assert.equal(report.gpsConflicts[0].reason, "decimal_gps_gt_100m");
+    assert.equal(kejadian[0].arah_di_peta.latitude, 5.2);
+    assert.equal(kejadian[0].arah_di_peta.longitude, 96.1);
+    assert.equal(kejadian[0].jiwa_terdampak, 11);
+    assert.equal(kejadian[0].payload.sik.gps, "quarantine");
+    assert.equal(quarantineKeepsExistingGps(kejadian, report.gpsConflicts), true);
+  });
+
+  it("quarantineKeepsExistingGps is false if SIK overwrite slipped through", () => {
+    assert.equal(
+      quarantineKeepsExistingGps(
+        [
+          {
+            id: "ACEH-KEEP",
+            arah_di_peta: { latitude: 5.3, longitude: 96.2 },
+          },
+        ],
+        [
+          {
+            id: "ACEH-KEEP",
+            existing: { lat: 5.2, lng: 96.1 },
+            sik: { lat: 5.3, lng: 96.2 },
+          },
+        ]
+      ),
+      false
+    );
   });
 
   it("matches natural key on 10-digit kode and does not invent kodes", () => {
@@ -452,6 +509,180 @@ con.commit()
     assert.match(out, /Dry-run: fixtures unchanged/);
     const after = JSON.parse(readFileSync(kejadianPath, "utf8"));
     assert.equal(after.kejadian.length, 0);
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe("accept-gps-quarantine write guard", () => {
+  const apply = join(root, "scripts/lib/sik-apply.mjs");
+  const importer = join(root, "scripts/import-sik-aceh.py");
+
+  function conflictFixture(dir) {
+    const kejadianPath = join(dir, "kejadian.json");
+    const markersPath = join(dir, "markers.geojson");
+    const extractedPath = join(dir, "extracted.json");
+    const reportPath = join(dir, "report.json");
+    writeFileSync(
+      kejadianPath,
+      JSON.stringify({
+        metadata: { total_kejadian_tercatat: 1, sumber: ["BPBA"] },
+        kejadian: [
+          {
+            id: "ACEH-KEEP",
+            jenis_bencana: "Longsor",
+            hari_tanggal: "2023-02-02",
+            lokasi: { kabupaten: "Pidie", desa: "A" },
+            arah_di_peta: { latitude: 5.2, longitude: 96.1 },
+          },
+        ],
+      })
+    );
+    writeFileSync(
+      markersPath,
+      JSON.stringify({ type: "FeatureCollection", features: [] })
+    );
+    writeFileSync(
+      extractedPath,
+      JSON.stringify({
+        rows: [
+          {
+            sik_id: "ACEH-KEEP",
+            jenis_bencana: "Longsor",
+            hari_tanggal: "2023-02-02",
+            kabupaten: "Pidie",
+            desa: "A",
+            latitude: 5.3,
+            longitude: 96.2,
+            jiwa_terdampak: 11,
+          },
+        ],
+      })
+    );
+    return { kejadianPath, markersPath, extractedPath, reportPath };
+  }
+
+  it("still refuses --write-fixtures on GPS quarantine without the flag", () => {
+    const dir = mkdtempSync(join(tmpdir(), "sik-q-refuse-"));
+    const paths = conflictFixture(dir);
+    let status = 0;
+    try {
+      execFileSync(
+        process.execPath,
+        [
+          apply,
+          "--extracted",
+          paths.extractedPath,
+          "--write-fixtures",
+          "--kejadian",
+          paths.kejadianPath,
+          "--markers",
+          paths.markersPath,
+          "--report",
+          paths.reportPath,
+        ],
+        { encoding: "utf8" }
+      );
+    } catch (err) {
+      status = err.status;
+    }
+    assert.equal(status, 2);
+    const after = JSON.parse(readFileSync(paths.kejadianPath, "utf8"));
+    assert.equal(after.kejadian[0].arah_di_peta.latitude, 5.2);
+    assert.equal(after.kejadian[0].jiwa_terdampak, undefined);
+    assert.equal(after.metadata.sik_merge, undefined);
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("writes fixtures with --accept-gps-quarantine while keeping existing GPS", () => {
+    const dir = mkdtempSync(join(tmpdir(), "sik-q-accept-"));
+    const paths = conflictFixture(dir);
+    const out = execFileSync(
+      process.execPath,
+      [
+        apply,
+        "--extracted",
+        paths.extractedPath,
+        "--write-fixtures",
+        "--accept-gps-quarantine",
+        "--kejadian",
+        paths.kejadianPath,
+        "--markers",
+        paths.markersPath,
+        "--report",
+        paths.reportPath,
+      ],
+      { encoding: "utf8" }
+    );
+    assert.match(out, /"gpsConflicts": 1/);
+    const merged = JSON.parse(readFileSync(paths.kejadianPath, "utf8"));
+    assert.equal(merged.kejadian[0].arah_di_peta.latitude, 5.2);
+    assert.equal(merged.kejadian[0].arah_di_peta.longitude, 96.1);
+    assert.equal(merged.kejadian[0].jiwa_terdampak, 11);
+    assert.equal(merged.metadata.sik_merge.gpsConflicts, 1);
+    assert.equal(merged.metadata.sik_merge.accepted_gps_quarantine, true);
+    assert.equal(merged.metadata.sik_merge.attributeConflicts, 0);
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("passes --accept-gps-quarantine from import-sik-aceh.py", () => {
+    const dir = mkdtempSync(join(tmpdir(), "sik-q-py-"));
+    const db = join(dir, "sik_aceh.db");
+    const { kejadianPath, markersPath } = conflictFixture(dir);
+    execFileSync("python3", [
+      "-c",
+      `
+import sqlite3
+con = sqlite3.connect(${JSON.stringify(db)})
+con.execute("create table kejadian (id text, jenis text, tanggal text, lat real, lng real, nama_kabupaten text, desa text, jiwa integer)")
+con.execute("insert into kejadian values ('ACEH-KEEP', 'Longsor', '2023-02-02', 5.3, 96.2, 'Pidie', 'A', 11)")
+con.commit()
+`,
+    ]);
+    const refused = (() => {
+      try {
+        execFileSync(
+          "python3",
+          [
+            importer,
+            "--db",
+            db,
+            "--write-fixtures",
+            "--kejadian",
+            kejadianPath,
+            "--markers",
+            markersPath,
+          ],
+          { encoding: "utf8" }
+        );
+        return 0;
+      } catch (err) {
+        return err.status;
+      }
+    })();
+    assert.equal(refused, 2);
+    const before = JSON.parse(readFileSync(kejadianPath, "utf8"));
+    assert.equal(before.kejadian[0].arah_di_peta.latitude, 5.2);
+
+    execFileSync(
+      "python3",
+      [
+        importer,
+        "--db",
+        db,
+        "--write-fixtures",
+        "--accept-gps-quarantine",
+        "--kejadian",
+        kejadianPath,
+        "--markers",
+        markersPath,
+      ],
+      { encoding: "utf8" }
+    );
+    const merged = JSON.parse(readFileSync(kejadianPath, "utf8"));
+    assert.equal(merged.kejadian[0].arah_di_peta.latitude, 5.2);
+    assert.equal(merged.kejadian[0].arah_di_peta.longitude, 96.1);
+    assert.equal(merged.kejadian[0].jiwa_terdampak, 11);
+    assert.equal(merged.metadata.sik_merge.gpsConflicts, 1);
     rmSync(dir, { recursive: true, force: true });
   });
 });

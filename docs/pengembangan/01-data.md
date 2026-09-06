@@ -125,6 +125,10 @@ Jurnal: `jurnal/DATA-21.md`. Gelombang 22. Agregat 4 digit saja. Jangan mengaran
 
 Jurnal: `jurnal/DATA-22.md`. Gelombang 22. RLS `is_staff()`. Bukan layer publik. Jangan ingest pengungsian. Jangan DATA-4.
 
+### DATA-23 — SIK GPS `--accept-gps-quarantine`
+
+Jurnal: `jurnal/DATA-23.md`. GO SIK apply GPS langkah 3. Bendera eksplisit mengizinkan `--write-fixtures` hanya jika baris quarantine tetap memakai GPS existing (SIK desimal >100 m tidak menimpa). Catat `sik_merge.gpsConflicts`. Jangan menghapus gerbang tanpa bendera. Jangan `--apply` produksi. Jangan mengarang GPS. Dry-run langkah 1 butuh `data/sik/sik_aceh.db` (gitignored).
+
 ## Saat menutup tiket
 
 Perbarui baris tiket di [STATUS.md](STATUS.md). Jangan commit.

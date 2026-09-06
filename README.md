@@ -210,11 +210,12 @@ After fixture changes, re-seed Supabase `marker_features` via the existing `upse
 
 ### SIK Aceh master (`sik_aceh.db`)
 
-Optional enrichment of `kejadian_bencana` / `disasterEvents` from the local SIK SQLite. Geometry stays on disk; the `.db` is gitignored (`data/sik/sik_aceh.db`). Dry-run default. `--write-fixtures` is refused when GPS points disagree by more than ~100 m.
+Optional enrichment of `kejadian_bencana` / `disasterEvents` from the local SIK SQLite. Geometry stays on disk; the `.db` is gitignored (`data/sik/sik_aceh.db`). Dry-run default. `--write-fixtures` is refused when GPS points disagree by more than ~100 m unless `--accept-gps-quarantine` is set; that flag keeps the existing GPS and records the quarantine count in `metadata.sik_merge.gpsConflicts`.
 
 ```
 python3 scripts/import-sik-aceh.py
 python3 scripts/import-sik-aceh.py --write-fixtures
+python3 scripts/import-sik-aceh.py --write-fixtures --accept-gps-quarantine
 node scripts/seed-sik-supabase.mjs          # dry-run
 node scripts/seed-sik-supabase.mjs --apply  # coordinator only
 ```
