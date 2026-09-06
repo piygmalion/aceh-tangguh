@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Home, X } from "lucide-react";
@@ -386,6 +386,7 @@ export function AreaProfilPanel({
   const t = useTranslations("profilDesa");
   const [view, setView] = useState<AreaProfilView>(AREA_PROFIL_INITIAL_VIEW);
   const [listOpen, setListOpen] = useState(false);
+  const listRef = useRef<HTMLElement>(null);
   const [activeKecamatan, setActiveKecamatan] = useState<KecamatanListItem | null>(
     null
   );
@@ -503,6 +504,11 @@ export function AreaProfilPanel({
         : t("kabupatenLabel");
   const showClickedHint = Boolean(selection.name) && view !== "desa";
 
+  useEffect(() => {
+    if (!listOpen) return;
+    listRef.current?.scrollIntoView({ block: "nearest" });
+  }, [listOpen]);
+
   const goBack = () => {
     const next = areaProfilBack(view);
     if (next === "close") {
@@ -606,7 +612,7 @@ export function AreaProfilPanel({
                 {listOpen ? (
                 <>
                 <Separator />
-                <section>
+                <section ref={listRef}>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
                     {t("kecamatanLabel")}
                   </h3>
@@ -659,7 +665,7 @@ export function AreaProfilPanel({
                 {listOpen ? (
                 <>
                 <Separator />
-                <section>
+                <section ref={listRef}>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
                     {t("desaLabel")}
                   </h3>

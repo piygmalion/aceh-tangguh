@@ -198,15 +198,12 @@ describe("signed Distribusi area panel IA", () => {
     });
 
     const kab = profilKabupatenSearchParams(desaClick);
-    assert.deepEqual(Array.from(kab.keys()).sort(), [
-      "kabupaten",
-      "kode_kabupaten",
-    ]);
+    assert.deepEqual(Array.from(kab.keys()), ["kabupaten"]);
     assert.equal(kab.get("kabupaten"), "Aceh Selatan");
-    assert.equal(kab.get("kode_kabupaten"), "1101");
+    assert.equal(kab.has("kode_kabupaten"), false);
     assert.equal(
       profilDesaApiPath("kabupaten", kab),
-      "/api/profil-desa/kabupaten?kabupaten=Aceh+Selatan&kode_kabupaten=1101"
+      "/api/profil-desa/kabupaten?kabupaten=Aceh+Selatan"
     );
 
     const kecByName = profilKecamatanSearchParams({
@@ -308,6 +305,24 @@ describe("signed Distribusi area panel IA", () => {
     const params = profilKabupatenSearchParams(kabPolygon);
     assert.equal(params.get("kabupaten"), "Aceh Barat");
     assert.equal(params.has("kode_kabupaten"), false);
+  });
+
+  it("looks up kab polygons by name, not dissolve kode_kab that can disagree", () => {
+    const pidie = sel({
+      name: "Pidie",
+      kabupaten: "Pidie",
+      level: "kab",
+      kodeKabupaten: "1109",
+    });
+    const params = profilKabupatenSearchParams(pidie);
+    assert.equal(params.get("kabupaten"), "Pidie");
+    assert.equal(params.has("kode_kabupaten"), false);
+    assert.equal(
+      profilKabupatenSearchParams(
+        sel({ name: "", level: "kab", kodeKabupaten: "1108" })
+      ).get("kode_kabupaten"),
+      "1108"
+    );
   });
 });
 

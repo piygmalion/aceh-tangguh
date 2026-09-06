@@ -114,23 +114,25 @@ function setAllowed(
   if (trimmed) params.set(key, trimmed);
 }
 
-/** Kabupaten: `kabupaten` | `kode_kabupaten`. */
+/**
+ * Kabupaten: `kabupaten` | `kode_kabupaten`.
+ * Prefer the clicked name. Dissolve `kode_kab` on r3p-kab can disagree with
+ * profil_desa (do not invent a replacement BPS code — just don't send it).
+ */
 export function profilKabupatenSearchParams(
   selection: VillageClickSelection
 ): URLSearchParams {
   const params = new URLSearchParams();
-  setAllowed(
-    params,
-    PROFIL_QUERY_KEYS.kabupaten,
-    "kabupaten",
-    kabupatenNameFromSelection(selection)
-  );
-  setAllowed(
-    params,
-    PROFIL_QUERY_KEYS.kabupaten,
-    "kode_kabupaten",
-    selection.kodeKabupaten
-  );
+  const name = kabupatenNameFromSelection(selection);
+  setAllowed(params, PROFIL_QUERY_KEYS.kabupaten, "kabupaten", name);
+  if (!name) {
+    setAllowed(
+      params,
+      PROFIL_QUERY_KEYS.kabupaten,
+      "kode_kabupaten",
+      selection.kodeKabupaten
+    );
+  }
   return params;
 }
 
