@@ -14,6 +14,8 @@ const pagesBase = (
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Isolated dist when several `next dev` share one repo (avoids corrupt `.next`).
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   transpilePackages: ["react-map-gl", "maplibre-gl"],
   // Vercel Functions do not serve `public/` via fs. Trace fixtures so API
   // fallbacks (`path.join(process.cwd(), "public/fixtures/...")`) keep working.

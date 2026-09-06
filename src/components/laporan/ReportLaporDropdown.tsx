@@ -1,20 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { navInteractiveClass } from "@/lib/nav-chrome";
+import { cn } from "@/lib/utils";
 
-export function ReportLaporDropdown({ className = "" }: { className?: string }) {
+export function ReportLaporDropdown({
+  className = "",
+  active = false,
+}: {
+  className?: string;
+  active?: boolean;
+}) {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   return (
-    <div className={`relative ${className}`}>
+    <div ref={rootRef} className={cn("relative", className)}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1 rounded-full bg-accent px-3.5 py-2 text-sm font-semibold text-accent-foreground transition hover:bg-[var(--accent-hover)]"
+        aria-expanded={open}
+        className={cn("inline-flex items-center gap-1 text-sm", navInteractiveClass({ active, open, shape: "pill" }))}
       >
         {t("lapor")}
         <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
@@ -24,14 +50,14 @@ export function ReportLaporDropdown({ className = "" }: { className?: string }) 
           <Link
             href="/lapor/kejadian"
             onClick={() => setOpen(false)}
-            className="block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+            className={cn("block", navInteractiveClass({ shape: "row" }))}
           >
             {t("laporKejadian")}
           </Link>
           <Link
             href="/lapor/penanganan"
             onClick={() => setOpen(false)}
-            className="block rounded-lg px-3 py-2.5 text-sm hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+            className={cn("block", navInteractiveClass({ shape: "row" }))}
           >
             {t("laporPenanganan")}
           </Link>

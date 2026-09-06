@@ -25,13 +25,16 @@ describe("nav IA groups", () => {
     assert.match(nav, /href: "\/pelatihan"/);
     assert.match(nav, /href: "\/mitra"/);
     assert.match(nav, /<ReportLaporDropdown/);
+    assert.match(nav, /active=\{laporActive\}/);
     assert.match(nav, /data-nav-ia="desktop"/);
     assert.match(nav, /data-nav-ia="mobile"/);
   });
 
-  it("uses existing primary-dim for active links and leaves Auth/Locale/Theme in place", () => {
+  it("uses accent interaction chrome and leaves Auth/Locale/Theme in place", () => {
     const nav = read("src/components/SiteNav.tsx");
-    assert.match(nav, /bg-\[var\(--primary-dim\)\]/);
+    assert.match(nav, /from "@\/lib\/nav-chrome"/);
+    assert.match(nav, /navInteractiveClass/);
+    assert.equal(/bg-\[var\(--primary-dim\)\]/.test(nav), false);
     assert.match(nav, /from "@\/components\/admin\/AuthMenu"/);
     assert.match(nav, /from "@\/components\/LocaleSwitch"/);
     assert.match(nav, /from "@\/components\/ThemeToggle"/);
