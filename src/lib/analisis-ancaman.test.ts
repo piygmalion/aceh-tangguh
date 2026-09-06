@@ -110,6 +110,32 @@ describe("buildAncamanRiwayat", () => {
     assert.equal(result.kodeKabupaten, null);
   });
 
+  it("keeps both IRBI and KRB classes when they differ", () => {
+    const krbMixed: KrbPayload = {
+      ...krb,
+      wilayah: krb.wilayah.map((row) =>
+        row.id === "11.18-gempabumi"
+          ? { ...row, kelas_ancaman: "SEDANG", skor_irbi: 12 }
+          : row
+      ),
+    };
+    const result = buildAncamanRiwayat({
+      kab: "Pidie Jaya",
+      ancaman: "gempabumi",
+      irbi,
+      krb: krbMixed,
+      history: {
+        jumlahKejadian: 0,
+        kejadianTerakhir: null,
+        localImpacts: [],
+        provincialImpacts: [],
+      },
+    });
+    assert.equal(result.irbi?.kelas, "TINGGI");
+    assert.equal(result.krb?.kelas, "SEDANG");
+    assert.notEqual(result.irbi?.kelas, result.krb?.kelas);
+  });
+
   it("stays unready until both variables are set", () => {
     const missingAncaman = buildAncamanRiwayat({
       kab: "Pidie Jaya",

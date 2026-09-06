@@ -45,6 +45,7 @@ function hrefFor(filters: TeaserFilters) {
     compareKab: "",
     compareYear: "",
     view: "",
+    ancaman: "",
   });
   return {
     pathname: "/analisis-data" as const,

@@ -250,6 +250,8 @@ export type KejadianAnalisisPayload = {
   impact: KejadianImpact;
   facets: KejadianFacets;
   sample: KejadianAnalisisSample[];
+  rumahImpacts: RumahRusakCounts[];
+  latestDate: string | null;
 };
 
 export function parseAnalisisMetric(raw: string | null | undefined): AnalisisMetric {
@@ -395,5 +397,7 @@ export function buildKejadianAnalisis(
     impact: aggregateImpact(filtered),
     facets: buildFacets(data.kejadian),
     sample: sampleRows(filtered),
+    rumahImpacts: filtered.map(readRumahRusak),
+    latestDate: filtered[0]?.hari_tanggal ?? null,
   };
 }
