@@ -720,6 +720,33 @@ html[data-theme="dark"] .map-layer-icon-disc {
   color: var(--text-dim);
 }
 
+.maplibregl-popup.map-feature-popup {
+  max-width: min(22rem, calc(100vw - 1.5rem)) !important;
+  z-index: 20;
+}
+
+.maplibregl-popup.map-feature-popup .maplibregl-popup-content {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none;
+  box-shadow: none;
+  max-width: none;
+}
+
+.maplibregl-popup.map-feature-popup .maplibregl-popup-close-button {
+  display: none;
+}
+
+.map-feature-card {
+  width: min(21rem, calc(100vw - 2rem));
+  padding: 0.85rem 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--map-chrome);
+  box-shadow: var(--shadow-elevated);
+  color: var(--text);
+}
+
 /*
  * shadcn/ui semantic aliases.
  * HEX lives on Aceh tokens above. These only reference them — do not invent brand colors.

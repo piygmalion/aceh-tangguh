@@ -49,6 +49,7 @@ import {
   VILLAGE_OUTLINE_MIN_ZOOM,
   areaOutlinePaint,
   geometryBounds,
+  isAdminLodArea,
   isAreaFillLayerId,
   isKabAreaFeature,
   mergeVillageLodFocus,
@@ -63,7 +64,6 @@ import {
 } from "@/lib/village-distribution-lod";
 import {
   MAP_CLUSTER_MAX_ZOOM,
-  MAP_DOT_MAX_ZOOM,
   MAP_DOT_RADIUS_PX,
   MAP_DOT_STROKE_PX,
   MAP_ICON_MIN_ZOOM,
@@ -71,11 +71,10 @@ import {
   markerRenderMode,
   parseStackItems,
   stackSharedCentroidDisasterEvents,
-  type StackMember,
 } from "@/lib/map-marker-chrome";
 import { registerMapChromeIcons } from "@/lib/map-symbol-images";
-import { Chip } from "@/components/ui/Chip";
-import { StatusChip } from "@/components/ui/StatusChip";
+import { MapFeatureCard, fetchFeatureCard } from "@/components/map/MapFeatureCard";
+import { toFeatureCard, type FeatureCard } from "@/lib/feature-card";
 import { useTranslations } from "next-intl";
 import {
   MapOverlays,
@@ -83,14 +82,7 @@ import {
   pickOverlayHit,
   type OverlayHit,
 } from "@/components/map/MapOverlays";
-import {
-  COORD_QUALITY_OFFSHORE,
-  COORD_QUALITY_TRUNCATED,
-  readCoordQuality,
-  type CoordQuality,
-} from "@/lib/coord-quality";
-import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
-import { cn } from "@/lib/utils";
+import { readCoordQuality } from "@/lib/coord-quality";
 
 const POINT_LAYER_IDS = [
   "marker-dots",
@@ -225,10 +217,12 @@ function highlightFilter(sel: VillageClickSelection | null): FilterSpecification
 }
 
 function AreaHighlightLayers({
+  source,
   sourceLayer,
   selection,
   beforeId,
 }: {
+  source?: string;
   sourceLayer?: string;
   selection: VillageClickSelection | null;
   beforeId?: string;
@@ -236,11 +230,13 @@ function AreaHighlightLayers({
   const filter = highlightFilter(selection);
   const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
   const before = beforeId ? { beforeId } : {};
+  const sourceProp = source ? { source } : {};
   return (
     <>
       <Layer
         id="area-highlight-fill"
         type="fill"
+        {...sourceProp}
         {...layerProps}
         {...before}
         filter={filter}
@@ -252,6 +248,7 @@ function AreaHighlightLayers({
       <Layer
         id="area-highlight-line"
         type="line"
+        {...sourceProp}
         {...layerProps}
         {...before}
         filter={filter}
@@ -267,6 +264,7 @@ function AreaHighlightLayers({
 
 function AreaOverlayLayers({
   idPrefix,
+  source,
   sourceLayer,
   areaLayer,
   outlineKind,
@@ -278,6 +276,8 @@ function AreaOverlayLayers({
   villageClickEnabled,
 }: {
   idPrefix?: string;
+  /** Injected by react-map-gl <Source> via cloneElement. */
+  source?: string;
   sourceLayer?: string;
   areaLayer: AreaLayerKey | null;
   outlineKind: "kab" | "kecamatan" | "village";
@@ -290,6 +290,7 @@ function AreaOverlayLayers({
 }) {
   const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
   const before = beforeId ? { beforeId } : {};
+  const sourceProp = source ? { source } : {};
   const filterProp = filter ? { filter } : {};
   const zoomRange = {
     ...(minzoom != null ? { minzoom } : {}),
@@ -325,6 +326,7 @@ function AreaOverlayLayers({
       <Layer
         id={overlayLayerId("area-fill", idPrefix)}
         type="fill"
+        {...sourceProp}
         {...layerProps}
         {...before}
         {...filterProp}
@@ -334,6 +336,7 @@ function AreaOverlayLayers({
       <Layer
         id={overlayLayerId("area-outline", idPrefix)}
         type="line"
+        {...sourceProp}
         {...layerProps}
         {...before}
         {...filterProp}
@@ -347,6 +350,7 @@ function AreaOverlayLayers({
       />
       {villageClickEnabled && (
         <AreaHighlightLayers
+          source={source}
           sourceLayer={sourceLayer}
           selection={villageSelection}
           beforeId={beforeId}
@@ -415,14 +419,12 @@ export function MapViewport({
   const [popup, setPopup] = useState<{
     lng: number;
     lat: number;
-    title: string;
-    status?: string;
-    layer?: MarkerLayerKey;
-    href?: string;
-    subtitle?: string;
-    coordQuality?: CoordQuality | null;
-    stackItems?: StackMember[];
+    id: string;
+    layer: string;
+    stack?: { id: string; title: string }[];
+    localCard?: FeatureCard;
   } | null>(null);
+  const [cardId, setCardId] = useState<string | null>(null);
   const [overlayPopup, setOverlayPopup] = useState<OverlayHit | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
@@ -433,7 +435,7 @@ export function MapViewport({
   const [kabFocus, setKabFocus] = useState<VillageLodFocus | null>(null);
   const [overlaySlot, setOverlaySlot] = useState<string | undefined>();
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const villageClickEnabled = areaLayer === "villageDistribution";
+  const villageClickEnabled = isAdminLodArea(areaLayer);
   const useVillageTiles = lodBand === "village";
 
   const applyZoomLod = useCallback((zoom: number) => {
@@ -514,8 +516,8 @@ export function MapViewport({
   }, [areaLayer]);
 
   const overlayInteractiveIds = useMemo(
-    () => overlayInteractiveLayerIds(overlays),
-    [overlays]
+    () => overlayInteractiveLayerIds(overlays, { pointAsSymbol: chromeIconsReady }),
+    [overlays, chromeIconsReady]
   );
 
   const sortedKeys = useMemo(
@@ -535,17 +537,13 @@ export function MapViewport({
 
   const villageFilter = useMemo(
     () =>
-      areaLayer === "villageDistribution"
-        ? villageLayerFilter(lodFocus)
-        : undefined,
+      isAdminLodArea(areaLayer) ? villageLayerFilter(lodFocus) : undefined,
     [areaLayer, lodFocus]
   );
 
-  const villageLod = areaLayer === "villageDistribution";
+  const villageLod = isAdminLodArea(areaLayer);
   const otherPmtilesMeta =
-    areaLayer && areaLayer !== "villageDistribution"
-      ? PMTILES_AREA[areaLayer]
-      : undefined;
+    areaLayer && !villageLod ? PMTILES_AREA[areaLayer] : undefined;
 
   const krbRecolor = areaLayer === "irbi2025" && Boolean(krbJenis);
 
@@ -609,6 +607,13 @@ export function MapViewport({
     enabled: sortedKeys.length > 0,
   });
 
+  const fetchRemoteCard = Boolean(popup && cardId && !popup.localCard);
+  const { data: featureCard, isFetching: cardLoading, isError: cardError } = useQuery({
+    queryKey: qk.featureCard(cardId ?? "", popup?.layer ?? ""),
+    queryFn: () => fetchFeatureCard(cardId!, popup?.layer),
+    enabled: fetchRemoteCard,
+  });
+
   const markerGeojson = useMemo((): FeatureCollection => {
     if (!data?.features?.length) return EMPTY_FC;
     const prepared: Feature<Point>[] = [];
@@ -627,6 +632,7 @@ export function MapViewport({
         id: f.id,
         geometry: point,
         properties: {
+          id: String(f.id ?? ""),
           layer,
           title: String(f.properties?.title ?? "Titik"),
           status: f.properties?.status ? String(f.properties.status) : "",
@@ -744,18 +750,18 @@ export function MapViewport({
         const [lng, lat] = pointFeat.geometry.coordinates as [number, number];
         const props = pointFeat.properties ?? {};
         const stackItems = parseStackItems(props.stackItems);
+        const id = String(props.id ?? pointFeat.id ?? "");
         setPopup({
           lng,
           lat,
-          title:
+          id,
+          layer: String(props.layer ?? "disasterEvents"),
+          stack:
             stackItems.length > 1
-              ? `${stackItems.length} kejadian`
-              : String(props.title ?? "Titik"),
-          status: props.status ? String(props.status) : undefined,
-          layer: (props.layer as MarkerLayerKey) || "disasterEvents",
-          coordQuality: readCoordQuality(props as Record<string, unknown>),
-          stackItems: stackItems.length > 1 ? stackItems : undefined,
+              ? stackItems.map((item) => ({ id: item.id, title: item.title }))
+              : undefined,
         });
+        setCardId(id);
         setOverlayPopup(null);
         return;
       }
@@ -771,14 +777,27 @@ export function MapViewport({
       if (kawasanFeat && kawasanFeat.geometry.type === "Point") {
         const [lng, lat] = kawasanFeat.geometry.coordinates as [number, number];
         const props = kawasanFeat.properties ?? {};
+        const kawasanId = String(props.id ?? props.title ?? "kawasan");
+        const localCard = toFeatureCard({
+          type: "Feature",
+          id: kawasanId,
+          geometry: { type: "Point", coordinates: [lng, lat] },
+          properties: {
+            layer: "irbiKawasan",
+            title: String(props.title ?? t("krbKawasan")),
+            status: props.zona ? String(props.zona) : undefined,
+            jenis_bahaya: props.jenis_bahaya,
+            kabupaten: props.kabupaten,
+          },
+        });
         setPopup({
           lng,
           lat,
-          title: String(props.title ?? t("krbKawasan")),
-          status: props.zona ? String(props.zona) : undefined,
-          subtitle: [props.jenis_bahaya, props.kabupaten].filter(Boolean).join(" · "),
-          href: props.sumber_url ? String(props.sumber_url) : undefined,
+          id: kawasanId,
+          layer: "irbiKawasan",
+          localCard,
         });
+        setCardId(kawasanId);
         setOverlayPopup(null);
         return;
       }
@@ -947,12 +966,20 @@ export function MapViewport({
             <Layer
               id="marker-dots"
               type="circle"
-              {...(chromeIconsReady ? { maxzoom: MAP_DOT_MAX_ZOOM } : {})}
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["!=", ["get", "renderMode"], "stack"],
-              ]}
+              filter={
+                chromeIconsReady
+                  ? [
+                      "all",
+                      ["!", ["has", "point_count"]],
+                      ["!=", ["get", "renderMode"], "stack"],
+                      ["!=", ["get", "renderMode"], "pin"],
+                    ]
+                  : [
+                      "all",
+                      ["!", ["has", "point_count"]],
+                      ["!=", ["get", "renderMode"], "stack"],
+                    ]
+              }
               paint={{
                 "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
                 "circle-radius": MAP_DOT_RADIUS_PX,
@@ -964,7 +991,6 @@ export function MapViewport({
             <Layer
               id="marker-approx"
               type="circle"
-              minzoom={MAP_ICON_MIN_ZOOM}
               filter={[
                 "all",
                 ["!", ["has", "point_count"]],
@@ -1027,7 +1053,11 @@ export function MapViewport({
                 ["==", ["get", "renderMode"], "pin"],
               ]}
               layout={{
-                "icon-image": ["get", "icon"],
+                "icon-image": [
+                  "coalesce",
+                  ["image", ["get", "icon"]],
+                  ["image", "layer:disasterEvents"],
+                ],
                 "icon-size": 1,
                 "icon-allow-overlap": true,
                 "icon-ignore-placement": true,
@@ -1134,6 +1164,7 @@ export function MapViewport({
             beforeId={overlaySlot}
             popup={overlayPopup}
             onPopupClose={() => setOverlayPopup(null)}
+            iconsReady={chromeIconsReady}
           />
         )}
         {popup && (
@@ -1141,60 +1172,31 @@ export function MapViewport({
             longitude={popup.lng}
             latitude={popup.lat}
             anchor="top"
-            onClose={() => setPopup(null)}
+            offset={14}
+            maxWidth="22rem"
+            className="map-feature-popup"
+            closeButton={false}
+            onClose={() => {
+              setPopup(null);
+              setCardId(null);
+            }}
             closeOnClick={false}
           >
-            <div className="text-sm">
-              <div className="font-semibold text-[var(--text)]">{popup.title}</div>
-              {popup.subtitle ? (
-                <div className={cn("mt-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                  {popup.subtitle}
-                </div>
-              ) : null}
-              {popup.href ? (
-                <a
-                  href={popup.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-1.5 inline-block text-xs text-[var(--primary)] underline"
-                >
-                  {popup.href}
-                </a>
-              ) : null}
-              <div className="mt-1.5">
-                <StatusChip
-                  raw={popup.status}
-                  layer={popup.layer}
-                  className={cn("px-2 py-0.5", TYPE_FLOOR_CLASS)}
-                />
-              </div>
-              {popup.coordQuality === COORD_QUALITY_TRUNCATED && (
-                <Chip
-                  tone="warn"
-                  className={cn("mt-1.5 px-2 py-0.5", TYPE_FLOOR_CLASS)}
-                >
-                  {t("coordApprox")}
-                </Chip>
-              )}
-              {popup.coordQuality === COORD_QUALITY_OFFSHORE && (
-                <Chip
-                  tone="info"
-                  className={cn("mt-1.5 px-2 py-0.5", TYPE_FLOOR_CLASS)}
-                >
-                  {t("coordOffshore")}
-                </Chip>
-              )}
-              {popup.stackItems && popup.stackItems.length > 1 ? (
-                <ul className="mt-2 max-h-40 space-y-1 overflow-auto text-[0.8125rem] text-[var(--text-dim)]">
-                  {popup.stackItems.map((item) => (
-                    <li key={item.id || item.title}>
-                      {item.jenisBencana ? `${item.jenisBencana} — ` : ""}
-                      {item.title}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
+            <MapFeatureCard
+              card={
+                popup.localCard ??
+                (featureCard
+                  ? { ...featureCard, stack: popup.stack ?? featureCard.stack }
+                  : null)
+              }
+              loading={cardLoading && !popup.localCard}
+              error={cardError && !popup.localCard}
+              onClose={() => {
+                setPopup(null);
+                setCardId(null);
+              }}
+              onSelectStack={(id) => setCardId(id)}
+            />
           </Popup>
         )}
       </Map>
