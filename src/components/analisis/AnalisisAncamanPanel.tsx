@@ -15,7 +15,7 @@ import type { KejadianAnalisisPayload } from "@/lib/kejadian-analisis";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import { kelasFill } from "@/lib/chart-colors";
-import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
 function analisisSearch(params: {
@@ -57,7 +57,10 @@ function KelasChip({ kelas }: { kelas: string }) {
   if (!kelas) return null;
   return (
     <span
-      className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+      className={cn(
+        "inline-flex rounded-full px-2.5 py-0.5 font-semibold text-white",
+        TYPE_FLOOR_CLASS
+      )}
       style={{ background: kelasFill(kelas) }}
     >
       {kelas}
@@ -84,7 +87,7 @@ function ProyeksiBody({ proyeksi }: { proyeksi: ProyeksiDampak }) {
     !proyeksi.jiwa &&
     proyeksi.scale.length === 0;
   return (
-    <div className="mt-2 space-y-2" data-analisis-ancaman="proyeksi">
+    <div className="flex flex-col gap-2" data-analisis-ancaman="proyeksi">
       <div className="text-sm font-medium">
         {proyeksi.grain === "kabupaten"
           ? t("analogLocal")
@@ -92,7 +95,7 @@ function ProyeksiBody({ proyeksi }: { proyeksi: ProyeksiDampak }) {
             ? t("analogProvince")
             : t("analogNone")}
       </div>
-      <div className="text-xs text-[var(--text-dim)]">
+      <div className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
         {t("proyeksiScenario", { scenario: scenarioLabel(t, proyeksi.scenario) })}
       </div>
       <div className="text-sm tabular-nums">{t("analogN", { count: proyeksi.n })}</div>
@@ -105,9 +108,9 @@ function ProyeksiBody({ proyeksi }: { proyeksi: ProyeksiDampak }) {
         </>
       )}
       {proyeksi.scale.length > 0 ? (
-        <div className="space-y-1">
+        <div className="flex flex-col gap-1">
           <div className="text-sm font-medium">{t("proyeksiScale")}</div>
-          <ul className="space-y-1 text-sm">
+          <ul className="flex flex-col gap-1 text-sm">
             {proyeksi.scale.map((peer) => (
               <li key={peer.id} className="tabular-nums">
                 {t("proyeksiScalePeer", {
@@ -122,9 +125,9 @@ function ProyeksiBody({ proyeksi }: { proyeksi: ProyeksiDampak }) {
         </div>
       ) : null}
       {proyeksi.corridors.length > 0 ? (
-        <div className="space-y-1">
+        <div className="flex flex-col gap-1">
           <div className="text-sm font-medium">{t("proyeksiCorridor")}</div>
-          <ul className="space-y-1 text-sm">
+          <ul className="flex flex-col gap-1 text-sm">
             {proyeksi.corridors.map((row) => (
               <li key={row.label} className="tabular-nums">
                 {t("proyeksiCorridorRow", {
@@ -312,29 +315,28 @@ export function AnalisisAncamanPanel({
     : "";
 
   return (
-    <GlassPanel className="p-4 md:p-5" data-analisis-ancaman="panel">
-      <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
-        {t("ancamanTitle")}
+    <GlassPanel className="flex flex-col gap-4 p-4 md:p-5" data-analisis-ancaman="panel">
+      <div className="flex flex-col gap-1">
+        <h3 className="text-lg font-semibold">{t("ancamanTitle")}</h3>
+        <p className="text-sm text-[var(--text-dim)]">{t("ancamanLead")}</p>
       </div>
-      <h3 className="mt-1 text-lg font-semibold">{t("ancamanTitle")}</h3>
-      <p className="mt-1 text-sm text-[var(--text-dim)]">{t("ancamanLead")}</p>
 
       {!result?.ready ? (
-        <p className="mt-4 text-sm text-[var(--text-dim)]">{t("ancamanNeedBoth")}</p>
+        <p className="text-sm text-[var(--text-dim)]">{t("ancamanNeedBoth")}</p>
       ) : (
-        <div className="mt-4 grid gap-4 lg:grid-cols-3">
-          <div className="rounded-xl border border-[var(--glass-border)] px-3 py-3">
+        <div className="grid gap-4 lg:grid-cols-3">
+          <div className="flex flex-col gap-2 rounded-xl border border-[var(--glass-border)] px-3 py-3">
             <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {ancamanLabel || ancaman}
               {kab ? ` · ${kab}` : ""}
             </div>
             {result.kodeKabupaten ? (
-              <div className="mt-2 text-sm tabular-nums" data-analisis-ancaman="kode-kab">
+              <div className="text-sm tabular-nums" data-analisis-ancaman="kode-kab">
                 {t("kodeKabupaten", { kode: result.kodeKabupaten })}
               </div>
             ) : null}
             {result.irbi ? (
-              <div className="mt-2 space-y-1 text-sm">
+              <div className="flex flex-col gap-1 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <span>{t("irbiKelas")}</span>
                   <span data-analisis-ancaman="irbi-kelas">
@@ -367,10 +369,10 @@ export function AnalisisAncamanPanel({
                 ) : null}
               </div>
             ) : (
-              <p className="mt-2 text-sm text-[var(--text-dim)]">{t("krbMissing")}</p>
+              <p className="text-sm text-[var(--text-dim)]">{t("krbMissing")}</p>
             )}
             {result.krb ? (
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+              <div className="flex flex-wrap items-center gap-2 text-sm">
                 <span>{t("krbKelas")}</span>
                 <span data-analisis-ancaman="krb-kelas">
                   <KelasChip kelas={result.krb.kelas} />
@@ -385,7 +387,7 @@ export function AnalisisAncamanPanel({
               </div>
             ) : null}
             {result.kawasan.length > 0 ? (
-              <ul className="mt-3 space-y-1 text-sm">
+              <ul className="flex flex-col gap-1 text-sm">
                 <li className="text-[var(--text-dim)]">{t("kawasanTitle")}</li>
                 {result.kawasan.map((row) => (
                   <li key={row.id}>
@@ -395,7 +397,7 @@ export function AnalisisAncamanPanel({
                 ))}
               </ul>
             ) : null}
-            <p className="mt-3 text-sm">
+            <p className="text-sm">
               <Link
                 href={{
                   pathname: "/peta",
@@ -408,32 +410,34 @@ export function AnalisisAncamanPanel({
             </p>
           </div>
 
-          <div className="rounded-xl border border-[var(--glass-border)] px-3 py-3">
+          <div className="flex flex-col gap-2 rounded-xl border border-[var(--glass-border)] px-3 py-3">
             <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {t("historyTitle")}
             </div>
             {historyPending ? (
-              <p className="mt-2 text-sm text-[var(--text-dim)]">{t("loading")}</p>
+              <p className="text-sm text-[var(--text-dim)]">{t("loading")}</p>
             ) : (
-              <>
-            <div className="mt-2 text-sm font-semibold" data-analisis-ancaman="history">
-              {result.history.punyaRiwayat ? t("historyYes") : t("historyNo")}
-            </div>
-            <div className="mt-1 text-sm tabular-nums">
-              {t("historyCount", {
-                count: result.history.jumlahKejadian,
-              })}
-            </div>
-            {result.history.kejadianTerakhir ? (
-              <div className="mt-1 text-sm text-[var(--text-dim)]">
-                {t("historyLast", { date: result.history.kejadianTerakhir })}
+              <div className="flex flex-col gap-1">
+                <div className="text-sm font-semibold" data-analisis-ancaman="history">
+                  {result.history.punyaRiwayat ? t("historyYes") : t("historyNo")}
+                </div>
+                <div className="text-sm tabular-nums">
+                  {t("historyCount", {
+                    count: result.history.jumlahKejadian,
+                  })}
+                </div>
+                {result.history.kejadianTerakhir ? (
+                  <div className="text-sm text-[var(--text-dim)]">
+                    {t("historyLast", { date: result.history.kejadianTerakhir })}
+                  </div>
+                ) : null}
+                <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                  {t("historyNote")}
+                </p>
               </div>
-            ) : null}
-            <p className="mt-2 text-xs text-[var(--text-dim)]">{t("historyNote")}</p>
-              </>
             )}
             {historyJenis ? (
-              <p className="mt-3 text-sm">
+              <p className="text-sm">
                 <Link
                   href={{
                     pathname: "/data-bencana",
@@ -452,17 +456,17 @@ export function AnalisisAncamanPanel({
             ) : null}
           </div>
 
-          <div className="rounded-xl border border-[var(--glass-border)] px-3 py-3">
+          <div className="flex flex-col gap-2 rounded-xl border border-[var(--glass-border)] px-3 py-3">
             <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
               {t("analogTitle")}
             </div>
             {analogPending ? (
-              <p className="mt-2 text-sm text-[var(--text-dim)]">{t("loading")}</p>
+              <p className="text-sm text-[var(--text-dim)]">{t("loading")}</p>
             ) : (
               <ProyeksiBody proyeksi={result.proyeksi} />
             )}
             <p
-              className="mt-2 text-xs text-[var(--text-dim)]"
+              className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}
               data-analisis-ancaman="analog-disclaimer"
             >
               {t("analogDisclaimer")}
@@ -470,7 +474,7 @@ export function AnalisisAncamanPanel({
           </div>
         </div>
       )}
-      <p className="mt-4 text-xs text-[var(--text-dim)]">{t("sourceIrbiKrb")}</p>
+      <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("sourceIrbiKrb")}</p>
     </GlassPanel>
   );
 }

@@ -325,6 +325,14 @@ Dua variabel kabupaten × jenis ancaman IRBI/KRB di `/analisis-data`. Analogi hi
 | FE-30 | frontend | Panel Ancaman × riwayat | jurnal/FE-30.md | selesai |
 | AN-33 | analis | Uji penerimaan IRBI/KRB analisis | jurnal/AN-33.md | selesai |
 
+## Gelombang 25 — polish Analisis ancaman (pasca #70)
+
+Tiga follow-up UI dari glance #70. Logika IRBI/KRB dan rumus proyeksi tidak diubah. `npm test` 566 lulus; lint + `tsc` hijau. Browser: satu judul id+en; chip TINGGI 13px; disclaimer empiris tetap. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-32 | frontend | Type floor + judul + flex gap panel ancaman | jurnal/FE-32.md | selesai |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).
