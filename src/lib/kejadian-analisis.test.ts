@@ -93,6 +93,8 @@ describe("kejadian-analisis G20", () => {
     assert.equal("dibi" in payload, false);
     assert.equal("totals" in payload, false);
     assert.equal(payload.rumahImpacts.length, 2);
+    assert.equal(payload.impactCards.length, 2);
+    assert.equal(payload.impactCards[0]?.id, "b");
     assert.equal(payload.latestDate, "2024-03-02");
   });
 

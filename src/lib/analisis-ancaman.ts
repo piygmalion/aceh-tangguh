@@ -9,6 +9,11 @@ import {
 import { kabupatenNamesMatch } from "@/lib/kabupaten-join";
 import type { KrbKawasan, KrbPayload } from "@/lib/krb-filter";
 import type { RumahRusakCounts } from "@/lib/kejadian-analisis";
+import {
+  buildProyeksiDampak,
+  type DampakCard,
+  type ProyeksiDampak,
+} from "@/lib/proyeksi-dampak";
 
 const JENIS_TO_KRB: Record<string, KrbJenisKode> = {
   "gempa bumi": "gempabumi",
@@ -42,6 +47,8 @@ export type AncamanHistoryInput = {
   kejadianTerakhir: string | null;
   localImpacts: RumahRusakCounts[];
   provincialImpacts: RumahRusakCounts[];
+  localCards?: DampakCard[];
+  provincialCards?: DampakCard[];
 };
 
 export type AnalogRange = {
@@ -75,6 +82,7 @@ export type AncamanRiwayat = {
     kejadianTerakhir: string | null;
   };
   analog: AnalogDamage;
+  proyeksi: ProyeksiDampak;
 };
 
 function foldJenis(raw: string): string {
@@ -159,6 +167,12 @@ export function buildAncamanRiwayat(input: {
     input.history.localImpacts,
     input.history.provincialImpacts
   );
+  const proyeksi = buildProyeksiDampak({
+    local: input.history.localCards ?? [],
+    provincial: input.history.provincialCards ?? [],
+    ancaman: input.ancaman,
+    irbiKelas: null,
+  });
   const empty: AncamanRiwayat = {
     ready: false,
     kodeKabupaten: null,
@@ -171,6 +185,7 @@ export function buildAncamanRiwayat(input: {
       kejadianTerakhir: input.history.kejadianTerakhir,
     },
     analog,
+    proyeksi,
   };
 
   const kab = input.kab.trim();
@@ -222,6 +237,12 @@ export function buildAncamanRiwayat(input: {
     kawasan,
     history: empty.history,
     analog,
+    proyeksi: buildProyeksiDampak({
+      local: input.history.localCards ?? [],
+      provincial: input.history.provincialCards ?? [],
+      ancaman,
+      irbiKelas: irbiKelas,
+    }),
   };
 }
 

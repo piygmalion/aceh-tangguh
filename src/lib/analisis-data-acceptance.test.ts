@@ -69,8 +69,13 @@ describe("analisis data acceptance (AN-30)", () => {
   });
 
   it("AN-33: analog copy is not a forecast and KPI total stays kejadian-only", () => {
-    assert.match(ns("id").analogDisclaimer, /bukan prediksi/i);
-    assert.match(ns("en").analogDisclaimer, /not a forecast/i);
+    assert.equal(ns("id").historyTitle, "Histori Kejadian");
+    assert.equal(ns("id").analogTitle, "Proyeksi Dampak");
+    assert.equal(ns("en").historyTitle, "Event history");
+    assert.equal(ns("en").analogTitle, "Impact projection");
+    assert.match(ns("id").analogDisclaimer, /meninggal dari skor IRBI/i);
+    assert.match(ns("id").analogDisclaimer, /bukan prakiraan resmi/i);
+    assert.match(ns("en").analogDisclaimer, /not an official/i);
     assert.match(ns("id").historyNo, /tidak ada di katalog/i);
     const workspace = read("src/components/analisis/AnalisisWorkspace.tsx");
     const panel = read("src/components/analisis/AnalisisAncamanPanel.tsx");
