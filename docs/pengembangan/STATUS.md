@@ -365,6 +365,14 @@ Scaffold S3/R2 sudah di main. Tiket ini hanya verify publik + runbook ops. Carto
 | --- | --- | --- | --- | --- |
 | KOORD-GO-C2 | koordinator | Opt-in `verify:tiles-cdn` + runbook 5 langkah | jurnal/KOORD-GO-C2.md | selesai |
 
+## Gelombang 29 — Destana SoT #1 (type floor + Empty/Skeleton)
+
+Polish UI Destana saja. Lantai 13px; stack flex/gap; Empty/Skeleton pada daftar kosong/loading. API/RLS/skema Destana tidak diubah. `npm test` 577 lulus; lint + `tsc` hijau. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-36 | frontend | Type floor + Empty/Skeleton Destana | jurnal/FE-36.md | selesai |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).
