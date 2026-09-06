@@ -65,3 +65,4 @@ Batas ulang untuk satu tiket: lima putaran. Jika masih gagal, tulis blocker di j
 - **Gelombang ECC-S** — skema kerapian (AN-ECC-5). Kode S1 hanya setelah skema `selesai`. Jangan DATA-4. Jangan membuka P2 Juklak. Jangan POST nasional.
 - **Gelombang 21** — Bahaya InaRISK jadi poligon kelas sedang/tinggi di `ACEH_BBOX`. Jangan POST nasional. Jangan mengubah clip patahan. Jangan hapus proxy ubin. DATA-4 tetap tertahan. ID data = DATA-20 (DATA-14 sudah registri kab).
 - **Gelombang 22** — selesai (IRBI 2025 + KRB pada Analisis data). Jangan mengulang. Jangan menjumlahkan skor ke KPI. Jangan mengarang zona KRB I/II/III. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. ID naskah = AN-32 (AN-31 sudah G21).
+- **Gelombang 23** — Histori Kejadian + Proyeksi Dampak empiris dari katalog. Jangan model PAGER/OpenQuake. Jangan angka meninggal dari skor IRBI. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak.

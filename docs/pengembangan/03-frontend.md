@@ -167,6 +167,10 @@ Jurnal: `jurnal/FE-21.md`. `routing.ts` + taut dari daftar kejadian. Jangan meng
 
 Jurnal: `jurnal/FE-27.md`. Gelombang 22. Kontrak AN-32. Select `ancaman`, kartu IRBI/KRB + riwayat + analogi. i18n `analisisData.*`. Jangan menimpa FE-26. Jangan menjumlahkan skor ke KPI. Jangan hardcode judul Indonesia.
 
+### FE-28 — Histori Kejadian + Proyeksi Dampak
+
+Jurnal: `jurnal/FE-28.md`. Gelombang 23. Kontrak AN-34. Ganti judul kartu; tampilkan rentang histori + pita skala + replay. Jangan hardcode judul Indonesia. Jangan menjumlahkan skor ke KPI.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Jangan commit. Jika UI berubah, verifikasi di browser sebelum menutup.

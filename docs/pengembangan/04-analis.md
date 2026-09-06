@@ -220,6 +220,14 @@ Jurnal: `jurnal/AN-32.md`. Gelombang 22. Tulisan, bukan kode UI. Dua variabel ka
 
 Jurnal: `jurnal/AN-33.md`. Gelombang 22. Setelah FE-27. Pidie Jaya × gempabumi = TINGGI 26,4; copy bukan prediksi; KPI tidak memuat skor IRBI. Tutup STATUS G22. DATA-4 tetap tertahan.
 
+### AN-34 — naskah Histori Kejadian + Proyeksi Dampak
+
+Jurnal: `jurnal/AN-34.md`. Gelombang 23. Tulisan. Proyeksi empiris dari katalog; IRBI hanya pemilih skenario. Jangan PAGER. Jangan DATA-4.
+
+### AN-35 — uji penerimaan Proyeksi Dampak
+
+Jurnal: `jurnal/AN-35.md`. Gelombang 23. Setelah FE-28. Label, parser magnitudo/air, Pidie Jaya × banjir jiwa historis, gempa pita M tanpa rumah karangan.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan membuka P2 Juklak.

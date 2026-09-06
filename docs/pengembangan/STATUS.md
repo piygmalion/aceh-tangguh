@@ -313,6 +313,16 @@ Dua variabel kabupaten × jenis ancaman IRBI/KRB di `/analisis-data`. Analogi hi
 | FE-27 | frontend | Panel Ancaman × riwayat | jurnal/FE-27.md | selesai |
 | AN-33 | analis | Uji penerimaan IRBI/KRB analisis | jurnal/AN-33.md | selesai |
 
+## Gelombang 23 — Histori Kejadian + Proyeksi Dampak
+
+Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-34 | analis | Naskah Histori + Proyeksi Dampak | jurnal/AN-34.md | siap-kode |
+| FE-28 | frontend | Panel Histori + Proyeksi Dampak | jurnal/FE-28.md | draf |
+| AN-35 | analis | Uji penerimaan proyeksi | jurnal/AN-35.md | draf |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |
