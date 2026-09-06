@@ -270,7 +270,10 @@ export function buildProyeksiDampak(input: {
     kk: rangeOf(grainSource.map((row) => row.kkTerdampak)),
     pengungsi: rangeOf(grainSource.map((row) => row.pengungsi)),
     scale,
-    corridors: corridorGroups(grain === "kabupaten" ? input.local : grainSource),
+    corridors:
+      input.ancaman === "banjir" || input.ancaman === "banjir_bandang"
+        ? corridorGroups(grain === "kabupaten" ? input.local : grainSource)
+        : [],
     replay: {
       last: last ? toReplay(last) : null,
       worst: worst ? toReplay(worst) : null,
