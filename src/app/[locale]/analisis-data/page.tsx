@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -47,7 +48,9 @@ export default async function AnalisisDataPage({
         </p>
         <p className="mt-2 text-[0.8125rem] text-[var(--text-dim)]">{t("sourceStamp")}</p>
         <div className="mt-8">
-          <AnalisisWorkspace />
+          <Suspense fallback={<p className="text-sm text-[var(--text-dim)]">{t("loading")}</p>}>
+            <AnalisisWorkspace />
+          </Suspense>
         </div>
         <p className="sr-only">{tn("analisisData")}</p>
       </main>
