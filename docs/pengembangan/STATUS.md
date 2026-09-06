@@ -379,7 +379,7 @@ CTA “Tanya Tanggapi” hanya pada view desa AreaProfil (setelah kab→kec→de
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
-| FE-37 | frontend | Tanggapi CTA on Distribusi/AreaProfil desa | jurnal/FE-37.md | siap-kode |
+| FE-37 | frontend | Tanggapi CTA on Distribusi/AreaProfil desa | jurnal/FE-37.md | selesai |
 
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 

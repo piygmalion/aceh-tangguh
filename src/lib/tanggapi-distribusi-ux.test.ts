@@ -68,7 +68,7 @@ describe("FE-37 Tanggapi × Distribusi SoT", () => {
       "kode_kecamatan",
       "kode_kabupaten",
     ]);
-    for (const key of [
+    const forbidden = [
       "rumah_rr",
       "rumah_rs",
       "rumah_rb",
@@ -77,8 +77,9 @@ describe("FE-37 Tanggapi × Distribusi SoT", () => {
       "populasi",
       "destana_indeks",
       "kondisi_kode",
-    ]) {
-      assert.equal(TANGGAPI_SEED_FORBIDDEN.includes(key), true, key);
+    ] as const;
+    for (const key of forbidden) {
+      assert.equal((TANGGAPI_SEED_FORBIDDEN as readonly string[]).includes(key), true, key);
     }
 
     const seed = buildTanggapiSeedPrompt({
@@ -97,6 +98,7 @@ describe("FE-37 Tanggapi × Distribusi SoT", () => {
       destana_indeks: 0.42,
       kondisi_kode: "parah",
     });
+    assert.ok(seed);
     assert.match(seed, /1101012001/);
     assert.match(seed, /Keude Bakongan/);
     assert.match(seed, /Bakongan/);
