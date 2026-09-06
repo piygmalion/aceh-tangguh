@@ -355,7 +355,9 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
             </tbody>
           </table>
         </div>
-      ) : !error && listEmpty ? (
+      ) : null}
+
+      {!error && !loading && listEmpty ? (
         <Empty className="border border-dashed" data-testid="moderation-empty">
           <EmptyDescription className={TYPE_FLOOR_CLASS}>
             {t("emptyKabDescription")}
@@ -372,7 +374,9 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
             </Button>
           </EmptyContent>
         </Empty>
-      ) : !error ? (
+      ) : null}
+
+      {!error && !loading && !listEmpty ? (
       <div className="overflow-x-auto">
         <table className={cn("min-w-full text-left", TYPE_FLOOR_CLASS)}>
           <thead className="text-[var(--text-dim)]">
@@ -540,7 +544,7 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
           </tbody>
         </table>
       </div>
-      )}
+      ) : null}
 
       <div className="mt-4 flex items-center justify-between text-sm text-[var(--text-dim)]">
         <span>
