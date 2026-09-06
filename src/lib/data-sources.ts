@@ -293,7 +293,8 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     license: "© CARTO © OpenStreetMap contributors",
     date: "Live raster XYZ",
     format: "Raster PNG XYZ",
-    usedFor: "Default light, dark, and streets operational basemaps",
+    usedFor:
+      "Light/dark operational basemaps when NEXT_PUBLIC_CARTO_API_KEY is set; unkeyed Carto tiles are watermarked and are not used",
     href: "https://carto.com/basemaps",
   },
   {
@@ -305,7 +306,7 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     date: "Live vector tiles",
     format: "MapLibre style JSON + vector PBF",
     usedFor:
-      "Optional GPU vector style (`?vector=1`); falls back to Carto raster if the CDN fails. Also the tile source for owned brand style presets (not the default basemap).",
+      "Optional GPU vector style (`?vector=1`); falls back to keyed Carto or OSM raster if the CDN fails. Also the tile source for owned brand style presets (not the default basemap).",
     href: "https://openfreemap.org/",
   },
   {
@@ -318,7 +319,7 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     date: "Style JSON in-repo",
     format: "MapLibre style JSON + OpenFreeMap vector PBF",
     usedFor:
-      "Pengaturan → Peta dasar extras (Sederhana merek / Gelap merek / Abu-abu minimal). Carto remains the default; Carto raster is the automatic fallback if the vector source fails.",
+      "Pengaturan → Peta dasar extras (Sederhana merek / Gelap merek / Abu-abu minimal). Default remains Positron (keyed Carto or OSM). Raster fallback if the vector source fails.",
     href: "https://openfreemap.org/",
   },
   {
@@ -402,15 +403,15 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     id: "inarisk-bahaya-raster",
-    titleId: "InaRISK — raster bahaya (proxy ubin)",
-    titleEn: "InaRISK — hazard rasters (tile proxy)",
+    titleId: "InaRISK — poligon bahaya kelas sedang/tinggi (clip Aceh)",
+    titleEn: "InaRISK — medium/high hazard polygons (Aceh clip)",
     source:
-      "BNPB InaRISK ImageServer exportImage (gempa, tsunami, longsor, banjir, karhutla, letusan gunung api). Next.js proxies Web Mercator tiles so MapLibre can paint without CORS. Volcano KRB polygons are not stored; the gunung-api ImageServer is the raster stand-in.",
-    license: "Public InaRISK / BNPB — attribute BNPB InaRISK. Empty PNG on upstream failure.",
-    date: "Live tiles (cache up to 24h)",
-    format: "PNG via GET /api/overlay/tiles/{key}/{z}/{x}/{y}",
+      "BNPB InaRISK ImageServer exportImage for the Aceh envelope, polygonized to sedang/tinggi class and clipped to ACEH_BBOX. Official volcano KRB I/II/III polygons are not stored.",
+    license: "Public InaRISK / BNPB — attribute BNPB InaRISK.",
+    date: "ETL snapshot via fetch:inarisk-bahaya",
+    format: "GeoJSON fixtures → MapLibre fill overlays",
     usedFor:
-      "Geospasial raster overlays inariskBahaya*. InaWaves marine rasters are not enabled in this wave.",
+      "Geospasial fill overlays inariskBahaya*. Tile proxy remains for old URLs but the map does not request it.",
     href: "https://inarisk.bnpb.go.id/",
   },
   {

@@ -4,6 +4,7 @@
  */
 
 import { createHash } from "node:crypto";
+import { deflateSync, inflateSync } from "node:zlib";
 import { ACEH_BBOX } from "./aceh-scope.mjs";
 
 export { ACEH_BBOX };
@@ -630,4 +631,480 @@ export function assessOverlayFeatureCounts(currentCounts, previousCounts, opts =
     }
   }
   return { ok: errors.length === 0, errors };
+}
+
+/** Same ImageServer origin as src/lib/inarisk-tiles.ts. */
+export const INARISK_IMAGE_ORIGIN =
+  "https://gis.bnpb.go.id/server/rest/services/inarisk";
+
+export const INARISK_BAHAYA_EXPORT_SIZE = { width: 660, height: 830 };
+
+/** Offline ETL only — refuse a single envelope image larger than 8 MiB. */
+export const INARISK_BAHAYA_MAX_PNG_BYTES = 8 * 1024 * 1024;
+
+/** Slack above the locked 660×830 export so a slightly larger retry still decodes. */
+export const INARISK_BAHAYA_MAX_PIXELS =
+  INARISK_BAHAYA_EXPORT_SIZE.width * INARISK_BAHAYA_EXPORT_SIZE.height * 2;
+
+export function assertBahayaPngSize(buf) {
+  const len = buf?.byteLength ?? 0;
+  if (len > INARISK_BAHAYA_MAX_PNG_BYTES) {
+    throw new Error(`InaRISK bahaya PNG too large (${len} bytes)`);
+  }
+  return buf;
+}
+
+export const INARISK_BAHAYA_SIMPLIFY_EPS = 0.003;
+
+export const INARISK_BAHAYA_FILL = {
+  sedang: "#C4A35A",
+  tinggi: "#B42318",
+};
+
+export const INARISK_BAHAYA_LAYERS = [
+  {
+    key: "inariskBahayaGempa",
+    service: "layer_bahaya_gempabumi",
+    file: "bahaya-gempa-aceh.geojson",
+    title: "Bahaya gempa",
+  },
+  {
+    key: "inariskBahayaTsunami",
+    service: "layer_bahaya_tsunami",
+    file: "bahaya-tsunami-aceh.geojson",
+    title: "Bahaya tsunami",
+  },
+  {
+    key: "inariskBahayaLongsor",
+    service: "layer_bahaya_tanah_longsor",
+    file: "bahaya-longsor-aceh.geojson",
+    title: "Bahaya longsor",
+  },
+  {
+    key: "inariskBahayaBanjir",
+    service: "layer_bahaya_banjir",
+    file: "bahaya-banjir-aceh.geojson",
+    title: "Bahaya banjir",
+  },
+  {
+    key: "inariskBahayaKarhutla",
+    service: "layer_bahaya_kebakaran_hutan_dan_lahan",
+    file: "bahaya-karhutla-aceh.geojson",
+    title: "Bahaya karhutla",
+  },
+  {
+    key: "inariskBahayaGunungApi",
+    service: "layer_bahaya_letusan_gunungapi",
+    file: "bahaya-gunungapi-aceh.geojson",
+    title: "Bahaya gunung api",
+  },
+];
+
+export function inariskBahayaExportUrl(
+  service,
+  size = INARISK_BAHAYA_EXPORT_SIZE,
+) {
+  const [xmin, ymin, xmax, ymax] = ACEH_BBOX;
+  const params = new URLSearchParams({
+    bbox: `${xmin},${ymin},${xmax},${ymax}`,
+    bboxSR: "4326",
+    imageSR: "4326",
+    size: `${size.width},${size.height}`,
+    format: "png32",
+    f: "image",
+    transparent: "true",
+    interpolation: "RSP_NearestNeighbor",
+  });
+  return `${INARISK_IMAGE_ORIGIN}/${service}/ImageServer/exportImage?${params.toString()}`;
+}
+
+export function classifyInariskPixel(r, g, b, a) {
+  if (a < 16) return 0;
+  if (Math.abs(r - g) <= 3 && Math.abs(g - b) <= 3) {
+    if (r === 2) return 2;
+    if (r >= 3 && r <= 10) return 3;
+    return 0;
+  }
+  if (r >= 180 && g < 80 && b < 80) return 3;
+  if (r >= 180 && g >= 80 && g < 210 && b < 80) return 2;
+  return 0;
+}
+
+export function classifyInariskPixels(rgba, width, height) {
+  const values = new Uint8Array(width * height);
+  for (let i = 0; i < values.length; i++) {
+    const o = i * 4;
+    values[i] = classifyInariskPixel(rgba[o], rgba[o + 1], rgba[o + 2], rgba[o + 3]);
+  }
+  return values;
+}
+
+function pngPaeth(a, b, c) {
+  const p = a + b - c;
+  const pa = Math.abs(p - a);
+  const pb = Math.abs(p - b);
+  const pc = Math.abs(p - c);
+  if (pa <= pb && pa <= pc) return a;
+  if (pb <= pc) return b;
+  return c;
+}
+
+function pngBytesPerPixel(colorType, bitDepth) {
+  if (bitDepth !== 8) throw new Error(`unsupported PNG bit depth ${bitDepth}`);
+  if (colorType === 0) return 1;
+  if (colorType === 2) return 3;
+  if (colorType === 3) return 1;
+  if (colorType === 4) return 2;
+  if (colorType === 6) return 4;
+  throw new Error(`unsupported PNG color type ${colorType}`);
+}
+
+function pngUnfilter(inflated, width, height, bpp) {
+  const stride = width * bpp;
+  const raw = Buffer.alloc(height * stride);
+  let src = 0;
+  let prev = Buffer.alloc(stride);
+  for (let y = 0; y < height; y++) {
+    const filter = inflated[src++];
+    const row = inflated.subarray(src, src + stride);
+    src += stride;
+    const out = raw.subarray(y * stride, (y + 1) * stride);
+    for (let i = 0; i < stride; i++) {
+      const x = row[i];
+      const left = i >= bpp ? out[i - bpp] : 0;
+      const up = prev[i];
+      const upLeft = i >= bpp ? prev[i - bpp] : 0;
+      let val = x;
+      if (filter === 1) val = (x + left) & 255;
+      else if (filter === 2) val = (x + up) & 255;
+      else if (filter === 3) val = (x + Math.floor((left + up) / 2)) & 255;
+      else if (filter === 4) val = (x + pngPaeth(left, up, upLeft)) & 255;
+      else if (filter !== 0) throw new Error(`PNG filter ${filter}`);
+      out[i] = val;
+    }
+    prev = Buffer.from(out);
+  }
+  return raw;
+}
+
+function pngToRgba(raw, width, height, colorType, palette, trans) {
+  const n = width * height;
+  const rgba = Buffer.alloc(n * 4);
+  if (colorType === 6) {
+    raw.copy(rgba);
+    return rgba;
+  }
+  for (let i = 0; i < n; i++) {
+    const o = i * 4;
+    if (colorType === 2) {
+      rgba[o] = raw[i * 3];
+      rgba[o + 1] = raw[i * 3 + 1];
+      rgba[o + 2] = raw[i * 3 + 2];
+      rgba[o + 3] = 255;
+    } else if (colorType === 0) {
+      const v = raw[i];
+      rgba[o] = v;
+      rgba[o + 1] = v;
+      rgba[o + 2] = v;
+      rgba[o + 3] = 255;
+    } else if (colorType === 4) {
+      const v = raw[i * 2];
+      rgba[o] = v;
+      rgba[o + 1] = v;
+      rgba[o + 2] = v;
+      rgba[o + 3] = raw[i * 2 + 1];
+    } else if (colorType === 3) {
+      const idx = raw[i];
+      rgba[o] = palette[idx * 3];
+      rgba[o + 1] = palette[idx * 3 + 1];
+      rgba[o + 2] = palette[idx * 3 + 2];
+      rgba[o + 3] = trans && trans.length > idx ? trans[idx] : 255;
+    }
+  }
+  return rgba;
+}
+
+const PNG_SIG = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+
+export function decodePngRgba(buffer) {
+  const buf = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
+  if (buf.length < 8 || !buf.subarray(0, 8).equals(PNG_SIG)) {
+    throw new Error("not a PNG");
+  }
+  let offset = 8;
+  let width = 0;
+  let height = 0;
+  let bitDepth = 0;
+  let colorType = 0;
+  const idat = [];
+  let palette = null;
+  let trans = null;
+  while (offset + 8 <= buf.length) {
+    const len = buf.readUInt32BE(offset);
+    const type = buf.toString("ascii", offset + 4, offset + 8);
+    const data = buf.subarray(offset + 8, offset + 8 + len);
+    offset += 12 + len;
+    if (type === "IHDR") {
+      width = data.readUInt32BE(0);
+      height = data.readUInt32BE(4);
+      bitDepth = data[8];
+      colorType = data[9];
+      if (width * height > INARISK_BAHAYA_MAX_PIXELS) {
+        throw new Error(`PNG IHDR exceeds InaRISK bahaya envelope (${width}x${height})`);
+      }
+    } else if (type === "PLTE") {
+      palette = data;
+    } else if (type === "tRNS") {
+      trans = data;
+    } else if (type === "IDAT") {
+      idat.push(data);
+    } else if (type === "IEND") {
+      break;
+    }
+  }
+  if (!width || !height) throw new Error("PNG missing IHDR");
+  const bpp = pngBytesPerPixel(colorType, bitDepth);
+  const inflated = inflateSync(Buffer.concat(idat));
+  const raw = pngUnfilter(inflated, width, height, bpp);
+  return { width, height, rgba: pngToRgba(raw, width, height, colorType, palette, trans) };
+}
+
+function crc32(buf) {
+  let crc = 0xffffffff;
+  for (let i = 0; i < buf.length; i++) {
+    crc ^= buf[i];
+    for (let j = 0; j < 8; j++) {
+      crc = (crc >>> 1) ^ (crc & 1 ? 0xedb88320 : 0);
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function pngChunk(type, data) {
+  const body = Buffer.concat([Buffer.from(type, "ascii"), data]);
+  const out = Buffer.alloc(12 + data.length);
+  out.writeUInt32BE(data.length, 0);
+  body.copy(out, 4);
+  out.writeUInt32BE(crc32(body), 8 + data.length);
+  return out;
+}
+
+/** Test helper: 8-bit RGBA PNG, filter 0. */
+export function encodePngRgba(width, height, rgba) {
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(width, 0);
+  ihdr.writeUInt32BE(height, 4);
+  ihdr[8] = 8;
+  ihdr[9] = 6;
+  const stride = width * 4;
+  const raw = Buffer.alloc(height * (stride + 1));
+  for (let y = 0; y < height; y++) {
+    raw[y * (stride + 1)] = 0;
+    Buffer.from(rgba).copy(raw, y * (stride + 1) + 1, y * stride, (y + 1) * stride);
+  }
+  return Buffer.concat([
+    PNG_SIG,
+    pngChunk("IHDR", ihdr),
+    pngChunk("IDAT", deflateSync(raw)),
+    pngChunk("IEND", Buffer.alloc(0)),
+  ]);
+}
+
+export function simplifyRing(ring, epsilon = INARISK_BAHAYA_SIMPLIFY_EPS) {
+  if (!Array.isArray(ring) || ring.length <= 4) {
+    return ring ? ring.map((p) => [p[0], p[1]]) : [];
+  }
+  const closed =
+    ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1];
+  const pts = closed ? ring.slice(0, -1) : ring.slice();
+  const keep = douglasPeucker(pts, epsilon);
+  if (keep.length < 3) return [pts[0], pts[Math.floor(pts.length / 2)], pts[pts.length - 1], pts[0]];
+  const out = keep.map((p) => [p[0], p[1]]);
+  out.push([out[0][0], out[0][1]]);
+  return out;
+}
+
+function douglasPeucker(pts, epsilon) {
+  if (pts.length <= 2) return pts.slice();
+  let maxD = 0;
+  let idx = 0;
+  const a = pts[0];
+  const b = pts[pts.length - 1];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const d = perpendicularDistance(pts[i], a, b);
+    if (d > maxD) {
+      maxD = d;
+      idx = i;
+    }
+  }
+  if (maxD <= epsilon) return [a, b];
+  const left = douglasPeucker(pts.slice(0, idx + 1), epsilon);
+  const right = douglasPeucker(pts.slice(idx), epsilon);
+  return left.slice(0, -1).concat(right);
+}
+
+function perpendicularDistance(p, a, b) {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const len2 = dx * dx + dy * dy;
+  if (len2 === 0) return Math.hypot(p[0] - a[0], p[1] - a[1]);
+  const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / len2));
+  return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
+}
+
+function gridToLonLat(x, y, width, height, bbox) {
+  const [minLon, minLat, maxLon, maxLat] = bbox;
+  return [
+    minLon + (x / width) * (maxLon - minLon),
+    maxLat - (y / height) * (maxLat - minLat),
+  ];
+}
+
+function outlineCells(cells, width, height, bbox) {
+  const edges = new Map();
+  const add = (x1, y1, x2, y2) => {
+    const key =
+      x1 < x2 || (x1 === x2 && y1 < y2)
+        ? `${x1},${y1},${x2},${y2}`
+        : `${x2},${y2},${x1},${y1}`;
+    if (edges.has(key)) edges.delete(key);
+    else edges.set(key, [[x1, y1], [x2, y2]]);
+  };
+  for (const i of cells) {
+    const x = i % width;
+    const y = (i - x) / width;
+    add(x, y, x + 1, y);
+    add(x + 1, y, x + 1, y + 1);
+    add(x + 1, y + 1, x, y + 1);
+    add(x, y + 1, x, y);
+  }
+  const nodeKey = (p) => `${p[0]},${p[1]}`;
+  const adj = new Map();
+  for (const [a, b] of edges.values()) {
+    const ka = nodeKey(a);
+    const kb = nodeKey(b);
+    if (!adj.has(ka)) adj.set(ka, []);
+    if (!adj.has(kb)) adj.set(kb, []);
+    adj.get(ka).push(b);
+    adj.get(kb).push(a);
+  }
+  let start = null;
+  for (const k of adj.keys()) {
+    const [x, y] = k.split(",").map(Number);
+    if (!start || y < start[1] || (y === start[1] && x < start[0])) start = [x, y];
+  }
+  if (!start) return null;
+  const used = new Set();
+  const ringPx = [start];
+  let cur = start;
+  let prev = null;
+  for (let n = 0; n < edges.size + 2; n++) {
+    const neighbors = adj.get(nodeKey(cur)) ?? [];
+    let next = null;
+    for (const cand of neighbors) {
+      if (prev && cand[0] === prev[0] && cand[1] === prev[1]) continue;
+      const dk = `${nodeKey(cur)}>${nodeKey(cand)}`;
+      if (used.has(dk)) continue;
+      next = cand;
+      used.add(dk);
+      break;
+    }
+    if (!next) break;
+    if (next[0] === start[0] && next[1] === start[1]) {
+      ringPx.push(start);
+      break;
+    }
+    ringPx.push(next);
+    prev = cur;
+    cur = next;
+  }
+  if (ringPx.length < 4) return null;
+  return ringPx.map((p) => gridToLonLat(p[0], p[1], width, height, bbox));
+}
+
+export function polygonizeClassGrid(values, width, height, bbox = ACEH_BBOX) {
+  const visited = new Uint8Array(values.length);
+  const byClass = { 2: [], 3: [] };
+  for (let i = 0; i < values.length; i++) {
+    const k = values[i];
+    if ((k !== 2 && k !== 3) || visited[i]) continue;
+    const cells = [];
+    const stack = [i];
+    visited[i] = 1;
+    while (stack.length) {
+      const cur = stack.pop();
+      cells.push(cur);
+      const x = cur % width;
+      const y = (cur - x) / width;
+      const tryN = (nx, ny) => {
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height) return;
+        const ni = ny * width + nx;
+        if (visited[ni] || values[ni] !== k) return;
+        visited[ni] = 1;
+        stack.push(ni);
+      };
+      tryN(x + 1, y);
+      tryN(x - 1, y);
+      tryN(x, y + 1);
+      tryN(x, y - 1);
+    }
+    const ring = outlineCells(cells, width, height, bbox);
+    if (!ring) continue;
+    const simple = simplifyRing(ring);
+    if (simple.length >= 4) byClass[k].push(simple);
+  }
+  return byClass;
+}
+
+export function tagBahayaProperties({ layer, title, kelas }) {
+  return {
+    layer,
+    title,
+    kelas,
+    fillColor: kelas === "tinggi" ? INARISK_BAHAYA_FILL.tinggi : INARISK_BAHAYA_FILL.sedang,
+  };
+}
+
+export function bahayaCollectionFromGrid(values, width, height, opts) {
+  const bbox = opts.bbox ?? ACEH_BBOX;
+  const groups = polygonizeClassGrid(values, width, height, bbox);
+  const features = [];
+  for (const [value, rings] of [
+    [2, groups[2]],
+    [3, groups[3]],
+  ]) {
+    if (!rings.length) continue;
+    const kelas = value === 2 ? "sedang" : "tinggi";
+    const coords = rings.map((ring) => [ring]);
+    features.push({
+      type: "Feature",
+      properties: tagBahayaProperties({
+        layer: opts.layer,
+        title: opts.title,
+        kelas,
+      }),
+      geometry:
+        coords.length === 1
+          ? { type: "Polygon", coordinates: coords[0] }
+          : { type: "MultiPolygon", coordinates: coords },
+    });
+  }
+  return { type: "FeatureCollection", features };
+}
+
+export function prepareBahayaLayer(pngBuffer, spec, bbox = ACEH_BBOX) {
+  const { width, height, rgba } = decodePngRgba(pngBuffer);
+  const values = classifyInariskPixels(rgba, width, height);
+  const raw = bahayaCollectionFromGrid(values, width, height, {
+    bbox,
+    layer: spec.key ?? spec.layer,
+    title: spec.title,
+  });
+  return clipFeatureCollectionToBbox(raw, bbox);
+}
+
+export function bahayaEmptyLayerKeys(prepared) {
+  return prepared
+    .filter((item) => !item.clipped?.features?.length)
+    .map((item) => item.spec.key ?? item.spec.layer);
 }

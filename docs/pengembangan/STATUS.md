@@ -293,6 +293,16 @@ Riset ECC atas G0–G19 + pohon kode. Naskah: [06-skema-kerapian.md](06-skema-ke
 | FE-24 | frontend | Cangkang tabel admin bersama | jurnal/FE-24.md | selesai |
 | KOORD-ECC-S | ecc | Review uji + browser | jurnal/KOORD-ECC-S.md | selesai |
 
+## Gelombang 21 — Bahaya InaRISK poligon kelas
+
+Naskah AN-31 mengunci ImageServer `exportImage` amplop `ACEH_BBOX` → poligon sedang/tinggi. ID data = DATA-20 karena DATA-14 sudah registri kab. Jangan menimpa AN-19 / DATA-11 / FE-17. Jangan POST nasional. Jangan mengubah clip patahan. Jangan hapus proxy ubin. DATA-4 tetap tertahan.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-31 | analis | Naskah bahaya InaRISK jadi poligon kelas | jurnal/AN-31.md | selesai |
+| DATA-20 | data | ETL fixture poligon bahaya | jurnal/DATA-20.md | selesai |
+| FE-26 | frontend | Katalog fill + path static bahaya | jurnal/FE-26.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

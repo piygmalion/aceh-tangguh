@@ -143,6 +143,10 @@ Jurnal: `jurnal/FE-19.md`. Gelombang 19. Jangan dikode sebelum AN-24. Strip di b
 
 Jurnal: `jurnal/FE-25.md`. Gelombang 20. Jangan dikode sebelum AN-29. Rute `/analisis-data` · `/disaster-analysis`. Namespace `analisisData`. Teaser mengganti panel `KejadianAnalisis` di Data bencana. Jangan menabrak FE-20 (ECC-S). Jangan DATA-4.
 
+### FE-26 — katalog fill + path static bahaya
+
+Jurnal: `jurnal/FE-26.md`. Gelombang 21. `inariskBahaya*` = `kind: "fill"` + fixture static. `fetchOverlayGeojson` memakai `overlayVectorApiPath`. Popup `kelas` lewat `krbSedang`/`krbTinggi`. Jangan hapus `isInariskRasterKey` / proxy ubin. Jangan DATA-4.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.

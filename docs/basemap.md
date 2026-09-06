@@ -7,13 +7,13 @@ Rencana operasional untuk peta Aceh Tangguh. Bukan glosarium vendor: ini pilihan
 - **Renderer:** MapLibre GL JS (WebGL) + react-map-gl — jalur yang dipakai tim peta FOSS 2024–2026, bukan Leaflet DOM raster.
 - **Overlay wilayah:** PMTiles (tippecanoe) untuk choropleth kab/desa/IRBI, fallback GeoJSON. Geometri tetap di disk (`public/fixtures` + `public/tiles`), bukan PostGIS.
 - **Titik:** sebelumnya HTML `<Marker>` per fitur. Fasilitas pendidikan saja >3.000 titik — itu memaksa layout DOM, bukan GPU.
-- **Basemap default:** raster Carto Positron / Dark + OSM.org streets. Mudah, CORS terbuka, sudah terbukti di sandbox.
+- **Basemap default:** raster Carto Positron / Dark **jika** `NEXT_PUBLIC_CARTO_API_KEY` ada (`?key=` wajib — tanpa kunci CARTO men-watermark tile). Jika kunci kosong, Positron/Dark memakai OSM.org streets agar peta tidak ber-cap.
 
 ## Target (yang dikerjakan sekarang)
 
 | Lapisan | Teknologi | Alasan |
 |---|---|---|
-| Peta dasar OSM | **Carto raster (Positron / Dark)** + OSM streets | Default yang andal. Tidak bergantung pada CDN vektor yang sudah gagal di sandbox (peta kosong). |
+| Peta dasar OSM | **Carto raster (Positron / Dark) + kunci** atau OSM streets | Carto butuh `NEXT_PUBLIC_CARTO_API_KEY`. Tanpa kunci, jangan panggil `basemaps.cartocdn.com` — tile tetap 200 tapi ber-watermark. |
 | Preset merek (opsional) | Style JSON milik sendiri (Light / Dark / Abu-abu minimal) di atas **Aceh OSM extract** jika `NEXT_PUBLIC_ACEH_OSM_PMTILES` atau `public/tiles/aceh-osm.pmtiles` ada, lalu OpenFreeMap planet, lalu Carto | Bukan default. Pilih di Pengaturan → Peta dasar. Warna token: kertas `#F4F5F0`, tinta `#1A1A17`, hutan `#1F4C15`, teal `#2F6B66`, sage `#8A9A5B`. Jika sumber vektor gagal → **Carto**. Jangan self-host planet PMTiles. |
 | Vektor OSM (opsional) | OpenFreeMap Positron / Dark / Liberty | GPU, tajam di retina. Aktifkan dengan `?vector=1` atau kotak di pengaturan peta. Jika style fetch gagal → **Carto**. |
 | Satelit HD | Esri World Imagery | Resolusi tinggi untuk identifikasi bangunan/jalan. Bukan citra “hari ini”. |

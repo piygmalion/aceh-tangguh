@@ -61,6 +61,7 @@ vendor/ecc/
 
 # overlay ETL scratch (unfiltered national dumps)
 public/fixtures/overlays/_raw*
+.tmp-inarisk-probe/
 
 # Local Aceh OSM basemap extract (rebuild: npm run build:aceh-osm). Do not commit planet.
 public/tiles/aceh-osm.pmtiles

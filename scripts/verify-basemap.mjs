@@ -4,12 +4,19 @@
  * OpenFreeMap is optional — a failure there must not fail the probe.
  * Does not fail the product build — run manually or in CI as a health probe.
  */
+const cartoKey = (process.env.NEXT_PUBLIC_CARTO_API_KEY ?? "").trim();
 const required = [
-  {
-    name: "Carto positron raster",
-    url: "https://a.basemaps.cartocdn.com/light_all/6/50/32.png",
-    ok: (res, _buf, type) => res.ok && type.includes("image"),
-  },
+  cartoKey
+    ? {
+        name: "Carto positron raster (keyed)",
+        url: `https://a.basemaps.cartocdn.com/light_all/6/50/32.png?key=${encodeURIComponent(cartoKey)}`,
+        ok: (res, _buf, type) => res.ok && type.includes("image"),
+      }
+    : {
+        name: "OSM streets raster (Carto key unset)",
+        url: "https://tile.openstreetmap.org/6/50/32.png",
+        ok: (res, _buf, type) => res.ok && type.includes("image"),
+      },
   {
     name: "EOX Sentinel-2 cloudless tile z6",
     url: "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/6/50/32.jpg",

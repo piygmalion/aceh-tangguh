@@ -466,16 +466,14 @@ export function MapViewport({
     staleTime: 60_000,
   });
 
-  const mapStyle = useMemo(
-    () =>
-      getBasemapStyle(basemap, {
-        preferVector: preferVector && !vectorFailed,
-        rasterFallback: vectorFailed,
-        acehOsmUrl: acehOsmConfigured,
-        localAcehOsmPresent: acehOsmConfigured ? undefined : acehOsmPresent === true,
-      }),
-    [basemap, preferVector, vectorFailed, acehOsmConfigured, acehOsmPresent]
-  );
+  const mapStyle = useMemo(() => {
+    return getBasemapStyle(basemap, {
+      preferVector: preferVector && !vectorFailed,
+      rasterFallback: vectorFailed,
+      acehOsmUrl: acehOsmConfigured,
+      localAcehOsmPresent: acehOsmConfigured ? undefined : acehOsmPresent === true,
+    });
+  }, [basemap, preferVector, vectorFailed, acehOsmConfigured, acehOsmPresent]);
 
   const haloStroke = useMemo(() => markerHaloStroke(basemap), [basemap]);
 

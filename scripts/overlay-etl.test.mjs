@@ -2,18 +2,27 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   ACEH_BBOX,
+  INARISK_BAHAYA_MAX_PNG_BYTES,
   assessOverlayFeatureCounts,
+  assertBahayaPngSize,
+  bahayaCollectionFromGrid,
+  bahayaEmptyLayerKeys,
+  classifyInariskPixel,
   clipFeatureCollectionToBbox,
   clipGeometryToBbox,
+  decodePngRgba,
+  encodePngRgba,
   filterAcehPorts,
   filterAcehSensors,
   filterAcehWaters,
   inAcehBbox,
+  inariskBahayaExportUrl,
   inariskFaultQueryUrl,
   overlayLayerChecksum,
   overlayLayerStats,
   parseDiscoveredUrls,
   portsToStaticRows,
+  prepareBahayaLayer,
   previousOverlayCounts,
 } from "./lib/overlay-etl.mjs";
 
@@ -359,5 +368,130 @@ describe("overlay-etl", () => {
       null,
     );
     assert.equal(noBaseline.ok, true);
+  });
+
+  it("builds InaRISK bahaya export for the Aceh envelope without renderingRule", () => {
+    const url = inariskBahayaExportUrl("layer_bahaya_gempabumi");
+    assert.match(url, /layer_bahaya_gempabumi\/ImageServer\/exportImage/);
+    assert.match(url, /bboxSR=4326/);
+    assert.match(url, /size=660(,|%2C)830/);
+    assert.match(decodeURIComponent(url), /bbox=95(\.0)?,2(\.0)?,98\.3,6\.15/);
+    assert.doesNotMatch(url, /renderingRule/);
+  });
+
+  it("refuses oversized bahaya PNG bytes and IHDR before inflate", () => {
+    const tiny = encodePngRgba(2, 2, Buffer.alloc(16, 0));
+    assert.equal(assertBahayaPngSize(tiny), tiny);
+    assert.throws(
+      () => assertBahayaPngSize(Buffer.alloc(INARISK_BAHAYA_MAX_PNG_BYTES + 1)),
+      /too large/,
+    );
+    const ihdr = Buffer.alloc(13);
+    ihdr.writeUInt32BE(20_000, 0);
+    ihdr.writeUInt32BE(20_000, 4);
+    ihdr[8] = 8;
+    ihdr[9] = 6;
+    const chunk = Buffer.alloc(12 + 13);
+    chunk.writeUInt32BE(13, 0);
+    chunk.write("IHDR", 4);
+    ihdr.copy(chunk, 8);
+    const iend = Buffer.alloc(12);
+    iend.write("IEND", 4);
+    const fake = Buffer.concat([
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+      chunk,
+      iend,
+    ]);
+    assert.throws(() => decodePngRgba(fake), /IHDR exceeds/);
+  });
+
+  it("keeps class 2/3 and drops rendah or transparent", () => {
+    assert.equal(classifyInariskPixel(2, 2, 2, 255), 2);
+    assert.equal(classifyInariskPixel(3, 3, 3, 255), 3);
+    assert.equal(classifyInariskPixel(1, 1, 1, 255), 0);
+    assert.equal(classifyInariskPixel(0, 0, 0, 0), 0);
+    assert.equal(classifyInariskPixel(220, 20, 20, 255), 3);
+    assert.equal(classifyInariskPixel(220, 140, 20, 255), 2);
+    assert.equal(classifyInariskPixel(220, 220, 40, 255), 0);
+  });
+
+  it("polygonizes a class-3 block and clips a crossing polygon", () => {
+    const width = 6;
+    const height = 6;
+    const values = new Uint8Array(width * height);
+    for (let y = 1; y <= 3; y++) {
+      for (let x = 1; x <= 3; x++) values[y * width + x] = 3;
+    }
+    const fc = bahayaCollectionFromGrid(values, width, height, {
+      layer: "inariskBahayaGempa",
+      title: "Bahaya gempa",
+    });
+    assert.equal(fc.features.length, 1);
+    assert.equal(fc.features[0].properties.kelas, "tinggi");
+    assert.equal(fc.features[0].properties.fillColor, "#B42318");
+    assert.equal(fc.features[0].properties.layer, "inariskBahayaGempa");
+    const geom = fc.features[0].geometry;
+    assert.ok(geom.type === "Polygon" || geom.type === "MultiPolygon");
+
+    const crossing = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          properties: { layer: "inariskBahayaBanjir", title: "Bahaya banjir", kelas: "sedang" },
+          geometry: {
+            type: "Polygon",
+            coordinates: [[
+              [94.0, 4.0],
+              [94.0, 5.0],
+              [96.0, 5.0],
+              [96.0, 4.0],
+              [94.0, 4.0],
+            ]],
+          },
+        },
+      ],
+    };
+    const clipped = clipFeatureCollectionToBbox(crossing);
+    assert.equal(clipped.features.length, 1);
+    everyVertexInBbox(clipped.features[0].geometry);
+  });
+
+  it("prepareBahayaLayer reads PNG VALUE and refuses empty prepared layers", () => {
+    const width = 4;
+    const height = 4;
+    const rgba = Buffer.alloc(width * height * 4, 0);
+    for (let y = 1; y <= 2; y++) {
+      for (let x = 1; x <= 2; x++) {
+        const o = (y * width + x) * 4;
+        rgba[o] = 2;
+        rgba[o + 1] = 2;
+        rgba[o + 2] = 2;
+        rgba[o + 3] = 255;
+      }
+    }
+    const png = encodePngRgba(width, height, rgba);
+    const decoded = decodePngRgba(png);
+    assert.equal(decoded.width, 4);
+    const fc = prepareBahayaLayer(png, {
+      key: "inariskBahayaLongsor",
+      title: "Bahaya longsor",
+    });
+    assert.equal(fc.features.length, 1);
+    assert.equal(fc.features[0].properties.kelas, "sedang");
+    assert.equal(fc.features[0].properties.fillColor, "#C4A35A");
+
+    const emptyPng = encodePngRgba(2, 2, Buffer.alloc(16, 0));
+    const empty = prepareBahayaLayer(emptyPng, {
+      key: "inariskBahayaKarhutla",
+      title: "Bahaya karhutla",
+    });
+    assert.deepEqual(
+      bahayaEmptyLayerKeys([
+        { spec: { key: "inariskBahayaLongsor" }, clipped: fc },
+        { spec: { key: "inariskBahayaKarhutla" }, clipped: empty },
+      ]),
+      ["inariskBahayaKarhutla"],
+    );
   });
 });

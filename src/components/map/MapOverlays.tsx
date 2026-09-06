@@ -110,7 +110,7 @@ export function pickOverlayHit(
       lng,
       lat,
       title: asText(props.title) ?? asText(props.name) ?? asText(props.perairan) ?? key,
-      status: asText(props.status) ?? asText(props.wave_cat) ?? asText(props.weather) ?? undefined,
+      status: asText(props.kelas) ?? asText(props.status) ?? asText(props.wave_cat) ?? asText(props.weather) ?? undefined,
       subtitle: asText(props.Segment) ?? asText(props.stakeholder) ?? asText(props.wilayah) ?? undefined,
       href: asText(props.href) ?? undefined,
       kode,
@@ -303,6 +303,15 @@ function OverlayPopup({
         <div className={cn("mt-0.5 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
           {t(hit.key)}
         </div>
+        {hit.status === "sedang" || hit.status === "tinggi" ? (
+          <div className={cn("mt-1 text-[var(--text)]", TYPE_FLOOR_CLASS)}>
+            {hit.status === "tinggi" ? t("krbTinggi") : t("krbSedang")}
+          </div>
+        ) : hit.status ? (
+          <div className={cn("mt-1 text-[var(--text)]", TYPE_FLOOR_CLASS)}>
+            {hit.status}
+          </div>
+        ) : null}
         {hit.subtitle ? (
           <div className={cn("mt-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {hit.subtitle}

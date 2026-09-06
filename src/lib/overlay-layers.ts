@@ -58,37 +58,37 @@ export const OVERLAY_CATALOG: OverlayCatalogEntry[] = [
   },
   {
     key: "inariskBahayaGempa",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.orange,
   },
   {
     key: "inariskBahayaTsunami",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.teal,
   },
   {
     key: "inariskBahayaLongsor",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.gold,
   },
   {
     key: "inariskBahayaBanjir",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.teal,
   },
   {
     key: "inariskBahayaKarhutla",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.awas,
   },
   {
     key: "inariskBahayaGunungApi",
-    kind: "raster",
+    kind: "fill",
     group: "bahaya",
     color: COLOR_TOKENS.awas,
   },
@@ -184,6 +184,12 @@ export const OVERLAY_STATIC_FIXTURES: Partial<Record<OverlayLayerKey, string>> =
   seismicSensors: "/fixtures/overlays/sensor-seismic-aceh.geojson",
   inariskSumateraFault: "/fixtures/overlays/sumatera-fault-aceh.geojson",
   inariskMegathrust: "/fixtures/overlays/megathrust-aceh.geojson",
+  inariskBahayaGempa: "/fixtures/overlays/bahaya-gempa-aceh.geojson",
+  inariskBahayaTsunami: "/fixtures/overlays/bahaya-tsunami-aceh.geojson",
+  inariskBahayaLongsor: "/fixtures/overlays/bahaya-longsor-aceh.geojson",
+  inariskBahayaBanjir: "/fixtures/overlays/bahaya-banjir-aceh.geojson",
+  inariskBahayaKarhutla: "/fixtures/overlays/bahaya-karhutla-aceh.geojson",
+  inariskBahayaGunungApi: "/fixtures/overlays/bahaya-gunungapi-aceh.geojson",
 };
 
 export const MARITIME_WAVE_LEGEND: { color: string; labelKey: string }[] = [

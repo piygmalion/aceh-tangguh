@@ -33,6 +33,8 @@ describe("overlay layer URL tokens", () => {
       overlayCircleLayerId("maritimePorts"),
       overlayFillLayerId("maritimeWaters"),
       overlayLineLayerId("maritimeWaters"),
+      overlayFillLayerId("inariskBahayaGempa"),
+      overlayLineLayerId("inariskBahayaGempa"),
     ]);
     assert.equal(overlayKeyFromLayerId(ids[0]), "maritimePorts");
     assert.equal(overlayKeyFromLayerId("marker-dots"), null);

@@ -812,6 +812,12 @@ export async function loadOverlayVector(key: OverlayLayerKey): Promise<FeatureCo
   const files: Partial<Record<OverlayLayerKey, string>> = {
     inariskSumateraFault: "public/fixtures/overlays/sumatera-fault-aceh.geojson",
     inariskMegathrust: "public/fixtures/overlays/megathrust-aceh.geojson",
+    inariskBahayaGempa: "public/fixtures/overlays/bahaya-gempa-aceh.geojson",
+    inariskBahayaTsunami: "public/fixtures/overlays/bahaya-tsunami-aceh.geojson",
+    inariskBahayaLongsor: "public/fixtures/overlays/bahaya-longsor-aceh.geojson",
+    inariskBahayaBanjir: "public/fixtures/overlays/bahaya-banjir-aceh.geojson",
+    inariskBahayaKarhutla: "public/fixtures/overlays/bahaya-karhutla-aceh.geojson",
+    inariskBahayaGunungApi: "public/fixtures/overlays/bahaya-gunungapi-aceh.geojson",
     maritimeWaters: "public/fixtures/overlays/perairan-aceh.geojson",
     seismicSensors: "public/fixtures/overlays/sensor-seismic-aceh.geojson",
     maritimePorts: "public/fixtures/overlays/pelabuhan-aceh.geojson",

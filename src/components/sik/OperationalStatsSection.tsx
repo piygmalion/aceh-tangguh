@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -34,6 +34,7 @@ async function fetchStats(year: string, kabupaten: string, jenis: string): Promi
 
 export function OperationalStatsSection() {
   const locale = useLocale();
+  const tn = useTranslations("nav");
   const yearNow = String(new Date().getFullYear());
   const [year, setYear] = useState(yearNow);
   const [kabupaten, setKabupaten] = useState("");
@@ -113,6 +114,10 @@ export function OperationalStatsSection() {
       <p className="mt-4 text-sm">
         <Link href="/data-bencana" className="text-[var(--primary)] hover:underline">
           Lihat data bencana
+        </Link>
+        {" · "}
+        <Link href="/analisis-data" className="text-[var(--primary)] hover:underline">
+          {tn("analisisData")}
         </Link>
         {" · "}
         <Link href="/destana" className="text-[var(--primary)] hover:underline">

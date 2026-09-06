@@ -208,6 +208,10 @@ Jurnal: `jurnal/AN-29.md`. Gelombang 20. Tulisan, bukan kode UI/API. Kunci rute,
 
 Jurnal: `jurnal/AN-30.md`. Gelombang 20. Setelah BE-28 / FE-25. Agregat, kosong vs 503, i18n, Tanggapi. Tutup STATUS G20. DATA-4 tetap tertahan. Jangan menandai ECC-S selesai.
 
+### AN-31 — naskah bahaya InaRISK jadi poligon kelas
+
+Jurnal: `jurnal/AN-31.md`. Gelombang 21. Tulisan, bukan kode UI/API. Kontrak ImageServer `exportImage` amplop `ACEH_BBOX` → poligon sedang/tinggi. ID data = DATA-20 (DATA-14 sudah registri kab ECC-S2). Jangan menimpa AN-19 / DATA-11 / FE-17. Jangan DATA-4.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan membuka P2 Juklak.

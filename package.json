@@ -35,6 +35,7 @@
     "refresh:sipongi": "node scripts/refresh-peringatan.mjs --sipongi-only",
     "scrape:ruangkita": "node scripts/scrape-ruangkita-static.mjs",
     "fetch:inarisk-faults": "node scripts/fetch-inarisk-faults.mjs",
+    "fetch:inarisk-bahaya": "node scripts/fetch-inarisk-bahaya.mjs",
     "verify:weather": "node scripts/verify-weather-setup.mjs",
     "import:sik": "python3 scripts/import-sik-aceh.py",
     "seed:sik": "node scripts/seed-sik-supabase.mjs",
