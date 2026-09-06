@@ -385,7 +385,7 @@ Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang
 
 ## GO SIK apply GPS — karantina desimal >100 m
 
-Kebijakan terkunci: konflik GPS memakai GPS existing; `attributeConflicts` tidak memblokir tulis. Langkah 1 = dry-run import (tanpa `--write-fixtures` / `--apply`). Langkah 3 = bendera `--accept-gps-quarantine`. VM Cloud 6 September 2026: `data/sik/sik_aceh.db` absen (`sik_db_missing`); hitungan master tidak dikarang. Jangan merge ke produksi dari tiket ini. Jangan `--apply`. DATA-4 tetap tertahan.
+Kebijakan terkunci: konflik GPS memakai GPS existing; `attributeConflicts` tidak memblokir tulis. Langkah 1 = dry-run import (tanpa `--write-fixtures` / `--apply`). Langkah 3 = bendera `--accept-gps-quarantine`. VM Cloud: `sik_aceh.db` absen. Koordinator (tip `60f64a0`, mesin lain): matched 427, gpsConflicts 20. Jangan merge ke produksi dari tiket ini. Jangan `--apply`. DATA-4 tetap tertahan.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |

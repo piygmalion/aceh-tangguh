@@ -56,7 +56,7 @@ $ python3 scripts/import-sik-aceh.py --db data/sik/sik_aceh.db
 exit 2
 ```
 
-`data/sik/` hanya berisi `README.md`. Tidak ada hitungan matched/new/fillNull/gpsUpgrades/gpsConflicts/attributeConflicts dari master sungguhan — jangan dikarang. Operator harus menyalin `sik_aceh.db` lalu mengulang dry-run lokal.
+`data/sik/` hanya berisi `README.md` di VM ini. Koordinator mengonfirmasi dry-run di tip `60f64a0` (mesin lain, bukan karangan VM): **matched 427**, **gpsConflicts 20**. Id list `decimal_gps_gt_100m` tidak dikarang di sini. Jangan `--apply`.
 
 Langkah 3 (fixture sintetis, bukan GPS karangan untuk produksi):
 
@@ -81,4 +81,4 @@ Tidak ada `seed-sik-supabase.mjs --apply`. Fixture `public/fixtures/kejadian-ben
 
 ## Keputusan
 
-selesai (bendera). Dry-run master tetap menunggu salinan `data/sik/sik_aceh.db` di mesin operator.
+selesai (bendera). Koordinator mengunci PR: keep existing GPS; catat `sik_merge.gpsConflicts`; gerbang tanpa bendera tetap. Dry-run tip `60f64a0` di mesin lain: matched 427, gpsConflicts 20. Jangan `--apply`.
