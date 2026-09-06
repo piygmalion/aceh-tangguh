@@ -175,6 +175,10 @@ Jurnal: `jurnal/FE-32.md`. Gelombang 25. Hanya `AnalisisAncamanPanel` + uji pene
 
 Jurnal: `jurnal/FE-33.md`. Gelombang 26. Rapikan padding/stack/gap `MapFeatureCard` saja. Overlay hidup stale/503 memakai Empty/Skeleton + `overlayLiveStale` + `overlayLiveRetry` (accent ink-on-orange). Jangan mengubah ukuran marker/ikon/chrome. Jangan retile / PMTiles / mengarang titik. Jangan AreaProfilPanel, Distribusi Tanggapi-chrome, SIK, atau basemap. Jangan menimpa FE-32.
 
+### FE-34 — staf kab SoT #3 (empty state + undangan pending)
+
+Jurnal: `jurnal/FE-34.md`. Gelombang 27. Empty shadcn + i18n pada `ModerationTable` dan `StaffInviteTable` jika tidak ada data di lingkup. Chip pending ink/forest (`tone="forest"`), bukan lime; oranye hanya tombol Undang. Lantai tipe 13px; `flex`/`gap-*` bukan `space-y-*`. Jangan memperluas `matchesKabScope` / `hideLegacy`. Jangan endpoint baru. Label `inviteStatus` boleh pada GET `/api/admin/users` yang sudah ada. Jangan menimpa FE-33.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.
