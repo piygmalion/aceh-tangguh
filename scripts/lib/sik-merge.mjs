@@ -206,6 +206,24 @@ export function classifyGps(existing, incoming) {
 }
 
 /**
+ * True when every GPS quarantine row still uses the recorded existing coords.
+ * Used by --accept-gps-quarantine so the write guard cannot silently overwrite.
+ * @param {Record<string, unknown>[]} kejadian
+ * @param {{ id?: unknown, existing?: { lat?: number | null, lng?: number | null }, sik?: { lat?: number | null, lng?: number | null } }[]} gpsConflicts
+ */
+export function quarantineKeepsExistingGps(kejadian, gpsConflicts) {
+  const byId = new Map(kejadian.map((row) => [String(row.id), row]));
+  for (const conflict of gpsConflicts || []) {
+    const row = byId.get(String(conflict.id));
+    if (!row) return false;
+    const coords = readExistingCoords(row);
+    const existing = conflict.existing || {};
+    if (coords.lat !== existing.lat || coords.lng !== existing.lng) return false;
+  }
+  return true;
+}
+
+/**
  * @param {unknown} current
  * @param {unknown} incoming
  */
