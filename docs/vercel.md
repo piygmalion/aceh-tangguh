@@ -10,7 +10,23 @@ Preview online memakai **Next.js Node di Vercel**, bukan GitHub Pages / static e
 4. **Jangan** set `STATIC_EXPORT`, `GITHUB_PAGES`, atau `NEXT_PUBLIC_BASE_PATH`.
 5. Deploy. URL produksi biasanya `https://aceh-tangguh.vercel.app` (atau nama proyek yang dipilih). Setiap PR mendapat URL preview sendiri.
 
-`vercel.json` memaksa `npm ci` (bukan Bun — repo punya `bun.lock` dan `package-lock.json`; CI memakai npm), Node **22.x**, dan region `sin1` (Singapura).
+`vercel.json` memaksa `npm ci` (bukan Bun — repo punya `bun.lock` dan `package-lock.json`; CI memakai npm) dan region `sin1` (Singapura). Versi Node **tidak** diatur di `vercel.json`.
+
+## 1b. Node.js 22.x — jangan naik ke 24.x
+
+Vercel sekarang default dashboard ke **24.x**. Proyek ini tetap di **22.x** karena Next.js 14.2 dan CI (`AN-2`) dikunci ke major itu. Sumber kebenaran:
+
+| Tempat | Nilai |
+| --- | --- |
+| `package.json` `engines.node` | `22.x` (Vercel memakai ini; menimpa dashboard) |
+| `.nvmrc` | `22` |
+| `.github/workflows/ci.yml` | `node-version: "22"` |
+
+Jika Settings → Build and Deployment menampilkan **22.x** dan **24.x** tercoret plus tooltip *Project Setting overridden by package.json*, itu peringatan tampilan, bukan gagal deploy. Runtime yang dipakai sudah 22.x.
+
+Agar tooltip hilang: ubah dropdown **Node.js Version** di dashboard menjadi **22.x**, lalu Save. Jangan mengubah `engines.node` menjadi `24.x` — itu membuat Vercel membangun Next 14 di runtime yang bukan target uji.
+
+**Cold Start Prevention** (Disabled) adalah sakelar Fluid di dashboard, bukan dari `package.json`. Biarkan mati kecuali paket Vercel mendukungnya dan operator menyalakannya sadar.
 
 ## 2. Supabase (sudah terhubung di Vercel)
 

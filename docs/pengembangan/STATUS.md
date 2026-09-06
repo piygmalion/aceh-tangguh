@@ -315,6 +315,26 @@ Bukan gelombang overlay baru. DATA-4 tetap tertahan. Jangan POST nasional. Janga
 | FE-29 | frontend | Kartu keterangan titik peta | jurnal/FE-29.md | selesai |
 | DATA-22 | data | Tabel staf tilikan kerusakan infra | jurnal/DATA-22.md | selesai |
 
+## Gelombang 23 — IRBI/KRB pada Analisis data
+
+Dua variabel kabupaten × jenis ancaman IRBI/KRB di `/analisis-data`. Analogi historis rumah rusak, bukan prediksi. Angka IRBI/KRB tidak dijumlahkan ke KPI katalog. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menimpa AN-31/FE-26. UI frontend = FE-30 (ID FE-27 di main sudah dialog cuaca).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-32 | analis | Naskah kab × ancaman + analogi | jurnal/AN-32.md | selesai |
+| FE-30 | frontend | Panel Ancaman × riwayat | jurnal/FE-30.md | selesai |
+| AN-33 | analis | Uji penerimaan IRBI/KRB analisis | jurnal/AN-33.md | selesai |
+
+## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
+
+Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-34 | analis | Naskah Histori + Proyeksi Dampak | jurnal/AN-34.md | selesai |
+| FE-31 | frontend | Panel Histori + Proyeksi Dampak | jurnal/FE-31.md | selesai |
+| AN-35 | analis | Uji penerimaan proyeksi | jurnal/AN-35.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |
