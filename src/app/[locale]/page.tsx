@@ -6,7 +6,6 @@ import { WeatherStrip } from "@/components/weather/WeatherStrip";
 import { HeroSection } from "@/components/HeroSection";
 import { MapTeaserSection } from "@/components/MapTeaserSection";
 import { ParticipationSection } from "@/components/ParticipationSection";
-import { OperationalStatsSection } from "@/components/sik/OperationalStatsSection";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 import { TransparencySection } from "@/components/TransparencySection";
@@ -25,7 +24,6 @@ export default async function HomePage({
         <HeroSection />
         <PeringatanDiniSection />
         <WeatherStrip />
-        <OperationalStatsSection />
         <ClusterGrid />
         <R3PChartSection />
         <MapTeaserSection />

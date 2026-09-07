@@ -1,6 +1,7 @@
 export { matchGuideIntent, shouldShowGuideBot, extractKabupaten, extractJenis, extractDesa } from "./match";
 export { loadGuideContext } from "./context";
 export { composeGuideAnswer, composeTourStep } from "./answers";
+export { compileAlertBrief, briefingLead } from "./alert-brief";
 export { HOME_TOUR_STEPS } from "./tour-steps";
 export { CONTEXT_FOR_INTENT } from "./intents";
 export {

@@ -165,6 +165,9 @@ async function resolveStaticGet(input: string): Promise<Response> {
       tatonas: { ...tatonas, stale: true, source: "fixture", tone: "neutral" },
     });
   }
+  if (path.startsWith("/api/brief/")) {
+    return jsonResponse({ error: "not_found", source: "fixture" }, 404);
+  }
   if (path === "/api/peringatan-dini/magma") {
     return jsonResponse(unavailableMagmaCard());
   }

@@ -22,6 +22,10 @@ export function buildWhatsAppMessage(template: string, payload: WaPayload): stri
       return `Aceh Tangguh: laporan ${payload.nomor_laporan ?? ""} disetujui dan dapat tampil di peta publik.`;
     case "laporan_rejected":
       return `Aceh Tangguh: laporan ${payload.nomor_laporan ?? ""} tidak dapat dipublikasikan. Hubungi BPBA Pusdalops jika perlu klarifikasi.`;
+    case "daily_brief":
+      return typeof payload.message === "string" && payload.message.trim()
+        ? payload.message
+        : "Aceh Tangguh — ringkasan harian. Untuk darurat hubungi 112 / Pusdalops.";
     default:
       return `Aceh Tangguh: ${template} ${JSON.stringify(payload)}`;
   }

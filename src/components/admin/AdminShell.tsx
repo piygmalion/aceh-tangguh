@@ -44,14 +44,17 @@ function roleKey(
 
 export function AdminShell({
   profile,
+  moduleOverlay,
   children,
 }: {
   profile: AdminProfile;
+  moduleOverlay?: Record<string, boolean> | null;
   children: ReactNode;
 }) {
   const t = useTranslations("admin");
   const pathname = usePathname();
   const superAdmin = isSuperAdmin(profile);
+  const overlay = moduleOverlay ? new Map(Object.entries(moduleOverlay)) : null;
 
   const items: Array<{
     href:
@@ -66,7 +69,8 @@ export function AdminShell({
       | "/admin/sik/publik"
       | "/admin/staf"
       | "/admin/cms"
-      | "/admin/database";
+      | "/admin/database"
+      | "/admin/daily-brief";
     label: string;
     icon: typeof LayoutDashboard;
     module?: SikModule;
@@ -81,6 +85,7 @@ export function AdminShell({
     { href: "/admin/sik/rehab", label: t("navRehab"), icon: BookOpen, module: "rehab" },
     { href: "/admin/sik/disabilitas", label: t("navDisabilitas"), icon: Accessibility, module: "disabilitas" },
     { href: "/admin/sik/publik", label: t("navPublikCms"), icon: Phone, module: "publikCms" },
+    { href: "/admin/daily-brief", label: t("navDailyBrief"), icon: Phone, module: "dailyBrief" },
     { href: "/admin/staf", label: t("navStaff"), icon: Users, superOnly: true },
     { href: "/admin/cms", label: t("navCms"), icon: FileStack, superOnly: true },
     { href: "/admin/database", label: t("navDatabase"), icon: Database, superOnly: true },
@@ -89,7 +94,7 @@ export function AdminShell({
   const visible = items.filter((item) => {
     if (item.superOnly) return superAdmin;
     if (!item.module) return true;
-    return canAccessModule(profile, item.module);
+    return canAccessModule(profile, item.module, overlay);
   });
 
   const isActive = (href: string) => {

@@ -23,7 +23,76 @@ export type SikModule =
   | "disabilitas"
   | "publikCms"
   | "cms"
-  | "database";
+  | "database"
+  | "dailyBrief";
+
+export const SIK_MODULES: readonly SikModule[] = [
+  "overview",
+  "moderasi",
+  "kejadian",
+  "logistik",
+  "master",
+  "destana",
+  "rehab",
+  "disabilitas",
+  "publikCms",
+  "cms",
+  "database",
+  "dailyBrief",
+];
+
+export type RoleModuleOverlay = ReadonlyMap<string, boolean>;
+
+export function roleModuleKey(role: AdminRole, module: SikModule): string {
+  return `${normalizedRole(role) ?? role}:${module}`;
+}
+
+export function overlayFromRows(
+  rows: Array<{ role: string; module: string; allowed: boolean }>,
+): RoleModuleOverlay {
+  const map = new Map<string, boolean>();
+  for (const row of rows) {
+    const role = normalizedRole(row.role as AdminRole);
+    if (!role || !SIK_MODULES.includes(row.module as SikModule)) continue;
+    map.set(roleModuleKey(role, row.module as SikModule), row.allowed);
+  }
+  return map;
+}
+
+export function defaultModuleAllowed(role: AdminRole, module: SikModule): boolean {
+  const normalized = normalizedRole(role);
+  if (!normalized) return false;
+  if (normalized === "super_admin") return true;
+  switch (module) {
+    case "overview":
+      return true;
+    case "moderasi":
+    case "kejadian":
+    case "logistik":
+      return normalized === "admin_provinsi" || normalized === "admin_kabkota";
+    case "master":
+      return normalized === "admin_provinsi";
+    case "destana":
+      return (
+        normalized === "admin_provinsi" ||
+        normalized === "admin_kabkota" ||
+        normalized === "admin_desa" ||
+        normalized === "penilai_pkd"
+      );
+    case "rehab":
+      return normalized === "admin_rr" || normalized === "admin_provinsi" || normalized === "admin_kabkota";
+    case "disabilitas":
+    case "publikCms":
+      return normalized === "admin_provinsi" || normalized === "admin_kabkota";
+    case "cms":
+    case "database":
+      return false;
+    case "dailyBrief":
+      return normalized === "admin_provinsi";
+    default:
+      return false;
+  }
+}
 
 const ALL_STAFF = new Set<AdminRole>(SIK_ROLES);
 
@@ -61,40 +130,20 @@ export function isPenilaiPkd(profile: AdminProfile | null): boolean {
   return role === "penilai_pkd" || role === "super_admin";
 }
 
-export function canAccessModule(profile: AdminProfile | null, module: SikModule): boolean {
+export function canAccessModule(
+  profile: AdminProfile | null,
+  module: SikModule,
+  overlay?: RoleModuleOverlay | null,
+): boolean {
   if (!profile) return false;
   const role = normalizedRole(profile.role);
   if (!role) return false;
   if (role === "super_admin") return true;
-
-  switch (module) {
-    case "overview":
-      return true;
-    case "moderasi":
-    case "kejadian":
-    case "logistik":
-      return role === "admin_provinsi" || role === "admin_kabkota";
-    case "master":
-      return role === "admin_provinsi";
-    case "destana":
-      return (
-        role === "admin_provinsi" ||
-        role === "admin_kabkota" ||
-        role === "admin_desa" ||
-        role === "penilai_pkd"
-      );
-    case "rehab":
-      return role === "admin_rr" || role === "admin_provinsi" || role === "admin_kabkota";
-    case "disabilitas":
-      return role === "admin_provinsi" || role === "admin_kabkota";
-    case "publikCms":
-      return role === "admin_provinsi" || role === "admin_kabkota";
-    case "cms":
-    case "database":
-      return false;
-    default:
-      return false;
+  if (overlay) {
+    const hit = overlay.get(roleModuleKey(role, module));
+    if (hit !== undefined) return hit;
   }
+  return defaultModuleAllowed(role, module);
 }
 
 export function defaultSikHome(profile: AdminProfile): "/admin" | "/admin/sik/destana" | "/admin/sik/rehab" {

@@ -45,6 +45,9 @@ export function assertProductionConfig(): void {
   if (!process.env.OVERLAY_CRON_SECRET?.trim()) {
     warnings.push("OVERLAY_CRON_SECRET (overlay live cron disabled)");
   }
+  if (!process.env.DAILY_BRIEF_CRON_SECRET?.trim()) {
+    warnings.push("DAILY_BRIEF_CRON_SECRET (Daily Brief WhatsApp cron disabled)");
+  }
 
   for (const item of warnings) {
     console.warn(`[production-config] ${item}`);

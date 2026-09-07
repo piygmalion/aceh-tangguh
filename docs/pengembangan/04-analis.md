@@ -228,6 +228,22 @@ Jurnal: `jurnal/AN-34.md`. Gelombang 24. Tulisan. Proyeksi empiris dari katalog;
 
 Jurnal: `jurnal/AN-35.md`. Gelombang 24. Setelah FE-31. Label, parser magnitudo/air, Pidie Jaya × banjir jiwa historis, gempa pita M tanpa rumah karangan.
 
+### AN-38 — naskah Daily Brief staf
+
+Jurnal: `jurnal/AN-38.md`. Gelombang 31. Tulisan, bukan kode. Kontrak saluran staf, compose, secret, PII. Jangan AN-36 / AN-37. Jangan DATA-4.
+
+### AN-39 — uji penerimaan Daily Brief
+
+Jurnal: `jurnal/AN-39.md`. Gelombang 31. Setelah DATA-24 / BE-29 / FE-39. Kab 403; cron 401/503; compose tidak mengarang; i18n; tutup STATUS G31.
+
+### AN-41 — naskah User Management katalog
+
+Jurnal: `jurnal/AN-41.md`. Gelombang 33. Tulisan. Katalog peran tetap; PATCH/DELETE/tangguh; overlay modul. Jangan menimpa AN-38. Jangan DATA-4.
+
+### AN-42 — uji penerimaan User Management
+
+Jurnal: `jurnal/AN-42.md`. Gelombang 33. Setelah DATA-26 / BE-31 / FE-41. 403 non-super; 409 self / last_super_admin; fallback matriks; helper SQL utuh; tutup STATUS G33.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan membuka P2 Juklak.

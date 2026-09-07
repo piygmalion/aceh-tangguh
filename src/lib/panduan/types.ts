@@ -123,11 +123,14 @@ export type GuideContext = {
     cuacaEmpty: boolean;
     cuacaTone: string;
     cuacaHighlight?: string;
+    cuacaUnmatched?: string;
     magmaEmpty: boolean;
     magmaSummary?: string;
+    magmaSource?: "live" | "fixture" | "unavailable";
     sipongiEmpty: boolean;
     sipongiCount: number;
     sipongiPlace?: string;
+    sipongiUnmatched?: string;
     tatonasEmpty: boolean;
     tatonasHighlight?: string;
     tatonasLevel?: string;

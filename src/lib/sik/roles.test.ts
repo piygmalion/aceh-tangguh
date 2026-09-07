@@ -124,6 +124,13 @@ describe("AN-1 authorization matrix", () => {
     assert.equal(canAccessModule(staff("admin_provinsi"), "moderasi"), true);
     assert.equal(canAccessModule(staff("admin"), "moderasi"), true);
   });
+
+  it("denies Daily Brief module to kab and allows provinsi (AN-38)", () => {
+    assert.equal(canAccessModule(staff("admin_kabkota", { kode: KAB_A }), "dailyBrief"), false);
+    assert.equal(canAccessModule(staff("admin_desa"), "dailyBrief"), false);
+    assert.equal(canAccessModule(staff("admin_provinsi"), "dailyBrief"), true);
+    assert.equal(canAccessModule(staff("super_admin"), "dailyBrief"), true);
+  });
 });
 
 describe("AN-1 P0 route guards still present", () => {

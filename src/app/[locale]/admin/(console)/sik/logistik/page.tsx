@@ -5,8 +5,8 @@ import { SikResourceManager } from "@/components/sik/SikResourceManager";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 
 export default async function SikLogistikPage() {
-  const { profile } = await requireStaffPage();
-  if (!canAccessModule(profile, "logistik")) return <SikForbidden />;
+  const { profile, roleModules } = await requireStaffPage();
+  if (!canAccessModule(profile, "logistik", roleModules)) return <SikForbidden />;
   return (
     <div className="flex flex-col gap-4">
       <GlassPanel className="p-5">

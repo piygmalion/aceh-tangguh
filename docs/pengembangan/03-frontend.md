@@ -191,6 +191,14 @@ Jurnal: `jurnal/FE-36.md`. Gelombang 29. Tiga komponen Destana: `text-xs` → `T
 
 Jurnal: `jurnal/FE-37.md`. Gelombang 30. CTA “Tanya Tanggapi” hanya view desa (setelah kab→kec→desa) dan pada MapFeatureCard hanya jika kode 10 digit. Seed whitelist lokasi lewat `sessionStorage` `aceh:tanggapi-seed`. `requestOpenTanggapi` yang sudah ada. Accent ink-on-orange; lantai 13px. Jangan menimpa IA #50. Jangan menimpa FE-36.
 
+### FE-39 — halaman Daily Brief + admin nomor
+
+Jurnal: `jurnal/FE-39.md`. Gelombang 31. Jangan dikode sebelum AN-38. Publik `/brief/[ymd]` + admin `/admin/daily-brief`. i18n ID+EN. Nomor mask di daftar. Jangan menimpa FE-38. Jangan OTP publik.
+
+### FE-41 — dashboard User Management
+
+Jurnal: `jurnal/FE-41.md`. Gelombang 33. Kontrak AN-41. Tetap `/admin/staf`. Daftar semua staf + kisi peran/modul + ringkasan 23 slot (FE-34 jangan dihapus). i18n `admin.*` ID+EN. Jangan rute `/admin/pengguna`. Jangan menimpa FE-39.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.

@@ -134,6 +134,14 @@ Jurnal: `jurnal/BE-20.md`. Gelombang 19. Jangan dikode sebelum AN-24. `GET /api/
 
 Jurnal: `jurnal/BE-28.md`. Gelombang 20. Jangan dikode sebelum AN-29. Agregat dari `loadKejadian()`. Kosong sah = 200. Hulu gagal = 503. Jangan menggabungkan DIBI. Jangan menabrak BE-21 (ECC-S). Jangan DATA-4.
 
+### BE-29 — compose + cron Daily Brief
+
+Jurnal: `jurnal/BE-29.md`. Gelombang 31. Jangan dikode sebelum AN-38. Compose murni; `POST /api/cron/daily-brief` (`DAILY_BRIEF_CRON_SECRET`); API staf `isProvinsiOps`; GET publik `/api/brief/[ymd]` tanpa PII. Jangan reuse secret overlay/cuaca/laporan. Jangan menaikkan kuota Tanggapi. Jangan DATA-4.
+
+### BE-31 — API User Management katalog
+
+Jurnal: `jurnal/BE-31.md`. Gelombang 33. Kontrak AN-41. `GET/POST /api/admin/users` + `PATCH/DELETE /api/admin/users/[id]` + `GET/PATCH /api/admin/roles`. Super_admin + `rejectCrossOrigin`. Tanpa password. Jangan merevoke helper SQL. Jangan DATA-4.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan merge `/api/weather`.

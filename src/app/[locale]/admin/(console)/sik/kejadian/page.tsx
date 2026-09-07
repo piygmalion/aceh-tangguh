@@ -4,7 +4,7 @@ import { SikForbidden } from "@/components/sik/SikForbidden";
 import { KejadianOpsList } from "@/components/sik/KejadianOpsList";
 
 export default async function SikKejadianPage() {
-  const { profile } = await requireStaffPage();
-  if (!canAccessModule(profile, "kejadian")) return <SikForbidden />;
+  const { profile, roleModules } = await requireStaffPage();
+  if (!canAccessModule(profile, "kejadian", roleModules)) return <SikForbidden />;
   return <KejadianOpsList />;
 }

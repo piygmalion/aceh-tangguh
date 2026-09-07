@@ -104,7 +104,7 @@ export function welcomeQueryForPath(pathname: string, locale: GuideLocale): stri
       case "metodologi":
         return "data sources";
       default:
-        return "about aceh tangguh";
+        return "early warning";
     }
   }
   switch (hint) {
@@ -129,6 +129,6 @@ export function welcomeQueryForPath(pathname: string, locale: GuideLocale): stri
     case "metodologi":
       return "sumber data";
     default:
-      return "apa itu aceh tangguh";
+      return "peringatan dini";
   }
 }

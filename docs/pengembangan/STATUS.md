@@ -381,6 +381,15 @@ CTA “Tanya Tanggapi” hanya pada view desa AreaProfil (setelah kab→kec→de
 | --- | --- | --- | --- | --- |
 | FE-37 | frontend | Tanggapi CTA on Distribusi/AreaProfil desa | jurnal/FE-37.md | selesai |
 
+## Gelombang Tanggapi briefing — AN-37 / FE-38
+
+Sambutan beranda Tanggapi adalah briefing empat umpan `GET /api/peringatan-dini` (cuaca → MAGMA → Sipongi → Tatonas). Bukan Web Push, SMS, atau siaran WA. MAGMA unavailable tidak mengulang gempa. Tautan hanya `#status` / `#cuaca`. Kartu PD ke-5 maritim tetap [AN-36](jurnal/AN-36.md). DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-37 | analis | Naskah briefing peringatan Tanggapi | jurnal/AN-37.md | selesai |
+| FE-38 | frontend | Compiler + sambutan briefing | jurnal/FE-38.md | selesai |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).
@@ -398,6 +407,32 @@ Kebijakan terkunci: konflik GPS memakai GPS existing; `attributeConflicts` tidak
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
 | DATA-23 | data | `--accept-gps-quarantine` keep-existing GPS | jurnal/DATA-23.md | selesai |
+
+## Gelombang 31 — selesai (Daily Brief staf)
+
+Naskah AN-38 dikunci sebelum kode. Audiens = nomor yang ditambah operator provinsi. Bukan OTP publik. Bukan stack Python. Compose dari umpan hidup yang sudah ada. `npm test` 654 lulus; `tsc` hijau. Browser: `/id/brief/{ymd}` empty sah; `/en/brief/{ymd}` EN; admin super admin form + error jika tabel belum di-apply. Migrasi `20260926` belum diterapkan ke produksi dari tiket ini. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan mengerjakan AN-36 / FE-38 / G32 dari tiket ini.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-38 | analis | Naskah Daily Brief staf | jurnal/AN-38.md | selesai |
+| DATA-24 | data | Tabel subscriber / briefs / log | jurnal/DATA-24.md | selesai |
+| BE-29 | backend | Compose + cron + API | jurnal/BE-29.md | selesai |
+| FE-39 | frontend | `/brief/[ymd]` + admin nomor | jurnal/FE-39.md | selesai |
+| AN-39 | analis | Uji penerimaan G31 | jurnal/AN-39.md | selesai |
+
+G32 (AN-40 / DATA-25 / BE-30 / FE-40) tercatat di AN-38 §8. Jangan dikode sebelum G31 `selesai`.
+
+## Gelombang 33 — selesai (User Management katalog)
+
+Kontrak AN-41: Super Admin kelola semua staf + paket akses modul. Bukan RBAC dinamis. `npm test` 665 lulus; `tsc` hijau. Browser `/id/admin/staf` dan `/en/admin/staf` menampilkan form katalog + kisi akses + 23 slot. Migrasi `20260927` belum diterapkan ke produksi dari tiket ini. DATA-4 tetap tertahan. Jangan merevoke `is_staff` / `is_ops` / `is_walidata`. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menimpa G31 Daily Brief.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-41 | analis | Naskah User Management katalog | jurnal/AN-41.md | selesai |
+| DATA-26 | data | Tabel `admin_role_modules` + seed | jurnal/DATA-26.md | selesai |
+| BE-31 | backend | Perluas `/api/admin/users` + `/api/admin/roles` | jurnal/BE-31.md | selesai |
+| FE-41 | frontend | Dashboard `/admin/staf` pengguna + matriks | jurnal/FE-41.md | selesai |
+| AN-42 | analis | Uji penerimaan G33 | jurnal/AN-42.md | selesai |
 
 ## Gelombang kemudian
 

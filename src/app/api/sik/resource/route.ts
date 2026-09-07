@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
   const key = parseResource(req.nextUrl.searchParams.get("resource"));
   if (!key) return NextResponse.json({ error: "unknown resource" }, { status: 400 });
   const spec = RESOURCES[key];
-  if (!canAccessModule(auth.profile, spec.module)) {
+  if (!canAccessModule(auth.profile, spec.module, auth.roleModules)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
   const key = parseResource(typeof json?.resource === "string" ? json.resource : null);
   if (!key || !json) return NextResponse.json({ error: "invalid" }, { status: 400 });
   const spec = RESOURCES[key];
-  if (!canAccessModule(auth.profile, spec.module)) {
+  if (!canAccessModule(auth.profile, spec.module, auth.roleModules)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
   const { resource: _r, ...payload } = json;
@@ -219,7 +219,7 @@ export async function PATCH(req: NextRequest) {
   const id = typeof json?.id === "string" ? json.id : null;
   if (!key || !id || !json) return NextResponse.json({ error: "invalid" }, { status: 400 });
   const spec = RESOURCES[key];
-  if (!canAccessModule(auth.profile, spec.module)) {
+  if (!canAccessModule(auth.profile, spec.module, auth.roleModules)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
   const existing = await loadExisting(auth.supabase, spec.table, id);
@@ -261,7 +261,7 @@ export async function DELETE(req: NextRequest) {
   const id = typeof json?.id === "string" ? json.id : null;
   if (!key || !id) return NextResponse.json({ error: "invalid" }, { status: 400 });
   const spec = RESOURCES[key];
-  if (!canAccessModule(auth.profile, spec.module)) {
+  if (!canAccessModule(auth.profile, spec.module, auth.roleModules)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
   const existing = await loadExisting(auth.supabase, spec.table, id);

@@ -118,6 +118,24 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
+      admin_role_modules: {
+        Row: {
+          role: AdminRole;
+          module: string;
+          allowed: boolean;
+        };
+        Insert: {
+          role: AdminRole;
+          module: string;
+          allowed?: boolean;
+        };
+        Update: {
+          role?: AdminRole;
+          module?: string;
+          allowed?: boolean;
+        };
+        Relationships: EmptyRelationships;
+      };
       live_stats: {
         Row: {
           id: number;

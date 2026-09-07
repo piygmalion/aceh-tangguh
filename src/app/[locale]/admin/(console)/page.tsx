@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { OperationalStatsSection } from "@/components/sik/OperationalStatsSection";
 import { isSuperAdmin } from "@/lib/auth/types";
 import { canAccessModule } from "@/lib/sik/roles";
 import { requireStaffPage } from "@/lib/auth/admin";
@@ -33,7 +34,7 @@ function emptyOverviewCounts(): OverviewCounts {
 
 export default async function AdminOverviewPage() {
   const t = await getTranslations("admin");
-  const { supabase, profile } = await requireStaffPage();
+  const { supabase, profile, roleModules } = await requireStaffPage();
   const superAdmin = isSuperAdmin(profile);
 
   const counts = {
@@ -57,8 +58,11 @@ export default async function AdminOverviewPage() {
 
   const cards = [
     { href: "/admin/moderasi" as const, title: t("navModeration"), body: t("overviewModeration") },
-    ...(canAccessModule(profile, "kejadian")
+    ...(canAccessModule(profile, "kejadian", roleModules)
       ? [{ href: "/admin/sik/kejadian" as const, title: t("navKejadianOps"), body: t("overviewKejadian") }]
+      : []),
+    ...(canAccessModule(profile, "dailyBrief", roleModules)
+      ? [{ href: "/admin/daily-brief" as const, title: t("navDailyBrief"), body: t("overviewDailyBrief") }]
       : []),
     ...(superAdmin
       ? [
@@ -114,6 +118,7 @@ export default async function AdminOverviewPage() {
           </p>
         ) : null}
       </GlassPanel>
+      <OperationalStatsSection />
       <div className="grid gap-3 md:grid-cols-2">
         {cards.map((card) => (
           <Link key={card.href} href={card.href}>

@@ -7,6 +7,13 @@ export default async function AdminConsoleLayout({
 }: {
   children: ReactNode;
 }) {
-  const { profile } = await requireStaffPage();
-  return <AdminShell profile={profile}>{children}</AdminShell>;
+  const { profile, roleModules } = await requireStaffPage();
+  return (
+    <AdminShell
+      profile={profile}
+      moduleOverlay={roleModules ? Object.fromEntries(roleModules) : null}
+    >
+      {children}
+    </AdminShell>
+  );
 }
