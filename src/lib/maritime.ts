@@ -4,6 +4,7 @@ import { unstable_cache } from "next/cache";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import { ACEH_PERAIRAN_CODES } from "@/lib/overlay-layers";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
+import { readMaritimeWarningIndex } from "@/lib/maritime-warning-index";
 import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/types";
 
@@ -21,6 +22,8 @@ export type MaritimeHourSlot = {
   wind_from?: string;
   wind_speed?: number;
   wind_gust?: number;
+  visibility?: number;
+  tides?: number;
   wave_cat?: string;
   wave_height?: number;
   current_to?: string;
@@ -64,6 +67,32 @@ const WAVE_FILL: Record<string, string> = {
 export function waveCatFill(cat: string | null | undefined): string {
   if (!cat) return COLOR_TOKENS.teal;
   return WAVE_FILL[cat.trim().toLowerCase()] ?? COLOR_TOKENS.teal;
+}
+
+const OUTLOOK_RANK: Record<string, number> = {
+  tenang: 0,
+  rendah: 1,
+  sedang: 2,
+  tinggi: 3,
+  "sangat tinggi": 4,
+  ekstrem: 5,
+  "sangat ekstrem": 5,
+};
+
+/** Peak category on later slots. Text only — does not replace slot fillColor. */
+export function outlookPeakWaveCat(slots: MaritimeHourSlot[]): string | null {
+  let best: string | null = null;
+  let bestRank = -1;
+  for (const slot of slots) {
+    const cat = slot.wave_cat ? String(slot.wave_cat).trim() : "";
+    if (!cat) continue;
+    const rank = OUTLOOK_RANK[cat.toLowerCase()] ?? -1;
+    if (rank > bestRank) {
+      bestRank = rank;
+      best = cat;
+    }
+  }
+  return best;
 }
 
 export function pickCurrentSlot(forecast: MaritimeForecast, now = Date.now()): MaritimeHourSlot | null {
@@ -273,26 +302,34 @@ export async function loadPelabuhanGeojson(): Promise<FeatureCollection> {
 export async function getPerairanOverlay(): Promise<
   FeatureCollection<Geometry> & { stale: boolean; source: string }
 > {
-  const [fc, forecasts] = await Promise.all([
+  const [fc, forecasts, warnings] = await Promise.all([
     loadPerairanGeojson(),
     getCachedAcehWaterForecasts(),
+    readMaritimeWarningIndex(),
   ]);
   let anyStale = false;
   const features: Feature<Geometry>[] = fc.features.map((f) => {
     const kode = String(f.properties?.kode ?? f.properties?.ID_MAR ?? "");
     const loaded = forecasts[kode];
     if (!loaded) {
+      const warning = warnings[kode];
       return {
         ...f,
         properties: {
           ...f.properties,
           fillColor: COLOR_TOKENS.teal,
           stale: true,
+          in_warning: Boolean(warning),
+          warning_cat: warning?.wave_cat ?? null,
         },
       };
     }
     anyStale = anyStale || loaded.stale;
     const summary = summarize(loaded.forecast, loaded.stale);
+    const warning = warnings[kode];
+    const outlook = outlookPeakWaveCat(
+      Array.isArray(loaded.forecast["forecast_day2-4"]) ? loaded.forecast["forecast_day2-4"] : [],
+    );
     return {
       ...f,
       properties: {
@@ -300,6 +337,9 @@ export async function getPerairanOverlay(): Promise<
         ...summary,
         title: summary.name,
         status: summary.wave_cat ?? summary.weather ?? "",
+        in_warning: Boolean(warning),
+        warning_cat: warning?.wave_cat ?? null,
+        outlook_max_wave_cat: outlook,
       },
     };
   });

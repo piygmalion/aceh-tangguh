@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
-import { CloudRain, Droplets, Flame, Mountain } from "lucide-react";
+import { CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
 import { Chip } from "@/components/ui/Chip";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,6 +12,7 @@ import { qk } from "@/lib/qk";
 import type {
   CuacaWarningCard,
   MagmaCard,
+  MaritimCard as MaritimWarningCard,
   PeringatanDiniResponse,
   PeringatanTone,
   SipongiCard,
@@ -293,6 +294,70 @@ function SipongiCardView({ card }: { card: SipongiCard }) {
   );
 }
 
+function MaritimCard({ card }: { card: MaritimWarningCard }) {
+  const t = useTranslations("peringatanDini");
+  const locale = useLocale();
+  const stamp = formatStamp(card.fetched_at, locale);
+
+  return (
+    <CardShell
+      href={card.href}
+      external
+      tone={card.tone}
+      ariaLabel={t("maritim.aria")}
+      header={
+        <CardHeader
+          icon={<Waves className="h-3.5 w-3.5 shrink-0 text-[var(--info)]" />}
+          source={t("maritim.source")}
+          tone={card.tone}
+          stamp={stamp}
+          stale={card.stale}
+        />
+      }
+    >
+      {card.empty ? (
+        <Empty className="min-h-0 flex-1 items-start justify-start border-0 p-0 md:p-0">
+          <EmptyDescription className="text-left text-foreground">
+            {t("maritim.empty")}
+          </EmptyDescription>
+        </Empty>
+      ) : (
+        <div className="mt-1 flex flex-col gap-2">
+          {card.highlights.map((h) => (
+            <div key={`${h.kode ?? h.nama}-${h.wave_cat}`} className="flex flex-col gap-0.5">
+              <Field label={t("maritim.perairan")} value={h.nama} />
+              <Field label={t("maritim.kategori")} value={h.wave_cat} />
+              {h.wave_min_m != null || h.wave_max_m != null ? (
+                <Field
+                  label={t("maritim.tinggi")}
+                  value={
+                    h.wave_min_m != null && h.wave_max_m != null
+                      ? `${h.wave_min_m}–${h.wave_max_m} m`
+                      : `${h.wave_max_m ?? h.wave_min_m} m`
+                  }
+                />
+              ) : null}
+            </div>
+          ))}
+          {card.valid_from || card.valid_to ? (
+            <Field
+              label={t("maritim.berlaku")}
+              value={[formatStamp(card.valid_from, locale), formatStamp(card.valid_to, locale)]
+                .filter(Boolean)
+                .join(" – ")}
+            />
+          ) : null}
+          {card.extra_count > 0 ? (
+            <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+              {t("maritim.more", { n: card.extra_count })}
+            </p>
+          ) : null}
+        </div>
+      )}
+    </CardShell>
+  );
+}
+
 function TatonasCardView({ card }: { card: TatonasCard }) {
   const t = useTranslations("peringatanDini");
   const locale = useLocale();
@@ -384,8 +449,8 @@ export function PeringatanDiniSection() {
         </div>
 
         {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4" aria-hidden>
-            {Array.from({ length: 4 }).map((_, i) => (
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-hidden>
+            {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton key={i} className="h-[20rem] rounded-2xl" />
             ))}
           </div>
@@ -398,11 +463,12 @@ export function PeringatanDiniSection() {
         ) : null}
 
         {data ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             <CuacaCard card={data.cuaca} />
             <MagmaCardView card={data.magma} />
             <SipongiCardView card={data.sipongi} />
             {data.tatonas ? <TatonasCardView card={data.tatonas} /> : null}
+            {data.maritim ? <MaritimCard card={data.maritim} /> : null}
           </div>
         ) : null}
       </div>

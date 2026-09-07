@@ -43,13 +43,13 @@ Roles: `super_admin`, `admin` → `admin_provinsi`, `admin_kabkota` (scoped), `a
 
 ## Public GET APIs
 
-`GET /api/stats/live`, `/api/peringatan-dini`, `/api/peringatan-dini/magma`, `/api/peringatan-dini/sipongi`, `/api/peringatan-dini/tatonas`, `/api/weather`, `/api/weather/inovasi`, `/api/weather/[kab]`, `/api/dibi/aceh`, `/api/irbi`, `/api/krb`, `/api/kejadian`, `/api/kejadian/analisis`, `/api/kejadian/[id]`, `/api/anggaran`, `/api/publikasi`, `/api/publikasi/kegiatan`, `/api/prrpka/summary`, `/api/r3p/summary`, `/api/layers/catalog`, `/api/layers/meta/[layerKey]`, `/api/layers/areas/[key]`, `/api/layers/markers`, `/api/layers/markers/summary`, `/api/boundaries`, `/api/laporan/peta`, `/api/profil-desa/desa`, `/api/profil-desa/kecamatan`, `/api/profil-desa/kabupaten`, `/api/sentinel/status`, `/api/sik/public`, `/api/overlay/[key]`, `/api/overlay/static/[key]`, `/api/overlay/tiles/[...parts]`, `/api/overlay/maritime/perairan`, `/api/overlay/maritime/pelabuhan/[kode]`, `/api/brief/[ymd]` (snapshot tanpa PII), `/api/admin/me` (null session if logged out).
+`GET /api/stats/live`, `/api/peringatan-dini`, `/api/peringatan-dini/magma`, `/api/peringatan-dini/sipongi`, `/api/peringatan-dini/tatonas`, `/api/peringatan-dini/maritim`, `/api/weather`, `/api/weather/inovasi`, `/api/weather/[kab]`, `/api/dibi/aceh`, `/api/irbi`, `/api/krb`, `/api/kejadian`, `/api/kejadian/analisis`, `/api/kejadian/[id]`, `/api/anggaran`, `/api/publikasi`, `/api/publikasi/kegiatan`, `/api/prrpka/summary`, `/api/r3p/summary`, `/api/layers/catalog`, `/api/layers/meta/[layerKey]`, `/api/layers/areas/[key]`, `/api/layers/markers`, `/api/layers/markers/summary`, `/api/boundaries`, `/api/laporan/peta`, `/api/profil-desa/desa`, `/api/profil-desa/kecamatan`, `/api/profil-desa/kabupaten`, `/api/sentinel/status`, `/api/sik/public`, `/api/overlay/[key]`, `/api/overlay/static/[key]`, `/api/overlay/tiles/[...parts]`, `/api/overlay/maritime/perairan`, `/api/overlay/maritime/pelabuhan/[kode]`, `/api/brief/[ymd]` (snapshot tanpa PII), `/api/admin/me` (null session if logged out).
 
 `GET|POST /api/reports` is **410 Gone**.
 
 `GET /api/laporan/peta` must not include pelapor fields or `jawaban_json`.
 
-Public maritime GET (`/api/overlay/maritime/perairan`, `/api/overlay/maritime/pelabuhan/[kode]`) reads `maritime_forecast_cache` only. Cron `POST /api/cron/overlay-live` writes the cache (`refreshMaritimeForecasts`). G14 live overlay GET does not write.
+Public maritime GET (`/api/overlay/maritime/perairan`, `/api/overlay/maritime/pelabuhan/[kode]`) reads `maritime_forecast_cache` only. Cron `POST /api/cron/overlay-live` writes the forecast cache (`refreshMaritimeForecasts`) and the PDGT bulletin cache (`refreshMaritimeWarnings` → `maritime_warning_cache`). GET `/api/peringatan-dini` and `/api/peringatan-dini/maritim` read the bulletin cache only. G14 live overlay GET does not write.
 
 ## Public POST APIs
 

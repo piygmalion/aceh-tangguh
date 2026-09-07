@@ -196,11 +196,31 @@ describe("feature-card mapper", () => {
         code: "XA001",
         weather: "Berawan",
         wave_cat: "Rendah",
+        visibility: 8,
+        tides: 1.2,
+        wind_gust: 18,
       }),
     );
     assert.equal(port.category, "PELABUHAN");
     assert.equal(port.details.find((d) => d.key === "kode")?.value, "XA001");
     assert.equal(port.details.find((d) => d.key === "cuaca")?.value, "Berawan");
+    assert.equal(port.details.find((d) => d.key === "visibilitas")?.value, "8");
+    assert.equal(port.details.find((d) => d.key === "pasangSurut")?.value, "1.2");
+    assert.equal(port.details.find((d) => d.key === "anginKencang")?.value, "18");
+
+    const water = toFeatureCard(
+      point("P.A.05", "maritimeWaters", {
+        title: "Aceh Besar–Meulaboh",
+        kode: "P.A.05",
+        wave_cat: "Sedang",
+        in_warning: true,
+        warning_cat: "Sedang",
+        outlook_max_wave_cat: "Tinggi",
+      }),
+    );
+    assert.equal(water.category, "PERAIRAN");
+    assert.equal(water.details.find((d) => d.key === "peringatan")?.value, "Sedang");
+    assert.equal(water.details.find((d) => d.key === "puncak3Hari")?.value, "Tinggi");
   });
 
   it("omits optional media when empty and accepts only public URLs", () => {

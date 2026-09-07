@@ -76,3 +76,4 @@ Batas ulang untuk satu tiket: lima putaran. Jika masih gagal, tulis blocker di j
 - **Gelombang 31** — Daily Brief staf (compose + WA + `/brief/[ymd]`). Jangan OTP publik. Jangan AN-36 / FE-38 / DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menulis nilai `DAILY_BRIEF_CRON_SECRET`. G32 riset AI jangan dikode.
 - **Gelombang 32** — riset AI Daily Brief. Jangan dikode sebelum naskah G32. Jangan OTP publik. Jangan DATA-4.
 - **Gelombang 33** — User Management katalog (AN-41). Jangan memakai ID G31 (AN-38 / DATA-24 / BE-29 / FE-39). Jangan merevoke `is_staff` / `is_ops` / `is_walidata`. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan RBAC dinamis.
+- **Gelombang 34** — kartu PD maritim dari buletin BMKG (AN-36). Jangan menulis `overlay_live_features`. Jangan membuka calon. Jangan merge `/api/weather`. Jangan InaWaves. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. ID = DATA-27 / BE-32 / FE-42. Jangan memakai ID G32.

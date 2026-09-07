@@ -366,14 +366,15 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleId: "BMKG Maritim — cuaca perairan dan pelabuhan Aceh",
     titleEn: "BMKG Maritim — Aceh waters and port forecast",
     source:
-      "BMKG marine2026-data: meta/area_province.json, meta/wilmetos.min.geojson, meta/pelabuhan.json, GET /perairan/{KODE}.json and /pelabuhan/{KODE}.json. Aceh codes P.A.01–P.A.08, M.01, M.03.",
+      "BMKG marine2026-data: meta/area_province.json, meta/wilmetos.min.geojson, meta/pelabuhan.json, GET /perairan/{KODE}.json and /pelabuhan/{KODE}.json. Official PDGT bulletin (www.bmkg.go.id/cuaca/maritim/peringatan-gelombang-tinggi); warning/*.json is tried first and usually 404. Aceh codes P.A.01–P.A.08, M.01, M.03.",
     license:
-      "Official BMKG maritime forecast — attribution required. Wave height and wind are copied from the live payload; values are never invented when the feed is stale or missing.",
-    date: "Live (cache 1 hour, BMKG cycle ~00 UTC)",
-    format: "JSON → GET /api/overlay/maritimeWaters and /api/overlay/maritime/pelabuhan/{kode}",
+      "Official BMKG maritime forecast and PDGT bulletin — attribution required. Wave height and wind are copied from the live payload; values are never invented when the feed is stale or missing. The early-warning card uses the bulletin, not the hourly forecast slot.",
+    date: "Live (cache 2 hours, BMKG cycle ~00 UTC)",
+    format:
+      "JSON forecast → GET /api/overlay/maritime/perairan and /api/overlay/maritime/pelabuhan/{kode}. Bulletin → GET /api/peringatan-dini field maritim.",
     usedFor:
-      "Map Geospasial overlays maritimeWaters (choropleth wave_cat) and port popups. Does not replace kabupaten/kota /api/weather.",
-    href: "https://maritim.bmkg.go.id/apidoc",
+      "Map Geospasial overlays maritimeWaters (choropleth wave_cat) and port popups; Peringatan Dini card ke-5 from the PDGT bulletin. Does not replace kabupaten/kota /api/weather. Does not write overlay_live_features.",
+    href: "https://www.bmkg.go.id/cuaca/maritim/peringatan-gelombang-tinggi",
   },
   {
     id: "ruangkita-static-poi",

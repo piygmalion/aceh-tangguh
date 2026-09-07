@@ -58,6 +58,7 @@ describe("AN-19 overlay vector paths", () => {
   it("POST cron overlay memanggil refresh maritim tanpa nilai secret", () => {
     const cron = readFileSync(join(ROOT, "src/app/api/cron/overlay-live/route.ts"), "utf8");
     assert.match(cron, /refreshMaritimeForecasts/);
+    assert.match(cron, /refreshMaritimeWarnings/);
     assert.match(cron, /maritime:/);
     assert.match(cron, /OVERLAY_CRON_SECRET/);
     assert.doesNotMatch(cron, /OVERLAY_CRON_SECRET:\s*[0-9a-fA-F]{16,}/);

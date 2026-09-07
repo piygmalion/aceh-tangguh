@@ -1281,6 +1281,60 @@ export interface Database {
         };
         Relationships: EmptyRelationships;
       };
+      maritime_warning_cache: {
+        Row: {
+          external_id: string;
+          kode: string | null;
+          nama: string;
+          wave_cat: string;
+          wave_min_m: number | null;
+          wave_max_m: number | null;
+          valid_from: string | null;
+          valid_to: string | null;
+          issued: string | null;
+          no_surat: string | null;
+          sinoptik: string | null;
+          source_url: string | null;
+          payload: Json;
+          fetched_at: string;
+          expires_at: string | null;
+        };
+        Insert: {
+          external_id: string;
+          kode?: string | null;
+          nama?: string;
+          wave_cat?: string;
+          wave_min_m?: number | null;
+          wave_max_m?: number | null;
+          valid_from?: string | null;
+          valid_to?: string | null;
+          issued?: string | null;
+          no_surat?: string | null;
+          sinoptik?: string | null;
+          source_url?: string | null;
+          payload?: Json;
+          fetched_at?: string;
+          expires_at?: string | null;
+        };
+        Update: {
+          external_id?: string;
+          kode?: string | null;
+          nama?: string;
+          wave_cat?: string;
+          wave_min_m?: number | null;
+          wave_max_m?: number | null;
+          valid_from?: string | null;
+          valid_to?: string | null;
+          issued?: string | null;
+          no_surat?: string | null;
+          sinoptik?: string | null;
+          source_url?: string | null;
+          payload?: Json;
+          fetched_at?: string;
+          expires_at?: string | null;
+        };
+        Relationships: EmptyRelationships;
+      };
       maritime_forecast_cache: {
         Row: {
           kode: string;

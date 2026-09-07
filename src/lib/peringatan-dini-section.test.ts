@@ -21,6 +21,17 @@ const TATONAS_CHROME = [
   "aria",
 ] as const;
 
+const MARITIM_CHROME = [
+  "source",
+  "empty",
+  "perairan",
+  "kategori",
+  "tinggi",
+  "berlaku",
+  "more",
+  "aria",
+] as const;
+
 describe("Peringatan Dini compact cards", () => {
   it("caps each card height and scrolls overflow instead of stretching the row", () => {
     const src = read("src/components/PeringatanDiniSection.tsx");
@@ -58,5 +69,24 @@ describe("Peringatan Dini compact cards", () => {
     }
     assert.equal(idTatonas.kind, undefined);
     assert.equal(enTatonas.kind, undefined);
+
+    assert.match(String(id.peringatanDini.subtitle), /BMKG Maritim|gelombang/i);
+    assert.match(String(en.peringatanDini.subtitle), /BMKG Maritim|wave/i);
+    const idMaritim = id.peringatanDini.maritim as Record<string, unknown>;
+    const enMaritim = en.peringatanDini.maritim as Record<string, unknown>;
+    for (const key of MARITIM_CHROME) {
+      assert.equal(typeof idMaritim[key], "string", `id maritim.${key}`);
+      assert.equal(typeof enMaritim[key], "string", `en maritim.${key}`);
+    }
+  });
+
+  it("renders a fifth maritime card without stretching card height", () => {
+    const src = read("src/components/PeringatanDiniSection.tsx");
+    assert.match(src, /MaritimCard/);
+    assert.match(src, /data\.maritim/);
+    assert.match(src, /h-\[20rem\]/);
+    assert.match(src, /xl:grid-cols-3/);
+    assert.equal(/xl:grid-cols-5/.test(src), false);
+    assert.match(src, /length:\s*5/);
   });
 });

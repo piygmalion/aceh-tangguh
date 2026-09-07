@@ -93,6 +93,17 @@ function HeroStatusPanel() {
               },
             ]
           : []),
+        ...(data.maritim
+          ? [
+              {
+                key: "maritim",
+                place: data.maritim.empty
+                  ? tp("maritim.empty")
+                  : data.maritim.highlights[0]?.nama ?? tp("maritim.source"),
+                tone: data.maritim.tone,
+              },
+            ]
+          : []),
       ]
     : [];
 
@@ -109,7 +120,7 @@ function HeroStatusPanel() {
       </div>
       <div className="flex flex-col gap-3">
         {isLoading
-          ? Array.from({ length: 4 }).map((_, i) => (
+          ? Array.from({ length: 5 }).map((_, i) => (
               <Skeleton key={i} className="h-8 w-full rounded-lg bg-white/10" />
             ))
           : rows.map((row) => {
