@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ export function DailyBriefManager() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const [subs, briefs] = await Promise.all([
       fetch("/api/admin/daily-brief/subscribers", { cache: "no-store" }),
@@ -35,11 +35,11 @@ export function DailyBriefManager() {
     setToday(briefJson.today ?? null);
     setError(null);
     setLoading(false);
-  }
+  }, [t]);
 
   useEffect(() => {
     void load();
-  }, []);
+  }, [load]);
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
