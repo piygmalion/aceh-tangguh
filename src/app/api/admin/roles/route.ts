@@ -24,8 +24,8 @@ function buildFallbackMatrix() {
   for (const role of SIK_ROLES) {
     const key = normalizedRole(role) ?? role;
     matrix[key] ??= {};
-    for (const module of SIK_MODULES) {
-      matrix[key][module] = defaultModuleAllowed(role, module);
+    for (const moduleKey of SIK_MODULES) {
+      matrix[key][moduleKey] = defaultModuleAllowed(role, moduleKey);
     }
   }
   return matrix;
