@@ -125,6 +125,10 @@ Jurnal: `jurnal/DATA-21.md`. Gelombang 22. Agregat 4 digit saja. Jangan mengaran
 
 Jurnal: `jurnal/DATA-22.md`. Gelombang 22. RLS `is_staff()`. Bukan layer publik. Jangan ingest pengungsian. Jangan DATA-4.
 
+### DATA-23 — tabel `insight` + `insight_chart`
+
+Jurnal: `jurnal/DATA-23.md`. Gelombang 25. Kontrak AN-36. Migrasi baru. RLS: SELECT `is_staff()`, tulis `is_ops()`, tanpa anon, tanpa `ALL`. Jangan apply dari tiket naskah. Jangan merevoke `is_staff` / `is_ops`. Jangan DATA-4.
+
 ## Saat menutup tiket
 
 Perbarui baris tiket di [STATUS.md](STATUS.md). Jangan commit.

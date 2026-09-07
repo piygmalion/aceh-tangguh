@@ -134,6 +134,10 @@ Jurnal: `jurnal/BE-20.md`. Gelombang 19. Jangan dikode sebelum AN-24. `GET /api/
 
 Jurnal: `jurnal/BE-28.md`. Gelombang 20. Jangan dikode sebelum AN-29. Agregat dari `loadKejadian()`. Kosong sah = 200. Hulu gagal = 503. Jangan menggabungkan DIBI. Jangan menabrak BE-21 (ECC-S). Jangan DATA-4.
 
+### BE-29 — API insight + query adapter
+
+Jurnal: `jurnal/BE-29.md`. Gelombang 25. Kontrak AN-36. CRUD staf + `GET /api/insight/public/[slug]` + `POST /api/insight/query`. Adapter empat sumber. Bukan SQL. Bukan `/api/admin/database`. Inventaris `attack-surface.md`. Jangan DATA-4.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan merge `/api/weather`.

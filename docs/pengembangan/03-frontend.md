@@ -183,6 +183,10 @@ Jurnal: `jurnal/FE-30.md`. Gelombang 23. Kontrak AN-32. Select `ancaman`, kartu 
 
 Jurnal: `jurnal/FE-31.md`. Gelombang 24. Kontrak AN-34. Ganti judul kartu; tampilkan rentang histori + pita skala + replay. Jangan hardcode judul Indonesia. Jangan menjumlahkan skor ke KPI. Jangan menimpa FE-28 (navbar G22).
 
+### FE-32 — kanvas insight builder
+
+Jurnal: `jurnal/FE-32.md`. Gelombang 25. Kontrak AN-36. `/admin/insight` + `/analisis-data/[slug]`. Sumber dulu, lalu chart, lalu layout. `react-grid-layout` 2.x, `ssr: false`. Recharts yang ada. Jangan menimpa `/analisis-data` resmi. Jangan hardcode judul Indonesia. Jangan DATA-4.
+
 ## Saat menutup tiket
 
 Perbarui [STATUS.md](STATUS.md). Jangan commit. Jika UI berubah, verifikasi di browser sebelum menutup.

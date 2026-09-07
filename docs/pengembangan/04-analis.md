@@ -228,6 +228,14 @@ Jurnal: `jurnal/AN-34.md`. Gelombang 24. Tulisan. Proyeksi empiris dari katalog;
 
 Jurnal: `jurnal/AN-35.md`. Gelombang 24. Setelah FE-31. Label, parser magnitudo/air, Pidie Jaya × banjir jiwa historis, gempa pita M tanpa rumah karangan.
 
+### AN-36 — naskah insight builder
+
+Jurnal: `jurnal/AN-36.md`. Gelombang 25. Tulisan, bukan kode. Empat sumber adapter; kueri publik per slug; `kpi` hanya kejadian; RLS tanpa anon; modul `insight`. Jangan memakai AN-29/35. Jangan DATA-4.
+
+### AN-37 — uji penerimaan insight builder
+
+Jurnal: `jurnal/AN-37.md`. Gelombang 25. Setelah FE-32. Kasus emas AN-36 §13. KPI ≠ 26,4. Query publik tanpa encoding klien. Draft = 404. Tutup STATUS G25. DATA-4 tetap tertahan.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan membuka P2 Juklak.

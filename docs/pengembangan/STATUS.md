@@ -335,6 +335,18 @@ Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang
 | FE-31 | frontend | Panel Histori + Proyeksi Dampak | jurnal/FE-31.md | selesai |
 | AN-35 | analis | Uji penerimaan proyeksi | jurnal/AN-35.md | selesai |
 
+## Gelombang 25 — insight builder
+
+Naskah AN-36 mengunci builder di konsol + slug publik. `/analisis-data` resmi tidak ditimpa. Empat sumber adapter (bukan tabel admin). DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan memperlebar `is_staff` / `is_ops`. Jangan SQL bebas.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-36 | analis | Naskah insight builder | jurnal/AN-36.md | selesai |
+| DATA-23 | data | Tabel `insight` + `insight_chart` | jurnal/DATA-23.md | siap-kode |
+| BE-29 | backend | API insight + adapter kueri | jurnal/BE-29.md | siap-kode |
+| FE-32 | frontend | Kanvas builder + slug publik | jurnal/FE-32.md | siap-kode |
+| AN-37 | analis | Uji penerimaan builder | jurnal/AN-37.md | menunggu-kode |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |
