@@ -5,9 +5,11 @@ import {
   createAuthServerClient,
   type AuthSupabaseClient,
 } from "@/lib/supabase/ssr";
+import { createServiceClient } from "@/lib/supabase/server";
 import type { AdminProfileRow } from "@/lib/supabase/types";
 import { isSuperAdmin, type AdminProfile } from "@/lib/auth/types";
-import { canAccessModule, type SikModule } from "@/lib/sik/roles";
+import { canAccessModule, type RoleModuleOverlay, type SikModule } from "@/lib/sik/roles";
+import { loadRoleModuleOverlay } from "@/lib/sik/staff-manage";
 
 export type { AdminProfile } from "@/lib/auth/types";
 export { isSuperAdmin, isStaff } from "@/lib/auth/types";
@@ -17,6 +19,7 @@ export type AuthContext = {
   userId: string | null;
   email: string | null;
   profile: AdminProfile | null;
+  roleModules: RoleModuleOverlay | null;
 };
 
 function toProfile(
@@ -46,7 +49,7 @@ export function sanitizeSearch(q: string): string {
 export async function getAuthContext(): Promise<AuthContext> {
   const supabase = createAuthServerClient();
   if (!supabase) {
-    return { supabase: null, userId: null, email: null, profile: null };
+    return { supabase: null, userId: null, email: null, profile: null, roleModules: null };
   }
 
   const {
@@ -54,7 +57,7 @@ export async function getAuthContext(): Promise<AuthContext> {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { supabase, userId: null, email: null, profile: null };
+    return { supabase, userId: null, email: null, profile: null, roleModules: null };
   }
 
   const { data: row } = await supabase
@@ -65,17 +68,23 @@ export async function getAuthContext(): Promise<AuthContext> {
     .eq("user_id", user.id)
     .maybeSingle();
 
+  const profile = row ? toProfile(row, user.email ?? null) : null;
+  const overlayClient = createServiceClient() ?? supabase;
+  const roleModules = profile ? await loadRoleModuleOverlay(overlayClient) : null;
+
   return {
     supabase,
     userId: user.id,
     email: user.email ?? null,
-    profile: row ? toProfile(row, user.email ?? null) : null,
+    profile,
+    roleModules,
   };
 }
 
 export async function requireStaffPage(): Promise<{
   supabase: AuthSupabaseClient;
   profile: AdminProfile;
+  roleModules: RoleModuleOverlay | null;
 }> {
   const locale = await getLocale();
   const ctx = await getAuthContext();
@@ -90,12 +99,13 @@ export async function requireStaffPage(): Promise<{
     throw new Error("redirect");
   }
 
-  return { supabase: ctx.supabase, profile: ctx.profile };
+  return { supabase: ctx.supabase, profile: ctx.profile, roleModules: ctx.roleModules };
 }
 
 export async function requireSuperAdminPage(): Promise<{
   supabase: AuthSupabaseClient;
   profile: AdminProfile;
+  roleModules: RoleModuleOverlay | null;
 }> {
   const locale = await getLocale();
   const result = await requireStaffPage();
@@ -109,6 +119,7 @@ type ApiOk = {
   ok: true;
   supabase: AuthSupabaseClient;
   profile: AdminProfile;
+  roleModules: RoleModuleOverlay | null;
 };
 
 type ApiErr = { ok: false; response: NextResponse };
@@ -127,7 +138,7 @@ export async function requireStaffApi(): Promise<ApiOk | ApiErr> {
       response: NextResponse.json({ error: "forbidden" }, { status: 403 }),
     };
   }
-  return { ok: true, supabase: ctx.supabase, profile: ctx.profile };
+  return { ok: true, supabase: ctx.supabase, profile: ctx.profile, roleModules: ctx.roleModules };
 }
 
 export async function requireSuperAdminApi(): Promise<ApiOk | ApiErr> {
@@ -144,9 +155,10 @@ export async function requireSuperAdminApi(): Promise<ApiOk | ApiErr> {
 
 export function authorizeStaffModule(
   profile: AdminProfile | null,
-  module: SikModule
+  module: SikModule,
+  overlay?: RoleModuleOverlay | null,
 ): { ok: true } | { ok: false; status: 403; error: "forbidden" } {
-  if (!canAccessModule(profile, module)) {
+  if (!canAccessModule(profile, module, overlay)) {
     return { ok: false, status: 403, error: "forbidden" };
   }
   return { ok: true };
@@ -155,7 +167,7 @@ export function authorizeStaffModule(
 export async function requireModuleApi(module: SikModule): Promise<ApiOk | ApiErr> {
   const staff = await requireStaffApi();
   if (!staff.ok) return staff;
-  const gate = authorizeStaffModule(staff.profile, module);
+  const gate = authorizeStaffModule(staff.profile, module, staff.roleModules);
   if (!gate.ok) {
     return {
       ok: false,

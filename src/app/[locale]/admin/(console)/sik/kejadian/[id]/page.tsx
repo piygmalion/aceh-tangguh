@@ -8,7 +8,7 @@ export default async function SikKejadianDetailPage({
 }: {
   params: { id: string };
 }) {
-  const { profile } = await requireStaffPage();
-  if (!canAccessModule(profile, "kejadian")) return <SikForbidden />;
+  const { profile, roleModules } = await requireStaffPage();
+  if (!canAccessModule(profile, "kejadian", roleModules)) return <SikForbidden />;
   return <KejadianOpsDetail id={params.id} canLockStatis={isProvinsiOps(profile)} />;
 }

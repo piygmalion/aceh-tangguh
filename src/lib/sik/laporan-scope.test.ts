@@ -96,9 +96,11 @@ describe("AN-22 / AN-23 moderasi + staf kab", () => {
     assert.match(reports, /authorizeLegacyReports/);
     const users = readFileSync(join(process.cwd(), "src/app/api/admin/users/route.ts"), "utf8");
     assert.match(users, /requireSuperAdminApi/);
-    assert.match(users, /authorizeStaffInvite/);
+    assert.match(users, /authorizeStaffCatalogInvite/);
     assert.match(users, /inviteUserByEmail/);
     assert.doesNotMatch(users, /password/);
+    const manage = readFileSync(join(process.cwd(), "src/lib/sik/staff-manage.ts"), "utf8");
+    assert.match(manage, /authorizeStaffInvite/);
   });
 
   it("halaman staf super_admin; moderasi menyembunyikan reports warisan untuk kab", () => {

@@ -4,8 +4,8 @@ import { SikForbidden } from "@/components/sik/SikForbidden";
 import { SikResourceManager } from "@/components/sik/SikResourceManager";
 
 export default async function SikPublikCmsPage() {
-  const { profile } = await requireStaffPage();
-  if (!canAccessModule(profile, "publikCms")) return <SikForbidden />;
+  const { profile, roleModules } = await requireStaffPage();
+  if (!canAccessModule(profile, "publikCms", roleModules)) return <SikForbidden />;
   return (
     <div className="flex flex-col gap-4">
       <SikResourceManager

@@ -50,28 +50,44 @@ function pickWeather(
   };
 }
 
-function summarizePeringatan(data: PeringatanDiniResponse): GuideContext["peringatan"] {
-  const cuaca = data.cuaca.highlights[0];
-  const magma = data.magma.event;
-  const sipongi = data.sipongi.points[0];
+function summarizePeringatan(
+  data: PeringatanDiniResponse,
+  kabupaten?: string
+): GuideContext["peringatan"] {
+  const cuacaRow = kabupaten
+    ? data.cuaca.highlights.find((item) => kabupatenNamesMatch(item.kabupaten, kabupaten))
+    : data.cuaca.highlights[0];
+  const cuacaUnmatched =
+    Boolean(kabupaten) && data.cuaca.highlights.length > 0 && !cuacaRow ? kabupaten : undefined;
+
+  const magma = data.magma.source === "unavailable" ? null : data.magma.event;
+  const sipongiPoints = kabupaten
+    ? data.sipongi.points.filter((item) => kabupatenNamesMatch(item.kabkota, kabupaten))
+    : data.sipongi.points;
+  const sipongiUnmatched =
+    Boolean(kabupaten) && data.sipongi.points.length > 0 && sipongiPoints.length === 0
+      ? kabupaten
+      : undefined;
+  const sipongi = sipongiPoints[0];
   const tatonas = data.tatonas.highlights[0];
   const tatonasValue =
     tatonas && tatonas.value != null ? `${tatonas.value} ${tatonas.satuan}`.trim() : undefined;
   return {
-    cuacaEmpty: data.cuaca.empty,
+    cuacaEmpty: cuacaUnmatched ? true : data.cuaca.empty,
     cuacaTone: data.cuaca.tone,
-    cuacaHighlight: cuaca
-      ? `${cuaca.kabupaten}: ${cuaca.kondisi}`
-      : undefined,
-    magmaEmpty: data.magma.empty,
+    cuacaHighlight: cuacaRow ? `${cuacaRow.kabupaten}: ${cuacaRow.kondisi}` : undefined,
+    cuacaUnmatched,
+    magmaEmpty: data.magma.source === "unavailable" ? true : data.magma.empty,
     magmaSummary: magma
       ? [magma.magnitude_text, magma.wilayah || magma.gunung_api_terdekat]
           .filter(Boolean)
           .join(" — ")
       : undefined,
-    sipongiEmpty: data.sipongi.empty,
-    sipongiCount: data.sipongi.points.length,
+    magmaSource: data.magma.source,
+    sipongiEmpty: sipongiUnmatched ? true : data.sipongi.empty,
+    sipongiCount: sipongiPoints.length,
     sipongiPlace: sipongi?.kabkota,
+    sipongiUnmatched,
     tatonasEmpty: data.tatonas.empty,
     tatonasHighlight: tatonas
       ? [tatonas.pos_name, tatonas.sensor, tatonasValue, tatonas.level && `(${tatonas.level})`]
@@ -114,7 +130,7 @@ export async function loadGuideContext(
           ctx.peringatan = null;
           return;
         }
-        ctx.peringatan = summarizePeringatan(data);
+        ctx.peringatan = summarizePeringatan(data, match.kabupaten);
       })
     );
   }

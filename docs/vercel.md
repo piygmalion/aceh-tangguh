@@ -51,12 +51,14 @@ Set di Vercel → Project → Settings → Environment Variables (Production + P
 | `WEATHER_CRON_SECRET` | `POST /api/weather/refresh` dan alias `POST /api/cron/weather` | Bearer. Path lama tetap; alias memanggil handler yang sama. |
 | `WEATHER_INOVASI_CRON_SECRET` | `POST /api/weather/inovasi/refresh` dan alias `POST /api/cron/weather-inovasi` | Bearer terpisah; opsional. Tanpa ini + tanpa allowlist EE, strip inovasi tetap `unconfigured` (bukan angka palsu). Jangan reuse `WEATHER_CRON_SECRET`. Path lama tetap. |
 | `OVERLAY_CRON_SECRET` | `POST /api/cron/overlay-live` | Bearer; jangan reuse secret lain |
+| `DAILY_BRIEF_CRON_SECRET` | `POST /api/cron/daily-brief` | Bearer; jangan reuse secret overlay/cuaca/laporan |
 
 Setelah URL Vercel hidup, isi GitHub variable:
 
 - `WEATHER_REFRESH_URL` = `https://aceh-tangguh.vercel.app/api/weather/refresh` (atau alias `/api/cron/weather`; path lama jangan dihapus)
 - `LAPORAN_WA_URL` = `https://aceh-tangguh.vercel.app/api/cron/laporan-wa`
 - `OVERLAY_REFRESH_URL` = `https://aceh-tangguh.vercel.app/api/cron/overlay-live`
+- `DAILY_BRIEF_URL` = `https://aceh-tangguh.vercel.app/api/cron/daily-brief`
 
 ## 4. Yang sengaja tidak diubah
 

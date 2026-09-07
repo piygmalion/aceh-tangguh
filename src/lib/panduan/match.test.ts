@@ -171,7 +171,42 @@ describe("panduan matcher", () => {
     assert.equal(chipsForPathname("/").includes("risetBanding"), true);
     assert.equal(chipsForPathname("/").at(-1), "lapor");
     assert.equal(welcomeQueryForPath("/destana", "id"), "destana");
-    assert.equal(welcomeQueryForPath("/", "id"), "apa itu aceh tangguh");
+    assert.equal(welcomeQueryForPath("/", "id"), "peringatan dini");
+    assert.equal(welcomeQueryForPath("/", "en"), "early warning");
+    assert.equal(matchGuideIntent(welcomeQueryForPath("/", "id"), "id").intent, "peringatan");
+  });
+
+  it("briefs four early-warning clauses without opening the map or inventing casualties", () => {
+    const welcome = matchGuideIntent(welcomeQueryForPath("/", "id"), "id");
+    const answer = composeGuideAnswer(
+      welcome,
+      {
+        failed: [],
+        peringatan: {
+          cuacaEmpty: true,
+          cuacaTone: "neutral",
+          magmaEmpty: true,
+          magmaSource: "live",
+          sipongiEmpty: true,
+          sipongiCount: 0,
+          tatonasEmpty: false,
+          tatonasHighlight: "Pos Krueng Aceh WL 1.2 m (WASPADA)",
+          tatonasLevel: "WASPADA",
+          stale: false,
+        },
+      },
+      "id"
+    );
+    assert.match(answer.body, /112|Pusdalops/);
+    assert.match(answer.body, /Cuaca:/);
+    assert.match(answer.body, /MAGMA/);
+    assert.match(answer.body, /Sipongi/);
+    assert.match(answer.body, /Tatonas/);
+    assert.doesNotMatch(answer.body, /korban jiwa \d+/i);
+    assert.equal(answer.links.some((item) => item.href === "/peta"), false);
+    assert.equal(answer.links.some((item) => item.href === "/" && item.hash === "status"), true);
+    assert.equal(answer.links.some((item) => item.href === "/" && item.hash === "cuaca"), true);
+    assert.equal(answer.tour, undefined);
   });
 
   it("answers the three screenshot queries without an empty body", () => {

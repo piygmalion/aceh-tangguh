@@ -5,8 +5,8 @@ import { SikForbidden } from "@/components/sik/SikForbidden";
 import type { KejadianDampakRow, KejadianOperasiRow } from "@/lib/sik/db-tables";
 
 export default async function CetakKejadianPage({ params }: { params: { id: string } }) {
-  const { profile } = await requireStaffPage();
-  if (!canAccessModule(profile, "kejadian")) return <SikForbidden />;
+  const { profile, roleModules } = await requireStaffPage();
+  if (!canAccessModule(profile, "kejadian", roleModules)) return <SikForbidden />;
   const client = createServerClient();
   if (!client) return <p>Supabase tidak tersedia.</p>;
   const { data: item } = await client.from("kejadian_operasi").select("*").eq("id", params.id).maybeSingle();

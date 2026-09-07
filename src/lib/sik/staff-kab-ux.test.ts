@@ -112,8 +112,9 @@ describe("FE-34 staf kab SoT-3 FINAL UX", () => {
     assert.equal(users.includes("inviteStatus"), false);
     assert.equal(users.includes("last_sign_in_at"), false);
     assert.match(users, /requireSuperAdminApi/);
-    assert.match(users, /authorizeStaffInvite/);
+    assert.match(users, /authorizeStaffCatalogInvite/);
     assert.doesNotMatch(users, /password/);
+    assert.match(read("src/lib/sik/staff-manage.ts"), /authorizeStaffInvite/);
     assert.match(laporan, /authorizeLaporanList/);
     assert.match(laporan, /matchesLaporanKabScope/);
     assert.match(reports, /authorizeLegacyReports/);

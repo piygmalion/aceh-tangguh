@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const year = Number(req.nextUrl.searchParams.get("tahun") ?? new Date().getFullYear());
   const auth = await requireStaffApi();
   if (!auth.ok) return auth.response;
-  if (!canAccessModule(auth.profile, "destana")) {
+  if (!canAccessModule(auth.profile, "destana", auth.roleModules)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
   if (originErr) return originErr;
   const auth = await requireStaffApi();
   if (!auth.ok) return auth.response;
-  if (!canAccessModule(auth.profile, "destana")) {
+  if (!canAccessModule(auth.profile, "destana", auth.roleModules)) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
   const json = (await req.json().catch(() => null)) as Record<string, unknown> | null;

@@ -72,6 +72,11 @@ export const routing = defineRouting({
       id: "/mitra",
       en: "/partners",
     },
+    "/brief/[ymd]": {
+      id: "/brief/[ymd]",
+      en: "/brief/[ymd]",
+    },
+    "/admin/daily-brief": "/admin/daily-brief",
   },
 });
 

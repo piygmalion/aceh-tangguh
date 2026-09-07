@@ -1,5 +1,6 @@
 import { formatRpCompact } from "@/lib/anggaran-format";
 import { DATA_SOURCES } from "@/lib/data-sources";
+import { compileAlertBrief } from "./alert-brief";
 import { HOME_TOUR_STEPS } from "./tour-steps";
 import type {
   GuideAnswer,
@@ -24,15 +25,6 @@ function link(
   extra?: { hash?: string; accent?: boolean }
 ): GuideLink {
   return { href, labelKey, ...extra };
-}
-
-function staleNote(locale: GuideLocale, stale?: boolean): string {
-  if (!stale) return "";
-  return t(
-    locale,
-    " Sebagian umpan berlabel data tertunda.",
-    " Some feeds are marked as delayed."
-  );
 }
 
 function failedNote(locale: GuideLocale, label: string): string {
@@ -221,43 +213,16 @@ function composeUnknown(match: GuideMatch, locale: GuideLocale): GuideAnswer {
 }
 
 function composePeringatan(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
-  if (ctx.failed.includes("peringatan") || !ctx.peringatan) {
-    return {
-      intent: "peringatan",
-      body: failedNote(locale, t(locale, "peringatan dini", "early warning")),
-      links: [link("/", "linkPeringatan", { hash: "status" })],
-    };
-  }
-  const p = ctx.peringatan;
-  const cuaca = p.cuacaEmpty
-    ? t(locale, "Cuaca: tidak ada peringatan ekstrem.", "Weather: no extreme warning.")
-    : t(locale, `Cuaca: ${p.cuacaHighlight}.`, `Weather: ${p.cuacaHighlight}.`);
-  const magma = p.magmaEmpty
-    ? t(locale, "Gempa MAGMA: tidak ada kejadian Aceh yang tampil, atau umpan tertunda.", "MAGMA quake: no Aceh event shown, or the feed is delayed.")
-    : t(locale, `Gempa MAGMA: ${p.magmaSummary}.`, `MAGMA quake: ${p.magmaSummary}.`);
-  const sipongi = p.sipongiEmpty
-    ? t(locale, "Sipongi: tidak ada hotspot Aceh (medium/tinggi).", "Sipongi: no Aceh hotspots (medium/high).")
-    : t(
-        locale,
-        `Sipongi: ${p.sipongiCount} hotspot, antara lain ${p.sipongiPlace ?? "Aceh"}.`,
-        `Sipongi: ${p.sipongiCount} hotspot(s), including ${p.sipongiPlace ?? "Aceh"}.`
-      );
-  const tatonas = p.tatonasEmpty
-    ? t(
-        locale,
-        "Tatonas: tidak ada pos hidrologi di atas ambang, atau umpan tertunda.",
-        "Tatonas: no hydrology post above threshold, or the feed is delayed."
-      )
-    : t(
-        locale,
-        `Tatonas: ${p.tatonasHighlight ?? "pos hidrologi tercatat"}.`,
-        `Tatonas: ${p.tatonasHighlight ?? "a hydrology post is recorded"}.`
-      );
+  const brief = compileAlertBrief(ctx, locale);
+  const failed = ctx.failed.includes("peringatan") || !ctx.peringatan;
   return {
     intent: "peringatan",
-    body: [cuaca, magma, sipongi, tatonas].join(" ") + staleNote(locale, p.stale),
-    links: [link("/", "linkPeringatan", { hash: "status" }), link("/peta", "linkPeta")],
-    source: t(locale, "Peringatan dini situs", "Site early warning"),
+    body: brief.body,
+    links: [
+      link("/", "linkPeringatan", { hash: "status" }),
+      link("/", "linkCuaca", { hash: "cuaca" }),
+    ],
+    source: failed ? undefined : t(locale, "Peringatan dini situs", "Site early warning"),
   };
 }
 

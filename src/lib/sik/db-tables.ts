@@ -276,6 +276,41 @@ export type DestanaSiRow = {
   updated_at: string;
 };
 
+export type DailyBriefSubscriberStatus = "active" | "inactive" | "unsubscribed";
+export type DailyBriefMessageStatus = "pending" | "sent" | "failed";
+
+export type DailyBriefSubscriberRow = {
+  id: string;
+  phone_enc: string;
+  name: string | null;
+  status: DailyBriefSubscriberStatus;
+  subscribed_at: string;
+  unsubscribed_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DailyBriefRow = {
+  id: string;
+  brief_date: string;
+  summary: Json;
+  sources: Json;
+  whatsapp_enqueued_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DailyBriefMessageLogRow = {
+  id: string;
+  subscriber_id: string;
+  brief_id: string;
+  status: DailyBriefMessageStatus;
+  error_message: string | null;
+  sent_at: string | null;
+  created_at: string;
+};
+
 export type DestanaAktivitasRow = {
   id: string;
   kode_desa_kelurahan: string;
@@ -401,4 +436,19 @@ export type SikTables = {
     Partial<SdbJadwalKirimRow>
   >;
   disabilitas_agregat: LooseTable;
+  daily_brief_subscribers: Table<
+    DailyBriefSubscriberRow,
+    Partial<DailyBriefSubscriberRow> & { phone_enc: string },
+    Partial<DailyBriefSubscriberRow>
+  >;
+  daily_briefs: Table<
+    DailyBriefRow,
+    Partial<DailyBriefRow> & { brief_date: string; summary: Json },
+    Partial<DailyBriefRow>
+  >;
+  daily_brief_message_logs: Table<
+    DailyBriefMessageLogRow,
+    Partial<DailyBriefMessageLogRow> & { subscriber_id: string; brief_id: string },
+    Partial<DailyBriefMessageLogRow>
+  >;
 };

@@ -50,9 +50,9 @@ export function OperationalStatsSection() {
   }, [yearNow]);
 
   return (
-    <section className="section-shell mt-16 md:mt-24" id="sik">
+    <GlassPanel as="section" className="p-5 sm:p-6">
       <div className="max-w-2xl">
-        <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Kejadian operasional Aceh</h2>
+        <h2 className="text-xl font-semibold">Kejadian operasional Aceh</h2>
         <p className="mt-3 text-[var(--text-dim)]">
           Ringkasan kejadian yang dicatat Pusdalops BPBA/BPBD. Default satu tahun berjalan, dapat disaring per kabupaten dan jenis.
         </p>
@@ -124,6 +124,6 @@ export function OperationalStatsSection() {
           Status Destana
         </Link>
       </p>
-    </section>
+    </GlassPanel>
   );
 }

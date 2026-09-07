@@ -129,6 +129,14 @@ Jurnal: `jurnal/DATA-22.md`. Gelombang 22. RLS `is_staff()`. Bukan layer publik.
 
 Jurnal: `jurnal/DATA-23.md`. GO SIK apply GPS langkah 3. Bendera eksplisit mengizinkan `--write-fixtures` hanya jika baris quarantine tetap memakai GPS existing (SIK desimal >100 m tidak menimpa). Catat `sik_merge.gpsConflicts`. Jangan menghapus gerbang tanpa bendera. Jangan `--apply` produksi. Jangan mengarang GPS. Dry-run langkah 1 butuh `data/sik/sik_aceh.db` (gitignored).
 
+### DATA-24 — tabel Daily Brief
+
+Jurnal: `jurnal/DATA-24.md`. Gelombang 31. Jangan dikode sebelum AN-38. Migrasi baru `daily_brief_subscribers` / `daily_briefs` / `daily_brief_message_logs`. Bukan tabel `users`. Jangan sunting migrasi lama. Jangan DATA-4.
+
+### DATA-26 — tabel paket akses peran
+
+Jurnal: `jurnal/DATA-26.md`. Gelombang 33. Kontrak AN-41. Migrasi baru `admin_role_modules`. Seed = matriks `canAccessModule` hari ini termasuk `dailyBrief`. Jangan sunting migrasi lama. Jangan merevoke `is_staff` / `is_ops` / `is_walidata`. Jangan DATA-4.
+
 ## Saat menutup tiket
 
 Perbarui baris tiket di [STATUS.md](STATUS.md). Jangan commit.

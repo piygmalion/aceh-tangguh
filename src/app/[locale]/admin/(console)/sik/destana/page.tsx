@@ -4,8 +4,8 @@ import { SikForbidden } from "@/components/sik/SikForbidden";
 import { DestanaAdminPanel } from "@/components/sik/DestanaAdminPanel";
 
 export default async function SikDestanaPage() {
-  const { profile } = await requireStaffPage();
-  if (!canAccessModule(profile, "destana")) return <SikForbidden />;
+  const { profile, roleModules } = await requireStaffPage();
+  if (!canAccessModule(profile, "destana", roleModules)) return <SikForbidden />;
   return (
     <DestanaAdminPanel
       isDesa={isDesaRole(profile)}
