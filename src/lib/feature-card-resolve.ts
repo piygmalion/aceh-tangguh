@@ -58,6 +58,9 @@ async function withPortForecast(feature: Feature): Promise<Feature> {
         wave_height: slot?.wave_height ?? props.wave_height,
         wind_from: slot?.wind_from ?? props.wind_from,
         wind_speed: slot?.wind_speed ?? props.wind_speed,
+        wind_gust: slot?.wind_gust ?? props.wind_gust,
+        visibility: slot?.visibility ?? props.visibility,
+        tides: slot?.tides ?? props.tides,
         wind:
           slot?.wind_from || typeof slot?.wind_speed === "number"
             ? `${slot?.wind_from ?? "—"} ${typeof slot?.wind_speed === "number" ? slot.wind_speed : "—"} kn`

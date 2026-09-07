@@ -434,6 +434,17 @@ Kontrak AN-41: Super Admin kelola semua staf + paket akses modul. Bukan RBAC din
 | FE-41 | frontend | Dashboard `/admin/staf` pengguna + matriks | jurnal/FE-41.md | selesai |
 | AN-42 | analis | Uji penerimaan G33 | jurnal/AN-42.md | selesai |
 
+## Gelombang 34 — kartu PD maritim (AN-36)
+
+Kontrak AN-36: kartu ke-5 dari buletin PDGT, bukan slot prakiraan. `npm test` 678 lulus; `tsc` hijau. Browser `/id#status` dan `/en#status` menampilkan kartu BMKG Maritim (tinggi 20rem). Overlay `maritimeWaters` tetap pewarna `wave_cat` slot. Cache buletin belum di-apply ke produksi dari tiket ini — GET lokal = `unavailable` + stale (benar, pola MAGMA). Migrasi `20260928` belum diterapkan ke produksi. DATA-4 tetap tertahan. Jangan menulis `overlay_live_features`. Jangan membuka calon. Jangan merge `/api/weather`. Jangan InaWaves. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-36 | analis | Naskah kartu PD maritim | jurnal/AN-36.md | siap-kode |
+| DATA-27 | data | Tabel `maritime_warning_cache` | jurnal/DATA-27.md | selesai |
+| BE-32 | backend | Ingest buletin + GET baca saja | jurnal/BE-32.md | selesai |
+| FE-42 | frontend | Kartu PD ke-5 + field peta | jurnal/FE-42.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

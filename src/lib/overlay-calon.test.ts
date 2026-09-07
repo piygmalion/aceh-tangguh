@@ -118,6 +118,11 @@ describe("kelayakan calon overlay", () => {
       input: signal({ source: "bmkg", layer_key: "maritimePorts" }),
       ok: false,
     },
+    {
+      name: "perairan / buletin gelombang bukan calon",
+      input: signal({ source: "bmkg", layer_key: "maritimeWaters" }),
+      ok: false,
+    },
   ];
 
   for (const row of cases) {

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { isMaritimeCacheStale, pickCurrentSlot, waveCatFill } from "./maritime";
+import { isMaritimeCacheStale, outlookPeakWaveCat, pickCurrentSlot, waveCatFill } from "./maritime";
 import { inariskExportImageUrl, webMercatorTileBbox } from "./inarisk-tiles";
 
 describe("BE-16 maritime cache read vs cron write", () => {
@@ -54,6 +54,14 @@ describe("maritime slot picker", () => {
     assert.equal(slot?.wave_cat, "Tinggi");
     assert.equal(waveCatFill("Tinggi"), "#FF7722");
     assert.equal(waveCatFill(null), "#2F6B66");
+    assert.equal(
+      outlookPeakWaveCat([
+        { wave_cat: "Sedang" },
+        { wave_cat: "Tinggi" },
+        { wave_cat: "Rendah" },
+      ]),
+      "Tinggi",
+    );
   });
 });
 

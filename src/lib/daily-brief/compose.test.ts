@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import type { PeringatanDiniResponse } from "@/lib/peringatan-dini-types";
-import { unavailableMagmaCard } from "@/lib/peringatan-dini-types";
+import { emptyMaritimCard, unavailableMagmaCard } from "@/lib/peringatan-dini-types";
 import {
   buildDailyBriefWhatsApp,
   composeDailyBrief,
@@ -58,6 +58,7 @@ function emptyPeringatan(overrides: Partial<PeringatanDiniResponse> = {}): Perin
       stale: false,
       source: "live",
     },
+    maritim: emptyMaritimCard("2026-09-07T00:00:00.000Z"),
     ...overrides,
   };
 }
