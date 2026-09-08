@@ -4,23 +4,30 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 import { COLOR_TOKENS } from "./layer-colors";
 import {
+  AREA_HIGHLIGHT_FILL,
+  AREA_HIGHLIGHT_LINE,
   AREA_OUTLINE_COLOR,
   BASEMAP_LABEL_PLACE_LAYER,
   KAB_OVERVIEW_AREA_KEY,
   KAB_OUTLINE_PAINT,
+  KECAMATAN_OUTLINE_PAINT,
+  KECAMATAN_OVERVIEW_MAX_ZOOM,
   MARKER_CLUSTERS_LAYER,
   PMTILES_KECAMATAN,
   PMTILES_VILLAGE,
   VILLAGE_DISTRIBUTION_TERCILES,
+  VILLAGE_MESH_MIN_ZOOM,
   VILLAGE_OUTLINE_MIN_ZOOM,
   VILLAGE_OUTLINE_PAINT,
   adminLodBand,
   adminLodTiles,
+  areaHighlightFilter,
   geometryBounds,
   isAdminLodArea,
   isAreaFillLayerId,
   isKabAreaFeature,
   isKecamatanAreaFeature,
+  lodFocusFromSelection,
   mergeVillageLodFocus,
   overlayBeforeId,
   rebucketVillageKabFeature,
@@ -30,6 +37,8 @@ import {
   villageDistributionBucket,
   villageFeatureVisible,
   villageLayerFilter,
+  villageLodShowsKecamatanLayer,
+  villageLodShowsVillageLayer,
   villagePanelClickEnabled,
   withKecamatanFocus,
 } from "./village-distribution-lod";
@@ -117,17 +126,31 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(isAdminLodArea(null), false);
   });
 
-  it("starts desa outlines at z11 and uses a forest token, not #14532d", () => {
+  it("starts desa outlines at z11 and uses paper/forest tokens, not #14532d", () => {
     assert.equal(VILLAGE_OUTLINE_MIN_ZOOM, 11);
+    assert.equal(VILLAGE_MESH_MIN_ZOOM, 11);
+    assert.equal(KECAMATAN_OVERVIEW_MAX_ZOOM, 11);
     assert.equal(AREA_OUTLINE_COLOR, COLOR_TOKENS.forest);
     assert.notEqual(AREA_OUTLINE_COLOR, "#14532d");
     assert.equal(KAB_OUTLINE_PAINT["line-color"], COLOR_TOKENS.forest);
-    assert.equal(VILLAGE_OUTLINE_PAINT["line-color"], COLOR_TOKENS.forest);
+    assert.equal(KECAMATAN_OUTLINE_PAINT["line-color"], COLOR_TOKENS.paper);
+    assert.equal(VILLAGE_OUTLINE_PAINT["line-color"], COLOR_TOKENS.paper);
     const opacity = VILLAGE_OUTLINE_PAINT["line-opacity"];
     assert.equal(opacity[3], 11);
     assert.equal(opacity[4], 0.3);
     assert.equal(opacity[5], 13);
     assert.equal(opacity[6], 0.45);
+  });
+
+  it("keeps kecamatan overview below z11 and desa mesh at z≥11 after a kab focus", () => {
+    assert.equal(villageLodShowsKecamatanLayer("kabupaten"), false);
+    assert.equal(villageLodShowsVillageLayer("kabupaten"), false);
+    assert.equal(villageLodShowsKecamatanLayer("kecamatan"), true);
+    assert.equal(villageLodShowsVillageLayer("kecamatan"), true);
+    assert.equal(villageLodShowsKecamatanLayer("village"), true);
+    assert.equal(villageLodShowsVillageLayer("village"), true);
+    assert.equal(AREA_HIGHLIGHT_FILL, COLOR_TOKENS.awas);
+    assert.equal(AREA_HIGHLIGHT_LINE, COLOR_TOKENS.awas);
   });
 });
 
@@ -340,7 +363,7 @@ describe("geometry bounds for kab fitBounds", () => {
 });
 
 describe("click drill source lock", () => {
-  it("MapViewport switches admin overlay by focus, not zoom", () => {
+  it("MapViewport keeps click focus and applies z11 kecamatan/desa bands", () => {
     const viewport = readFileSync(
       join(process.cwd(), "src/components/map/MapViewport.tsx"),
       "utf8"
@@ -349,8 +372,83 @@ describe("click drill source lock", () => {
     assert.equal(viewport.includes("adminLodBand"), true);
     assert.equal(viewport.includes("KECAMATAN_LOD_MAX_ZOOM"), false);
     assert.equal(viewport.includes("VILLAGE_LOD_MIN_ZOOM"), false);
+    assert.equal(viewport.includes("KECAMATAN_OVERVIEW_MAX_ZOOM"), true);
+    assert.equal(viewport.includes("VILLAGE_MESH_MIN_ZOOM"), true);
     assert.equal(viewport.includes("readVillageSelection"), true);
-    assert.equal(viewport.includes("withKecamatanFocus"), true);
+    assert.equal(viewport.includes("lodFocusFromSelection"), true);
+    assert.equal(viewport.includes("areaHighlightFilter"), true);
     assert.equal(viewport.includes("rebucketVillageKabFeature"), true);
+    assert.equal(viewport.includes("r3p-kab.pmtiles"), false);
+  });
+});
+
+describe("area highlight filter", () => {
+  it("matches kab, kecamatan, and desa from stored codes or names without inventing codes", () => {
+    const kab = areaHighlightFilter({
+      name: "Aceh Barat",
+      kabupaten: "Aceh Barat",
+      kecamatan: "",
+      kodeKabupaten: "1107",
+      level: "kab",
+    });
+    const kabRaw = stringify(kab);
+    assert.equal(kabRaw.includes("1107"), true);
+    assert.equal(kabRaw.includes("Aceh Barat"), true);
+    assert.equal(kabRaw.includes("kode_kecamatan"), false);
+
+    const kec = areaHighlightFilter({
+      name: "Johan Pahlawan",
+      kabupaten: "Aceh Barat",
+      kecamatan: "Johan Pahlawan",
+      kodeKecamatan: "110701",
+      kodeKabupaten: "1107",
+      level: "kecamatan",
+    });
+    const kecRaw = stringify(kec);
+    assert.equal(kecRaw.includes("110701"), true);
+    assert.equal(kecRaw.includes("Johan Pahlawan"), true);
+
+    const desa = areaHighlightFilter({
+      name: "Keude",
+      kabupaten: "Aceh Barat",
+      kecamatan: "Johan Pahlawan",
+      kodeDesa: "1107012001",
+      kodeKecamatan: "110701",
+      level: "desa",
+    });
+    const desaRaw = stringify(desa);
+    assert.equal(desaRaw.includes("1107012001"), true);
+    assert.equal(desaRaw.includes("kode_desa_kelurahan"), true);
+
+    assert.deepEqual(areaHighlightFilter(null), ["==", ["get", "name"], "__none__"]);
+  });
+
+  it("builds lod focus from selection without inventing missing codes", () => {
+    assert.deepEqual(
+      lodFocusFromSelection({
+        name: "Aceh Barat",
+        kabupaten: "Aceh Barat",
+        kecamatan: "",
+        kodeKabupaten: "1107",
+        level: "kab",
+      }),
+      { kodeKab: "1107", kabupaten: "Aceh Barat" }
+    );
+    assert.deepEqual(
+      lodFocusFromSelection({
+        name: "Johan Pahlawan",
+        kabupaten: "Aceh Barat",
+        kecamatan: "Johan Pahlawan",
+        kodeKecamatan: "110701",
+        kodeKabupaten: "1107",
+        level: "kecamatan",
+      }),
+      { kodeKab: "1107", kabupaten: "Aceh Barat", kodeKecamatan: "110701" }
+    );
+    assert.equal(lodFocusFromSelection(null), null);
+    assert.equal(
+      lodFocusFromSelection({ name: "", kabupaten: "", kecamatan: "" }),
+      null
+    );
   });
 });

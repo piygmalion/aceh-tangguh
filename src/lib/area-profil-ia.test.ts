@@ -13,6 +13,12 @@ import {
   areaProfilBack,
   areaProfilBreadcrumbLevels,
   areaProfilBreadcrumbTarget,
+  areaProfilDesaDrillTarget,
+  areaProfilKecamatanDrillTarget,
+  areaProfilKickerKey,
+  areaProfilSelectionForDesa,
+  areaProfilSelectionForKabupaten,
+  areaProfilSelectionForKecamatan,
   areaProfilViewOnOpen,
   hasKabupatenQuery,
   kabupatenNameFromSelection,
@@ -281,6 +287,84 @@ describe("signed Distribusi area panel IA", () => {
     assert.equal(params.get("kabupaten"), "Aceh Barat");
     assert.equal(params.has("kode_kabupaten"), false);
   });
+
+  it("picks drill targets from existing selection or list rows and never invents codes", () => {
+    assert.equal(areaProfilKickerKey("kabupaten", "desa"), "distribusiKabupaten");
+    assert.equal(areaProfilKickerKey("kecamatan", "desa"), "distribusiKecamatan");
+    assert.equal(areaProfilKickerKey("desa", "desa"), "distribusiDesa");
+    assert.equal(areaProfilKickerKey("kabupaten", "r3p"), "r3pKabKicker");
+    assert.equal(areaProfilKickerKey("kecamatan", "r3p"), "distribusiKecamatan");
+
+    const list: KecamatanListItem[] = [
+      {
+        kecamatan: "Bakongan",
+        kode_kecamatan: "110101",
+        desa_count: 2,
+        badge: "tidak_diketahui",
+        total_rumah_rusak: 10,
+      },
+      {
+        kecamatan: "Trumon",
+        kode_kecamatan: "110102",
+        desa_count: 3,
+        badge: "terdampak",
+        total_rumah_rusak: 40,
+      },
+    ];
+    const kabOnly = sel({ name: "Aceh Selatan", kabupaten: "Aceh Selatan", level: "kab" });
+    assert.equal(areaProfilKecamatanDrillTarget(kabOnly, list), null);
+    const fromSel = areaProfilKecamatanDrillTarget(
+      sel({
+        name: "Keude Bakongan",
+        kabupaten: "Aceh Selatan",
+        kecamatan: "Bakongan",
+        kodeKecamatan: "110101",
+      }),
+      list
+    );
+    assert.equal(fromSel?.kode_kecamatan, "110101");
+
+    const desaRows = [
+      {
+        id: "1",
+        kode: "1101012001",
+        nama: "Keude Bakongan",
+        kabupaten: "Aceh Selatan",
+        kecamatan: "Bakongan",
+        badge: "terdampak" as const,
+        total_rumah_rusak: 4,
+      },
+    ];
+    assert.equal(
+      areaProfilDesaDrillTarget(sel({ name: "Other", kabupaten: "Aceh Selatan", kecamatan: "Bakongan" }), desaRows),
+      null
+    );
+    assert.equal(
+      areaProfilDesaDrillTarget(
+        sel({
+          name: "Keude Bakongan",
+          kabupaten: "Aceh Selatan",
+          kecamatan: "Bakongan",
+          kodeDesa: "1101012001",
+        }),
+        desaRows
+      )?.kode,
+      "1101012001"
+    );
+
+    const kecSel = areaProfilSelectionForKecamatan(kabOnly, list[0]);
+    assert.equal(kecSel.level, "kecamatan");
+    assert.equal(kecSel.kodeKecamatan, "110101");
+    assert.equal(kecSel.kecamatan, "Bakongan");
+    const backKab = areaProfilSelectionForKabupaten(kecSel);
+    assert.equal(backKab.level, "kab");
+    assert.equal(backKab.kodeKecamatan, undefined);
+    assert.equal(backKab.kecamatan, "");
+    const desaSel = areaProfilSelectionForDesa(kecSel, desaRows[0]);
+    assert.equal(desaSel.kodeDesa, "1101012001");
+    assert.equal(desaSel.kodeKecamatan, "110101");
+    assert.equal(desaSel.level, "desa");
+  });
 });
 
 describe("AreaProfilPanel source lock", () => {
@@ -299,9 +383,13 @@ describe("AreaProfilPanel source lock", () => {
   const id = readFileSync(path.join(ROOT, "messages/id.json"), "utf8");
   const en = readFileSync(path.join(ROOT, "messages/en.json"), "utf8");
 
-  it("drops desa-list and the viewDesa footer", () => {
+  it("keeps three views and wires DISTRIBUSI / R3P kickers plus drill footers", () => {
     assert.equal(panel.includes("desa-list"), false);
-    assert.equal(panel.includes("viewDesa"), false);
+    assert.match(panel, /t\("viewDesa"\)/);
+    assert.match(panel, /t\("viewKecamatan"\)/);
+    assert.match(panel, /t\("backToKecamatan"\)/);
+    assert.match(panel, /areaProfilKickerKey/);
+    assert.match(panel, /onNavigate/);
     assert.equal(panel.includes("locationLine"), false);
     assert.match(panel, /useState<AreaProfilView>\(AREA_PROFIL_INITIAL_VIEW\)/);
     assert.match(panel, /areaProfilViewOnOpen/);
@@ -340,6 +428,15 @@ describe("AreaProfilPanel source lock", () => {
     assert.equal(enJson.profilDesa.unknown, "Unknown");
     assert.equal(idJson.profilDesa.r3pKicker, "R3P");
     assert.equal(enJson.profilDesa.r3pKicker, "R3P");
+    assert.equal(idJson.profilDesa.distribusiKabupaten, "DISTRIBUSI KABUPATEN");
+    assert.equal(idJson.profilDesa.distribusiKecamatan, "DISTRIBUSI KECAMATAN");
+    assert.equal(idJson.profilDesa.distribusiDesa, "DISTRIBUSI DESA");
+    assert.equal(idJson.profilDesa.r3pKabKicker, "R3P KABUPATEN/KOTA");
+    assert.equal(idJson.profilDesa.viewKecamatan, "Lihat Kecamatan");
+    assert.equal(idJson.profilDesa.viewDesa, "Lihat Detail Desa");
+    assert.equal(idJson.profilDesa.backToKecamatan, "Kembali ke Kecamatan");
+    assert.equal(enJson.profilDesa.distribusiKecamatan, "SUBDISTRICT DISTRIBUTION");
+    assert.equal(enJson.profilDesa.distribusiDesa, "VILLAGE DISTRIBUTION");
     assert.match(panel, /variant === ["']r3p["']/);
     assert.match(panel, /leadWith/);
   });
