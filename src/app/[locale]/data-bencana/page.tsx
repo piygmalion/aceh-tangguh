@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -37,7 +38,9 @@ export default async function DataBencanaPage({
           {t("lead")}
         </p>
         <div className="mt-8">
-          <KejadianTable />
+          <Suspense fallback={<p className="text-sm text-[var(--text-dim)]">{t("loading")}</p>}>
+            <KejadianTable />
+          </Suspense>
         </div>
       </main>
       <SiteFooter />
