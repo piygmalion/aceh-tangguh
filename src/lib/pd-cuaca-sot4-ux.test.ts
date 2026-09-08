@@ -95,7 +95,10 @@ describe("FE-35 PD/cuaca SoT-4 UX", () => {
 
     assert.match(strip, /WeatherInovasiStrip/);
     assert.doesNotMatch(strip, /\/api\/weather\/inovasi/);
-    assert.match(page, /<WeatherStrip \/>/);
+    const cuaca = read("src/components/beranda/CuacaStrip.tsx");
+    assert.match(cuaca, /WeatherInovasiStrip/);
+    assert.doesNotMatch(cuaca, /\/api\/weather\/inovasi/);
+    assert.match(page, /<CuacaStrip \/>/);
     assert.doesNotMatch(page, /WeatherInovasiStrip/);
     assert.doesNotMatch(page, /id="cuaca-inovasi"/);
   });

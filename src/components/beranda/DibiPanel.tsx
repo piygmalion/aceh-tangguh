@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import {
   jiwaTerdampak,
@@ -24,18 +25,25 @@ function warnaKategori(kejadian: number, maks: number): string {
 }
 
 function RingkasanDampak({ dibi }: { dibi: DibiAcehResponse }) {
-  const t = dibi.totals;
-  const terdampak = angkaRingkas(jiwaTerdampak(t));
-  const kerugian = rupiahDariJuta(t.estimasi_kerugian_rumah);
+  const t = useTranslations("beranda");
+  const locale = useLocale();
+  const totals = dibi.totals;
+  const terdampak = angkaRingkas(jiwaTerdampak(totals), locale);
+  const kerugian = rupiahDariJuta(totals.estimasi_kerugian_rumah, locale);
 
   const baris = [
     {
-      label: "Meninggal dan hilang",
-      node: <Figure value={meninggalHilang(t)} size="sm" tone="danger" />,
-      note: `${angka(t.meninggal)} meninggal, ${angka(t.hilang)} hilang`,
+      key: "meninggal",
+      label: t("dibi.meninggal"),
+      node: <Figure value={meninggalHilang(totals)} size="sm" tone="danger" />,
+      note: t("dibi.meninggalNote", {
+        meninggal: angka(totals.meninggal, locale),
+        hilang: angka(totals.hilang, locale),
+      }),
     },
     {
-      label: "Jiwa terdampak",
+      key: "terdampak",
+      label: t("dibi.terdampak"),
       node: (
         <Figure
           value={terdampak.n}
@@ -44,20 +52,27 @@ function RingkasanDampak({ dibi }: { dibi: DibiAcehResponse }) {
           size="sm"
         />
       ),
-      note: `${angka(t.luka_sakit)} di antaranya luka atau sakit`,
+      note: t("dibi.terdampakNote", { count: angka(totals.luka_sakit, locale) }),
     },
     {
-      label: "Rumah rusak",
-      node: <Figure value={rumahRusakTotal(t)} size="sm" />,
-      note: `Rusak berat ${angka(t.rumah_rusak_berat)}, sedang ${angka(t.rumah_rusak_sedang)}, ringan ${angka(t.rumah_rusak_ringan)}`,
+      key: "rumahRusak",
+      label: t("dibi.rumahRusak"),
+      node: <Figure value={rumahRusakTotal(totals)} size="sm" />,
+      note: t("dibi.rumahRusakNote", {
+        berat: angka(totals.rumah_rusak_berat, locale),
+        sedang: angka(totals.rumah_rusak_sedang, locale),
+        ringan: angka(totals.rumah_rusak_ringan, locale),
+      }),
     },
     {
-      label: "Rumah terendam",
-      node: <Figure value={t.rumah_terendam} size="sm" />,
-      note: "Tergenang tanpa kerusakan struktur",
+      key: "rumahTerendam",
+      label: t("dibi.rumahTerendam"),
+      node: <Figure value={totals.rumah_terendam} size="sm" />,
+      note: t("dibi.rumahTerendamNote"),
     },
     {
-      label: "Estimasi kerugian rumah",
+      key: "kerugian",
+      label: t("dibi.kerugian"),
       node: (
         <Figure
           value={kerugian.n}
@@ -67,14 +82,14 @@ function RingkasanDampak({ dibi }: { dibi: DibiAcehResponse }) {
           size="sm"
         />
       ),
-      note: "Nilai kerusakan permukiman menurut DIBI",
+      note: t("dibi.kerugianNote"),
     },
   ];
 
   return (
     <dl className="divide-y divide-[var(--border)]">
       {baris.map((b) => (
-        <div key={b.label} className="py-4 first:pt-0 last:pb-0">
+        <div key={b.key} className="py-4 first:pt-0 last:pb-0">
           <dt className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{b.label}</dt>
           <dd className="mt-1.5">
             {b.node}
@@ -87,6 +102,8 @@ function RingkasanDampak({ dibi }: { dibi: DibiAcehResponse }) {
 }
 
 function TrenTahun({ dibi }: { dibi: DibiAcehResponse }) {
+  const t = useTranslations("beranda");
+  const locale = useLocale();
   const rows = dibi.by_tahun;
   if (rows.length === 0) return null;
 
@@ -101,9 +118,12 @@ function TrenTahun({ dibi }: { dibi: DibiAcehResponse }) {
           TYPE_FLOOR_CLASS,
         )}
       >
-        <span className="font-semibold text-[var(--text)]">Kejadian per tahun</span>
+        <span className="font-semibold text-[var(--text)]">{t("dibi.perTahun")}</span>
         <span>
-          Puncak {puncak.tahun} dengan {angka(puncak.kejadian)} kejadian
+          {t("dibi.puncak", {
+            year: puncak.tahun,
+            count: angka(puncak.kejadian, locale),
+          })}
         </span>
       </figcaption>
       <ul className="flex items-end gap-[3px] sm:gap-1.5" role="list">
@@ -123,7 +143,11 @@ function TrenTahun({ dibi }: { dibi: DibiAcehResponse }) {
                     : "bg-[var(--accent-soft)] group-hover:bg-[var(--primary)]",
                 )}
                 style={{ height: `${tinggi}px` }}
-                title={`${r.tahun}: ${angka(r.kejadian)} kejadian, ${angka(r.meninggal + r.hilang)} meninggal dan hilang`}
+                title={t("dibi.barTitle", {
+                  year: r.tahun,
+                  count: angka(r.kejadian, locale),
+                  mati: angka(r.meninggal + r.hilang, locale),
+                })}
               />
               <span
                 className={cn(
@@ -142,6 +166,8 @@ function TrenTahun({ dibi }: { dibi: DibiAcehResponse }) {
 }
 
 export function DibiPanel() {
+  const t = useTranslations("beranda");
+  const locale = useLocale();
   const { data, isLoading, isError } = useDibi();
 
   const kategori = useMemo(() => {
@@ -151,11 +177,11 @@ export function DibiPanel() {
   }, [data]);
 
   return (
-    <section id="dampak" className="scroll-mt-24 px-4 py-16 md:py-20">
+    <section id="dibi" className="scroll-mt-24 px-4 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          title="Delapan belas tahun dampak bencana di Aceh"
-          lead="Agregat kejadian Provinsi Aceh dari Data Informasi Bencana Indonesia. Angka nasional tidak dicampurkan."
+          title={t("dibi.title")}
+          lead={t("dibi.lead")}
           aside={
             <Link
               href="/data-bencana"
@@ -164,7 +190,7 @@ export function DibiPanel() {
                 TYPE_FLOOR_CLASS,
               )}
             >
-              Telusuri per kejadian
+              {t("dibi.cta")}
               <ArrowUpRight size={14} aria-hidden />
             </Link>
           }
@@ -173,7 +199,7 @@ export function DibiPanel() {
         {isLoading ? <PanelSkeleton className="mt-8 h-[28rem]" /> : null}
         {isError ? (
           <div className="mt-8">
-            <PanelError>Dashboard DIBI Aceh belum bisa dimuat.</PanelError>
+            <PanelError>{t("dibi.error")}</PanelError>
           </div>
         ) : null}
 
@@ -186,7 +212,7 @@ export function DibiPanel() {
 
               <div className="lg:col-span-7">
                 <p className={cn("mb-4 font-semibold", TYPE_FLOOR_CLASS)}>
-                  Kejadian menurut kategori bencana
+                  {t("dibi.kategori")}
                 </p>
                 <ul className="space-y-3.5">
                   {kategori.rows.map((row) => (
@@ -196,7 +222,7 @@ export function DibiPanel() {
                           {rapikanTanda(row.kategori_bencana)}
                         </span>
                         <span className="shrink-0 text-[0.9375rem] font-semibold tabular-nums">
-                          {angka(row.kejadian)}
+                          {angka(row.kejadian, locale)}
                         </span>
                       </div>
                       <div className="mt-1.5">
@@ -211,8 +237,10 @@ export function DibiPanel() {
                           TYPE_FLOOR_CLASS,
                         )}
                       >
-                        {angka(row.meninggal + row.hilang)} meninggal dan hilang,{" "}
-                        {angka(jiwaTerdampak(row))} jiwa terdampak
+                        {t("dibi.kategoriNote", {
+                          mati: angka(row.meninggal + row.hilang, locale),
+                          jiwa: angka(jiwaTerdampak(row), locale),
+                        })}
                       </p>
                     </li>
                   ))}
@@ -223,8 +251,11 @@ export function DibiPanel() {
             <TrenTahun dibi={data} />
 
             <Sumber href={data.metadata.source_url}>
-              {rapikanTanda(data.metadata.source_name)}, difilter untuk Provinsi Aceh tahun{" "}
-              {data.metadata.year_from} sampai {data.metadata.year_to}
+              {t("dibi.sumber", {
+                name: rapikanTanda(data.metadata.source_name),
+                from: data.metadata.year_from,
+                to: data.metadata.year_to,
+              })}
             </Sumber>
           </>
         ) : null}

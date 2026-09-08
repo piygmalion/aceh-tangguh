@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
@@ -15,10 +16,12 @@ function BarisKab({
   kab,
   peringkat,
   maks,
+  locale,
 }: {
   kab: IrbiKabView;
   peringkat: number;
   maks: number;
+  locale: string;
 }) {
   return (
     <li className="grid grid-cols-[1.75rem_1fr_auto] items-center gap-x-3 gap-y-1.5 border-b border-[var(--border)] py-3 last:border-b-0">
@@ -35,7 +38,7 @@ function BarisKab({
       </span>
       <span className="flex items-baseline gap-2">
         <span className="text-[0.9375rem] font-semibold tabular-nums tracking-[-0.02em]">
-          {desimal(kab.irb_2025, 2)}
+          {desimal(kab.irb_2025, 2, locale)}
         </span>
         <span
           className={cn(
@@ -44,7 +47,7 @@ function BarisKab({
             kelasRisikoChip(kab.kelas_risiko),
           )}
         >
-          {kapitalAwal(kab.kelas_risiko)}
+          {kapitalAwal(kab.kelas_risiko, locale)}
         </span>
       </span>
 
@@ -56,7 +59,7 @@ function BarisKab({
         <span
           className={cn("shrink-0 whitespace-nowrap text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}
         >
-          {dariSlug(kab.ancaman_tertinggi)}
+          {dariSlug(kab.ancaman_tertinggi, locale)}
         </span>
       </span>
     </li>
@@ -64,6 +67,8 @@ function BarisKab({
 }
 
 export function RisikoLadder() {
+  const t = useTranslations("beranda");
+  const locale = useLocale();
   const { data, isLoading, isError } = useIrbi();
   const [tampilSemua, setTampilSemua] = useState(false);
 
@@ -93,9 +98,9 @@ export function RisikoLadder() {
     >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          kicker="Risiko jangka panjang"
-          title="Peringkat risiko 23 kabupaten dan kota"
-          lead="Indeks Risiko Bencana BNPB menimbang bahaya 40 persen, kerentanan 30 persen, dan kapasitas 30 persen. Nilai yang lebih tinggi berarti risiko lebih besar."
+          kicker={t("risiko.kicker")}
+          title={t("risiko.title")}
+          lead={t("risiko.lead")}
           aside={
             <Link
               href={{ pathname: "/peta", query: { area: "irbi2025", basemap: "positron" } }}
@@ -104,7 +109,7 @@ export function RisikoLadder() {
                 TYPE_FLOOR_CLASS,
               )}
             >
-              Buka peta IRBI
+              {t("risiko.ctaPeta")}
               <ArrowUpRight size={14} aria-hidden />
             </Link>
           }
@@ -113,7 +118,7 @@ export function RisikoLadder() {
         {isLoading ? <PanelSkeleton className="mt-8 h-96" /> : null}
         {isError ? (
           <div className="mt-8">
-            <PanelError>Data IRBI belum bisa dimuat.</PanelError>
+            <PanelError>{t("risiko.error")}</PanelError>
           </div>
         ) : null}
 
@@ -121,7 +126,7 @@ export function RisikoLadder() {
           <>
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl border border-[var(--border)] bg-[var(--bg-muted)] px-4 py-3.5">
               <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                Ancaman tertinggi per wilayah
+                {t("risiko.ancaman")}
               </p>
               <ul className="flex flex-wrap items-center gap-2">
                 {tally.map(([ancaman, jumlah]) => (
@@ -132,7 +137,7 @@ export function RisikoLadder() {
                       TYPE_FLOOR_CLASS,
                     )}
                   >
-                    {dariSlug(ancaman)}
+                    {dariSlug(ancaman, locale)}
                     <span className="font-semibold tabular-nums text-[var(--text-dim)]">
                       {jumlah}
                     </span>
@@ -141,7 +146,7 @@ export function RisikoLadder() {
               </ul>
               {penduduk > 0 ? (
                 <p className={cn("text-[var(--text-dim)] sm:ml-auto", TYPE_FLOOR_CLASS)}>
-                  {angka(penduduk)} jiwa terpapar
+                  {t("risiko.penduduk", { count: angka(penduduk, locale) })}
                 </p>
               ) : null}
             </div>
@@ -153,6 +158,7 @@ export function RisikoLadder() {
                   kab={kab}
                   peringkat={i + 1}
                   maks={maks}
+                  locale={locale}
                 />
               ))}
             </ol>
@@ -168,13 +174,13 @@ export function RisikoLadder() {
                 )}
               >
                 {tampilSemua
-                  ? "Ringkas kembali"
-                  : `Tampilkan ${tersisa} wilayah lainnya`}
+                  ? t("risiko.ringkas")
+                  : t("risiko.tampilkan", { count: tersisa })}
               </button>
             ) : null}
 
             <Sumber href="https://bnpb.go.id/">
-              BNPB, Indeks Risiko Bencana Indonesia 2025, Volume 04 Nomor 04
+              {t("risiko.sumber")}
             </Sumber>
           </>
         ) : null}

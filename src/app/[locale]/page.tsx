@@ -1,14 +1,16 @@
 import { setRequestLocale } from "next-intl/server";
-import { ClusterGrid } from "@/components/ClusterGrid";
-import { R3PChartSection } from "@/components/R3PChartSection";
-import { PeringatanDiniSection } from "@/components/PeringatanDiniSection";
-import { WeatherStrip } from "@/components/weather/WeatherStrip";
-import { HeroSection } from "@/components/HeroSection";
-import { MapTeaserSection } from "@/components/MapTeaserSection";
-import { ParticipationSection } from "@/components/ParticipationSection";
+import { AksiPanel } from "@/components/beranda/AksiPanel";
+import { CuacaStrip } from "@/components/beranda/CuacaStrip";
+import { DibiPanel } from "@/components/beranda/DibiPanel";
+import { HeroBoard } from "@/components/beranda/HeroBoard";
+import { MetricRail } from "@/components/beranda/MetricRail";
+import { PemulihanPanel } from "@/components/beranda/PemulihanPanel";
+import { PeringatanBento } from "@/components/beranda/PeringatanBento";
+import { PetaPanel } from "@/components/beranda/PetaPanel";
+import { RisikoLadder } from "@/components/beranda/RisikoLadder";
+import { SumberPanel } from "@/components/beranda/SumberPanel";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
-import { TransparencySection } from "@/components/TransparencySection";
 
 export default async function HomePage({
   params,
@@ -21,14 +23,16 @@ export default async function HomePage({
     <>
       <SiteNav />
       <main className="overflow-x-hidden">
-        <HeroSection />
-        <PeringatanDiniSection />
-        <WeatherStrip />
-        <ClusterGrid />
-        <R3PChartSection />
-        <MapTeaserSection />
-        <ParticipationSection />
-        <TransparencySection />
+        <HeroBoard />
+        <MetricRail />
+        <CuacaStrip />
+        <PeringatanBento />
+        <RisikoLadder />
+        <DibiPanel />
+        <PemulihanPanel />
+        <PetaPanel />
+        <AksiPanel />
+        <SumberPanel />
       </main>
       <SiteFooter />
     </>

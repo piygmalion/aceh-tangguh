@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Layers, MapPin, Radio } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { SITE_MEDIA } from "@/lib/media";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
@@ -12,34 +13,36 @@ import { SectionHeading } from "./primitives";
 const LAPISAN = [
   {
     key: "disasterEvents" as const,
-    nama: "Kejadian bencana",
-    isi: "Titik kejadian terverifikasi beserta kronologi dan dampaknya",
+    namaKey: "peta.kejadian",
+    isiKey: "peta.kejadianIsi",
     Icon: Radio,
   },
   {
     key: "facHealth" as const,
-    nama: "Fasilitas kesehatan",
-    isi: "Rumah sakit dan puskesmas rujukan saat tanggap darurat",
+    namaKey: "peta.faskes",
+    isiKey: "peta.faskesIsi",
     Icon: MapPin,
   },
   {
     key: "laporanKejadian" as const,
-    nama: "Laporan warga",
-    isi: "Kiriman masyarakat yang sudah lolos moderasi petugas",
+    namaKey: "peta.laporan",
+    isiKey: "peta.laporanIsi",
     Icon: Layers,
   },
-];
+] as const;
 
 export function PetaPanel() {
+  const t = useTranslations("beranda");
+  const tm = useTranslations("mapTeaser");
   // Aceh documentation only. Generic island stock would misrepresent the coverage area.
   const foto = SITE_MEDIA.heroSlides[3];
 
   return (
-    <section id="peta" className="scroll-mt-24 px-4 py-16 md:py-20">
+    <section id="peta-teaser" className="scroll-mt-24 px-4 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          title="Satu peta untuk seluruh operasional"
-          lead="Bahaya, kerentanan, fasilitas, dan laporan lapangan berada pada basemap yang sama, sehingga keputusan penanganan tidak perlu berpindah aplikasi."
+          title={t("peta.title")}
+          lead={t("peta.lead")}
         />
 
         <div className="mt-8 grid gap-3 lg:grid-cols-12">
@@ -59,21 +62,20 @@ export function PetaPanel() {
 
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <p className="max-w-md text-[0.9375rem] leading-relaxed text-white/85">
-                  Choropleth risiko per kabupaten, titik posko dan pengungsian, serta
-                  kawasan rawan bencana dalam satu tampilan.
+                  {t("peta.caption")}
                 </p>
                 <Link
                   href="/peta"
                   className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-[var(--accent)] px-6 text-sm font-semibold text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)]"
                 >
-                  Buka peta penuh
+                  {tm("cta")}
                 </Link>
               </div>
             </div>
           </div>
 
           <ul className="grid gap-3 lg:col-span-5">
-            {LAPISAN.map(({ key, nama, isi, Icon }) => (
+            {LAPISAN.map(({ key, namaKey, isiKey, Icon }) => (
               <li key={key} className="h-full">
                 <Link
                   href={{ pathname: "/peta", query: { layers: key } }}
@@ -86,14 +88,14 @@ export function PetaPanel() {
                     <Icon size={17} strokeWidth={2} />
                   </span>
                   <span className="min-w-0">
-                    <span className="block text-[0.9375rem] font-semibold">{nama}</span>
+                    <span className="block text-[0.9375rem] font-semibold">{t(namaKey)}</span>
                     <span
                       className={cn(
                         "mt-1 block leading-relaxed text-[var(--text-dim)]",
                         TYPE_FLOOR_CLASS,
                       )}
                     >
-                      {isi}
+                      {t(isiKey)}
                     </span>
                   </span>
                 </Link>

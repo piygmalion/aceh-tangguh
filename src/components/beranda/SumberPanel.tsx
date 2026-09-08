@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { DIBI_DASHBOARD_URL } from "@/lib/dibi-types";
 import { MAGMA_HOME, SIPONGI_PETA } from "@/lib/peringatan-dini-types";
@@ -8,87 +9,89 @@ import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { SectionHeading } from "./primitives";
 
-type Sumber = {
-  lembaga: string;
-  isi: string;
+type SumberRow = {
+  lembagaKey: "sumber.dibi" | "sumber.irbi" | "sumber.bmkg" | "sumber.maritim" | "sumber.magma" | "sumber.sipongi" | "sumber.tatonas" | "sumber.prrpka" | "sumber.apba";
+  isiKey: "sumber.dibiIsi" | "sumber.irbiIsi" | "sumber.bmkgIsi" | "sumber.maritimIsi" | "sumber.magmaIsi" | "sumber.sipongiIsi" | "sumber.tatonasIsi" | "sumber.prrpkaIsi" | "sumber.apbaIsi";
   href?: string;
 };
 
 /** Every figure on this page traces back to one of these. */
-const SUMBER: Sumber[] = [
+const SUMBER: SumberRow[] = [
   {
-    lembaga: "BNPB, DIBI",
-    isi: "Dampak kejadian bencana Aceh 2008 sampai 2026",
+    lembagaKey: "sumber.dibi",
+    isiKey: "sumber.dibiIsi",
     href: DIBI_DASHBOARD_URL,
   },
   {
-    lembaga: "BNPB, IRBI 2025",
-    isi: "Indeks risiko bencana 23 kabupaten dan kota",
+    lembagaKey: "sumber.irbi",
+    isiKey: "sumber.irbiIsi",
     href: "https://bnpb.go.id/",
   },
   {
-    lembaga: "BMKG",
-    isi: "Prakiraan cuaca dan peringatan dini per kabupaten",
+    lembagaKey: "sumber.bmkg",
+    isiKey: "sumber.bmkgIsi",
     href: "https://www.bmkg.go.id/",
   },
   {
-    lembaga: "BMKG Maritim",
-    isi: "Tinggi gelombang perairan Aceh",
+    lembagaKey: "sumber.maritim",
+    isiKey: "sumber.maritimIsi",
     href: "https://maritim.bmkg.go.id/",
   },
   {
-    lembaga: "MAGMA, Kementerian ESDM",
-    isi: "Gempa bumi terkini dan aktivitas gunung api",
+    lembagaKey: "sumber.magma",
+    isiKey: "sumber.magmaIsi",
     href: MAGMA_HOME,
   },
   {
-    lembaga: "SIPONGI",
-    isi: "Titik panas kebakaran hutan dan lahan",
+    lembagaKey: "sumber.sipongi",
+    isiKey: "sumber.sipongiIsi",
     href: SIPONGI_PETA,
   },
   {
-    lembaga: "Tatonas",
-    isi: "Telemetri tinggi muka air dan curah hujan",
+    lembagaKey: "sumber.tatonas",
+    isiKey: "sumber.tatonasIsi",
   },
   {
-    lembaga: "Keputusan Gubernur PRRPKA",
-    isi: "Rencana pemulihan pascabencana 2026 sampai 2028",
+    lembagaKey: "sumber.prrpka",
+    isiKey: "sumber.prrpkaIsi",
   },
   {
-    lembaga: "Peraturan Gubernur APBA",
-    isi: "Penjabaran anggaran penanganan bencana 2026",
+    lembagaKey: "sumber.apba",
+    isiKey: "sumber.apbaIsi",
   },
 ];
 
 const JAMINAN = [
   {
-    judul: "Terbuka tanpa akun",
-    isi: "Seluruh lapisan publik dapat dibaca tanpa login.",
-    tautan: "Lihat sumber data",
+    judulKey: "sumber.j1Title",
+    isiKey: "sumber.j1Isi",
+    tautanKey: "sumber.j1Cta",
     href: "/sumber-data" as const,
   },
   {
-    judul: "Angka bisa ditelusuri",
-    isi: "Setiap klaim di halaman ini menautkan ke data mentahnya.",
-    tautan: "Buka peta",
+    judulKey: "sumber.j2Title",
+    isiKey: "sumber.j2Isi",
+    tautanKey: "sumber.j2Cta",
     href: "/peta" as const,
   },
   {
-    judul: "Metode dapat diaudit",
-    isi: "Cara pengolahan dan batasannya ditulis terbuka.",
-    tautan: "Baca metodologi",
+    judulKey: "sumber.j3Title",
+    isiKey: "sumber.j3Isi",
+    tautanKey: "sumber.j3Cta",
     href: "/metodologi" as const,
   },
-];
+] as const;
 
 export function SumberPanel() {
+  const t = useTranslations("beranda");
+
   return (
-    <section id="sumber" className="scroll-mt-24 px-4 py-16 md:py-20">
+    <section id="transparansi" className="scroll-mt-24 px-4 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          kicker="Data terbuka"
-          title="Dari mana angka di halaman ini berasal"
-          lead="Aceh Tangguh tidak memproduksi angka sendiri. Halaman ini menyusun ulang data resmi agar bisa dibaca dalam satu alur."
+          kicker={t("sumber.kicker")}
+          title={t("sumber.title")}
+          lead={t("sumber.lead")}
         />
 
         <div className="mt-8 grid gap-10 lg:grid-cols-12 lg:gap-12">
@@ -96,7 +99,7 @@ export function SumberPanel() {
             <ul className="grid gap-x-10 sm:grid-cols-2">
               {SUMBER.map((s) => (
                 <li
-                  key={s.lembaga}
+                  key={s.lembagaKey}
                   className="border-b border-[var(--border)] py-3 last:border-b-0 sm:last:border-b"
                 >
                   {s.href ? (
@@ -108,12 +111,12 @@ export function SumberPanel() {
                     >
                       <span className="min-w-0">
                         <span className="block text-[0.9375rem] font-medium transition-colors group-hover:text-[var(--primary)]">
-                          {s.lembaga}
+                          {t(s.lembagaKey)}
                         </span>
                         <span
                           className={cn("mt-0.5 block text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}
                         >
-                          {s.isi}
+                          {t(s.isiKey)}
                         </span>
                       </span>
                       <ArrowUpRight
@@ -124,11 +127,11 @@ export function SumberPanel() {
                     </a>
                   ) : (
                     <div>
-                      <span className="block text-[0.9375rem] font-medium">{s.lembaga}</span>
+                      <span className="block text-[0.9375rem] font-medium">{t(s.lembagaKey)}</span>
                       <span
                         className={cn("mt-0.5 block text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}
                       >
-                        {s.isi}
+                        {t(s.isiKey)}
                       </span>
                     </div>
                   )}
@@ -141,17 +144,17 @@ export function SumberPanel() {
             <ul className="grid gap-3">
               {JAMINAN.map((j) => (
                 <li
-                  key={j.judul}
+                  key={j.judulKey}
                   className="rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] p-4"
                 >
-                  <p className="text-[0.9375rem] font-semibold">{j.judul}</p>
+                  <p className="text-[0.9375rem] font-semibold">{t(j.judulKey)}</p>
                   <p
                     className={cn(
                       "mt-1.5 leading-relaxed text-[var(--text-dim)]",
                       TYPE_FLOOR_CLASS,
                     )}
                   >
-                    {j.isi}
+                    {t(j.isiKey)}
                   </p>
                   <Link
                     href={j.href}
@@ -160,7 +163,7 @@ export function SumberPanel() {
                       TYPE_FLOOR_CLASS,
                     )}
                   >
-                    {j.tautan}
+                    {t(j.tautanKey)}
                     <ArrowUpRight size={13} aria-hidden />
                   </Link>
                 </li>

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "motion/react";
+import { useLocale, useTranslations } from "next-intl";
 import { AlertTriangle, Map } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { SITE_MEDIA } from "@/lib/media";
@@ -13,7 +14,7 @@ import {
 import { MediaBackdrop } from "@/components/ui/MediaBackdrop";
 import { cn } from "@/lib/utils";
 import { useIrbi, usePeringatan } from "./data";
-import { desimal, kapitalAwal, rapikanTanda, TONE_CHIP, TONE_DOT, TONE_LABEL } from "./format";
+import { desimal, kapitalAwal, rapikanTanda, TONE_CHIP, TONE_DOT } from "./format";
 
 type Feed = {
   key: string;
@@ -23,18 +24,12 @@ type Feed = {
   tone: PeringatanTone;
 };
 
-const HARI_INI = new Intl.DateTimeFormat("id-ID", {
-  timeZone: "Asia/Jakarta",
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-});
-
 /**
  * Photographic situation board. Production hides four of five feeds behind a
  * carousel. This board shows every official feed at once, on the same Aceh aerials.
  */
 function BarisStatus({ feed }: { feed: Feed }) {
+  const tp = useTranslations("peringatanDini");
   return (
     <li className="flex items-center justify-between gap-3 py-2.5">
       <div className="flex min-w-0 items-center gap-2.5">
@@ -58,64 +53,74 @@ function BarisStatus({ feed }: { feed: Feed }) {
           TONE_CHIP[feed.tone],
         )}
       >
-        {TONE_LABEL[feed.tone]}
+        {tp(`tone.${feed.tone}`)}
       </span>
     </li>
   );
 }
 
 export function HeroBoard() {
+  const t = useTranslations("beranda");
+  const th = useTranslations("hero");
+  const locale = useLocale();
   const reduced = useReducedMotion();
   const { data: pd, isLoading, isError } = usePeringatan();
   const { data: irbi } = useIrbi();
+
+  const hariIni = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "id-ID", {
+    timeZone: "Asia/Jakarta",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date());
 
   const feeds: Feed[] = pd
     ? [
         {
           key: "cuaca",
-          bahaya: "Cuaca ekstrem",
-          lembaga: "BMKG",
+          bahaya: t("feed.cuaca"),
+          lembaga: t("lembaga.cuaca"),
           detail: pd.cuaca?.empty
-            ? "Tidak ada peringatan"
-            : (pd.cuaca?.highlights?.[0]?.kabupaten ?? "Aceh"),
+            ? t("empty.cuaca")
+            : (pd.cuaca?.highlights?.[0]?.kabupaten ?? t("fallback.aceh")),
           tone: pd.cuaca?.tone ?? "neutral",
         },
         {
           key: "magma",
-          bahaya: "Gempa bumi",
-          lembaga: "MAGMA ESDM",
+          bahaya: t("feed.magma"),
+          lembaga: t("lembaga.magma"),
           detail: pd.magma?.empty
-            ? "Tidak ada kejadian"
-            : (pd.magma?.event?.wilayah ?? "Wilayah Aceh"),
+            ? t("empty.magma")
+            : (pd.magma?.event?.wilayah ?? t("fallback.wilayahAceh")),
           tone: pd.magma?.tone ?? "neutral",
         },
         {
           key: "sipongi",
-          bahaya: "Kebakaran hutan dan lahan",
-          lembaga: "SIPONGI",
+          bahaya: t("feed.sipongi"),
+          lembaga: t("lembaga.sipongi"),
           detail: pd.sipongi?.empty
-            ? "Tidak ada titik panas"
-            : (pd.sipongi?.points?.[0]?.kabkota ?? "Aceh"),
+            ? t("empty.sipongi")
+            : (pd.sipongi?.points?.[0]?.kabkota ?? t("fallback.aceh")),
           tone: pd.sipongi?.tone ?? "neutral",
         },
         {
           key: "tatonas",
-          bahaya: "Tinggi muka air",
-          lembaga: "Tatonas",
+          bahaya: t("feed.tatonas"),
+          lembaga: t("lembaga.tatonas"),
           detail: pd.tatonas?.empty
-            ? "Semua pos normal"
-            : (pd.tatonas?.highlights?.[0]?.pos_name ?? "Pos pantau"),
+            ? t("empty.tatonas")
+            : (pd.tatonas?.highlights?.[0]?.pos_name ?? t("fallback.posPantau")),
           tone: pd.tatonas?.tone ?? "neutral",
         },
         ...(pd.maritim
           ? [
               {
                 key: "maritim",
-                bahaya: "Gelombang laut",
-                lembaga: "BMKG Maritim",
+                bahaya: t("feed.maritim"),
+                lembaga: t("lembaga.maritim"),
                 detail: pd.maritim.empty
-                  ? "Perairan aman"
-                  : (pd.maritim.highlights?.[0]?.nama ?? "Perairan Aceh"),
+                  ? t("empty.maritim")
+                  : (pd.maritim.highlights?.[0]?.nama ?? t("fallback.perairanAceh")),
                 tone: pd.maritim.tone,
               } satisfies Feed,
             ]
@@ -133,7 +138,7 @@ export function HeroBoard() {
 
   return (
     <section
-      id="beranda"
+      id="hero"
       className="relative flex min-h-[100dvh] flex-col justify-end overflow-hidden px-4 pb-28 pt-24 text-[var(--hero-fg)] sm:pt-28"
     >
       <MediaBackdrop
@@ -153,19 +158,19 @@ export function HeroBoard() {
           transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
         >
           <p className={cn("flex items-center gap-2.5 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
-            <span className="relative flex h-2 w-2" aria-hidden title="Data diperbarui otomatis">
+            <span className="relative flex h-2 w-2" aria-hidden title={t("hero.pulse")}>
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent)] opacity-60 motion-reduce:hidden" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
             </span>
-            Aceh hari ini
+            {t("hero.kicker")}
           </p>
 
           <h1 className={cn("mt-5 max-w-[16ch]", TYPE_HERO_DISPLAY_CLASS)}>
-            Bahaya hari ini dan risiko jangka panjang
+            {t("hero.title")}
           </h1>
 
           <p className="mt-5 max-w-xl text-[1.0625rem] leading-relaxed text-[var(--hero-muted)]">
-            Lima sumber resmi, 23 kabupaten/kota, dan jejak anggaran penanganan dalam satu papan.
+            {t("hero.lead")}
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -173,14 +178,14 @@ export function HeroBoard() {
               href="/peta"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--primary)] px-6 text-sm font-semibold text-[var(--primary-fg)] transition hover:bg-[var(--primary-hover)] active:scale-[0.98]"
             >
-              Buka peta
+              {th("ctaPeta")}
               <Map size={17} aria-hidden />
             </Link>
             <Link
               href="/lapor/kejadian"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 text-sm font-semibold text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)] active:scale-[0.98]"
             >
-              Laporkan kejadian
+              {th("ctaLaporKejadian")}
               <AlertTriangle size={17} aria-hidden />
             </Link>
           </div>
@@ -195,10 +200,10 @@ export function HeroBoard() {
         >
           <div className="flex items-end justify-between gap-3 border-b border-white/10 px-4 py-3.5">
             <h2 id="papan-status" className="text-[1.0625rem] font-semibold leading-tight">
-              Status Aceh hari ini
+              {t("hero.statusTitle")}
             </h2>
             <span className={cn("shrink-0 text-white/60", TYPE_FLOOR_CLASS)}>
-              {HARI_INI.format(new Date())}
+              {hariIni}
             </span>
           </div>
 
@@ -216,7 +221,7 @@ export function HeroBoard() {
 
             {isError ? (
               <p className={cn("py-6 text-center text-white/70", TYPE_FLOOR_CLASS)}>
-                Data peringatan belum bisa dimuat. Coba muat ulang halaman.
+                {t("hero.error")}
               </p>
             ) : null}
 
@@ -232,12 +237,12 @@ export function HeroBoard() {
           <div className="flex items-center justify-between gap-3 border-t border-white/10 bg-black/20 px-4 py-3">
             <div className="min-w-0">
               <p className={cn("text-white/60", TYPE_FLOOR_CLASS)}>
-                Indeks risiko bencana provinsi
+                {t("hero.irbiLabel")}
               </p>
               <p className="mt-0.5 flex items-baseline gap-2">
                 {irbi ? (
                   <span className="text-[1.375rem] font-semibold tabular-nums leading-none tracking-[-0.03em]">
-                    {desimal(irbi.nilai_irb_provinsi, 2)}
+                    {desimal(irbi.nilai_irb_provinsi, 2, locale)}
                   </span>
                 ) : (
                   <span
@@ -247,7 +252,7 @@ export function HeroBoard() {
                 )}
                 {irbi ? (
                   <span className={cn("font-semibold text-[var(--accent)]", TYPE_FLOOR_CLASS)}>
-                    Kelas {kapitalAwal(irbi.kelas_risiko_provinsi)}
+                    {t("hero.kelas", { kelas: kapitalAwal(irbi.kelas_risiko_provinsi, locale) })}
                   </span>
                 ) : null}
               </p>
@@ -259,7 +264,9 @@ export function HeroBoard() {
                 TYPE_FLOOR_CLASS,
               )}
             >
-              {perluPerhatian > 0 ? `${perluPerhatian} perlu perhatian` : "Rincian risiko"}
+              {perluPerhatian > 0
+                ? t("hero.perhatian", { count: perluPerhatian })
+                : t("hero.rincian")}
             </a>
           </div>
         </motion.aside>
