@@ -28,7 +28,7 @@ export function ReportKejadianForm() {
   const [lokasi, setLokasi] = useState<LokasiValue>({
     latitude: 5.5483,
     longitude: 95.3238,
-    kabupaten_kota: "",
+    kabupaten_kota: "Banda Aceh",
     kecamatan: "",
     desa: "",
   });
@@ -49,8 +49,16 @@ export function ReportKejadianForm() {
 
   async function submit() {
     setStatus(null);
+    if (!/^\d{16}$/.test(pelapor.nik)) {
+      setStatus("NIK harus 16 digit.");
+      return;
+    }
     if (!pelapor.telepon && !pelapor.email) {
       setStatus(t("needContact"));
+      return;
+    }
+    if (!lokasi.kabupaten_kota.trim()) {
+      setStatus("Kabupaten/kota wajib diisi.");
       return;
     }
     setBusy(true);
@@ -74,7 +82,16 @@ export function ReportKejadianForm() {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error?.message ?? json.error ?? "Failed");
+      if (!res.ok) {
+        const err = json.error;
+        const message =
+          typeof err === "string"
+            ? err
+            : err && typeof err === "object" && "message" in err && typeof err.message === "string"
+              ? err.message
+              : "Failed";
+        throw new Error(message);
+      }
       setStatus(`${t("success")} ${json.nomor_laporan}`);
       setStep(0);
     } catch (err) {
@@ -154,6 +171,13 @@ export function ReportKejadianForm() {
         )}
 
         {step === 2 && (
+          <form
+            className="contents"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void submit();
+            }}
+          >
           <FieldGroup className="gap-4">
             <ReporterFields value={pelapor} onChange={setPelapor} />
             <Field
@@ -177,9 +201,8 @@ export function ReportKejadianForm() {
                 {t("back")}
               </Button>
               <Button
-                type="button"
+                type="submit"
                 disabled={busy || !consent}
-                onClick={submit}
                 data-icon={busy ? "inline-start" : "inline-end"}
               >
                 {busy ? <Spinner /> : null}
@@ -188,9 +211,8 @@ export function ReportKejadianForm() {
               </Button>
             </div>
           </FieldGroup>
+          </form>
         )}
-
-        {status ? <FieldError className="text-muted-foreground">{status}</FieldError> : null}
       </div>
 
       <p className="mt-6 text-center text-[0.8125rem] leading-relaxed text-muted-foreground">

@@ -7,6 +7,9 @@ import { SITE_MEDIA, UI_CREDITS } from "@/lib/media";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
+const DETAILS_SUMMARY =
+  "cursor-pointer list-none text-[var(--text-dim)] transition hover:text-[var(--primary)] [&::-webkit-details-marker]:hidden";
+
 export function SiteFooter() {
   const t = useTranslations("footer");
   const tn = useTranslations("nav");
@@ -21,10 +24,10 @@ export function SiteFooter() {
             {t("credit")}
           </p>
         </div>
-        <div>
-          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+        <details>
+          <summary className={cn(DETAILS_SUMMARY, TYPE_KICKER_CLASS)}>
             {t("jelajah")}
-          </div>
+          </summary>
           <ul className="mt-3 space-y-2 text-sm text-[var(--text-dim)]">
             <li>
               <Link className="transition hover:text-[var(--primary)]" href="/peta">
@@ -92,11 +95,11 @@ export function SiteFooter() {
               </Link>
             </li>
           </ul>
-        </div>
-        <div data-footer-sumber>
-          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+        </details>
+        <details data-footer-sumber>
+          <summary className={cn(DETAILS_SUMMARY, TYPE_KICKER_CLASS)}>
             {t("sumberData")}
-          </div>
+          </summary>
           <ul className={cn("mt-3 space-y-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {FOOTER_SUMBER.map((row) => (
               <li key={row.id}>
@@ -109,7 +112,7 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
-        </div>
+        </details>
       </div>
       <div
         className={cn(

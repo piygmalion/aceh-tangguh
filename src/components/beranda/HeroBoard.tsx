@@ -165,7 +165,7 @@ export function HeroBoard() {
             {t("hero.kicker")}
           </p>
 
-          <h1 className={cn("mt-5 max-w-[16ch]", TYPE_HERO_DISPLAY_CLASS)}>
+          <h1 className={cn("mt-5 max-w-[22ch]", TYPE_HERO_DISPLAY_CLASS)}>
             {t("hero.title")}
           </h1>
 

@@ -29,11 +29,33 @@ export function GuideMessage({
     );
   }
 
+  const card = answer?.clauses && answer.clauses.length === 4;
+
   return (
     <div className="space-y-2">
-      <p className="max-w-[95%] rounded-2xl bg-[var(--bg-raised)] px-3.5 py-2 text-[var(--text)] shadow-[var(--shadow)]">
-        {body}
-      </p>
+      {card ? (
+        <div className="max-w-[95%] overflow-hidden rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)] shadow-[var(--shadow)]">
+          {answer.lead ? (
+            <p className="border-b border-[var(--glass-border)] px-3.5 py-2 text-[var(--text)]">
+              {answer.lead}
+            </p>
+          ) : null}
+          <ul className="divide-y divide-[var(--glass-border)]">
+            {answer.clauses?.map((clause) => (
+              <li
+                key={clause.slice(0, 48)}
+                className={cn("px-3.5 py-2 text-[var(--text)]", TYPE_FLOOR_CLASS)}
+              >
+                {clause}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p className="max-w-[95%] rounded-2xl bg-[var(--bg-raised)] px-3.5 py-2 text-[var(--text)] shadow-[var(--shadow)]">
+          {body}
+        </p>
+      )}
       {answer?.source ? (
         <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{answer.source}</p>
       ) : null}

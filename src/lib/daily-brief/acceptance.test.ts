@@ -48,7 +48,12 @@ describe("AN-39 Daily Brief acceptance", () => {
     const src = read("src/components/admin/DailyBriefManager.tsx");
     assert.doesNotMatch(src, /daily-brief\/service/);
     assert.match(src, /phoneMasked/);
+    assert.match(src, /resolveDailyBriefSubscriberInput/);
+    assert.match(src, /dailyBriefPhoneInvalid/);
     assert.doesNotMatch(src, /OTP|Z-API/);
+    const phoneLabel = src.indexOf("{t(\"dailyBriefPhone\")}");
+    const nameLabel = src.indexOf("{t(\"dailyBriefName\")}");
+    assert.ok(nameLabel >= 0 && phoneLabel > nameLabel);
   });
 
   it("does not open G32 research tables or LLM gate", () => {

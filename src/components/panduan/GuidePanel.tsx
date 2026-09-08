@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/Chip";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import type { GuideChipKey } from "@/lib/panduan/page-context";
-import type { GuideAnswer, GuideHref } from "@/lib/panduan/types";
+import type { GuideAnswer, GuideHref, GuideSlots } from "@/lib/panduan/types";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { GuideMessage } from "./GuideMessage";
@@ -42,6 +42,8 @@ export function GuidePanel({
   onLink,
   tourActive,
   onNextTour,
+  session,
+  onClearThread,
 }: {
   messages: GuideChatItem[];
   busy: boolean;
@@ -54,6 +56,8 @@ export function GuidePanel({
   onLink: (href: GuideHref, hash?: string) => void;
   tourActive: boolean;
   onNextTour: () => void;
+  session?: GuideSlots;
+  onClearThread?: () => void;
 }) {
   const t = useTranslations("panduan");
   const scrollerRef = useRef<HTMLDivElement | null>(null);
@@ -65,7 +69,7 @@ export function GuidePanel({
   }, [messages, busy]);
 
   return (
-    <GlassPanel className="flex max-h-[70vh] w-[min(calc(100vw-1.5rem),380px)] flex-col overflow-hidden border border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
+    <GlassPanel className="flex max-h-[70vh] w-[min(calc(100vw-1.5rem),400px)] flex-col overflow-hidden border border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
       <div className="flex items-start justify-between gap-3 border-b border-[var(--glass-border)] px-4 py-3">
         <div className="flex items-center gap-3">
           <span className="inline-flex h-9 w-9 shrink-0 overflow-hidden rounded-full bg-[var(--forest-700)]">
@@ -76,15 +80,56 @@ export function GuidePanel({
             <p className="text-lg font-semibold leading-tight">{t("title")}</p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
-          aria-label={t("close")}
-        >
-          <X size={18} />
-        </button>
+        <div className="flex items-center gap-1.5">
+          {onClearThread && messages.length > 0 ? (
+            <button
+              type="button"
+              onClick={onClearThread}
+              className={cn(
+                TYPE_FLOOR_CLASS,
+                "rounded-full border border-[var(--glass-border)] px-2.5 py-1.5 font-semibold text-[var(--text)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
+              )}
+            >
+              {t("clearThread")}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
+            aria-label={t("close")}
+          >
+            <X size={18} />
+          </button>
+        </div>
       </div>
+      {session?.kabupaten || session?.jenis || session?.lastIntent ? (
+        <div
+          className={cn(
+            "flex flex-wrap gap-x-3 gap-y-1 border-b border-[var(--glass-border)] px-4 py-2 text-[var(--text-dim)]",
+            TYPE_FLOOR_CLASS
+          )}
+        >
+          {session.kabupaten ? (
+            <span>
+              {t("sessionKab")}: {session.kabupaten}
+            </span>
+          ) : null}
+          {session.jenis ? (
+            <span>
+              {t("sessionJenis")}: {session.jenis}
+            </span>
+          ) : null}
+          {session.lastIntent ? (
+            <span>
+              {t("sessionIntent")}:{" "}
+              {t.has(`chips.${session.lastIntent}`)
+                ? t(`chips.${session.lastIntent}`)
+                : session.lastIntent}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
 
       <div
         ref={scrollerRef}

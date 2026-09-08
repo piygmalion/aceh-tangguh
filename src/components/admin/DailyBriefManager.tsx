@@ -6,7 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { AdminListChrome, AdminTableStatusRow } from "@/components/admin/AdminListChrome";
-import type { DailyBriefSubscriberStatus, SubscriberPublic } from "@/lib/daily-brief/compose";
+import {
+  looksLikeWhatsAppPhone,
+  resolveDailyBriefSubscriberInput,
+  type DailyBriefSubscriberStatus,
+  type SubscriberPublic,
+} from "@/lib/daily-brief/compose";
+
+type BriefSendResult = { enqueued?: number; sent?: number; failed?: number };
+
+async function readErrorMessage(res: Response): Promise<string | null> {
+  const json = (await res.json().catch(() => null)) as { error?: unknown } | null;
+  return typeof json?.error === "string" ? json.error : null;
+}
 
 export function DailyBriefManager() {
   const t = useTranslations("admin");
@@ -18,24 +30,27 @@ export function DailyBriefManager() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    const [subs, briefs] = await Promise.all([
-      fetch("/api/admin/daily-brief/subscribers", { cache: "no-store" }),
-      fetch("/api/admin/daily-brief/briefs", { cache: "no-store" }),
-    ]);
-    if (!subs.ok || !briefs.ok) {
-      setError(t("dailyBriefLoadError"));
+  const load = useCallback(
+    async (opts?: { clearError?: boolean }) => {
+      setLoading(true);
+      const [subs, briefs] = await Promise.all([
+        fetch("/api/admin/daily-brief/subscribers", { cache: "no-store" }),
+        fetch("/api/admin/daily-brief/briefs", { cache: "no-store" }),
+      ]);
+      if (!subs.ok || !briefs.ok) {
+        setError(t("dailyBriefLoadError"));
+        setLoading(false);
+        return;
+      }
+      const subJson = (await subs.json()) as { items: SubscriberPublic[] };
+      const briefJson = (await briefs.json()) as { today?: string };
+      setItems(subJson.items);
+      setToday(briefJson.today ?? null);
+      if (opts?.clearError !== false) setError(null);
       setLoading(false);
-      return;
-    }
-    const subJson = (await subs.json()) as { items: SubscriberPublic[] };
-    const briefJson = (await briefs.json()) as { today?: string };
-    setItems(subJson.items);
-    setToday(briefJson.today ?? null);
-    setError(null);
-    setLoading(false);
-  }, [t]);
+    },
+    [t]
+  );
 
   useEffect(() => {
     void load();
@@ -43,15 +58,25 @@ export function DailyBriefManager() {
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
+    const resolved = resolveDailyBriefSubscriberInput(phone, name);
+    if (!looksLikeWhatsAppPhone(resolved.phone)) {
+      setError(t("dailyBriefPhoneInvalid"));
+      return;
+    }
     setBusy(true);
     const res = await fetch("/api/admin/daily-brief/subscribers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, name }),
+      body: JSON.stringify({ phone: resolved.phone, name: resolved.name }),
     });
     setBusy(false);
     if (!res.ok) {
-      setError(t("dailyBriefLoadError"));
+      const apiError = await readErrorMessage(res);
+      setError(
+        apiError === "Nomor tidak valid" || apiError === "phone_required"
+          ? t("dailyBriefPhoneInvalid")
+          : t("dailyBriefSaveError")
+      );
       return;
     }
     setPhone("");
@@ -66,7 +91,7 @@ export function DailyBriefManager() {
       body: JSON.stringify({ id, status }),
     });
     if (!res.ok) {
-      setError(t("dailyBriefLoadError"));
+      setError(t("dailyBriefStatusError"));
       return;
     }
     await load();
@@ -79,12 +104,22 @@ export function DailyBriefManager() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ force: true, send }),
     });
+    const json = (await res.json().catch(() => null)) as
+      | { send?: BriefSendResult; error?: string }
+      | null;
     setBusy(false);
     if (!res.ok) {
-      setError(t("dailyBriefLoadError"));
+      setError(t("dailyBriefGenerateError"));
       return;
     }
-    await load();
+    const failed = json?.send?.failed ?? 0;
+    const sent = json?.send?.sent ?? 0;
+    await load({ clearError: false });
+    if (send && failed > 0 && sent === 0) {
+      setError(t("dailyBriefSendFailed"));
+      return;
+    }
+    setError(null);
   }
 
   const statusLabel: Record<DailyBriefSubscriberStatus, string> = {
@@ -125,12 +160,24 @@ export function DailyBriefManager() {
       <form onSubmit={(e) => void add(e)} className="mt-4">
         <FieldGroup className="grid gap-3 md:grid-cols-[1fr_1fr_auto]">
           <Field>
-            <FieldLabel>{t("dailyBriefPhone")}</FieldLabel>
-            <Input value={phone} onChange={(ev) => setPhone(ev.target.value)} required />
+            <FieldLabel>{t("dailyBriefName")}</FieldLabel>
+            <Input
+              value={name}
+              onChange={(ev) => setName(ev.target.value)}
+              placeholder={t("dailyBriefNamePlaceholder")}
+              autoComplete="name"
+            />
           </Field>
           <Field>
-            <FieldLabel>{t("dailyBriefName")}</FieldLabel>
-            <Input value={name} onChange={(ev) => setName(ev.target.value)} />
+            <FieldLabel>{t("dailyBriefPhone")}</FieldLabel>
+            <Input
+              value={phone}
+              onChange={(ev) => setPhone(ev.target.value)}
+              placeholder={t("dailyBriefPhonePlaceholder")}
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+            />
           </Field>
           <div className="flex items-end">
             <Button type="submit" disabled={busy}>

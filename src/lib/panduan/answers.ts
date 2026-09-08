@@ -223,6 +223,8 @@ function composePeringatan(ctx: GuideContext, locale: GuideLocale): GuideAnswer 
       link("/", "linkCuaca", { hash: "cuaca" }),
     ],
     source: failed ? undefined : t(locale, "Peringatan dini situs", "Site early warning"),
+    lead: brief.lead || undefined,
+    clauses: brief.clauses,
   };
 }
 

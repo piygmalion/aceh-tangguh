@@ -42,7 +42,7 @@ test("assertProductionConfig allows production without Supabase or Upstash", () 
   assert.doesNotThrow(() => assertProductionConfig());
 });
 
-test("assertProductionConfig throws when Supabase is set without Upstash", () => {
+test("assertProductionConfig allows production Supabase without Upstash", () => {
   setNodeEnv("production");
   delete process.env.STATIC_EXPORT;
   delete process.env.GITHUB_PAGES;
@@ -53,7 +53,7 @@ test("assertProductionConfig throws when Supabase is set without Upstash", () =>
   delete process.env.UPSTASH_REDIS_REST_URL;
   delete process.env.UPSTASH_REDIS_REST_TOKEN;
 
-  assert.throws(() => assertProductionConfig(), /UPSTASH_REDIS/);
+  assert.doesNotThrow(() => assertProductionConfig());
 });
 
 test("assertProductionConfig throws when production secrets are missing", () => {

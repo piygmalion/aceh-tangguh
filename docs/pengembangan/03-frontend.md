@@ -191,6 +191,10 @@ Jurnal: `jurnal/FE-36.md`. Gelombang 29. Tiga komponen Destana: `text-xs` → `T
 
 Jurnal: `jurnal/FE-37.md`. Gelombang 30. CTA “Tanya Tanggapi” hanya view desa (setelah kab→kec→desa) dan pada MapFeatureCard hanya jika kode 10 digit. Seed whitelist lokasi lewat `sessionStorage` `aceh:tanggapi-seed`. `requestOpenTanggapi` yang sudah ada. Accent ink-on-orange; lantai 13px. Jangan menimpa IA #50. Jangan menimpa FE-36.
 
+### FE-38 — briefing peringatan saat Tanggapi dibuka
+
+Jurnal: `jurnal/FE-38.md`. Kontrak AN-37. Sambutan beranda = compiler empat umpan. Bukan Web Push / WA. Jangan menimpa FE-37. Jangan AN-36.
+
 ### FE-39 — halaman Daily Brief + admin nomor
 
 Jurnal: `jurnal/FE-39.md`. Gelombang 31. Jangan dikode sebelum AN-38. Publik `/brief/[ymd]` + admin `/admin/daily-brief`. i18n ID+EN. Nomor mask di daftar. Jangan menimpa FE-38. Jangan OTP publik.
@@ -202,6 +206,14 @@ Jurnal: `jurnal/FE-41.md`. Gelombang 33. Kontrak AN-41. Tetap `/admin/staf`. Daf
 ### FE-43 — dasbor data operasional
 
 Jurnal: `jurnal/FE-43.md`. Gelombang 35. Kontrak AN-43. Halaman `/admin/operasi` (bukan ganti Ringkasan). Baca agregat tabel yang sudah ada. Tanpa modul RBAC baru, tanpa migrasi, tanpa API tulis. i18n `admin.opsDash*` ID+EN. Jangan menimpa FE-41 / FE-39.
+
+### FE-48 — form Daily Brief admin
+
+Jurnal: `jurnal/FE-48.md`. Urutan Nama→Nomor; tukar otomatis jika nomor tertukar ke kolom nama; jangan pakai `dailyBriefLoadError` untuk gagal tambah/kirim. Jangan menimpa FE-47. Jangan OTP.
+
+### FE-49 — berkas percakapan Tanggapi + kartu briefing
+
+Jurnal: `jurnal/FE-49.md`. Kontrak AN-44. Thread `sessionStorage` (bukan G31 FE-39). Kartu empat umpan; rel slot; Mulai ulang. Jangan menimpa FE-38 / FE-39. Jangan POST kontak. Jangan Web Push.
 
 ## Tiket gelombang ECC-S — kerapian
 

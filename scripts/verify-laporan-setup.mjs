@@ -47,9 +47,9 @@ if (
 ) {
   ok("Upstash Redis", "distributed rate limit configured");
 } else {
-  fail(
+  warn(
     "Upstash Redis",
-    "UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN required in production"
+    "UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN missing — in-memory rate limit"
   );
 }
 

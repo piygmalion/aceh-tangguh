@@ -12,7 +12,7 @@ Email the repository owner. Do not open a public GitHub issue for secrets, RLS b
 2. Set `SUPABASE_SERVICE_ROLE_KEY` only on the Node server — never in `NEXT_PUBLIC_*` or GitHub Pages.
 3. Set `LAPORAN_PII_KEY` (64 hex) and a non-default `LAPORAN_PII_SALT`.
 4. Set `LAPORAN_CRON_SECRET` / `WEATHER_CRON_SECRET` as random Bearer tokens. `WEATHER_INOVASI_CRON_SECRET` is a separate optional token for `POST /api/weather/inovasi/refresh` — never reuse the official weather secret.
-5. Set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` when Supabase/laporan is enabled (required for distributed rate limiting on public POSTs; those routes return 503 without it).
+5. Set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` when Supabase/laporan is enabled (distributed rate limiting on public POSTs). Without them, POSTs use an in-memory limiter so laporan submits still work. Set `RATE_LIMIT_REQUIRE_UPSTASH=1` to fail closed with 503 instead.
 6. Do not commit `.env.local` or `.data/`.
 
 Verify laporan + RLS + env:

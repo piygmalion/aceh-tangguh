@@ -85,6 +85,8 @@ export type GuideAnswer = {
   links: GuideLink[];
   source?: string;
   tour?: GuideTourAction;
+  lead?: string;
+  clauses?: string[];
 };
 
 export type GuideContextKey =

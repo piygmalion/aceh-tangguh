@@ -63,7 +63,8 @@ export type RateLimitOutcome =
 
 /**
  * Distributed rate limit via Upstash Redis.
- * Production requires Upstash; development falls back to in-memory.
+ * Without Upstash, falls back to in-memory (per instance). Set
+ * RATE_LIMIT_REQUIRE_UPSTASH=1 in production to fail closed instead.
  */
 export async function rateLimitAsync(
   key: string,
@@ -82,11 +83,19 @@ export async function rateLimitAsync(
     }
   }
 
-  if (process.env.NODE_ENV === "production") {
+  const requireUpstash =
+    process.env.NODE_ENV === "production" && process.env.RATE_LIMIT_REQUIRE_UPSTASH === "1";
+  if (requireUpstash) {
     console.error(
-      "[rate-limit] UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production"
+      "[rate-limit] UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required when RATE_LIMIT_REQUIRE_UPSTASH=1"
     );
     return { allowed: false, reason: "rate_limit_unconfigured" };
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    console.warn(
+      "[rate-limit] Upstash unset — using in-memory limiter (per instance). Set UPSTASH_REDIS_REST_* for distributed limits."
+    );
   }
 
   return rateLimit(key, limit, windowMs)
