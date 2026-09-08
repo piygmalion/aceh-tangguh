@@ -462,6 +462,14 @@ Bukan gelombang 35 (FE-43 dasbor operasi sudah selesai). Lima kartu `#status` ja
 | --- | --- | --- | --- | --- |
 | FE-44 | frontend | Slideshow lima kartu Peringatan Dini | jurnal/FE-44.md | selesai |
 
+## Tindak lanjut — gateway WhatsApp (BE-33)
+
+`WHATSAPP_GATEWAY_URL` adalah URL layanan pengirim, bukan secret. Adapter Fonnte/Wablas di `sendWhatsAppGateway` supaya Daily Brief + laporan memakai format provider. Token tetap dari dashboard Fonnte setelah HP pengirim dipasangkan. Bukan rute publik baru. Jangan menulis nilai token. DATA-4 tetap tertahan. Jangan G32.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| BE-33 | backend | Adapter Fonnte/Wablas | jurnal/BE-33.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

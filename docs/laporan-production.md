@@ -65,8 +65,8 @@ Set env:
 | Variabel | Deskripsi |
 |----------|-----------|
 | `LAPORAN_CRON_SECRET` | Bearer token untuk cron |
-| `WHATSAPP_GATEWAY_URL` | Endpoint HTTP gateway (Fonnte/Wablas/custom) |
-| `WHATSAPP_GATEWAY_TOKEN` | Token gateway (opsional) |
+| `WHATSAPP_GATEWAY_URL` | Endpoint HTTP pengirim. Fonnte: `https://api.fonnte.com/send`. Wablas: `https://<domain>.wablas.com/api/send-message`. Bukan secret; token terpisah. |
+| `WHATSAPP_GATEWAY_TOKEN` | Token dashboard Fonnte/Wablas (Authorization mentah). Gateway custom memakai `Bearer`. |
 
 Cron endpoint: `POST /api/cron/laporan-wa` dengan header `Authorization: Bearer <LAPORAN_CRON_SECRET>`.
 
