@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Download, MapPin, Search } from "lucide-react";
 import { AnalisisTeaser } from "@/components/analisis/AnalisisTeaser";
+import { AdminPager } from "@/components/admin/AdminListChrome";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,42 +25,22 @@ import { qk } from "@/lib/qk";
 import { formatStatusLabel, normalizeStatus } from "@/lib/status-vocab";
 import type { KejadianListResult, KejadianRow } from "@/lib/kejadian-types";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { listWindow } from "@/lib/list-window";
+import {
+  KEJADIAN_LIST_FACET_KEYS,
+  kejadianListStateToParams,
+  parseKejadianListSearchParams,
+  type KejadianListUrlState,
+} from "@/lib/list-url";
+import { useListUrlState } from "@/hooks/useListUrlState";
 import { cn } from "@/lib/utils";
 
-type Filters = {
-  q: string;
-  jenis: string;
-  kabupaten: string;
-  kecamatan: string;
-  status: string;
-  from: string;
-  to: string;
-  page: number;
-  pageSize: number;
-};
-
-const DEFAULT_FILTERS: Filters = {
-  q: "",
-  jenis: "",
-  kabupaten: "",
-  kecamatan: "",
-  status: "",
-  from: "",
-  to: "",
-  page: 1,
-  pageSize: 10,
-};
-
-function buildQuery(f: Filters, overrides?: Partial<Filters>): string {
+function buildQuery(
+  f: KejadianListUrlState,
+  overrides?: Partial<KejadianListUrlState>
+): string {
   const merged = { ...f, ...overrides };
-  const sp = new URLSearchParams();
-  if (merged.q.trim()) sp.set("q", merged.q.trim());
-  if (merged.jenis) sp.set("jenis", merged.jenis);
-  if (merged.kabupaten) sp.set("kabupaten", merged.kabupaten);
-  if (merged.kecamatan) sp.set("kecamatan", merged.kecamatan);
-  if (merged.status) sp.set("status", merged.status);
-  if (merged.from) sp.set("from", merged.from);
-  if (merged.to) sp.set("to", merged.to);
+  const sp = kejadianListStateToParams(merged);
   sp.set("page", String(merged.page));
   sp.set("pageSize", String(merged.pageSize));
   return sp.toString();
@@ -186,10 +167,32 @@ const selectClassName =
 export function KejadianTable() {
   const t = useTranslations("dataBencana");
   const tStatus = useTranslations("statusVocab");
-  const [draft, setDraft] = useState<Filters>(DEFAULT_FILTERS);
-  const [applied, setApplied] = useState<Filters>(DEFAULT_FILTERS);
+  const { state: applied, replace, reset } = useListUrlState(
+    parseKejadianListSearchParams,
+    kejadianListStateToParams,
+    KEJADIAN_LIST_FACET_KEYS
+  );
+  const [draft, setDraft] = useState<KejadianListUrlState>(applied);
   const [detail, setDetail] = useState<KejadianRow | null>(null);
   const [exporting, setExporting] = useState(false);
+
+  const appliedKey = [
+    applied.q,
+    applied.jenis,
+    applied.kabupaten,
+    applied.kecamatan,
+    applied.status,
+    applied.from,
+    applied.to,
+    String(applied.page),
+    String(applied.pageSize),
+  ].join("\0");
+
+  useEffect(() => {
+    setDraft(applied);
+    // Sync draft when the URL-applied snapshot changes, not on object identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedKey]);
 
   const qs = useMemo(() => buildQuery(applied), [applied]);
   const { data, isLoading, isError, isFetching } = useQuery({
@@ -236,24 +239,20 @@ export function KejadianTable() {
   }, [facets, draft.kabupaten]);
 
   const applyFilters = useCallback(() => {
-    setApplied({ ...draft, page: 1 });
-  }, [draft]);
+    replace({ ...draft, page: 1 });
+  }, [draft, replace]);
 
   const resetFilters = useCallback(() => {
-    setDraft(DEFAULT_FILTERS);
-    setApplied(DEFAULT_FILTERS);
-  }, []);
+    reset();
+  }, [reset]);
 
-  const setPage = (page: number) => setApplied((f) => ({ ...f, page }));
-  const setPageSize = (pageSize: number) =>
-    setApplied((f) => ({ ...f, pageSize, page: 1 }));
+  const setPage = (page: number) => replace({ page });
+  const setPageSize = (pageSize: number) => replace({ pageSize, page: 1 });
 
   const total = data?.total ?? 0;
   const page = data?.page ?? applied.page;
   const pageSize = data?.pageSize ?? applied.pageSize;
-  const pages = Math.max(1, Math.ceil(total / pageSize));
-  const fromIdx = total === 0 ? 0 : (page - 1) * pageSize + 1;
-  const toIdx = Math.min(page * pageSize, total);
+  const span = listWindow(page, pageSize, total);
 
   const exportFiltered = async (format: "csv" | "json" | "kml") => {
     setExporting(true);
@@ -597,35 +596,22 @@ export function KejadianTable() {
           </table>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm text-[var(--text-dim)]">
-          <div>
-            {t("showing", { from: fromIdx, to: toIdx, total })}
-            {isFetching && !isLoading ? (
+        <AdminPager
+          className="mt-0 px-4 py-3"
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          showingLabel={t("showing", span)}
+          note={
+            isFetching && !isLoading ? (
               <span className="ml-2 opacity-60">…</span>
-            ) : null}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
-            >
-              {t("prev")}
-            </Button>
-            <span>{t("page", { page, pages })}</span>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              disabled={page >= pages}
-              onClick={() => setPage(page + 1)}
-            >
-              {t("next")}
-            </Button>
-          </div>
-        </div>
+            ) : null
+          }
+          onPrev={() => setPage(page - 1)}
+          onNext={() => setPage(page + 1)}
+          prevLabel={t("prev")}
+          nextLabel={t("next")}
+        />
       </GlassPanel>
 
       <Dialog open={detail != null} onOpenChange={(open) => { if (!open) setDetail(null); }}>

@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { AdminPager } from "@/components/admin/AdminListChrome";
+import { listWindow } from "@/lib/list-window";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +18,8 @@ import { GlassPanel } from "@/components/ui/GlassPanel";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { CmsCoverField } from "@/components/admin/CmsCoverField";
+import { isCmsCoverUrlColumn } from "@/lib/cms/cover-fields";
 import {
   ADMIN_TABLES,
   ADMIN_TABLE_KEYS,
@@ -172,7 +176,6 @@ export function DatabaseExplorer() {
     await load();
   }
 
-  const pages = Math.max(1, Math.ceil(total / pageSize));
   const formOpen = editing != null || creating;
 
   return (
@@ -294,28 +297,16 @@ export function DatabaseExplorer() {
         </table>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-        <span>
-          {t("showing", {
-            from: total === 0 ? 0 : (page - 1) * pageSize + 1,
-            to: Math.min(page * pageSize, total),
-            total,
-          })}
-        </span>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-            {t("prev")}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={page >= pages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t("next")}
-          </Button>
-        </div>
-      </div>
+      <AdminPager
+        page={page}
+        pageSize={pageSize}
+        total={total}
+        showingLabel={t("showing", listWindow(page, pageSize, total))}
+        onPrev={() => setPage((p) => p - 1)}
+        onNext={() => setPage((p) => p + 1)}
+        prevLabel={t("prev")}
+        nextLabel={t("next")}
+      />
 
       <Dialog open={formOpen} onOpenChange={(open) => { if (!open) closeForm(); }}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
@@ -378,6 +369,13 @@ export function DatabaseExplorer() {
                         setDraft((d) => ({ ...d, [col.key]: e.target.value }))
                       }
                       className="font-mono"
+                    />
+                  ) : isCmsCoverUrlColumn(col.key) ? (
+                    <CmsCoverField
+                      id={fieldId}
+                      disabled={!writable}
+                      value={draft[col.key] ?? ""}
+                      onUrl={(url) => setDraft((d) => ({ ...d, [col.key]: url }))}
                     />
                   ) : (
                     <Input

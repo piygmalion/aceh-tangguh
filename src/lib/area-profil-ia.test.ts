@@ -292,6 +292,10 @@ describe("AreaProfilPanel source lock", () => {
     path.join(ROOT, "src/components/map/MapViewport.tsx"),
     "utf8"
   );
+  const lod = readFileSync(
+    path.join(ROOT, "src/lib/village-distribution-lod.ts"),
+    "utf8"
+  );
   const id = readFileSync(path.join(ROOT, "messages/id.json"), "utf8");
   const en = readFileSync(path.join(ROOT, "messages/en.json"), "utf8");
 
@@ -341,7 +345,8 @@ describe("AreaProfilPanel source lock", () => {
   });
 
   it("forwards existing kode_kabupaten from map clicks without inventing codes", () => {
-    assert.match(viewport, /kodeKabupaten/);
+    assert.match(lod, /kodeKabupaten/);
+    assert.match(lod, /kode_kabupaten/);
     assert.match(viewport, /kode_kabupaten/);
     assert.equal(/params\.set\("kode_kab"/.test(panel), false);
     assert.equal(PROFIL_QUERY_KEYS.kabupaten.includes("kode_kabupaten"), true);

@@ -77,7 +77,7 @@ Jalur ahli yang sama dipakai Planetary Computer / CDSE Global Mosaics. **Jangan*
 | `village-r3p.pmtiles` | `village` | `villageDistribution.geojson` |
 | `irbi-2025.pmtiles` | `irbi` | `irbi2025.geojson` |
 
-`villageDistribution` / `r3pDistribution` use two archives as zoom LOD (tiles only, no remount, no retile): **z<11** paints `kecamatan-r3p` only (source-layer `kecamatan`; covers former kab overview); **z≥11** paints `village-r3p` (desa fill + outlines). `r3p-kab.pmtiles` is **retired** — it was an overlay choropleth for admin LOD at z<9, not the basemap. After a kab/kec selection, kecamatan and village features filter on existing `kode_kecamatan` (6-digit) / `kode_kab` / `kode_kabupaten` / `kode_desa_kelurahan` — never kecamatan name. Leftovers without `kode_kecamatan` stay **out** of the kecamatan dissolve (no invented codes) and remain on village tiles only. Overlay fill/outline/highlight use `beforeId=marker-clusters` when that layer exists, else `basemap-label-place`; Carto raster omits `beforeId` when neither is mounted.
+`villageDistribution` / `r3pDistribution` drill down on click, not zoom: overview paints kabupaten GeoJSON from `r3pDistribution.geojson` (23 kab/kota; villageDistribution recolors with desa terciles 106 / 1184); a kabupaten click filters `kecamatan-r3p` to that kab; a kecamatan click paints `village-r3p` filtered to that `kode_kecamatan`. `r3p-kab.pmtiles` is **retired** and is not in `OVERLAY_PMTILES_FILES`. After a kab/kec selection, kecamatan and village features filter on existing `kode_kecamatan` (6-digit) / `kode_kab` / `kode_kabupaten` / `kode_desa_kelurahan` — never kecamatan name. Leftovers without `kode_kecamatan` stay **out** of the kecamatan dissolve (no invented codes) and remain on village tiles only. Overlay fill/outline/highlight use `beforeId=marker-clusters` when that layer exists, else `basemap-label-place`; Carto raster omits `beforeId` when neither is mounted.
 
 Overlay URLs default ke `/tiles/...`. Set `NEXT_PUBLIC_TILES_BASE_URL` (prefix publik S3/R2, tanpa trailing slash) jika arsip di-host di object storage — filename tetap sama (`kecamatan-r3p.pmtiles`, …). Choropleth tetap di disk kecuali URL itu diisi.
 
@@ -146,7 +146,7 @@ Workflow `.github/workflows/sync-tiles-s3.yml` adalah `workflow_dispatch` saja �
 
 ## CDN verify runbook (opt-in, Stage 3)
 
-Production blocking hari ini adalah ops (secret + URL publik + `aceh-osm.pmtiles` belum dibangun), bukan kode sync. **Carto tetap default.** Preset merek Aceh OSM opsional. `r3p-kab.pmtiles` is retired (LOD0 is kecamatan). Jangan commit artefak `aceh-osm.pmtiles` (gitignored). Verify ini **lokal/manual** — jangan pasang ke CI terjadwal agar tidak false-red saat URL belum diisi.
+Production blocking hari ini adalah ops (secret + URL publik + `aceh-osm.pmtiles` belum dibangun), bukan kode sync. **Carto tetap default.** Preset merek Aceh OSM opsional. `r3p-kab.pmtiles` is retired (LOD0 is kabupaten GeoJSON). Jangan commit artefak `aceh-osm.pmtiles` (gitignored). Verify ini **lokal/manual** — jangan pasang ke CI terjadwal agar tidak false-red saat URL belum diisi.
 
 CORS bucket/CDN harus mengizinkan **GET, HEAD, Range** dari origin aplikasi (`Access-Control-Allow-Origin` = origin app atau `*`; `Access-Control-Allow-Headers: Range`; expose `Content-Range` / `Accept-Ranges`). Range 206 lebih baik; HTTP 200 (badan penuh) diterima.
 

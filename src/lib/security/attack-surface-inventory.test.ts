@@ -15,6 +15,7 @@ const REQUIRED_ATTACK_SURFACE_PATHS = [
   "/api/cron/overlay-live",
   "/api/panduan/ask",
   "/api/panduan/unknown",
+  "/api/admin/cms/upload",
 ] as const;
 
 type MessagesWithS8 = {

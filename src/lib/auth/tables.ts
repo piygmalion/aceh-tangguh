@@ -246,7 +246,7 @@ export const ADMIN_TABLES: Record<AdminTableKey, AdminTableConfig> = {
         key: "foto_sampul_thumbnail_url",
         label: "Thumbnail",
         type: "text",
-        editable: false,
+        editable: true,
       },
       { key: "jumlah_foto", label: "Jumlah foto", type: "number", editable: false },
       { key: "kabupaten", label: "Kabupaten", type: "json", editable: false },

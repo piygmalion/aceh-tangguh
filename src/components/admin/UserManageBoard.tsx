@@ -20,6 +20,7 @@ type StaffUser = {
   kabupaten: string | null;
   desa: string | null;
   status: "active" | "suspended";
+  emailConfirmed: boolean;
 };
 
 type RoleMatrix = Record<string, Record<string, boolean>>;
@@ -144,6 +145,19 @@ export function UserManageBoard() {
     setPending(null);
     if (!res.ok) {
       setError(data?.error === "self" || data?.error === "last_super_admin" ? t("usersGuardError") : t("staffInviteError"));
+      return;
+    }
+    await load();
+  }
+
+  async function resendInvite(userId: string) {
+    setPending(userId);
+    setError(null);
+    const res = await fetch(`/api/admin/users/${userId}/resend-invite`, { method: "POST" });
+    const data = (await res.json().catch(() => null)) as { error?: string } | null;
+    setPending(null);
+    if (!res.ok) {
+      setError(data?.error === "already_confirmed" ? t("usersAlreadyConfirmed") : t("staffInviteError"));
       return;
     }
     await load();
@@ -300,9 +314,34 @@ export function UserManageBoard() {
                       <td className="py-2 pr-3">{user.desa || user.kabupaten || "—"}</td>
                       <td className="py-2">
                         <div className="flex flex-wrap items-center gap-2">
-                          <Chip tone={user.status === "suspended" ? "danger" : "forest"} className={TYPE_FLOOR_CLASS}>
-                            {user.status === "suspended" ? t("staffSuspended") : t("staffActive")}
+                          <Chip
+                            tone={
+                              user.status === "suspended"
+                                ? "danger"
+                                : user.emailConfirmed
+                                  ? "forest"
+                                  : "accent"
+                            }
+                            className={TYPE_FLOOR_CLASS}
+                          >
+                            {user.status === "suspended"
+                              ? t("staffSuspended")
+                              : user.emailConfirmed
+                                ? t("staffActive")
+                                : t("staffPending")}
                           </Chip>
+                          {!user.emailConfirmed && user.status !== "suspended" ? (
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              className={OUTLINE_PRIMARY_CLASS}
+                              disabled={pending === user.userId}
+                              onClick={() => void resendInvite(user.userId)}
+                            >
+                              {pending === user.userId ? t("usersResending") : t("usersResendInvite")}
+                            </Button>
+                          ) : null}
                           <Button
                             type="button"
                             size="sm"

@@ -36,6 +36,7 @@ export default async function middleware(request: NextRequest) {
 
   if (
     pathname.startsWith("/api") ||
+    pathname.startsWith("/auth") ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/_vercel")
   ) {

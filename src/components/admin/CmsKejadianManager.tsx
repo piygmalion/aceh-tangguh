@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { AdminPager } from "@/components/admin/AdminListChrome";
+import { listWindow } from "@/lib/list-window";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { GlassPanel } from "@/components/ui/GlassPanel";
@@ -142,8 +144,6 @@ export function CmsKejadianManager() {
     await load();
   }
 
-  const pages = Math.max(1, Math.ceil(total / pageSize));
-
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_22rem]">
       <GlassPanel className="p-4 sm:p-6">
@@ -224,19 +224,16 @@ export function CmsKejadianManager() {
             </tbody>
           </table>
         </div>
-        <div className="mt-4 flex justify-end gap-2">
-          <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-            {t("prev")}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={page >= pages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t("next")}
-          </Button>
-        </div>
+        <AdminPager
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          showingLabel={t("showing", listWindow(page, pageSize, total))}
+          onPrev={() => setPage((p) => p - 1)}
+          onNext={() => setPage((p) => p + 1)}
+          prevLabel={t("prev")}
+          nextLabel={t("next")}
+        />
       </GlassPanel>
 
       <GlassPanel className="h-fit p-4 sm:p-5">
