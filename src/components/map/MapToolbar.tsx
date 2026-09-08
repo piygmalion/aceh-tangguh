@@ -370,18 +370,13 @@ export function MapToolbar({
                               return (
                                 <label
                                   key={jenis}
-                                  className={`map-option ${
-                                    parentDisasterOn
-                                      ? ""
-                                      : "opacity-50"
-                                  }`}
+                                  className="map-option"
                                   data-active={childChecked ? "true" : "false"}
                                 >
                                   <input
                                     className="map-check"
                                     type="checkbox"
                                     checked={childChecked}
-                                    disabled={!parentDisasterOn}
                                     onChange={() => onToggleDisasterJenis(jenis)}
                                   />
                                   <MapLayerIcon

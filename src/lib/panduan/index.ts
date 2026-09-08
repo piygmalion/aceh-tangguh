@@ -22,6 +22,12 @@ export { retrieveKnowledgeChunks, retrieveGuideChunks } from "./retrieve";
 export { askGroundedLlm, isGroundedAskEnabled } from "./ask";
 export { STATIC_GUIDE_FAQ, matchGuideFaq } from "./faq";
 export { chipsForPathname, pageIntentHint, welcomeQueryForPath } from "./page-context";
+export {
+  clearTanggapiThread,
+  loadTanggapiThread,
+  saveTanggapiThread,
+  TANGGAPI_THREAD_STORAGE,
+} from "./thread-store";
 export type {
   GuideAnswer,
   GuideContext,

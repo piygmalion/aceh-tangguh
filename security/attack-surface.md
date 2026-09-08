@@ -59,7 +59,7 @@ Public maritime GET (`/api/overlay/maritime/perairan`, `/api/overlay/maritime/pe
 | POST | `/api/laporan/kejadian` | Zod, origin, Upstash ~8/hour, service-role insert, PII encrypt |
 | POST | `/api/laporan/penanganan` | Same |
 | POST | `/api/laporan/upload` | Multipart, magic-byte MIME, 10 MB, UUID storage path, Upstash ~20/hour |
-| POST | `/api/sik/public` | Zod + `guardPublicPost` (origin + Upstash ~8/hour, fail-closed in production) |
+| POST | `/api/sik/public` | Zod + `guardPublicPost` (origin + Upstash ~8/hour, in-memory fallback if Upstash unset) |
 | POST | `/api/panduan/ask` | `guardPublicPost` (~20/hour); LLM only if `PANDUAN_LLM_ENABLED` |
 | POST | `/api/panduan/unknown` | `guardPublicPost` (~30/hour); writes `panduan_unknown` |
 

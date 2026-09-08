@@ -390,6 +390,15 @@ Sambutan beranda Tanggapi adalah briefing empat umpan `GET /api/peringatan-dini`
 | AN-37 | analis | Naskah briefing peringatan Tanggapi | jurnal/AN-37.md | selesai |
 | FE-38 | frontend | Compiler + sambutan briefing | jurnal/FE-38.md | selesai |
 
+## Gelombang Tanggapi berkas percakapan — AN-44 / FE-49
+
+Thread Tanggapi di `sessionStorage` (cap 40, sanitasi tel). Bukan CRM staf, bukan inbox, bukan WA publik. Kartu briefing empat umpan dari compiler FE-38. ID AN-38 / FE-39 tetap Daily Brief G31. AN-36 / DATA-4 / Web Push tidak dibuka. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-44 | analis | Naskah berkas percakapan Tanggapi | jurnal/AN-44.md | selesai |
+| FE-49 | frontend | Thread lokal + kartu briefing | jurnal/FE-49.md | selesai |
+
 ## Gelombang 24 — Histori Kejadian + Proyeksi Dampak
 
 Label kartu 2/3 dan proyeksi empiris dari katalog (skala, koridor, jika berulang). Bukan PAGER/OpenQuake. Bukan meninggal dari skor IRBI. DATA-4 tetap tertahan. UI frontend = FE-31 (ID FE-28 di main sudah chrome navbar).
@@ -470,6 +479,22 @@ Bukan gelombang 35. Desain pratinjau `/preview/beranda` menjadi `/[locale]`. Nam
 | --- | --- | --- | --- | --- |
 | FE-45 | frontend | Beranda produksi dari pratinjau fotografis | jurnal/FE-45.md | selesai |
 
+## Permintaan beranda — karusel cuaca 23 kab + Renduk
+
+Bukan gelombang 35. Pita `#cuaca` menampilkan semua 23 kabupaten/kota, jeda 5 detik. Salinan hero dan judul DIBI diganti. Jelajah dan Sumber data di footer memakai `<details>` seperti Kredit visual. Grafik PRRPKA / Renduk tampil di bawah `/analisis-data`. `npm test` 716 lulus; `tsc` hijau. DATA-4 tetap tertahan. Jangan POST nasional.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-46 | frontend | Karusel cuaca 23 kab, salinan beranda, Renduk di Analisis | jurnal/FE-46.md | selesai |
+
+## Permintaan peta — jenis mandiri, ikon zoom ketiga, uji MapLibre
+
+Bukan gelombang 35. Hanya `/[locale]/peta`. Anak jenis kejadian bisa dinyalakan tanpa induk semua-jenis. Ikon pecah pada zoom ketiga dari z=7 (`clusterMaxZoom` 9). Mesin sudah MapLibre; raster tetap default (vector `?vector=1` tidak dipaksa). `npm test` 724 lulus; `tsc` hijau. DATA-4 tetap tertahan. Jangan POST nasional.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-47 | frontend | Peta: jenis mandiri, ikon z+3, uji MapLibre | jurnal/FE-47.md | selesai |
+
 ## Tindak lanjut — gateway WhatsApp (BE-33)
 
 `WHATSAPP_GATEWAY_URL` adalah URL layanan pengirim, bukan secret. Adapter Fonnte/Wablas di `sendWhatsAppGateway` supaya Daily Brief + laporan memakai format provider. Token tetap dari dashboard Fonnte setelah HP pengirim dipasangkan. Bukan rute publik baru. Jangan menulis nilai token. DATA-4 tetap tertahan. Jangan G32.
@@ -477,6 +502,14 @@ Bukan gelombang 35. Desain pratinjau `/preview/beranda` menjadi `/[locale]`. Nam
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
 | BE-33 | backend | Adapter Fonnte/Wablas | jurnal/BE-33.md | selesai |
+
+## Tindak lanjut — form Daily Brief (FE-48)
+
+Form admin mengikuti tabel (Nama, lalu Nomor). Isi tertukar ditukar otomatis. Gagal tambah bukan “Gagal memuat”. DATA-4 tetap tertahan. Jangan menimpa FE-47. Jangan G32.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-48 | frontend | Form Daily Brief nama/nomor + error | jurnal/FE-48.md | selesai |
 
 ## Gelombang kemudian
 

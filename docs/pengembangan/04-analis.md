@@ -228,9 +228,21 @@ Jurnal: `jurnal/AN-34.md`. Gelombang 24. Tulisan. Proyeksi empiris dari katalog;
 
 Jurnal: `jurnal/AN-35.md`. Gelombang 24. Setelah FE-31. Label, parser magnitudo/air, Pidie Jaya × banjir jiwa historis, gempa pita M tanpa rumah karangan.
 
+### AN-36 — naskah kartu PD maritim
+
+Jurnal: `jurnal/AN-36.md`. Ditunda dari briefing Tanggapi. Kartu ke-5 buletin BMKG. Jangan dikode dari AN-37 / FE-38.
+
+### AN-37 — naskah briefing peringatan Tanggapi
+
+Jurnal: `jurnal/AN-37.md`. Empat umpan on-site. Bukan Web Push / WA. Jangan AN-36. Jangan DATA-4.
+
 ### AN-38 — naskah Daily Brief staf
 
 Jurnal: `jurnal/AN-38.md`. Gelombang 31. Tulisan, bukan kode. Kontrak saluran staf, compose, secret, PII. Jangan AN-36 / AN-37. Jangan DATA-4.
+
+### AN-44 — naskah berkas percakapan Tanggapi
+
+Jurnal: `jurnal/AN-44.md`. Thread lokal + kartu briefing. Bukan CRM staf. Jangan menimpa AN-38 G31. Jangan AN-36 / DATA-4.
 
 ### AN-39 — uji penerimaan Daily Brief
 

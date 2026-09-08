@@ -45,11 +45,27 @@ test("rateLimitAsync falls back to in-memory in development", async () => {
   });
 });
 
-test("rateLimitAsync denies in production without Upstash", async () => {
+test("rateLimitAsync falls back to in-memory in production without Upstash", async () => {
   setNodeEnv("production");
   delete process.env.UPSTASH_REDIS_REST_URL;
   delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  delete process.env.RATE_LIMIT_REQUIRE_UPSTASH;
 
-  const outcome = await rateLimitAsync("prod-unconfigured", 8, 3_600_000);
+  const key = `prod-fallback:${Date.now()}`;
+  assert.deepEqual(await rateLimitAsync(key, 2, 60_000), { allowed: true });
+  assert.deepEqual(await rateLimitAsync(key, 2, 60_000), { allowed: true });
+  assert.deepEqual(await rateLimitAsync(key, 2, 60_000), {
+    allowed: false,
+    reason: "too_many_requests",
+  });
+});
+
+test("rateLimitAsync fail-closes in production when Upstash is required", async () => {
+  setNodeEnv("production");
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  process.env.RATE_LIMIT_REQUIRE_UPSTASH = "1";
+
+  const outcome = await rateLimitAsync("prod-require-upstash", 8, 3_600_000);
   assert.deepEqual(outcome, { allowed: false, reason: "rate_limit_unconfigured" });
 });

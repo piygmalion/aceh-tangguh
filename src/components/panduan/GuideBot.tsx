@@ -16,6 +16,12 @@ import {
   markTanggapiBubbleSeen,
   TANGGAPI_OPEN_EVENT,
 } from "@/lib/panduan/open-tanggapi";
+import {
+  clearTanggapiThread,
+  loadTanggapiThread,
+  saveTanggapiThread,
+  type StoredThreadMessage,
+} from "@/lib/panduan/thread-store";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { chipsForPathname, type GuideChipKey, welcomeQueryForPath } from "@/lib/panduan/page-context";
@@ -45,6 +51,38 @@ const CHIP_QUERY: Record<GuideChipKey, { id: string; en: string }> = {
 
 function nextId(prefix: string) {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function storedToChat(item: StoredThreadMessage): GuideChatItem {
+  return {
+    id: item.id,
+    role: item.role,
+    body: item.body,
+    answer:
+      item.role === "bot"
+        ? {
+            intent: item.intent ?? "unknown",
+            body: item.body,
+            links: item.links ?? [],
+            source: item.source,
+            lead: item.lead,
+            clauses: item.clauses,
+          }
+        : undefined,
+  };
+}
+
+function chatToStored(item: GuideChatItem): StoredThreadMessage {
+  return {
+    id: item.id,
+    role: item.role,
+    body: item.body,
+    intent: item.answer?.intent,
+    links: item.answer?.links,
+    source: item.answer?.source,
+    lead: item.answer?.lead,
+    clauses: item.answer?.clauses,
+  };
 }
 
 function safeFallbackAnswer(locale: GuideLocale): GuideAnswer {
@@ -93,8 +131,10 @@ export function GuideBot() {
   const [session, setSession] = useState<GuideSlots>({});
   const [faq, setFaq] = useState<GuideFaqEntry[]>(STATIC_GUIDE_FAQ);
   const [showBubble, setShowBubble] = useState(false);
+  const [threadReady, setThreadReady] = useState(false);
   const sessionRef = useRef(session);
   sessionRef.current = session;
+  const welcomeLock = useRef(false);
 
   const visible = shouldShowGuideBot(pathname);
   const chipKeys = chipsForPathname(pathname);
@@ -200,6 +240,20 @@ export function GuideBot() {
     };
   }, []);
 
+  useEffect(() => {
+    const thread = loadTanggapiThread();
+    if (thread?.messages.length) {
+      setMessages(thread.messages.map(storedToChat));
+      setSession(thread.slots);
+    }
+    setThreadReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!threadReady) return;
+    saveTanggapiThread({ messages: messages.map(chatToStored), slots: session });
+  }, [messages, session, threadReady]);
+
   const rememberSlots = useCallback((match: { kabupaten?: string; jenis?: string; year?: number; intent: string }) => {
     setSession((prev) => ({
       kabupaten: match.kabupaten ?? prev.kabupaten,
@@ -242,8 +296,20 @@ export function GuideBot() {
     setOpen(true);
     const seed = consumeTanggapiSeed();
     if (seed) setInput(seed);
-    if (messages.length === 0) void pushWelcome();
-  }, [dismissBubble, messages.length, pushWelcome]);
+  }, [dismissBubble]);
+
+  useEffect(() => {
+    if (!open || !threadReady || messages.length > 0 || welcomeLock.current) return;
+    welcomeLock.current = true;
+    void pushWelcome();
+  }, [messages.length, open, pushWelcome, threadReady]);
+
+  const handleClearThread = useCallback(() => {
+    clearTanggapiThread();
+    setSession({});
+    setMessages([]);
+    welcomeLock.current = false;
+  }, []);
 
   useEffect(() => {
     if (!visible || open) {
@@ -388,6 +454,8 @@ export function GuideBot() {
               onLink={goTour}
               tourActive={tourIndex != null && tourIndex < HOME_TOUR_STEPS.length - 1}
               onNextTour={handleNextTour}
+              session={session}
+              onClearThread={handleClearThread}
             />
           </motion.div>
         ) : null}

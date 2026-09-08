@@ -332,7 +332,11 @@ function GroupedBar({
   );
 }
 
-export function R3PChartSection() {
+export function R3PChartSection({
+  sectionId = "prrpka",
+}: {
+  sectionId?: string;
+}) {
   const t = useTranslations("prrpkaChart");
   const tn = useTranslations("nav");
   const loc = useNumberLocale();
@@ -664,7 +668,7 @@ export function R3PChartSection() {
   );
 
   return (
-    <section className="section-shell reveal scroll-mt-28 py-20 md:py-28" id="prrpka">
+    <section className="section-shell reveal scroll-mt-28 py-20 md:py-28" id={sectionId}>
       <BlurFade inView>
         <div className="max-w-3xl">
           <p className="type-kicker mb-2 text-[var(--accent-soft)]">{t("kicker")}</p>

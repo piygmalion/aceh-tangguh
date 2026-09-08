@@ -27,9 +27,9 @@ export function assertProductionConfig(): void {
     if (!isProductionPiiConfigured()) {
       missing.push("LAPORAN_PII_KEY (64 hex) + non-default LAPORAN_PII_SALT");
     }
-    // Public laporan POSTs need distributed limits only when Supabase enables writes.
+    // Distributed limits are preferred; missing Upstash must not block laporan submits.
     if (!isUpstashConfigured()) {
-      missing.push("UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN");
+      warnings.push("UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN (in-memory rate limit)");
     }
     if (!process.env.LAPORAN_CRON_SECRET?.trim()) {
       warnings.push("LAPORAN_CRON_SECRET (WhatsApp cron disabled)");

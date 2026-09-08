@@ -8,6 +8,27 @@ function postRequest(headers: Record<string, string>, url = "https://aceh.exampl
   return new NextRequest(url, { method: "POST", headers });
 }
 
+test("guardPublicPost allows production POSTs without Upstash", async () => {
+  const saved = process.env.NODE_ENV;
+  const requireUpstash = process.env.RATE_LIMIT_REQUIRE_UPSTASH;
+  (process.env as Record<string, string | undefined>).NODE_ENV = "production";
+  delete process.env.RATE_LIMIT_REQUIRE_UPSTASH;
+  delete process.env.UPSTASH_REDIS_REST_URL;
+  delete process.env.UPSTASH_REDIS_REST_TOKEN;
+  try {
+    const req = postRequest({
+      origin: "https://aceh.example",
+      host: "aceh.example",
+    });
+    const res = await guardPublicPost(req, `an1-prod-no-upstash-${Date.now()}`, 5);
+    assert.equal(res, null);
+  } finally {
+    (process.env as Record<string, string | undefined>).NODE_ENV = saved;
+    if (requireUpstash === undefined) delete process.env.RATE_LIMIT_REQUIRE_UPSTASH;
+    else process.env.RATE_LIMIT_REQUIRE_UPSTASH = requireUpstash;
+  }
+});
+
 test("guardPublicPost allows same-origin under the quota", async () => {
   const req = postRequest({
     origin: "https://aceh.example",

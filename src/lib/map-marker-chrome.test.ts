@@ -5,15 +5,19 @@ import { describe, it } from "node:test";
 import type { Feature, FeatureCollection, Point } from "geojson";
 import { COORD_QUALITY_TRUNCATED, isTruncatedAcehLongitude } from "./coord-quality";
 import type { KejadianFixture } from "./kejadian-types";
+import { DEFAULT_VIEW } from "./types";
 import {
+  MAP_CLUSTER_MAX_ZOOM,
   MAP_DOT_MAX_ZOOM,
   MAP_DOT_RADIUS_PX,
   MAP_DOT_STROKE_PX,
   MAP_ICON_MIN_ZOOM,
+  MAP_ICON_ZOOM_STEPS,
   MAP_LIGHT_CANVAS_STROKE,
   MAP_PAPER_STROKE,
   MAP_PIN_DISC_PX,
   MAP_PIN_GLYPH_PX,
+  MAP_UNCLUSTERED_ICON_ZOOM,
   TOOLBAR_DISC_PX,
   TOOLBAR_GLYPH_PX,
   annotateDisasterDesa,
@@ -52,6 +56,14 @@ describe("signed map-chrome sizes", () => {
     assert.equal(MAP_PIN_DISC_PX, 28);
     assert.equal(TOOLBAR_GLYPH_PX, 20);
     assert.equal(TOOLBAR_DISC_PX, 32);
+  });
+
+  it("shows unclustered icons on the third +1 zoom from the default Aceh view", () => {
+    assert.equal(DEFAULT_VIEW.zoom, 7);
+    assert.equal(MAP_ICON_ZOOM_STEPS, 3);
+    assert.equal(MAP_UNCLUSTERED_ICON_ZOOM, 10);
+    assert.equal(MAP_CLUSTER_MAX_ZOOM, 9);
+    assert.equal(MAP_CLUSTER_MAX_ZOOM, MAP_UNCLUSTERED_ICON_ZOOM - 1);
   });
 });
 

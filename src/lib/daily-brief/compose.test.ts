@@ -10,6 +10,7 @@ import {
   feedAvailability,
   maskWhatsAppPhone,
   parseBriefYmd,
+  resolveDailyBriefSubscriberInput,
 } from "./compose";
 
 function emptyPeringatan(overrides: Partial<PeringatanDiniResponse> = {}): PeringatanDiniResponse {
@@ -142,6 +143,19 @@ describe("AN-38 daily brief compose", () => {
     assert.equal(parseBriefYmd("2026-09-07"), "2026-09-07");
     assert.equal(parseBriefYmd("nope"), null);
     assert.equal(maskWhatsAppPhone("6281234567890"), "6281***90");
+  });
+
+  it("swaps name and phone when the operator fills the form backwards", () => {
+    const swapped = resolveDailyBriefSubscriberInput("test", "081279895959");
+    assert.equal(swapped.phone, "081279895959");
+    assert.equal(swapped.name, "test");
+    assert.equal(swapped.swapped, true);
+    const fromNameOnly = resolveDailyBriefSubscriberInput("", "081279895959");
+    assert.equal(fromNameOnly.swapped, true);
+    assert.equal(fromNameOnly.phone, "081279895959");
+    const ok = resolveDailyBriefSubscriberInput("081234567890", "Hafid");
+    assert.equal(ok.swapped, false);
+    assert.equal(ok.phone, "081234567890");
   });
 
   it("does not mention maritime, AN-36, or public OTP in compose", () => {

@@ -77,6 +77,22 @@ export function maskWhatsAppPhone(raw: string): string {
   return `${digits.slice(0, 4)}***${digits.slice(-2)}`;
 }
 
+export function looksLikeWhatsAppPhone(raw: string): boolean {
+  return raw.replace(/\D/g, "").length >= 10;
+}
+
+export function resolveDailyBriefSubscriberInput(
+  phone: string,
+  name: string
+): { phone: string; name: string; swapped: boolean } {
+  const phoneTrim = phone.trim();
+  const nameTrim = name.trim();
+  if (!looksLikeWhatsAppPhone(phoneTrim) && looksLikeWhatsAppPhone(nameTrim)) {
+    return { phone: nameTrim, name: phoneTrim, swapped: true };
+  }
+  return { phone: phoneTrim, name: nameTrim, swapped: false };
+}
+
 export function feedAvailability(card: {
   empty: boolean;
   source: PeringatanSource | string;

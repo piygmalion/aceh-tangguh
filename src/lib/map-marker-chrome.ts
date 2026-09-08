@@ -39,7 +39,12 @@ export const MAP_PIN_GLYPH_PX = 24;
 export const TOOLBAR_DISC_PX = 32;
 export const TOOLBAR_GLYPH_PX = 20;
 
-export const MAP_CLUSTER_MAX_ZOOM = 10;
+/** +1 zoom clicks from DEFAULT_VIEW (z=7) before unclustered icons appear. */
+export const MAP_ICON_ZOOM_STEPS = 3;
+/** First zoom at which clustered points split into icons (7 + 3). */
+export const MAP_UNCLUSTERED_ICON_ZOOM = 10;
+/** Cluster through z=9; unclustered icons from z=10. */
+export const MAP_CLUSTER_MAX_ZOOM = MAP_UNCLUSTERED_ICON_ZOOM - 1;
 
 export type MarkerRenderMode = "dot" | "approx" | "pin" | "stack";
 

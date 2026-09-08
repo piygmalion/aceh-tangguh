@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { AnalisisWorkspace } from "@/components/analisis/AnalisisWorkspace";
+import { R3PChartSection } from "@/components/R3PChartSection";
 import { Link } from "@/i18n/routing";
 
 export default async function AnalisisDataPage({
@@ -52,6 +53,7 @@ export default async function AnalisisDataPage({
             <AnalisisWorkspace />
           </Suspense>
         </div>
+        <R3PChartSection sectionId="renduk" />
         <p className="sr-only">{tn("analisisData")}</p>
       </main>
       <SiteFooter />

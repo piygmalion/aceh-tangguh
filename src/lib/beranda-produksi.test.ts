@@ -132,8 +132,8 @@ describe("FE-45 beranda produksi", () => {
     assert.equal(id.hero.ctaPeta, "Buka peta");
     const idTitle = (id.beranda as { hero?: { title?: string } }).hero?.title ?? "";
     const enTitle = (en.beranda as { hero?: { title?: string } }).hero?.title ?? "";
-    assert.match(idTitle, /Bahaya hari ini/);
-    assert.match(enTitle, /today/i);
+    assert.match(idTitle, /Siapsiaga dan Tanggap untuk Aceh Tangguh/);
+    assert.match(enTitle, /Preparedness and response/i);
   });
 
   it("preview route redirects to the live homepage", () => {

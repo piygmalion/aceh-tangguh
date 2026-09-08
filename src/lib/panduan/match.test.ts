@@ -207,6 +207,8 @@ describe("panduan matcher", () => {
     assert.equal(answer.links.some((item) => item.href === "/" && item.hash === "status"), true);
     assert.equal(answer.links.some((item) => item.href === "/" && item.hash === "cuaca"), true);
     assert.equal(answer.tour, undefined);
+    assert.equal(answer.clauses?.length, 4);
+    assert.match(answer.lead ?? "", /112|Pusdalops/);
   });
 
   it("answers the three screenshot queries without an empty body", () => {

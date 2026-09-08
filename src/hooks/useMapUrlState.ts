@@ -12,7 +12,7 @@ import {
   type OverlayLayerKey,
 } from "@/lib/types";
 import { isBasemapId } from "@/lib/basemap";
-import { DISASTER_JENIS, encodeDisasterJenis } from "@/lib/disaster-jenis";
+import { nextDisasterJenisToggle } from "@/lib/disaster-jenis";
 import {
   canonicalMapUrlPatch,
   parseClusterId,
@@ -143,35 +143,17 @@ export function useMapUrlState() {
 
   const toggleDisasterJenis = useCallback(
     (jenis: string) => {
-      const parentOn = state.markerLayers.includes("disasterEvents");
-      if (!parentOn) return;
-
-      const all = DISASTER_JENIS as readonly string[];
-      const current = state.disasterJenis;
-      // empty = all active
-      const active = current.length === 0 ? new Set(all) : new Set(current);
-
-      if (active.has(jenis)) {
-        active.delete(jenis);
-        if (active.size === 0) {
-          // Last child off → turn parent off
-          const layers = state.markerLayers.filter((l) => l !== "disasterEvents");
-          push({
-            layers: layers.join(",") || null,
-            disasterJenis: null,
-          });
-          return;
-        }
-      } else {
-        active.add(jenis);
-      }
-
-      // If resulting set equals all jenis, clear param (empty = all)
-      if (active.size === all.length && all.every((j) => active.has(j))) {
-        push({ disasterJenis: null });
-        return;
-      }
-      push({ disasterJenis: encodeDisasterJenis(Array.from(active)) });
+      const next = nextDisasterJenisToggle(
+        {
+          markerLayers: state.markerLayers,
+          disasterJenis: state.disasterJenis,
+        },
+        jenis
+      );
+      push({
+        layers: next.markerLayers.join(",") || null,
+        disasterJenis: next.disasterJenisEncoded,
+      });
     },
     [push, state.disasterJenis, state.markerLayers]
   );

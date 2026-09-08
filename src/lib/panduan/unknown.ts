@@ -12,6 +12,16 @@ export function sanitizeUnknownQuery(raw: string): string {
     .slice(0, 160);
 }
 
+/** Bot thread bodies: strip contact patterns, keep official feed figures. */
+export function sanitizeBotThreadBody(raw: string): string {
+  return raw
+    .replace(/\S+@\S+/g, "[email]")
+    .replace(/\b(?:\+62|0)\d{8,15}\b/g, "[tel]")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 2000);
+}
+
 export function sanitizeUnknownPath(raw: string): string {
   const path = raw.split("?")[0]?.trim() || "/";
   if (!path.startsWith("/")) return "/";
