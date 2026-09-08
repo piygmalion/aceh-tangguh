@@ -42,10 +42,16 @@
   "hero": {
     "title": "Siaga untuk <brand>Aceh Tangguh</brand>,<br></br>tanggapi untuk penanganan lebih baik",
     "subtitle": "Kesiapsiagaan menghadapi Bencana dan Penanganan berbasis data",
+    "kicker": "Observatorium Aceh",
+    "liveBadge": "Langsung",
+    "statusTitle": "Peringatan hari ini",
+    "statusToday": "Hari ini",
+    "statusAll": "Lihat semua peringatan",
     "ctaPeta": "Buka peta",
     "ctaLapor": "Laporkan kejadian",
     "ctaLaporKejadian": "Laporkan Kejadian",
     "ctaLaporPenanganan": "Laporkan Penanganan",
+    "ctaDestana": "Buka Destana",
     "chipIncidents": "kejadian aktif",
     "chipReports": "laporan / 24 jam",
     "tabs": {
@@ -53,7 +59,7 @@
       "peta": "Peta",
       "irbi": "Irbi 2025",
       "krb": "KRB Aceh",
-      "aria": "Tab hero"
+      "aria": "Pilih tampilan beranda"
     },
     "petaTab": {
       "heading": "Satu peta untuk operasional Aceh",
@@ -63,6 +69,7 @@
     }
   },
   "clusters": {
+    "kicker": "DIBI Aceh",
     "heading": "Dashboard bencana Aceh",
     "lead": "Ringkasan dampak kejadian bencana khusus Provinsi Aceh, diolah dari Data Informasi Bencana Indonesia (DIBI) BNPB. Angka nasional tidak ditampilkan."
   },
@@ -102,6 +109,7 @@
     "sourceLink": "Buka dasbor DIBI BNPB"
   },
   "mapTeaser": {
+    "kicker": "Peta operasional",
     "heading": "Semua data, dalam satu peta",
     "lead": "Kejadian bencana, fasilitas kesehatan, laporan kejadian, laporan penanganan, dan batas administrasi Aceh.",
     "overlay": "Lapisan kejadian bencana, fasilitas kesehatan, serta laporan kejadian dan penanganan di atas basemap operasional.",
@@ -111,6 +119,7 @@
     "cta": "Buka peta penuh"
   },
   "participation": {
+    "kicker": "Lapor kejadian",
     "heading": "Partisipasi masyarakat",
     "sla": "Laporan dimoderasi sebelum tampil di peta publik (SLA target < 24 jam).",
     "step1": {
@@ -130,6 +139,7 @@
     "ctaPenanganan": "Laporkan Penanganan"
   },
   "transparency": {
+    "kicker": "Data terbuka",
     "heading": "Transparansi data",
     "c1": {
       "title": "Data terbuka",
@@ -387,6 +397,8 @@
   "laporHub": {
     "title": "Laporkan ke masyarakat Aceh Tangguh",
     "subtitle": "Pilih jenis laporan yang ingin Anda kirim. Laporan kejadian dan penanganan dapat tampil di peta setelah moderasi BPBA Pusdalops.",
+    "home": "Beranda",
+    "crumb": "Lapor",
     "kejadianTitle": "Laporkan Kejadian",
     "kejadianBody": "Laporkan bencana yang sedang atau baru terjadi di lokasi Anda.",
     "kejadianCta": "Buka formulir kejadian",
@@ -397,13 +409,23 @@
   "laporKejadian": {
     "title": "Laporkan Kejadian",
     "subtitle": "Formulir laporan bencana untuk moderasi BPBA Pusdalops. Notifikasi status dikirim via WhatsApp.",
+    "kicker": "Partisipasi warga",
+    "crumb": "Laporkan kejadian",
+    "stepsAria": "Langkah formulir laporan",
+    "step": {
+      "lokasi": "Lokasi",
+      "jenis": "Jenis",
+      "pelapor": "Pelapor"
+    },
     "chooseJenis": "Pilih jenis bencana",
     "next": "Lanjut",
     "back": "Kembali",
     "consent": "Saya setuju laporan diproses BPBA dan dapat ditampilkan di peta publik setelah disetujui (identitas tidak ditampilkan).",
     "submit": "Kirim laporan kejadian",
     "success": "Laporan terkirim. Nomor:",
-    "needContact": "Telepon atau email wajib diisi untuk notifikasi WhatsApp."
+    "needContact": "Telepon atau email wajib diisi untuk notifikasi WhatsApp.",
+    "emergencyNote": "Dalam keadaan darurat, hubungi",
+    "emergencyLink": "nomor penting"
   },
   "laporPenanganan": {
     "title": "Laporkan Penanganan",
@@ -430,6 +452,8 @@
     "gpsFailed": "Gagal mengambil GPS. Isi koordinat manual.",
     "gpsUnsupported": "GPS tidak didukung di perangkat ini.",
     "gpsOutsideAceh": "Koordinat harus berada di wilayah Aceh.",
+    "gpsMapHint": "Ketuk peta untuk menandai lokasi, atau geser pin. Hidupkan GPS untuk memakai posisi Anda.",
+    "gpsMapAria": "Peta pemilihan lokasi",
     "kabupaten": "Kabupaten / Kota",
     "kecamatan": "Kecamatan",
     "desa": "Desa / Gampong"
@@ -510,6 +534,10 @@
     "archiveLink": "Perkiraan cuaca Aceh",
     "error": "Gagal memuat peringatan dini.",
     "stale": "Data tertunda",
+    "carouselAria": "Karusel peringatan dini",
+    "prev": "Kartu sebelumnya",
+    "next": "Kartu berikutnya",
+    "slideOf": "{current} / {total}",
     "tone": {
       "neutral": "Normal",
       "warn": "Waspada",
@@ -622,6 +650,7 @@
     }
   },
   "prrpkaChart": {
+    "kicker": "Rencana induk",
     "heading": "PRRPKA — RENCANA INDUK Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh",
     "lead": "Data RENCANA INDUK Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh (PRRPKA / PRRKA), Keputusan Gubernur Aceh Nomor 300.2/666/2026, periode 2026–2028. Ringkasan JITUPASNA, kebutuhan RR, perumahan (PRRP / R3P / BNBA), pendanaan PRRKA, dan kesenjangan tingkat — bukan slide R3P multi-sektor lama.",
     "loading": "Memuat grafik PRRPKA…",
@@ -1167,6 +1196,7 @@
     "roleRr": "Admin rehab-rekon",
     "roleNone": "Tanpa peran",
     "navOverview": "Ringkasan",
+    "navOpsDash": "Dasbor data",
     "navModeration": "Moderasi Laporan",
     "navKejadianOps": "Kejadian SIK",
     "navMaster": "Master data",
@@ -1238,6 +1268,51 @@
     "retry": "Muat ulang",
     "staffFullTitle": "Semua slot terisi",
     "staffFullDescription": "23 kabupaten/kota sudah punya akun. Tidak ada slot kosong.",
+    "overviewOpsDash": "Satu layar untuk melihat data dan progres logistik, kejadian, Destana, dan modul operasional lain.",
+    "opsDashTitle": "Dasbor data operasional",
+    "opsDashLead": "Dari cakupan, ke perpindahan status, ke dampak di lapangan. Kartu umpan terhubung ke modul asalnya.",
+    "opsDashHello": "Halo {name} · {role}",
+    "opsDashCoverage": "Cakupan",
+    "opsDashModulesWithData": "Modul berdata",
+    "opsDashQueue": "Antrean",
+    "opsDashIncidents": "Kejadian SIK",
+    "opsDashLogisticsBound": "Logistik terikat",
+    "opsDashLifecycle": "Alur operasional",
+    "opsDashPhaseIncoming": "Masuk",
+    "opsDashPhaseReview": "Ditinjau",
+    "opsDashPhaseApproved": "Disetujui",
+    "opsDashPhaseOps": "Kejadian SIK",
+    "opsDashPhaseLogistics": "Distribusi",
+    "opsDashFeeds": "Umpan modul",
+    "opsDashOpen": "Buka modul",
+    "opsDashRecent": "Aktivitas terbaru",
+    "opsDashLeaderboard": "Volume modul",
+    "opsDashEmptyRecent": "Belum ada baris yang bisa ditampilkan.",
+    "opsDashProgress": "Progres",
+    "opsDashStock": "Stok",
+    "opsDashDistributed": "Terdistribusi",
+    "opsDashFilterAll": "Semua",
+    "opsDashColTitle": "Nama",
+    "opsDashColMeta": "Wilayah / jenis",
+    "opsDashColStatus": "Status",
+    "opsDashMetricPersonil": "Personil",
+    "opsDashMetricPeralatan": "Peralatan",
+    "opsDashMetricKebutuhan": "Kebutuhan",
+    "opsDashMetricCalon": "Calon",
+    "opsDashMetricDarurat": "Darurat",
+    "opsDashMetricPrograms": "Desa program",
+    "opsDashMetricAktivitas": "Aktivitas",
+    "opsDashMetricPkd": "Tugas PKD",
+    "opsDashMetricRehab": "Kebutuhan rehab",
+    "opsDashMetricMonitoring": "Pemantauan",
+    "opsDashMetricPenerima": "Penerima",
+    "opsDashMetricNomor": "Nomor penting",
+    "opsDashMetricPelatihan": "Pelatihan",
+    "opsDashMetricPermintaan": "Permintaan",
+    "opsDashMetricInstansi": "Instansi",
+    "opsDashMetricPengungsian": "Pengungsian",
+    "opsDashMetricSubscribers": "Nomor aktif",
+    "opsDashMetricBriefs": "Brief",
     "overviewTitle": "Dasbor staf",
     "overviewHello": "Halo {name} · {role}",
     "overviewModeration": "Tinjau laporan kejadian dan penanganan warga: antrean, setujui, atau tolak.",

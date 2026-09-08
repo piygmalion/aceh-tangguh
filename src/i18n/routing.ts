@@ -36,6 +36,7 @@ export const routing = defineRouting({
       en: "/methodology",
     },
     "/admin": "/admin",
+    "/admin/operasi": "/admin/operasi",
     "/admin/login": "/admin/login",
     "/admin/denied": "/admin/denied",
     "/admin/moderasi": "/admin/moderasi",

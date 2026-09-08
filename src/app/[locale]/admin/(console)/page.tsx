@@ -57,6 +57,7 @@ export default async function AdminOverviewPage() {
     .eq("status", "queued");
 
   const cards = [
+    { href: "/admin/operasi" as const, title: t("navOpsDash"), body: t("overviewOpsDash") },
     { href: "/admin/moderasi" as const, title: t("navModeration"), body: t("overviewModeration") },
     ...(canAccessModule(profile, "kejadian", roleModules)
       ? [{ href: "/admin/sik/kejadian" as const, title: t("navKejadianOps"), body: t("overviewKejadian") }]

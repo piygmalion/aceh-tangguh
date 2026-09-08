@@ -112,11 +112,13 @@ function HeroStatusPanel() {
       as="aside"
       className="w-full shrink-0 border border-white/10 p-5 lg:w-[320px]"
     >
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex items-start justify-between gap-3">
         <p className={cn("mb-0 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>
           {t("statusTitle")}
         </p>
-        <span className="type-stamp text-[0.8125rem] text-white/40">{t("statusToday")}</span>
+        <span className="type-stamp shrink-0 text-[0.8125rem] text-white/40">
+          {t("statusToday")}
+        </span>
       </div>
       <div className="flex flex-col gap-3">
         {isLoading
@@ -126,10 +128,12 @@ function HeroStatusPanel() {
           : rows.map((row) => {
               const chip = toneChip(row.tone);
               return (
-                <div key={row.key} className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className={cn("h-2 w-2 shrink-0 rounded-full", chip.dot)} />
-                    <span className="truncate text-sm font-medium">{row.place}</span>
+                <div key={row.key} className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-2">
+                    <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", chip.dot)} />
+                    <span className="text-sm font-medium leading-snug" title={row.place}>
+                      {row.place}
+                    </span>
                   </div>
                   <Badge
                     variant="outline"
@@ -148,7 +152,7 @@ function HeroStatusPanel() {
       <Separator className="mt-4 bg-white/10" />
       <a
         href="#status"
-        className="mt-3 flex items-center gap-1.5 text-[0.8125rem] font-semibold text-[var(--accent-soft)] transition-colors hover:text-[#F7F7F4]"
+        className="mt-3 inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-white/15 bg-white/[0.08] px-3.5 text-[0.8125rem] font-semibold text-[#F7F7F4] transition-colors hover:bg-white/[0.14]"
       >
         {t("statusAll")}
         <span aria-hidden>→</span>

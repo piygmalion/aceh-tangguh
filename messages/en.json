@@ -42,10 +42,16 @@
   "hero": {
     "title": "Stay ready for <brand>Aceh Tangguh</brand>,<br></br>respond for better handling.",
     "subtitle": "Disaster preparedness and data-driven response",
+    "kicker": "Aceh observatory",
+    "liveBadge": "Live",
+    "statusTitle": "Today's alerts",
+    "statusToday": "Today",
+    "statusAll": "See all alerts",
     "ctaPeta": "Open map",
     "ctaLapor": "Report an incident",
     "ctaLaporKejadian": "Report incident",
     "ctaLaporPenanganan": "Report response",
+    "ctaDestana": "Open Destana",
     "chipIncidents": "active incidents",
     "chipReports": "reports / 24h",
     "tabs": {
@@ -53,7 +59,7 @@
       "peta": "Map",
       "irbi": "Irbi 2025",
       "krb": "Aceh KRB",
-      "aria": "Hero tabs"
+      "aria": "Choose home view"
     },
     "petaTab": {
       "heading": "One operational map for Aceh",
@@ -63,6 +69,7 @@
     }
   },
   "clusters": {
+    "kicker": "Aceh DIBI",
     "heading": "Aceh disaster dashboard",
     "lead": "Disaster impact summary for Aceh province only, drawn from BNPB’s Data Informasi Bencana Indonesia (DIBI). National figures are not shown."
   },
@@ -102,6 +109,7 @@
     "sourceLink": "Open BNPB DIBI dashboard"
   },
   "mapTeaser": {
+    "kicker": "Operational map",
     "heading": "All data, one map",
     "lead": "Disaster events, health facilities, incident reports, response reports, and Aceh admin boundaries.",
     "overlay": "Disaster events, health facilities, and moderated incident and response reports on the operational basemap.",
@@ -111,6 +119,7 @@
     "cta": "Open full map"
   },
   "participation": {
+    "kicker": "Report an incident",
     "heading": "Public participation",
     "sla": "Reports are moderated before appearing on the public map (target SLA < 24h).",
     "step1": {
@@ -130,6 +139,7 @@
     "ctaPenanganan": "Report response"
   },
   "transparency": {
+    "kicker": "Open data",
     "heading": "Data transparency",
     "c1": {
       "title": "Open data",
@@ -387,6 +397,8 @@
   "laporHub": {
     "title": "Report to Aceh Tangguh",
     "subtitle": "Choose the type of report. Incident and response reports may appear on the map after BPBA Pusdalops moderation.",
+    "home": "Home",
+    "crumb": "Report",
     "kejadianTitle": "Report incident",
     "kejadianBody": "Report a disaster that is ongoing or recently occurred at your location.",
     "kejadianCta": "Open incident form",
@@ -397,13 +409,23 @@
   "laporKejadian": {
     "title": "Report incident",
     "subtitle": "Disaster report form for BPBA Pusdalops moderation. Status updates via WhatsApp.",
+    "kicker": "Public participation",
+    "crumb": "Report incident",
+    "stepsAria": "Report form steps",
+    "step": {
+      "lokasi": "Location",
+      "jenis": "Type",
+      "pelapor": "Reporter"
+    },
     "chooseJenis": "Choose disaster type",
     "next": "Next",
     "back": "Back",
     "consent": "I agree the report is processed by BPBA and may appear on the public map after approval (identity not shown).",
     "submit": "Submit incident report",
     "success": "Report sent. Number:",
-    "needContact": "Phone or email required for WhatsApp notifications."
+    "needContact": "Phone or email required for WhatsApp notifications.",
+    "emergencyNote": "In an emergency, call the",
+    "emergencyLink": "important numbers"
   },
   "laporPenanganan": {
     "title": "Report response",
@@ -430,6 +452,8 @@
     "gpsFailed": "Failed to get GPS. Enter coordinates manually.",
     "gpsUnsupported": "GPS not supported on this device.",
     "gpsOutsideAceh": "Coordinates must be within Aceh.",
+    "gpsMapHint": "Tap the map to mark a location, or drag the pin. Turn on GPS to use your current position.",
+    "gpsMapAria": "Location picker map",
     "kabupaten": "District / City",
     "kecamatan": "Sub-district",
     "desa": "Village"
@@ -510,6 +534,10 @@
     "archiveLink": "Aceh weather forecast",
     "error": "Failed to load early warnings.",
     "stale": "Data delayed",
+    "carouselAria": "Early warning carousel",
+    "prev": "Previous card",
+    "next": "Next card",
+    "slideOf": "{current} / {total}",
     "tone": {
       "neutral": "Normal",
       "warn": "Watch",
@@ -622,6 +650,7 @@
     }
   },
   "prrpkaChart": {
+    "kicker": "Master plan",
     "heading": "PRRPKA — Master Plan for Accelerated Post-Disaster Rehabilitation and Reconstruction under Aceh Authority",
     "lead": "Data from the RENCANA INDUK Percepatan Rehabilitasi dan Rekonstruksi Pascabencana Kewenangan Aceh (PRRPKA / PRRKA), Aceh Governor Decree No. 300.2/666/2026, period 2026–2028. JITUPASNA damage/loss, RR needs, housing vintages (PRRP / R3P / BNBA), PRRKA funding, and tier gaps — not the former generic R3P multi-sector slides.",
     "loading": "Loading PRRPKA charts…",
@@ -1167,6 +1196,7 @@
     "roleRr": "Rehab-recon admin",
     "roleNone": "No role",
     "navOverview": "Overview",
+    "navOpsDash": "Data dashboard",
     "navModeration": "Report moderation",
     "navKejadianOps": "SIK incidents",
     "navMaster": "Master data",
@@ -1238,6 +1268,51 @@
     "retry": "Refresh",
     "staffFullTitle": "All slots filled",
     "staffFullDescription": "All 23 kabupaten/kota already have an account. There are no vacant slots.",
+    "overviewOpsDash": "One screen for logistics, incidents, Destana, and other operational progress.",
+    "opsDashTitle": "Operational data dashboard",
+    "opsDashLead": "From coverage, to status movement, to field impact. Each feed card opens its source module.",
+    "opsDashHello": "Hello {name} · {role}",
+    "opsDashCoverage": "Coverage",
+    "opsDashModulesWithData": "Modules with data",
+    "opsDashQueue": "Queue",
+    "opsDashIncidents": "SIK incidents",
+    "opsDashLogisticsBound": "Bound logistics",
+    "opsDashLifecycle": "Operational flow",
+    "opsDashPhaseIncoming": "Inbound",
+    "opsDashPhaseReview": "In review",
+    "opsDashPhaseApproved": "Approved",
+    "opsDashPhaseOps": "SIK incidents",
+    "opsDashPhaseLogistics": "Distribution",
+    "opsDashFeeds": "Module feeds",
+    "opsDashOpen": "Open module",
+    "opsDashRecent": "Recent activity",
+    "opsDashLeaderboard": "Module volume",
+    "opsDashEmptyRecent": "No rows to show yet.",
+    "opsDashProgress": "Progress",
+    "opsDashStock": "Stock",
+    "opsDashDistributed": "Distributed",
+    "opsDashFilterAll": "All",
+    "opsDashColTitle": "Name",
+    "opsDashColMeta": "Area / type",
+    "opsDashColStatus": "Status",
+    "opsDashMetricPersonil": "Personnel",
+    "opsDashMetricPeralatan": "Equipment",
+    "opsDashMetricKebutuhan": "Supplies",
+    "opsDashMetricCalon": "Candidates",
+    "opsDashMetricDarurat": "Emergency",
+    "opsDashMetricPrograms": "Program villages",
+    "opsDashMetricAktivitas": "Activities",
+    "opsDashMetricPkd": "PKD tasks",
+    "opsDashMetricRehab": "Rehab needs",
+    "opsDashMetricMonitoring": "Monitoring",
+    "opsDashMetricPenerima": "Recipients",
+    "opsDashMetricNomor": "Hotline numbers",
+    "opsDashMetricPelatihan": "Training",
+    "opsDashMetricPermintaan": "Requests",
+    "opsDashMetricInstansi": "Agencies",
+    "opsDashMetricPengungsian": "Shelters",
+    "opsDashMetricSubscribers": "Active numbers",
+    "opsDashMetricBriefs": "Briefs",
     "overviewTitle": "Staff dashboard",
     "overviewHello": "Hello {name} · {role}",
     "overviewModeration": "Review disaster and response reports: queue, approve, or reject.",
