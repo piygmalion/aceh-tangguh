@@ -37,6 +37,7 @@ Roles: `super_admin`, `admin` → `admin_provinsi`, `admin_kabkota` (scoped), `a
 | `/id/admin/login` | Public |
 | `/id/admin/denied` | Signed in, no profile |
 | `/id/admin`, `/id/admin/moderasi` | Staff |
+| `/id/admin/operasi` | Staff (`overview`) — baca agregat, tanpa API baru |
 | `/id/admin/daily-brief` | Provinsi ops (`dailyBrief`) |
 | `/id/admin/sik/*` | Staff + `canAccessModule` |
 | `/id/admin/cms/*`, `/id/admin/database` | Super-admin |

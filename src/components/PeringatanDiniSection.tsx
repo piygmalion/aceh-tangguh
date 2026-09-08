@@ -1,9 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
-import { CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
+import { ChevronLeft, ChevronRight, CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
 import { Chip } from "@/components/ui/Chip";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,6 +25,22 @@ import {
   TYPE_STAMP_CLASS,
 } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
+
+const AUTOPLAY_MS = 7000;
+
+const controlBtnClass =
+  "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--primary)]";
+
+function scrollToPdCard(scroller: HTMLElement, index: number, smooth: boolean) {
+  const cards = scroller.querySelectorAll<HTMLElement>("[data-pd-card]");
+  const target = cards[index];
+  if (!target) return;
+  const left =
+    target.getBoundingClientRect().left -
+    scroller.getBoundingClientRect().left +
+    scroller.scrollLeft;
+  scroller.scrollTo({ left, behavior: smooth ? "smooth" : "auto" });
+}
 
 async function fetchPeringatanDini(): Promise<PeringatanDiniResponse> {
   const res = await fetchPublicApi("/api/peringatan-dini");
@@ -423,6 +440,83 @@ export function PeringatanDiniSection() {
     refetchInterval: 10 * 60_000,
   });
 
+  const slides = data
+    ? [
+        { key: "cuaca", node: <CuacaCard card={data.cuaca} /> },
+        { key: "magma", node: <MagmaCardView card={data.magma} /> },
+        { key: "sipongi", node: <SipongiCardView card={data.sipongi} /> },
+        ...(data.tatonas
+          ? [{ key: "tatonas", node: <TatonasCardView card={data.tatonas} /> }]
+          : []),
+        ...(data.maritim
+          ? [{ key: "maritim", node: <MaritimCard card={data.maritim} /> }]
+          : []),
+      ]
+    : [];
+
+  const total = slides.length;
+  const canCycle = total > 1;
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const indexRef = useRef(0);
+  const programmaticRef = useRef(false);
+  const [index, setIndex] = useState(0);
+  const [hovering, setHovering] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    indexRef.current = index;
+  }, [index]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReducedMotion(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    if (total === 0) {
+      setIndex(0);
+      return;
+    }
+    setIndex((current) => Math.min(current, total - 1));
+  }, [total]);
+
+  const goTo = useCallback(
+    (next: number, smooth = true) => {
+      if (total === 0) return;
+      const wrapped = ((next % total) + total) % total;
+      setIndex(wrapped);
+      const el = scrollerRef.current;
+      if (el) {
+        programmaticRef.current = true;
+        scrollToPdCard(el, wrapped, smooth && !reducedMotion);
+        window.setTimeout(() => {
+          programmaticRef.current = false;
+        }, 480);
+      }
+    },
+    [reducedMotion, total],
+  );
+
+  useEffect(() => {
+    if (reducedMotion || hovering || isLoading || isError || !canCycle) return;
+    const id = window.setInterval(() => goTo(indexRef.current + 1), AUTOPLAY_MS);
+    return () => window.clearInterval(id);
+  }, [canCycle, goTo, hovering, isError, isLoading, reducedMotion]);
+
+  const syncIndexFromScroll = useCallback(() => {
+    if (programmaticRef.current) return;
+    const el = scrollerRef.current;
+    if (!el || total === 0) return;
+    const cards = el.querySelectorAll<HTMLElement>("[data-pd-card]");
+    const first = cards[0];
+    if (!first) return;
+    const next = Math.round(el.scrollLeft / Math.max(first.offsetWidth, 1));
+    setIndex(Math.min(total - 1, Math.max(0, next)));
+  }, [total]);
+
   return (
     <section id="status" className="relative z-[1] scroll-mt-28 px-4 py-12 md:py-16">
       <div className="mx-auto max-w-6xl">
@@ -449,10 +543,8 @@ export function PeringatanDiniSection() {
         </div>
 
         {isLoading ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3" aria-hidden>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-[20rem] rounded-2xl" />
-            ))}
+          <div aria-hidden>
+            <Skeleton className="h-[20rem] rounded-2xl" />
           </div>
         ) : null}
 
@@ -462,13 +554,91 @@ export function PeringatanDiniSection() {
           </Empty>
         ) : null}
 
-        {data ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            <CuacaCard card={data.cuaca} />
-            <MagmaCardView card={data.magma} />
-            <SipongiCardView card={data.sipongi} />
-            {data.tatonas ? <TatonasCardView card={data.tatonas} /> : null}
-            {data.maritim ? <MaritimCard card={data.maritim} /> : null}
+        {data && total > 0 ? (
+          <div
+            className="flex flex-col gap-4"
+            onMouseEnter={() => setHovering(true)}
+            onMouseLeave={() => setHovering(false)}
+            onFocusCapture={() => setHovering(true)}
+            onBlurCapture={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                setHovering(false);
+              }
+            }}
+          >
+            <div
+              ref={scrollerRef}
+              role="region"
+              aria-roledescription="carousel"
+              aria-label={t("carouselAria")}
+              onScroll={syncIndexFromScroll}
+              className="grid auto-cols-[100%] grid-flow-col overflow-x-auto scroll-smooth snap-x snap-mandatory overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {slides.map((slide, i) => (
+                <div
+                  key={slide.key}
+                  data-pd-card
+                  className="min-w-0 snap-start"
+                  aria-hidden={i !== index}
+                  ref={(el) => {
+                    if (el) el.inert = i !== index;
+                  }}
+                >
+                  {slide.node}
+                </div>
+              ))}
+            </div>
+
+            {canCycle ? (
+              <div className="flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => goTo(index - 1)}
+                  aria-label={t("prev")}
+                  className={controlBtnClass}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
+                  <p
+                    className={cn("tabular-nums text-[var(--text-dim)]", TYPE_STAMP_CLASS)}
+                    aria-live="polite"
+                  >
+                    {t("slideOf", { current: index + 1, total })}
+                  </p>
+                  <div
+                    className="flex flex-wrap items-center justify-center gap-2"
+                    role="tablist"
+                    aria-label={t("carouselAria")}
+                  >
+                    {slides.map((slide, i) => (
+                      <button
+                        key={slide.key}
+                        type="button"
+                        role="tab"
+                        aria-selected={i === index}
+                        aria-label={t("slideOf", { current: i + 1, total })}
+                        onClick={() => goTo(i)}
+                        className={cn(
+                          "h-2 rounded-full transition-all",
+                          i === index
+                            ? "w-6 bg-[var(--primary)]"
+                            : "w-2 bg-[var(--text-dim)]/40 hover:bg-[var(--text-dim)]",
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => goTo(index + 1)}
+                  aria-label={t("next")}
+                  className={controlBtnClass}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>

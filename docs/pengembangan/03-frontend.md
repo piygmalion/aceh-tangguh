@@ -199,6 +199,10 @@ Jurnal: `jurnal/FE-39.md`. Gelombang 31. Jangan dikode sebelum AN-38. Publik `/b
 
 Jurnal: `jurnal/FE-41.md`. Gelombang 33. Kontrak AN-41. Tetap `/admin/staf`. Daftar semua staf + kisi peran/modul + ringkasan 23 slot (FE-34 jangan dihapus). i18n `admin.*` ID+EN. Jangan rute `/admin/pengguna`. Jangan menimpa FE-39.
 
+### FE-43 — dasbor data operasional
+
+Jurnal: `jurnal/FE-43.md`. Gelombang 35. Kontrak AN-43. Halaman `/admin/operasi` (bukan ganti Ringkasan). Baca agregat tabel yang sudah ada. Tanpa modul RBAC baru, tanpa migrasi, tanpa API tulis. i18n `admin.opsDash*` ID+EN. Jangan menimpa FE-41 / FE-39.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.

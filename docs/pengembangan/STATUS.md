@@ -445,6 +445,23 @@ Kontrak AN-36: kartu ke-5 dari buletin PDGT, bukan slot prakiraan. `npm test` 67
 | BE-32 | backend | Ingest buletin + GET baca saja | jurnal/BE-32.md | selesai |
 | FE-42 | frontend | Kartu PD ke-5 + field peta | jurnal/FE-42.md | selesai |
 
+## Gelombang 35 — dasbor data operasional staf
+
+Satu layar `/admin/operasi` menampilkan hitungan dan progres modul (logistik, kejadian, Destana, rehab, moderasi, layanan) tanpa migrasi dan tanpa modul RBAC baru. Tata Bolster: cakupan → alur → umpan → linimasa/peringkat. `npm test` 695 lulus; `tsc` hijau. Browser `/id/admin/operasi` dan `/en/admin/operasi` (sesi super_admin): judul ID/EN, filter Logistik, papan volume (46 calon SIK). Ringkasan `/admin` tetap. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-43 | analis | Naskah dasbor data operasional | jurnal/AN-43.md | selesai |
+| FE-43 | frontend | Halaman `/admin/operasi` | jurnal/FE-43.md | selesai |
+
+## Permintaan beranda — slideshow Peringatan Dini
+
+Bukan gelombang 35 (FE-43 dasbor operasi sudah selesai). Lima kartu `#status` jadi karusel satu kartu per slide. Tinggi `h-[20rem]` + gulir isi tidak diubah. Jangan menambah paket slider. DATA-4 tetap tertahan.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-44 | frontend | Slideshow lima kartu Peringatan Dini | jurnal/FE-44.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

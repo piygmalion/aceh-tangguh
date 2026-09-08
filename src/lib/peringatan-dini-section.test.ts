@@ -32,6 +32,8 @@ const MARITIM_CHROME = [
   "aria",
 ] as const;
 
+const CAROUSEL_CHROME = ["carouselAria", "prev", "next", "slideOf"] as const;
+
 describe("Peringatan Dini compact cards", () => {
   it("caps each card height and scrolls overflow instead of stretching the row", () => {
     const src = read("src/components/PeringatanDiniSection.tsx");
@@ -61,6 +63,11 @@ describe("Peringatan Dini compact cards", () => {
     assert.equal(typeof id.peringatanDini.archiveLink, "string");
     assert.equal(typeof en.peringatanDini.archiveLink, "string");
 
+    for (const key of CAROUSEL_CHROME) {
+      assert.equal(typeof id.peringatanDini[key], "string", `id ${key}`);
+      assert.equal(typeof en.peringatanDini[key], "string", `en ${key}`);
+    }
+
     const idTatonas = id.peringatanDini.tatonas as Record<string, unknown>;
     const enTatonas = en.peringatanDini.tatonas as Record<string, unknown>;
     for (const key of TATONAS_CHROME) {
@@ -85,8 +92,22 @@ describe("Peringatan Dini compact cards", () => {
     assert.match(src, /MaritimCard/);
     assert.match(src, /data\.maritim/);
     assert.match(src, /h-\[20rem\]/);
-    assert.match(src, /xl:grid-cols-3/);
     assert.equal(/xl:grid-cols-5/.test(src), false);
-    assert.match(src, /length:\s*5/);
+  });
+
+  it("shows the five cards as a one-card slideshow, not a wrap grid", () => {
+    const src = read("src/components/PeringatanDiniSection.tsx");
+    assert.match(src, /aria-roledescription="carousel"/);
+    assert.match(src, /carouselAria/);
+    assert.match(src, /auto-cols-\[100%\]/);
+    assert.match(src, /snap-x/);
+    assert.match(src, /data-pd-card/);
+    assert.equal(/md:grid-cols-2/.test(src), false);
+    assert.equal(/xl:grid-cols-3/.test(src), false);
+    assert.match(src, /<CuacaCard/);
+    assert.match(src, /<MagmaCardView/);
+    assert.match(src, /<SipongiCardView/);
+    assert.match(src, /<TatonasCardView/);
+    assert.match(src, /<MaritimCard/);
   });
 });

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import {
   Accessibility,
+  Activity,
   BookOpen,
   Boxes,
   Building2,
@@ -59,6 +60,7 @@ export function AdminShell({
   const items: Array<{
     href:
       | "/admin"
+      | "/admin/operasi"
       | "/admin/moderasi"
       | "/admin/sik/kejadian"
       | "/admin/sik/master"
@@ -77,6 +79,7 @@ export function AdminShell({
     superOnly?: boolean;
   }> = [
     { href: "/admin", label: t("navOverview"), icon: LayoutDashboard, module: "overview" },
+    { href: "/admin/operasi", label: t("navOpsDash"), icon: Activity, module: "overview" },
     { href: "/admin/moderasi", label: t("navModeration"), icon: ShieldCheck, module: "moderasi" },
     { href: "/admin/sik/kejadian", label: t("navKejadianOps"), icon: Siren, module: "kejadian" },
     { href: "/admin/sik/master", label: t("navMaster"), icon: Building2, module: "master" },
