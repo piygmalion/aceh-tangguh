@@ -94,7 +94,7 @@ export function Figure({
       {prefix ? (
         <span className="text-[0.55em] font-medium opacity-70">{prefix}</span>
       ) : null}
-      <span className={cn(sizeClass, "leading-[1.05] tracking-[-0.04em]")}>
+      <span className={cn(sizeClass, "leading-[1.12] tracking-[-0.04em]")}>
         <StatNumber value={value} decimals={decimals} />
       </span>
       {unit ? (
