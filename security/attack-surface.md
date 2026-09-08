@@ -35,6 +35,8 @@ Roles: `super_admin`, `admin` → `admin_provinsi`, `admin_kabkota` (scoped), `a
 | Path | Guard |
 | --- | --- |
 | `/id/admin/login` | Public |
+| `/id/admin/set-password` | Session from invite confirm; no console shell |
+| `/auth/confirm` | Public GET; one-time `token_hash`; rate-limited per IP; not locale-prefixed |
 | `/id/admin/denied` | Signed in, no profile |
 | `/id/admin`, `/id/admin/moderasi` | Staff |
 | `/id/admin/operasi` | Staff (`overview`) — baca agregat, tanpa API baru |
@@ -75,8 +77,9 @@ Dua jalur laporan: `laporan_*` + `/api/admin/laporan` (hidup) versus tabel waris
 | --- | --- | --- |
 | Staff + `moderasi`; kab 403 (tanpa kolom kab) | GET, PATCH | `/api/admin/reports` (tabel warisan `reports`) |
 | Staff + `moderasi`; kab filter AN-22 (`authorizeLaporanList` / `matchesLaporanKabScope`) | GET, PATCH | `/api/admin/laporan` |
-| Super-admin + `rejectCrossOrigin` pada POST; undangan Auth | GET, POST | `/api/admin/users` |
+| Super-admin + `rejectCrossOrigin` pada POST; undangan Auth + `redirectTo` `/auth/confirm` | GET, POST | `/api/admin/users` |
 | Super-admin + `rejectCrossOrigin`; tangguh/hapus/ubah peran | PATCH, DELETE | `/api/admin/users/[id]` |
+| Super-admin + `rejectCrossOrigin`; kirim ulang undangan jika belum `email_confirmed_at` | POST | `/api/admin/users/[id]/resend-invite` |
 | Super-admin + `rejectCrossOrigin` pada PATCH; matriks modul | GET, PATCH | `/api/admin/roles` |
 | Staff + modul per sumber; `sanitizeSearch` pada `q`; kab filter AN-20 (`authorizeResourceList` / `authorizeResourceRow`) | GET, POST, PATCH, DELETE | `/api/sik/resource` |
 | Staff + Destana | GET, POST | `/api/sik/pkd` |
@@ -99,6 +102,7 @@ Dua jalur laporan: `laporan_*` + `/api/admin/laporan` (hidup) versus tabel waris
 | Ops + `matchesKabScope` | GET, POST | `/api/sik/kejadian/[id]/validasi` (`POST` `diterima` → 400) |
 | Ops + `matchesKabScope` | GET | `/api/sik/kejadian/peringatan-dinamis` |
 | Super-admin | CRUD | `/api/admin/cms/kejadian`, `/api/admin/cms/publikasi` |
+| Super-admin + `rejectCrossOrigin` pada POST; magic-byte JPEG/PNG/WebP 5 MiB; service role → `cms-media` | POST | `/api/admin/cms/upload` |
 | Super-admin | GET, POST, PATCH, DELETE | `/api/admin/database` |
 | Provinsi (`dailyBrief`) + `rejectCrossOrigin` pada tulis | GET, POST, PATCH | `/api/admin/daily-brief/subscribers` |
 | Provinsi (`dailyBrief`) + `rejectCrossOrigin` pada POST | GET, POST | `/api/admin/daily-brief/briefs` |

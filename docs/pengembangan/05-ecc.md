@@ -67,6 +67,12 @@ Jurnal: `jurnal/AN-ECC-4.md`.
 
 Jurnal: `jurnal/AN-ECC-5.md`. Tulisan. Berkas: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan mengubah `src/` kecuali brief S1 sudah dibuka di STATUS. Jangan DATA-4.
 
+## Tiket gelombang ECC-CACHE — konsep caching
+
+### AN-ECC-6 — naskah empat lapisan
+
+Jurnal: `jurnal/AN-ECC-6.md`. Tulisan. Berkas: [07-konsep-caching.md](07-konsep-caching.md). Jangan mengubah `src/` pada tiket ini. Jangan Upstash sebagai store overlay. Jangan DATA-4. C1 = [AN-51](jurnal/AN-51.md); jangan dikode BE-37 sebelum AN-51 `siap-kode`. Jangan memakai AN-47 untuk C1. Jangan menimpa G36.
+
 ## Yang ditunda
 
 Hook runtime, Memory Vault sebagai sumber kebenaran, ECC Pro / GitHub App. DATA-4 dan P2 Juklak tetap tertahan.

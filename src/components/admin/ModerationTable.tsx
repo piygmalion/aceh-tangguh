@@ -11,6 +11,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Empty, EmptyContent, EmptyDescription } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AdminPager } from "@/components/admin/AdminListChrome";
+import { listWindow } from "@/lib/list-window";
 import type { ReportStatus } from "@/lib/supabase/types";
 import { OUTLINE_PRIMARY_CLASS, TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
@@ -226,7 +228,6 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
     router.push({ pathname: "/admin/sik/kejadian/[id]", params: { id: data.kejadian_id } });
   }
 
-  const pages = Math.max(1, Math.ceil(total / pageSize));
   const tabs: Tab[] = hideLegacy
     ? ["kejadian", "penanganan"]
     : ["kejadian", "penanganan", "legacy"];
@@ -550,33 +551,16 @@ export function ModerationTable({ hideLegacy = false }: { hideLegacy?: boolean }
       </div>
       ) : null}
 
-      <div className="mt-4 flex items-center justify-between text-sm text-[var(--text-dim)]">
-        <span>
-          {t("showing", {
-            from: total === 0 ? 0 : (page - 1) * pageSize + 1,
-            to: Math.min(page * pageSize, total),
-            total,
-          })}
-        </span>
-        <div className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            {t("prev")}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            disabled={page >= pages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            {t("next")}
-          </Button>
-        </div>
-      </div>
+      <AdminPager
+        page={page}
+        pageSize={pageSize}
+        total={total}
+        showingLabel={t("showing", listWindow(page, pageSize, total))}
+        onPrev={() => setPage((p) => p - 1)}
+        onNext={() => setPage((p) => p + 1)}
+        prevLabel={t("prev")}
+        nextLabel={t("next")}
+      />
     </GlassPanel>
   );
 }

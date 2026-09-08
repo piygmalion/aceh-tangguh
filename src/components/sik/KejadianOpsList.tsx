@@ -4,6 +4,13 @@ import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { AdminListChrome, AdminPager, AdminTableStatusRow } from "@/components/admin/AdminListChrome";
+import { listWindow } from "@/lib/list-window";
+import {
+  OPS_KEJADIAN_LIST_FACET_KEYS,
+  opsKejadianListStateToParams,
+  parseOpsKejadianListSearchParams,
+} from "@/lib/list-url";
+import { useListUrlState } from "@/hooks/useListUrlState";
 import { Button } from "@/components/ui/button";
 import type { KejadianOperasiRow } from "@/lib/sik/db-tables";
 
@@ -12,36 +19,49 @@ export function KejadianOpsList() {
   const tCalon = useTranslations("sikCalon");
   const tSdb = useTranslations("sikSdb");
   const locale = useLocale();
+  const { state, replace } = useListUrlState(
+    parseOpsKejadianListSearchParams,
+    opsKejadianListStateToParams,
+    OPS_KEJADIAN_LIST_FACET_KEYS
+  );
   const [items, setItems] = useState<KejadianOperasiRow[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
-  const [q, setQ] = useState("");
-  const [status, setStatus] = useState("");
+  const [q, setQ] = useState(state.q);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function load() {
-    setLoading(true);
-    const sp = new URLSearchParams({ page: String(page), pageSize: "20" });
-    if (q.trim()) sp.set("q", q.trim());
-    if (status) sp.set("status", status);
-    const res = await fetch(`/api/sik/kejadian?${sp}`, { cache: "no-store" });
-    if (!res.ok) {
-      setError(t("loadError"));
-      setLoading(false);
-      return;
-    }
-    const data = (await res.json()) as { items: KejadianOperasiRow[]; total: number };
-    setItems(data.items);
-    setTotal(data.total);
-    setError(null);
-    setLoading(false);
-  }
+  useEffect(() => {
+    setQ(state.q);
+  }, [state.q]);
 
   useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      const sp = new URLSearchParams({
+        page: String(state.page),
+        pageSize: "20",
+      });
+      if (state.q.trim()) sp.set("q", state.q.trim());
+      if (state.status) sp.set("status", state.status);
+      const res = await fetch(`/api/sik/kejadian?${sp}`, { cache: "no-store" });
+      if (cancelled) return;
+      if (!res.ok) {
+        setError(t("loadError"));
+        setLoading(false);
+        return;
+      }
+      const data = (await res.json()) as { items: KejadianOperasiRow[]; total: number };
+      setItems(data.items);
+      setTotal(data.total);
+      setError(null);
+      setLoading(false);
+    }
     void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, status]);
+    return () => {
+      cancelled = true;
+    };
+  }, [state.page, state.status, state.q, t]);
 
   return (
     <AdminListChrome
@@ -67,11 +87,12 @@ export function KejadianOpsList() {
       }
       footer={
         <AdminPager
-          page={page}
+          page={state.page}
           pageSize={20}
           total={total}
-          onPrev={() => setPage((p) => p - 1)}
-          onNext={() => setPage((p) => p + 1)}
+          showingLabel={t("showing", listWindow(state.page, 20, total))}
+          onPrev={() => replace({ page: state.page - 1 })}
+          onNext={() => replace({ page: state.page + 1 })}
           prevLabel={t("prev")}
           nextLabel={t("next")}
         />
@@ -81,8 +102,7 @@ export function KejadianOpsList() {
         className="mt-4 flex flex-wrap gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          setPage(1);
-          void load();
+          replace({ q: q.trim(), page: 1 });
         }}
       >
         <input
@@ -92,10 +112,9 @@ export function KejadianOpsList() {
           className="w-52 rounded-full border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 text-sm outline-none"
         />
         <select
-          value={status}
+          value={state.status}
           onChange={(e) => {
-            setStatus(e.target.value);
-            setPage(1);
+            replace({ status: e.target.value });
           }}
           className="rounded-full border border-[var(--glass-border)] bg-[var(--bg)] px-3 py-2 text-sm"
         >

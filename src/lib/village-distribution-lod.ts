@@ -5,19 +5,13 @@ import type { VillageClickSelection } from "@/lib/profil-desa";
 import { overlayPmtilesUrl } from "@/lib/tiles-url";
 import type { AreaLayerKey } from "@/lib/types";
 
-/**
- * Kecamatan overview has no min zoom — r3p-kab LOD0 is retired.
- * Stretch kecamatan-r3p to cover z<11 (including former kab band z<9).
- */
-export const KECAMATAN_LOD_MIN_ZOOM = 0;
+/** Kab overview uses the existing dissolve fixture, not retired r3p-kab.pmtiles. */
+export const KAB_OVERVIEW_AREA_KEY = "r3pDistribution" as const;
 
-/** Exclusive max zoom for kecamatan tiles (village mesh starts here). */
-export const KECAMATAN_LOD_MAX_ZOOM = 11;
+/** Same breaks as villageDistribution.legend.json / kecamatan dissolve. */
+export const VILLAGE_DISTRIBUTION_TERCILES = Object.freeze({ t1: 106, t2: 1184 });
 
-/** Desa fill starts here. Below this zoom the overlay is kecamatan only. */
-export const VILLAGE_LOD_MIN_ZOOM = 11;
-
-/** Desa outlines start with the village-fill switch so polygons are not a blob. */
+/** Desa outline paint still interpolates with zoom so polygons are not a blob. */
 export const VILLAGE_OUTLINE_MIN_ZOOM = 11;
 
 export const BASEMAP_LABEL_PLACE_LAYER = "basemap-label-place";
@@ -41,7 +35,6 @@ export function isAdminLodArea(
   return key === "villageDistribution" || key === "r3pDistribution";
 }
 
-/** z<11 admin-LOD paints kecamatan-r3p (kab archive retired). */
 export const PMTILES_KECAMATAN = {
   url: overlayPmtilesUrl("kecamatan-r3p.pmtiles"),
   sourceLayer: "kecamatan",
@@ -52,8 +45,8 @@ export const PMTILES_VILLAGE = {
   sourceLayer: "village",
 } as const;
 
-/** Overview band is kecamatan (not the retired kab archive). */
-export type VillageLodBand = "kecamatan" | "village";
+/** Click drill: kabupaten GeoJSON → kecamatan tiles → village tiles. */
+export type VillageLodBand = "kabupaten" | "kecamatan" | "village";
 
 export type PmtilesAreaMeta = {
   url: string;
@@ -68,26 +61,47 @@ export type VillageLodFocus = {
 
 export type LngLatBoundsTuple = [[number, number], [number, number]];
 
-export function villageLodBand(zoom: number): VillageLodBand {
-  if (zoom < VILLAGE_LOD_MIN_ZOOM) return "kecamatan";
-  return "village";
+export function adminLodBand(focus: VillageLodFocus | null | undefined): VillageLodBand {
+  if (focus?.kodeKecamatan) return "village";
+  if (focus?.kodeKab || focus?.kabupaten) return "kecamatan";
+  return "kabupaten";
 }
 
-export function isKecamatanLodZoom(zoom: number): boolean {
-  return villageLodBand(zoom) === "kecamatan";
+export function adminLodTiles(band: VillageLodBand): PmtilesAreaMeta | null {
+  if (band === "kecamatan") return PMTILES_KECAMATAN;
+  if (band === "village") return PMTILES_VILLAGE;
+  return null;
 }
 
-export function isVillageLodZoom(zoom: number): boolean {
-  return villageLodBand(zoom) === "village";
+export function villageDistributionBucket(total: unknown): "rendah" | "sedang" | "tinggi" {
+  const t = Number(total);
+  const n = Number.isFinite(t) ? t : 0;
+  if (n <= VILLAGE_DISTRIBUTION_TERCILES.t1) return "rendah";
+  if (n <= VILLAGE_DISTRIBUTION_TERCILES.t2) return "sedang";
+  return "tinggi";
 }
 
-/** AreaProfilPanel opens only on the desa mesh, not kecamatan overview. */
+function numericProp(value: unknown): number {
+  if (value == null || value === "") return 0;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+/** Recolor kab dissolve polygons with desa terciles for villageDistribution. */
+export function rebucketVillageKabFeature(
+  props: Record<string, unknown> | null | undefined,
+): Record<string, unknown> {
+  const p = { ...(props ?? {}) };
+  const rumah =
+    numericProp(p.rumah_rr) + numericProp(p.rumah_rs) + numericProp(p.rumah_rb);
+  const total = rumah > 0 ? rumah : numericProp(p.value);
+  p.bucket = villageDistributionBucket(total);
+  return p;
+}
+
+/** Panel opens on kab, kecamatan, and desa clicks. */
 export function villagePanelClickEnabled(band: VillageLodBand): boolean {
-  return band === "village";
-}
-
-export function villageDistributionTiles(zoom: number): PmtilesAreaMeta {
-  return villageLodBand(zoom) === "kecamatan" ? PMTILES_KECAMATAN : PMTILES_VILLAGE;
+  return band === "kabupaten" || band === "kecamatan" || band === "village";
 }
 
 /**
@@ -135,11 +149,61 @@ export function mergeVillageLodFocus(
   kab: VillageLodFocus | null,
   village: VillageClickSelection | null
 ): VillageLodFocus | null {
-  const kodeKab = kab?.kodeKab || undefined;
+  const kodeKab = kab?.kodeKab || village?.kodeKabupaten || undefined;
   const kabupaten = kab?.kabupaten || village?.kabupaten || undefined;
-  const kodeKecamatan = village?.kodeKecamatan || undefined;
+  const kodeKecamatan = kab?.kodeKecamatan || village?.kodeKecamatan || undefined;
   if (!kodeKab && !kabupaten && !kodeKecamatan) return null;
   return { kodeKab, kabupaten, kodeKecamatan };
+}
+
+export function withKecamatanFocus(
+  kab: VillageLodFocus | null,
+  kodeKecamatan: string,
+): VillageLodFocus {
+  const kode = kodeKecamatan.trim();
+  return {
+    kodeKab: kab?.kodeKab,
+    kabupaten: kab?.kabupaten,
+    kodeKecamatan: kode || undefined,
+  };
+}
+
+export function isKecamatanAreaFeature(
+  props: Record<string, unknown> | null | undefined,
+): boolean {
+  const level = String(props?.level ?? "").toLowerCase();
+  if (level === "kecamatan") return true;
+  if (isKabAreaFeature(props, "kecamatan")) return false;
+  const kodeKec = readStoredKode(props, "kode_kecamatan");
+  const kodeDesa = readStoredKode(props, "kode_desa_kelurahan");
+  return Boolean(kodeKec) && !kodeDesa;
+}
+
+export function readVillageSelection(
+  props: Record<string, unknown> | null | undefined,
+): VillageClickSelection | null {
+  if (!props) return null;
+  const name = String(props.name ?? "").trim();
+  const level = props.level ? String(props.level) : "desa";
+  const kabupatenFromProp = String(props.kabupaten ?? "").trim();
+  const kabupaten =
+    kabupatenFromProp ||
+    (level === "kab" || level === "kabupaten" ? name : "");
+  const kecamatan = String(props.kecamatan ?? "").trim();
+  if (!name && !kecamatan && !kabupaten) return null;
+  const kodeDesa = readStoredKode(props, "kode_desa_kelurahan") || undefined;
+  const kodeKecamatan = readStoredKode(props, "kode_kecamatan") || undefined;
+  const kodeKabupaten =
+    readStoredKode(props, "kode_kabupaten", "kode_kab") || undefined;
+  return {
+    name,
+    kabupaten,
+    kecamatan,
+    kodeDesa,
+    kodeKecamatan,
+    kodeKabupaten,
+    level,
+  };
 }
 
 /**
@@ -354,13 +418,11 @@ export function unionBounds(
 }
 
 /**
- * Kab click is still fitBounds-only. Overview band is kecamatan, not the
- * retired r3p-kab archive — only features with `level=kab` count as kab.
- * Boolean `false` means overview (kecamatan); `true` means village mesh.
+ * Kab click drills into kecamatan. Only features with `level=kab` count as kab.
  */
 export function isKabAreaFeature(
   props: Record<string, unknown> | null | undefined,
-  _lod: VillageLodBand | boolean
+  _lod?: VillageLodBand | boolean
 ): boolean {
   return String(props?.level ?? "") === "kab";
 }

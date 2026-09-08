@@ -236,6 +236,10 @@ Jurnal: `jurnal/AN-36.md`. Ditunda dari briefing Tanggapi. Kartu ke-5 buletin BM
 
 Jurnal: `jurnal/AN-37.md`. Empat umpan on-site. Bukan Web Push / WA. Jangan AN-36. Jangan DATA-4.
 
+### AN-47 — naskah urutan keparahan vs katalog
+
+Jurnal: `jurnal/AN-47.md`. Tulisan + uji berkas. Bento beranda = keparahan; briefing Tanggapi / karusel = katalog. Jangan meratakan ke satu sort. Jangan menimpa AN-36 / AN-37. Jangan DATA-4.
+
 ### AN-38 — naskah Daily Brief staf
 
 Jurnal: `jurnal/AN-38.md`. Gelombang 31. Tulisan, bukan kode. Kontrak saluran staf, compose, secret, PII. Jangan AN-36 / AN-37. Jangan DATA-4.
@@ -243,6 +247,18 @@ Jurnal: `jurnal/AN-38.md`. Gelombang 31. Tulisan, bukan kode. Kontrak saluran st
 ### AN-44 — naskah berkas percakapan Tanggapi
 
 Jurnal: `jurnal/AN-44.md`. Thread lokal + kartu briefing. Bukan CRM staf. Jangan menimpa AN-38 G31. Jangan AN-36 / DATA-4.
+
+### AN-45 — naskah konsep penanganan error
+
+Jurnal: `jurnal/AN-45.md`. Tulisan. Taksonomi kosong sah / stale / hulu gagal / tolak / salah input. Jangan menimpa AN-5 / AN-28. Jangan paket baru. Jangan DATA-4.
+
+### AN-49 — naskah unggah foto sampul CMS
+
+Jurnal: `jurnal/AN-49.md`. Gelombang 36. Tulisan. Bucket `cms-media`; super admin; JPEG/PNG/WebP 5 MiB. Jangan menimpa unggah laporan. Jangan AN-45. Jangan DATA-4.
+
+### AN-50 — uji penerimaan unggah CMS
+
+Jurnal: `jurnal/AN-50.md`. Gelombang 36. Setelah DATA-28 / BE-36 / FE-51. Auth/MIME/regresi laporan; tutup STATUS G36. Jangan PoC. Jangan DATA-4.
 
 ### AN-39 — uji penerimaan Daily Brief
 
@@ -255,6 +271,22 @@ Jurnal: `jurnal/AN-41.md`. Gelombang 33. Tulisan. Katalog peran tetap; PATCH/DEL
 ### AN-42 — uji penerimaan User Management
 
 Jurnal: `jurnal/AN-42.md`. Gelombang 33. Setelah DATA-26 / BE-31 / FE-41. 403 non-super; 409 self / last_super_admin; fallback matriks; helper SQL utuh; tutup STATUS G33.
+
+### AN-53 — naskah verifikasi email staf
+
+Jurnal: `jurnal/AN-53.md`. Tulisan. Undang → `token_hash` → set sandi. Jangan OTP publik. Jangan menimpa AN-44 Tanggapi / AN-45 konsep / FE-50 pager.
+
+### AN-54 — uji penerimaan verifikasi email staf
+
+Jurnal: `jurnal/AN-54.md`. Setelah BE-38 / FE-53. Helper + rute + i18n; bukan E2E kotak masuk. Jangan DATA-4.
+
+### AN-45 — naskah konsep Authentication
+
+Jurnal: `jurnal/AN-45.md`. Tulisan. Peta tiga bidang identitas + empat lapisan otorisasi. Jangan dikode dari naskah ini. Jangan OTP. Jangan RBAC dinamis. Jangan DATA-4.
+
+### AN-45 — naskah konsep Rate Limiting
+
+Jurnal: `jurnal/AN-45.md`. Tulisan. Kunci `guardPublicPost` + Upstash yang sudah hidup. Jangan paket baru. Jangan menaikkan kuota. Jangan limiter pada GET inovasi/overlay. Jangan DATA-4.
 
 ## Tiket gelombang ECC-S — kerapian
 
@@ -271,6 +303,18 @@ Jurnal: `jurnal/AN-27.md`. Tulisan dulu. Jangan mengubah `matchesKabScope` di na
 ### AN-28 — naskah 200 kosong vs 503 (S3)
 
 Jurnal: `jurnal/AN-28.md`. Static, maritime, weather, inovasi. Jangan merge jalur cuaca.
+
+## Tiket gelombang ECC-CACHE — konsep caching
+
+Kontrak: [07-konsep-caching.md](07-konsep-caching.md). AN-ECC-6 mengunci L0–L3.
+
+### AN-51 — naskah GET PD baca L1 (C1)
+
+Jurnal: `jurnal/AN-51.md`. Tulisan. MAGMA/Sipongi/Tatonas GET tanpa scrape. Jangan AN-47. Jangan G36. Jangan DATA-4.
+
+### AN-52 — uji GET PD tanpa scrape
+
+Jurnal: `jurnal/AN-52.md`. Setelah BE-37. Tes sumber + cabang kartu. Jangan PoC. Jangan DATA-4.
 
 ## Saat menutup tiket
 

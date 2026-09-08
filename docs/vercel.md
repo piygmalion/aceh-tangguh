@@ -34,7 +34,7 @@ Klien Supabase memakai default proyek `whojoxrbcdyotrpolgav` di `src/lib/supabas
 
 Cek: `GET https://aceh-tangguh.vercel.app/api/stats/live` harus `"source":"supabase"`.
 
-Admin login (`/id/admin/login`) memakai kunci publik yang sama. Tambah `https://aceh-tangguh.vercel.app/**` di **Supabase Auth → Redirect URLs** jika nanti memakai magic link / OAuth.
+Admin login (`/id/admin/login`) memakai kunci publik yang sama. Undangan staf memakai `GET /auth/confirm?token_hash=…&type=invite` (bukan OTP publik). Di **Supabase Auth → Redirect URLs** tambah `https://aceh-tangguh.vercel.app/auth/confirm` dan URL preview yang sama. Templat email Invite: tautan ke `/auth/confirm?token_hash={{ .TokenHash }}&type=invite`. Public signup dimatikan. Jangan menulis nilai SMTP.
 
 ## 3. Env server-only (dashboard Vercel, jangan commit)
 

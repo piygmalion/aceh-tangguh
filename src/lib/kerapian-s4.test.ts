@@ -61,6 +61,6 @@ describe("ECC-S4 kerapian", () => {
     assert.match(chrome, /AdminListChrome/);
     assert.match(kejadian, /AdminListChrome/);
     assert.match(sdb, /AdminListChrome/);
-    assert.doesNotMatch(moderasi, /AdminListChrome/);
+    assert.doesNotMatch(moderasi, /<AdminListChrome/);
   });
 });

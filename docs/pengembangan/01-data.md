@@ -137,6 +137,10 @@ Jurnal: `jurnal/DATA-24.md`. Gelombang 31. Jangan dikode sebelum AN-38. Migrasi 
 
 Jurnal: `jurnal/DATA-26.md`. Gelombang 33. Kontrak AN-41. Migrasi baru `admin_role_modules`. Seed = matriks `canAccessModule` hari ini termasuk `dailyBrief`. Jangan sunting migrasi lama. Jangan merevoke `is_staff` / `is_ops` / `is_walidata`. Jangan DATA-4.
 
+### DATA-28 — bucket `cms-media`
+
+Jurnal: `jurnal/DATA-28.md`. Gelombang 36. Kontrak AN-49. Migrasi baru saja. Bucket publik-baca, tanpa tulis anon. Jangan menyentuh `laporan-media`. Jangan DATA-4.
+
 ## Saat menutup tiket
 
 Perbarui baris tiket di [STATUS.md](STATUS.md). Jangan commit.

@@ -146,6 +146,10 @@ Jurnal: `jurnal/BE-31.md`. Gelombang 33. Kontrak AN-41. `GET/POST /api/admin/use
 
 Jurnal: `jurnal/BE-33.md`. Tindak lanjut kirim WA. `sendWhatsAppGateway` memetakan Fonnte (`target`) dan Wablas (`phone`) dari `WHATSAPP_GATEWAY_URL`. Bukan rute publik baru. Jangan menulis nilai token. Jangan DATA-4. Jangan G32.
 
+### BE-36 — POST unggah sampul CMS
+
+Jurnal: `jurnal/BE-36.md`. Gelombang 36. Kontrak AN-49. `POST /api/admin/cms/upload`; `requireSuperAdminApi`; magic bytes + `sharp`; bucket `cms-media`. Jangan `guardPublicPost`. Jangan mengubah rute laporan. Jangan DATA-4. Jangan BE-37 (C1). **Pengecualian wilayah:** `security/attack-surface.md` (daftar rute staf).
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan merge `/api/weather`.
@@ -157,6 +161,20 @@ Jurnal: `jurnal/BE-24.md`. Hapus kunci yatim jika uji preview tetap mengunci pen
 ### BE-22 / BE-27 / BE-21 — kontrak baca + cron (S3)
 
 Jangan dikode sebelum AN-28. Jangan menulis nilai secret. Jangan POST nasional.
+
+## Tiket gelombang ECC-CACHE — konsep caching
+
+Kontrak: [07-konsep-caching.md](07-konsep-caching.md). Jangan DATA-4. Jangan merge `/api/weather`. Jangan Upstash sebagai store overlay.
+
+C1 ([AN-51.md](jurnal/AN-51.md)): GET PD MAGMA/Sipongi/Tatonas baca L1 + `revalidateTag` dari cron.
+
+### BE-37 — GET PD dari overlay
+
+Jurnal: `jurnal/BE-37.md`. Kontrak AN-51. Jangan scrape pada GET. Jangan menimpa BE-36. Jangan DATA-4.
+
+### BE-38 — undangan staf redirectTo + confirm
+
+Jurnal: `jurnal/BE-38.md`. Kontrak AN-53. `inviteUserByEmail` + `redirectTo` `/auth/confirm`; GET `emailConfirmed`; `GET /auth/confirm` `verifyOtp`; `POST .../resend-invite`. Jangan OTP publik. Jangan password di body. Jangan DATA-4. **Pengecualian wilayah:** `src/lib/auth/`, `src/app/auth/`, `src/middleware.ts`, `docs/vercel.md`.
 
 ## Saat menutup tiket
 

@@ -28,9 +28,7 @@ function MapWorkspaceInner() {
     useState<VillageClickSelection | null>(null);
 
   useEffect(() => {
-    if (!isAdminLodArea(state.areaLayer)) {
-      setVillageSelection(null);
-    }
+    setVillageSelection(null);
   }, [state.areaLayer]);
 
   return (

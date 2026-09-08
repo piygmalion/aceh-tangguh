@@ -1,32 +1,37 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, it } from "node:test";
 import { COLOR_TOKENS } from "./layer-colors";
 import {
   AREA_OUTLINE_COLOR,
   BASEMAP_LABEL_PLACE_LAYER,
+  KAB_OVERVIEW_AREA_KEY,
   KAB_OUTLINE_PAINT,
-  KECAMATAN_LOD_MAX_ZOOM,
   MARKER_CLUSTERS_LAYER,
   PMTILES_KECAMATAN,
   PMTILES_VILLAGE,
-  VILLAGE_LOD_MIN_ZOOM,
+  VILLAGE_DISTRIBUTION_TERCILES,
   VILLAGE_OUTLINE_MIN_ZOOM,
   VILLAGE_OUTLINE_PAINT,
+  adminLodBand,
+  adminLodTiles,
   geometryBounds,
   isAdminLodArea,
   isAreaFillLayerId,
   isKabAreaFeature,
-  isKecamatanLodZoom,
-  isVillageLodZoom,
+  isKecamatanAreaFeature,
   mergeVillageLodFocus,
   overlayBeforeId,
+  rebucketVillageKabFeature,
   readKabLodFocus,
+  readVillageSelection,
   unionBounds,
-  villageDistributionTiles,
+  villageDistributionBucket,
   villageFeatureVisible,
   villageLayerFilter,
-  villageLodBand,
   villagePanelClickEnabled,
+  withKecamatanFocus,
 } from "./village-distribution-lod";
 
 const ACEH_BARAT_KAB = {
@@ -92,27 +97,20 @@ function stringify(value: unknown): string {
 }
 
 describe("villageDistribution LOD tiles", () => {
-  it("uses kecamatan-r3p below z11 and village-r3p at z11+ (r3p-kab retired)", () => {
-    assert.equal(KECAMATAN_LOD_MAX_ZOOM, 11);
-    assert.equal(VILLAGE_LOD_MIN_ZOOM, 11);
-    assert.equal(villageLodBand(7), "kecamatan");
-    assert.equal(villageLodBand(8.99), "kecamatan");
-    assert.equal(villageLodBand(9), "kecamatan");
-    assert.equal(villageLodBand(10.99), "kecamatan");
-    assert.equal(villageLodBand(11), "village");
-    assert.equal(isKecamatanLodZoom(7), true);
-    assert.equal(isKecamatanLodZoom(9), true);
-    assert.equal(isKecamatanLodZoom(11), false);
-    assert.equal(isVillageLodZoom(8.99), false);
-    assert.equal(isVillageLodZoom(10.99), false);
-    assert.equal(isVillageLodZoom(11), true);
-    assert.deepEqual(villageDistributionTiles(7), PMTILES_KECAMATAN);
-    assert.equal(villageDistributionTiles(7).url, "/tiles/kecamatan-r3p.pmtiles");
-    assert.equal(villageDistributionTiles(7).sourceLayer, "kecamatan");
-    assert.deepEqual(villageDistributionTiles(9), PMTILES_KECAMATAN);
-    assert.equal(villageDistributionTiles(10).sourceLayer, "kecamatan");
-    assert.deepEqual(villageDistributionTiles(11), PMTILES_VILLAGE);
-    assert.equal(villageDistributionTiles(11).sourceLayer, "village");
+  it("switches kab → kecamatan → desa from click focus, not zoom", () => {
+    assert.equal(KAB_OVERVIEW_AREA_KEY, "r3pDistribution");
+    assert.equal(adminLodBand(null), "kabupaten");
+    assert.equal(adminLodBand({}), "kabupaten");
+    assert.equal(adminLodBand({ kodeKab: "1107", kabupaten: "Aceh Barat" }), "kecamatan");
+    assert.equal(adminLodBand({ kabupaten: "Aceh Barat" }), "kecamatan");
+    assert.equal(
+      adminLodBand({ kodeKab: "1107", kabupaten: "Aceh Barat", kodeKecamatan: "110701" }),
+      "village",
+    );
+    assert.equal(adminLodTiles("kabupaten"), null);
+    assert.deepEqual(adminLodTiles("kecamatan"), PMTILES_KECAMATAN);
+    assert.equal(adminLodTiles("kecamatan")?.url, "/tiles/kecamatan-r3p.pmtiles");
+    assert.deepEqual(adminLodTiles("village"), PMTILES_VILLAGE);
     assert.equal(isAdminLodArea("villageDistribution"), true);
     assert.equal(isAdminLodArea("r3pDistribution"), true);
     assert.equal(isAdminLodArea("irbi2025"), false);
@@ -167,8 +165,45 @@ describe("village LOD focus + kode filter", () => {
     assert.equal(isKabAreaFeature(CODED_KECAMATAN, "kecamatan"), false);
     assert.equal(isKabAreaFeature(CODED_KECAMATAN, false), false);
     assert.equal(isKabAreaFeature(CODED_KECAMATAN, "village"), false);
-    assert.equal(villagePanelClickEnabled("kecamatan"), false);
+    assert.equal(isKecamatanAreaFeature(CODED_KECAMATAN), true);
+    assert.equal(isKecamatanAreaFeature(ACEH_BARAT_KAB), false);
+    assert.equal(isKecamatanAreaFeature(CODED_DESA), false);
+    assert.equal(villagePanelClickEnabled("kabupaten"), true);
+    assert.equal(villagePanelClickEnabled("kecamatan"), true);
     assert.equal(villagePanelClickEnabled("village"), true);
+  });
+
+  it("rebuckets kab dissolve with villageDistribution terciles, not R3P breaks", () => {
+    assert.equal(VILLAGE_DISTRIBUTION_TERCILES.t1, 106);
+    assert.equal(VILLAGE_DISTRIBUTION_TERCILES.t2, 1184);
+    assert.equal(villageDistributionBucket(106), "rendah");
+    assert.equal(villageDistributionBucket(1184), "sedang");
+    assert.equal(villageDistributionBucket(1185), "tinggi");
+    const kab = rebucketVillageKabFeature({
+      ...ACEH_BARAT_KAB,
+      rumah_rr: 400,
+      rumah_rs: 400,
+      rumah_rb: 400,
+      value: 2000,
+      bucket: "rendah",
+    });
+    assert.equal(kab.bucket, "tinggi");
+    assert.equal(rebucketVillageKabFeature({ value: 50, bucket: "tinggi" }).bucket, "rendah");
+  });
+
+  it("reads kab kode from kode_kab and kecamatan click does not jump to desa mesh until kode is set", () => {
+    const sel = readVillageSelection(ACEH_BARAT_KAB);
+    assert.equal(sel?.level, "kab");
+    assert.equal(sel?.kodeKabupaten, "1107");
+    assert.equal(sel?.kabupaten, "Aceh Barat");
+    const kecSel = readVillageSelection(CODED_KECAMATAN);
+    assert.equal(kecSel?.level, "kecamatan");
+    assert.equal(kecSel?.kodeKecamatan, "110701");
+    const afterKab = mergeVillageLodFocus(readKabLodFocus(ACEH_BARAT_KAB), sel);
+    assert.equal(adminLodBand(afterKab), "kecamatan");
+    const afterKec = withKecamatanFocus(afterKab, "110701");
+    assert.equal(adminLodBand(afterKec), "village");
+    assert.equal(afterKec.kodeKecamatan, "110701");
   });
 
   it("reads kab focus from r3p kode_kab / name and does not invent codes", () => {
@@ -301,5 +336,21 @@ describe("geometry bounds for kab fitBounds", () => {
         [97, 5],
       ]
     );
+  });
+});
+
+describe("click drill source lock", () => {
+  it("MapViewport switches admin overlay by focus, not zoom", () => {
+    const viewport = readFileSync(
+      join(process.cwd(), "src/components/map/MapViewport.tsx"),
+      "utf8"
+    );
+    assert.equal(viewport.includes("villageLodBand"), false);
+    assert.equal(viewport.includes("adminLodBand"), true);
+    assert.equal(viewport.includes("KECAMATAN_LOD_MAX_ZOOM"), false);
+    assert.equal(viewport.includes("VILLAGE_LOD_MIN_ZOOM"), false);
+    assert.equal(viewport.includes("readVillageSelection"), true);
+    assert.equal(viewport.includes("withKecamatanFocus"), true);
+    assert.equal(viewport.includes("rebucketVillageKabFeature"), true);
   });
 });

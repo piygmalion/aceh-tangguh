@@ -148,7 +148,7 @@ Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
 - `public/tiles/village-r3p.pmtiles` — `village` — from `fixtures/areas/villageDistribution.geojson` (simplified)
 - `public/tiles/irbi-2025.pmtiles` — `irbi` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
 
-`villageDistribution` / `r3pDistribution` LOD: **z<11** kecamatan only, **z≥11** desa. `r3p-kab.pmtiles` is retired (was kab choropleth at z<9). Rebuild the dissolve with `node scripts/dissolve-kecamatan-distribution.mjs` (requires shapely). Offline kab dissolve (`npm run dissolve:r3p-kab`) is deprecated and not part of `build:tiles`.
+`villageDistribution` / `r3pDistribution` LOD: click drill **kabupaten → kecamatan → desa**. Overview uses `r3pDistribution.geojson`. `r3p-kab.pmtiles` is retired. Rebuild the dissolve with `node scripts/dissolve-kecamatan-distribution.mjs` (requires shapely). Offline kab dissolve (`npm run dissolve:r3p-kab`) is deprecated and not part of `build:tiles`.
 
 `MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS. Set `NEXT_PUBLIC_TILES_BASE_URL` to serve the same filenames from S3/R2.
 

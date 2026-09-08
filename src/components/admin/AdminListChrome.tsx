@@ -1,6 +1,11 @@
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { listWindow } from "@/lib/list-window";
+import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
+import { cn } from "@/lib/utils";
+
+export { listWindow };
 
 /** Shared staff-table chrome only. Does not encode moderation or Juklak fields. */
 export function AdminListChrome({
@@ -58,6 +63,9 @@ export function AdminPager({
   onNext,
   prevLabel,
   nextLabel,
+  showingLabel,
+  note,
+  className,
 }: {
   page: number;
   pageSize: number;
@@ -66,15 +74,35 @@ export function AdminPager({
   onNext: () => void;
   prevLabel: string;
   nextLabel: string;
+  showingLabel: string;
+  note?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="mt-4 flex justify-end gap-2">
-      <Button size="sm" variant="outline" disabled={page <= 1} onClick={onPrev}>
-        {prevLabel}
-      </Button>
-      <Button size="sm" variant="outline" disabled={page * pageSize >= total} onClick={onNext}>
-        {nextLabel} {total ? `(${total})` : ""}
-      </Button>
+    <div
+      className={cn(
+        "mt-4 flex flex-wrap items-center justify-between gap-3",
+        className,
+      )}
+    >
+      <p className={cn(TYPE_FLOOR_CLASS, "tabular-nums text-[var(--text-dim)]")}>
+        {showingLabel}
+        {note}
+      </p>
+      <div className="flex gap-2">
+        <Button type="button" size="sm" variant="outline" disabled={page <= 1} onClick={onPrev}>
+          {prevLabel}
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={page * pageSize >= total}
+          onClick={onNext}
+        >
+          {nextLabel}
+        </Button>
+      </div>
     </div>
   );
 }

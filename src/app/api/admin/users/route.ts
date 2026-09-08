@@ -1,10 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireSuperAdminApi } from "@/lib/auth/admin";
+import { inviteRedirectTo, isEmailConfirmed } from "@/lib/auth/email-invite";
 import { rejectCrossOrigin } from "@/lib/security/origin";
 import { ACEH_KABUPATEN } from "@/lib/sik/juklak";
 import { isDuplicateKabSlot } from "@/lib/sik/staff-invite";
 import { authorizeStaffCatalogInvite, isUserSuspended } from "@/lib/sik/staff-manage";
 import { createServiceClient } from "@/lib/supabase/server";
+
+function requestHost(req: NextRequest): string {
+  return (
+    req.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
+    req.headers.get("host") ||
+    ""
+  );
+}
 
 export const dynamic = "force-dynamic";
 
@@ -44,7 +53,14 @@ export async function GET() {
   const authById = new Map(
     listed.users.map((user) => {
       const bannedUntil = "banned_until" in user ? (user.banned_until as string | null) : null;
-      return [user.id, { email: user.email ?? null, bannedUntil }];
+      return [
+        user.id,
+        {
+          email: user.email ?? null,
+          bannedUntil,
+          emailConfirmed: isEmailConfirmed(user.email_confirmed_at),
+        },
+      ];
     }),
   );
 
@@ -62,6 +78,7 @@ export async function GET() {
       kodeDesaKelurahan: row.kode_desa_kelurahan,
       desa: row.desa,
       bannedUntil,
+      emailConfirmed: authUser?.emailConfirmed ?? false,
       status: isUserSuspended(bannedUntil) ? "suspended" : "active",
     };
   });
@@ -125,8 +142,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const redirectTo = inviteRedirectTo({
+    originHeader: req.headers.get("origin"),
+    requestHost: requestHost(req),
+  });
   const invited = await svc.client.auth.admin.inviteUserByEmail(decided.invite.email, {
     data: { display_name: decided.invite.displayName },
+    redirectTo,
   });
   if (invited.error || !invited.data.user) {
     return NextResponse.json(

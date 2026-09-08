@@ -511,12 +511,93 @@ Form admin mengikuti tabel (Nama, lalu Nomor). Isi tertukar ditukar otomatis. Ga
 | --- | --- | --- | --- | --- |
 | FE-48 | frontend | Form Daily Brief nama/nomor + error | jurnal/FE-48.md | selesai |
 
+## Gelombang 36 — unggah foto sampul CMS (staf)
+
+Naskah AN-49 dikunci sebelum kode. Audiens = super admin (sama dengan CMS). Bucket baru `cms-media`, terpisah dari `laporan-media`. Bukan unggah publik. Bukan PDF/video/SVG. Bukan TUS. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan menimpa `POST /api/laporan/upload`. Jangan G32. Jangan C1. Jangan menimpa AN-45 / FE-50.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| KOORD-G36 | ecc | Rencana search-first + urutan tiket | jurnal/KOORD-G36.md | selesai |
+| AN-49 | analis | Naskah unggah sampul CMS | jurnal/AN-49.md | selesai |
+| DATA-28 | data | Bucket `cms-media` + kebijakan | jurnal/DATA-28.md | selesai |
+| BE-36 | backend | `POST /api/admin/cms/upload` | jurnal/BE-36.md | selesai |
+| FE-51 | frontend | Pemilih berkas foto sampul | jurnal/FE-51.md | selesai |
+| AN-50 | analis | Uji penerimaan G36 | jurnal/AN-50.md | selesai |
+
+Migrasi `20260929_cms_media` sudah di proyek produksi `aceh-tangguh` (`whojoxrbcdyotrpolgav`). `npm test` 752 lulus; 2 gagal di luar G36 (`email-invite`, FE-53).
+
+## Naskah — konsep Rate Limiting (AN-45)
+
+Bukan gelombang kode. G0 sudah memasang limiter publik. Naskah mengunci: adopt `@upstash/ratelimit` yang ada; enam POST `guardPublicPost`; kuota 8/8/20/8/20/30 per jam per IP; 429 vs 503 fail-closed; tanpa kuota pada GET/staf/cron. Jangan `express-rate-limit`. Jangan menaikkan kuota. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan G32.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-45 | analis | Naskah konsep Rate Limiting | jurnal/AN-45.md | selesai |
+
+## Naskah konsep Authentication — AN-45
+
+Tulisan. Bukan kode. Search-first: tetap `@supabase/ssr` + katalog peran (Adopt), jangan IdP baru. Tiga bidang: publik (anon), staf (cookie + `admin_profiles`), mesin (secret cron). Empat lapisan: sesi → profil → modul overlay → wilayah/RLS. Jangan OTP publik. Jangan RBAC dinamis. Jangan merevoke `is_staff` / `is_ops` / `is_super_admin` / `is_walidata`. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-45 | analis | Naskah konsep Authentication | jurnal/AN-45.md | selesai |
+
+## Konsep — penanganan error (AN-45)
+
+Naskah analis. Bukan gelombang overlay. Bukan kode. Kontrak: lima kelas (kosong sah, tertunda/stale, hulu gagal, tolak, salah input). Overlay hidup tetap AN-28 (200 kosong vs 503). Static/maritime tetap 200+stale. MAGMA/buletin maritim fail-closed. Pesan aksi ≠ pesan muat (FE-48). Jangan RFC 7807. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. Follow-up BE/FE (`error.message` staf, `error.tsx`) menunggu koordinator.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-45 | analis | Naskah konsep penanganan error | jurnal/AN-45.md | siap-kode |
+
+## Gelombang ECC-CACHE — konsep caching
+
+Skill `search-first` + `aceh-ecc`. Naskah: [07-konsep-caching.md](07-konsep-caching.md). Empat lapisan: L1 Postgres, L2 `unstable_cache`, L3 TanStack Query, L0 fixture. Upstash tetap rate limit saja. C1 usulan = AN-51 / BE-37 / AN-52 (bukan AN-47 keparahan, bukan G36). Jangan dikode BE-37 sebelum AN-51. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan merge cuaca resmi/inovasi. `src/` tidak berubah dari tiket ini.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-ECC-6 | ecc | Naskah empat lapisan cache | jurnal/AN-ECC-6.md | selesai |
+
+## Gelombang ECC-C1 — GET PD baca L1
+
+Kontrak [AN-51.md](jurnal/AN-51.md). MAGMA / Sipongi / Tatonas pada `GET /api/peringatan-dini` hanya SELECT overlay + ledger. Cron tetap scrape `no-store`. Agregat PD tetap HTTP 200. Overlay hidup tetap 200 vs 503. Jangan AN-47. Jangan G36. Jangan DATA-4. Jangan merge cuaca. Jangan Upstash overlay.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-51 | analis | Naskah GET PD baca L1 | jurnal/AN-51.md | siap-kode |
+| BE-37 | backend | GET PD dari overlay + tag cron | jurnal/BE-37.md | draf |
+| AN-52 | analis | Uji GET PD tanpa scrape hulu | jurnal/AN-52.md | draf |
+
+BE-37 boleh dikode setelah bacaan ulang AN-51. AN-52 menutup C1. Jangan commit dari tiket naskah ini.
+
+## Naskah — urutan keparahan vs katalog (AN-47)
+
+Bukan gelombang kode. Bukan G36. Kontrak: kisi bento `#status` mengurut **keparahan** (`danger` → `warn` → `neutral`, seri katalog). Briefing Tanggapi tetap **katalog** empat klausul cuaca → MAGMA → Sipongi → Tatonas (AN-37). Karusel `PeringatanDiniSection` jika dipasang lagi tetap lima slide katalog (FE-44). Jangan IRBI/DIBI sebagai kunci PD. Jangan menambah maritim ke briefing. Jangan DATA-4. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan G32.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-47 | analis | Naskah keparahan vs katalog umpan PD | jurnal/AN-47.md | selesai |
+
+## Tindak lanjut — verifikasi email staf (AN-53)
+
+Bukan G31 OTP publik. Bukan pager FE-50. Adopt `inviteUserByEmail` + `verifyOtp` `token_hash`. Status dari `email_confirmed_at`. ID rencana AN-44/BE-34/FE-50/AN-45 sudah terpakai → AN-53 / BE-38 / FE-53 / AN-54. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak. Jangan merevoke `is_staff` / `is_ops`.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-53 | analis | Naskah undang → tautan → set sandi | jurnal/AN-53.md | selesai |
+| BE-38 | backend | `redirectTo` + `/auth/confirm` + resend | jurnal/BE-38.md | selesai |
+| FE-53 | frontend | `/admin/set-password` + chip pending | jurnal/FE-53.md | selesai |
+| AN-54 | analis | Uji penerimaan | jurnal/AN-54.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
 | DATA-4 | data | Pemetaan `loggerKind` Tatonas | jurnal/DATA-4.md | menunggu-naskah |
 | DATA-10 | data | Cabut anon dari `next_kejadian_nomor` | jurnal/DATA-10.md | selesai |
+| FE-50 | frontend | Pager jendela daftar (konsep) | jurnal/FE-50.md | draf |
+| FE-52 | frontend | Pager jendela daftar (chrome) | jurnal/FE-52.md | selesai |
+| FE-54 | frontend | URL search/filter daftar kejadian | jurnal/FE-54.md | selesai |
 
 DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
 

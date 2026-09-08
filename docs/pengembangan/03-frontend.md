@@ -215,6 +215,18 @@ Jurnal: `jurnal/FE-48.md`. Urutan Nama→Nomor; tukar otomatis jika nomor tertuk
 
 Jurnal: `jurnal/FE-49.md`. Kontrak AN-44. Thread `sessionStorage` (bukan G31 FE-39). Kartu empat umpan; rel slot; Mulai ulang. Jangan menimpa FE-38 / FE-39. Jangan POST kontak. Jangan Web Push.
 
+### FE-53 — set kata sandi undangan staf
+
+Jurnal: `jurnal/FE-53.md`. Kontrak AN-53. `/admin/set-password` + chip `staffPending` + kirim ulang. i18n `admin.*`. Jangan menimpa FE-50 pager / FE-51 / FE-52. Jangan OTP publik.
+
+### FE-51 — pemilih berkas foto sampul CMS
+
+Jurnal: `jurnal/FE-51.md`. Gelombang 36. Kontrak AN-49. Input berkas pada kolom `foto_sampul_url` / `foto_sampul_thumbnail_url`. POST `/api/admin/cms/upload`. i18n `admin.*`. Jangan menimpa FE-49 / FE-50. Jangan unggah ke rute laporan.
+
+### FE-54 — URL search dan filter daftar kejadian
+
+Jurnal: `jurnal/FE-54.md`. Bukan G36. Bukan FE-53 (set sandi). Parser `list-url.ts` + `useListUrlState`. Data bencana dan daftar SIK ops. `kabupaten` bukan `kab`. Jangan nuqs. Jangan peta/Analisis. Jangan menimpa FE-50/FE-51/FE-52/FE-53.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.
