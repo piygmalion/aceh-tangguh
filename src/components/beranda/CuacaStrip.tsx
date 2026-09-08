@@ -1,6 +1,8 @@
 "use client";
 
+import { useLocale, useTranslations } from "next-intl";
 import { WeatherIcon } from "@/components/weather/WeatherIcon";
+import { WeatherInovasiStrip } from "@/components/weather/WeatherInovasiStrip";
 import type { WeatherForecastKab } from "@/lib/weather-types";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
@@ -43,22 +45,28 @@ function toneKelas(kelas?: string): string {
  * shows six kabupaten at once so the page can be scanned without playback.
  */
 export function CuacaStrip() {
+  const t = useTranslations("beranda");
+  const locale = useLocale();
   const { data, isLoading, isError } = useCuaca();
   const kab = data ? pilihKab(data.kabupaten_kota) : [];
 
   return (
     <section
-      aria-label="Cuaca kabupaten"
-      className="border-b border-[var(--border)] px-4 py-6"
+      id="cuaca"
+      aria-label={t("cuaca.aria")}
+      className="scroll-mt-24 border-b border-[var(--border)] px-4 py-6"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-3 flex items-baseline justify-between gap-3">
-          <h2 className="text-[0.9375rem] font-semibold">Cuaca kabupaten</h2>
-          {data ? (
-            <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-              {data.metadata.total_kabupaten_kota} wilayah, sumber BMKG
-            </p>
-          ) : null}
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-[0.9375rem] font-semibold">{t("cuaca.title")}</h2>
+          <div className="flex shrink-0 items-center gap-3">
+            {data ? (
+              <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                {t("cuaca.meta", { count: data.metadata.total_kabupaten_kota })}
+              </p>
+            ) : null}
+            <WeatherInovasiStrip />
+          </div>
         </div>
 
         {isLoading ? (
@@ -71,7 +79,7 @@ export function CuacaStrip() {
 
         {isError ? (
           <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-            Prakiraan cuaca belum bisa dimuat.
+            {t("cuaca.error")}
           </p>
         ) : null}
 
@@ -94,11 +102,11 @@ export function CuacaStrip() {
                   />
                 </div>
                 <p className={cn("mt-2 truncate text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                  {row.current.weather_desc_id}
+                  {locale === "en" ? row.current.weather_desc_en : row.current.weather_desc_id}
                 </p>
                 {row.kelas_cuaca_ekstrem ? (
                   <p className={cn("mt-1 font-semibold", TYPE_FLOOR_CLASS, toneKelas(row.kelas_cuaca_ekstrem))}>
-                    {kapitalAwal(row.kelas_cuaca_ekstrem)}
+                    {kapitalAwal(row.kelas_cuaca_ekstrem, locale)}
                   </p>
                 ) : null}
               </li>

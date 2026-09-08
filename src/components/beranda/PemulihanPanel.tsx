@@ -1,18 +1,13 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { useAnggaran, usePrrpka } from "./data";
 import { angka, rapikanTanda, rupiahRingkas, rupiahTeks } from "./format";
 import { Bar, Figure, PanelError, PanelSkeleton, SectionHeading, Sumber } from "./primitives";
-
-const LABEL_TINGKAT: Record<string, string> = {
-  nasional: "Kewenangan pusat",
-  provinsi: "Pemerintah Aceh",
-  kabupaten_kota: "Kabupaten dan kota",
-};
 
 function BarisKesenjangan({
   tingkat,
@@ -23,6 +18,8 @@ function BarisKesenjangan({
   kebutuhan: number;
   terakomodasi: number;
 }) {
+  const t = useTranslations("beranda");
+  const locale = useLocale();
   const rasio = kebutuhan > 0 ? terakomodasi / kebutuhan : 0;
   const cukup = terakomodasi >= kebutuhan;
   const selisih = Math.abs(terakomodasi - kebutuhan);
@@ -31,7 +28,7 @@ function BarisKesenjangan({
     <li className="border-b border-[var(--border)] py-4 last:border-b-0">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <span className="text-[0.9375rem] font-medium">
-          {LABEL_TINGKAT[tingkat] ?? tingkat}
+          {t(`pemulihan.tingkat.${tingkat}`)}
         </span>
         <span
           className={cn(
@@ -40,7 +37,9 @@ function BarisKesenjangan({
             cukup ? "text-[var(--primary)]" : "text-[var(--danger)]",
           )}
         >
-          {cukup ? "Surplus" : "Kurang"} {rupiahTeks(selisih)}
+          {cukup
+            ? t("pemulihan.surplus", { amount: rupiahTeks(selisih, locale) })
+            : t("pemulihan.kurang", { amount: rupiahTeks(selisih, locale) })}
         </span>
       </div>
 
@@ -57,9 +56,12 @@ function BarisKesenjangan({
           TYPE_FLOOR_CLASS,
         )}
       >
-        <span>Kebutuhan {rupiahTeks(kebutuhan)}</span>
+        <span>{t("pemulihan.kebutuhan", { amount: rupiahTeks(kebutuhan, locale) })}</span>
         <span className="tabular-nums">
-          Terakomodasi {rupiahTeks(terakomodasi)} ({Math.round(rasio * 100)} persen)
+          {t("pemulihan.terakomodasi", {
+            amount: rupiahTeks(terakomodasi, locale),
+            pct: Math.round(rasio * 100),
+          })}
         </span>
       </div>
     </li>
@@ -67,24 +69,26 @@ function BarisKesenjangan({
 }
 
 export function PemulihanPanel() {
+  const t = useTranslations("beranda");
+  const locale = useLocale();
   const { data: prrpka, isLoading, isError } = usePrrpka();
   const { data: anggaran } = useAnggaran();
 
   const r = prrpka?.ringkasan;
-  const kerusakan = rupiahRingkas(r?.jitupasna_kerusakan_kerugian ?? 0);
-  const kebutuhanRR = rupiahRingkas(r?.jitupasna_kebutuhan_rr ?? 0);
-  const totalApba = rupiahRingkas(anggaran?.totalRp ?? 0);
+  const kerusakan = rupiahRingkas(r?.jitupasna_kerusakan_kerugian ?? 0, locale);
+  const kebutuhanRR = rupiahRingkas(r?.jitupasna_kebutuhan_rr ?? 0, locale);
+  const totalApba = rupiahRingkas(anggaran?.totalRp ?? 0, locale);
   const maksFase = (anggaran?.perFase ?? []).reduce((m, f) => Math.max(m, f.rp), 0);
 
   return (
     <section
-      id="pemulihan"
+      id="prrpka"
       className="scroll-mt-24 border-y border-[var(--border)] bg-[var(--bg-raised)] px-4 py-16 md:py-20"
     >
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          title="Kebutuhan pemulihan dan dana yang tersedia"
-          lead="Kajian kebutuhan pascabencana menghitung nilai kerusakan dan rencana rehabilitasi rekonstruksi 2026 sampai 2028. Selisihnya menunjukkan di mana pendanaan masih kurang."
+          title={t("pemulihan.title")}
+          lead={t("pemulihan.lead")}
           aside={
             <Link
               href="/anggaran-bencana"
@@ -93,7 +97,7 @@ export function PemulihanPanel() {
                 TYPE_FLOOR_CLASS,
               )}
             >
-              Rincian anggaran
+              {t("pemulihan.cta")}
               <ArrowUpRight size={14} aria-hidden />
             </Link>
           }
@@ -102,7 +106,7 @@ export function PemulihanPanel() {
         {isLoading ? <PanelSkeleton className="mt-8 h-96" /> : null}
         {isError ? (
           <div className="mt-8">
-            <PanelError>Ringkasan pemulihan belum bisa dimuat.</PanelError>
+            <PanelError>{t("pemulihan.error")}</PanelError>
           </div>
         ) : null}
 
@@ -111,7 +115,7 @@ export function PemulihanPanel() {
             <dl className="mt-8 grid gap-6 border-y border-[var(--border)] py-6 sm:grid-cols-3 sm:gap-8">
               <div>
                 <dt className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                  Nilai kerusakan dan kerugian
+                  {t("pemulihan.kerusakan")}
                 </dt>
                 <dd className="mt-1.5">
                   <Figure
@@ -126,7 +130,7 @@ export function PemulihanPanel() {
               </div>
               <div>
                 <dt className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                  Kebutuhan rehabilitasi dan rekonstruksi
+                  {t("pemulihan.kebutuhanRR")}
                 </dt>
                 <dd className="mt-1.5">
                   <Figure
@@ -140,12 +144,12 @@ export function PemulihanPanel() {
               </div>
               <div>
                 <dt className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                  Rumah dalam rencana R3P
+                  {t("pemulihan.rumahR3p")}
                 </dt>
                 <dd className="mt-1.5">
-                  <Figure value={r.perumahan_r3p_unit} unit="unit" size="md" />
+                  <Figure value={r.perumahan_r3p_unit} unit={t("pemulihan.unit")} size="md" />
                   <p className={cn("mt-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                    Tersebar di {r.kabupaten_terdampak} kabupaten dan kota terdampak
+                    {t("pemulihan.rumahNote", { count: r.kabupaten_terdampak })}
                   </p>
                 </dd>
               </div>
@@ -154,7 +158,7 @@ export function PemulihanPanel() {
             <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-12">
               <div className="lg:col-span-7">
                 <p className={cn("mb-1 font-semibold", TYPE_FLOOR_CLASS)}>
-                  Kesenjangan pendanaan menurut kewenangan
+                  {t("pemulihan.kesenjangan")}
                 </p>
                 <ul>
                   {r.kesenjangan_tingkat.map((row) => (
@@ -172,7 +176,7 @@ export function PemulihanPanel() {
                 <div className="lg:col-span-5">
                   <div className="h-full rounded-2xl border border-[var(--border)] bg-[var(--bg-muted)] p-5">
                     <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                      Anggaran penanganan bencana {anggaran.tahun}
+                      {t("pemulihan.apba", { year: anggaran.tahun })}
                     </p>
                     <div className="mt-1.5">
                       <Figure
@@ -185,16 +189,18 @@ export function PemulihanPanel() {
                       />
                     </div>
                     <p className={cn("mt-1.5 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                      {anggaran.totalKegiatan} kegiatan, naik{" "}
-                      {angka(anggaran.perubahanPct)} persen dari tahun sebelumnya
+                      {t("pemulihan.apbaNote", {
+                        count: anggaran.totalKegiatan,
+                        pct: angka(anggaran.perubahanPct, locale),
+                      })}
                     </p>
 
                     <ul className="mt-5 space-y-3">
                       {anggaran.perFase.map((f) => (
-                        <li key={f.fase}>
+                        <li key={f.faseKey}>
                           <div className="flex items-baseline justify-between gap-3">
                             <span className={cn("font-medium", TYPE_FLOOR_CLASS)}>
-                              {f.fase}
+                              {t(`pemulihan.fase.${f.faseKey}`)}
                             </span>
                             <span
                               className={cn(
@@ -202,7 +208,7 @@ export function PemulihanPanel() {
                                 TYPE_FLOOR_CLASS,
                               )}
                             >
-                              {rupiahTeks(f.rp)}
+                              {rupiahTeks(f.rp, locale)}
                             </span>
                           </div>
                           <div className="mt-1.5">
@@ -221,11 +227,14 @@ export function PemulihanPanel() {
 
             <Sumber>
               {prrpka?.metadata.nomor_kepgub
-                ? rapikanTanda(
-                    `${prrpka.metadata.nomor_kepgub}, periode ${prrpka.metadata.periode}`,
-                  )
-                : "Keputusan Gubernur tentang PRRPKA"}
-              {anggaran ? `. Anggaran dari ${rapikanTanda(anggaran.sumber)}` : null}
+                ? t("pemulihan.sumberKepgub", {
+                    nomor: rapikanTanda(prrpka.metadata.nomor_kepgub),
+                    periode: prrpka.metadata.periode,
+                  })
+                : t("pemulihan.sumberFallback")}
+              {anggaran
+                ? ` ${t("pemulihan.sumberAnggaran", { sumber: rapikanTanda(anggaran.sumber) })}`
+                : null}
             </Sumber>
           </>
         ) : null}

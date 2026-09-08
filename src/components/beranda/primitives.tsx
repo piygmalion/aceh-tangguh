@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { useInView, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { angka, desimal } from "./format";
 
 /**
- * Counts up to `value` on first view, formatted for id-ID.
+ * Counts up to `value` on first view, formatted for the active locale.
  * The shared NumberTicker formats en-US, which prints 2,526 where Aceh reads 2.526.
  */
 export function StatNumber({
@@ -19,13 +20,15 @@ export function StatNumber({
   decimals?: 0 | 1 | 2;
   className?: string;
 }) {
+  const locale = useLocale();
   const ref = useRef<HTMLSpanElement>(null);
   const reduced = useReducedMotion();
   const motionValue = useMotionValue(0);
   const spring = useSpring(motionValue, { damping: 60, stiffness: 110 });
   const inView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
 
-  const format = (n: number) => (decimals === 0 ? angka(n) : desimal(n, decimals));
+  const format = (n: number) =>
+    decimals === 0 ? angka(n, locale) : desimal(n, decimals, locale);
 
   useEffect(() => {
     if (!inView) return;
@@ -34,9 +37,9 @@ export function StatNumber({
       return;
     }
     motionValue.set(value);
-    // format is derived from `decimals`, which is covered by the dependency list.
+    // format is derived from `decimals` and `locale`, which are covered below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, motionValue, reduced, value, decimals]);
+  }, [inView, motionValue, reduced, value, decimals, locale]);
 
   useEffect(
     () =>
@@ -44,7 +47,7 @@ export function StatNumber({
         if (ref.current) ref.current.textContent = format(latest);
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [spring, decimals],
+    [spring, decimals, locale],
   );
 
   return (

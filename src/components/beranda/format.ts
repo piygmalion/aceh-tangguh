@@ -1,26 +1,32 @@
 /**
- * Formatting for the alternative beranda preview.
- * Indonesian locale throughout: thousands use ".", decimals use ",".
+ * Locale-aware formatting for the production beranda.
+ * Indonesian: thousands ".", decimals ",". English: thousands ",", decimals ".".
  */
 import type { PeringatanTone } from "@/lib/peringatan-dini-types";
 
-const nf0 = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 });
-const nf1 = new Intl.NumberFormat("id-ID", {
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
-const nf2 = new Intl.NumberFormat("id-ID", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
-export function angka(n: number): string {
-  return nf0.format(Math.round(n));
+function numberTag(locale?: string): string {
+  return locale === "en" ? "en-US" : "id-ID";
 }
 
-export function desimal(n: number, digits: 0 | 1 | 2 = 2): string {
-  if (digits === 0) return nf0.format(n);
-  return (digits === 1 ? nf1 : nf2).format(n);
+function dateTag(locale?: string): string {
+  return locale === "en" ? "en-GB" : "id-ID";
+}
+
+export function angka(n: number, locale = "id"): string {
+  return new Intl.NumberFormat(numberTag(locale), {
+    maximumFractionDigits: 0,
+  }).format(Math.round(n));
+}
+
+export function desimal(n: number, digits: 0 | 1 | 2 = 2, locale = "id"): string {
+  const tag = numberTag(locale);
+  if (digits === 0) {
+    return new Intl.NumberFormat(tag, { maximumFractionDigits: 0 }).format(n);
+  }
+  return new Intl.NumberFormat(tag, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(n);
 }
 
 /**
@@ -29,34 +35,48 @@ export function desimal(n: number, digits: 0 | 1 | 2 = 2): string {
  */
 export type Ringkas = { n: number; unit: string; decimals: 0 | 1 | 2 };
 
-/** Compact count for headline figures: 5.836.593 reads as "5,84 jt". */
-export function angkaRingkas(n: number): Ringkas {
+/** Compact count for headline figures: 5.836.593 reads as "5,84 jt" / "5.84 m". */
+export function angkaRingkas(n: number, locale = "id"): Ringkas {
   const abs = Math.abs(n);
-  if (abs >= 1_000_000) return { n: n / 1_000_000, unit: "jt", decimals: 2 };
-  if (abs >= 10_000) return { n: n / 1_000, unit: "rb", decimals: 1 };
+  const en = locale === "en";
+  if (abs >= 1_000_000) return { n: n / 1_000_000, unit: en ? "m" : "jt", decimals: 2 };
+  if (abs >= 10_000) return { n: n / 1_000, unit: en ? "k" : "rb", decimals: 1 };
   return { n, unit: "", decimals: 0 };
 }
 
 /** Rupiah in trillions / billions / millions, split so the unit can be styled down. */
-export function rupiahRingkas(rp: number): Ringkas {
+export function rupiahRingkas(rp: number, locale = "id"): Ringkas {
   const abs = Math.abs(rp);
-  if (abs >= 1_000_000_000_000)
-    return { n: rp / 1_000_000_000_000, unit: "triliun", decimals: 1 };
-  if (abs >= 1_000_000_000)
-    return { n: rp / 1_000_000_000, unit: "miliar", decimals: 1 };
-  if (abs >= 1_000_000) return { n: rp / 1_000_000, unit: "juta", decimals: 1 };
+  const en = locale === "en";
+  if (abs >= 1_000_000_000_000) {
+    return {
+      n: rp / 1_000_000_000_000,
+      unit: en ? "trillion" : "triliun",
+      decimals: 1,
+    };
+  }
+  if (abs >= 1_000_000_000) {
+    return {
+      n: rp / 1_000_000_000,
+      unit: en ? "billion" : "miliar",
+      decimals: 1,
+    };
+  }
+  if (abs >= 1_000_000) {
+    return { n: rp / 1_000_000, unit: en ? "million" : "juta", decimals: 1 };
+  }
   return { n: rp, unit: "", decimals: 0 };
 }
 
 /** DIBI reports damage value already denominated in millions of rupiah. */
-export function rupiahDariJuta(juta: number): Ringkas {
-  return rupiahRingkas(juta * 1_000_000);
+export function rupiahDariJuta(juta: number, locale = "id"): Ringkas {
+  return rupiahRingkas(juta * 1_000_000, locale);
 }
 
 /** Inline form for running text, where a two-part figure would break the sentence. */
-export function rupiahTeks(rp: number): string {
-  const { n, unit, decimals } = rupiahRingkas(rp);
-  return `Rp${desimal(n, decimals)}${unit ? ` ${unit}` : ""}`;
+export function rupiahTeks(rp: number, locale = "id"): string {
+  const { n, unit, decimals } = rupiahRingkas(rp, locale);
+  return `Rp${desimal(n, decimals, locale)}${unit ? ` ${unit}` : ""}`;
 }
 
 /**
@@ -74,22 +94,23 @@ export function rapikanTanda(text: string): string {
 }
 
 /** "TINGGI" reads better as "Tinggi" outside a table. */
-export function kapitalAwal(text: string): string {
+export function kapitalAwal(text: string, locale = "id"): string {
   if (!text) return text;
-  const lower = rapikanTanda(text).toLocaleLowerCase("id-ID");
-  return lower.charAt(0).toLocaleUpperCase("id-ID") + lower.slice(1);
+  const tag = numberTag(locale);
+  const lower = rapikanTanda(text).toLocaleLowerCase(tag);
+  return lower.charAt(0).toLocaleUpperCase(tag) + lower.slice(1);
 }
 
 /** "kebakaran_hutan_lahan" reads as "Kebakaran hutan lahan". */
-export function dariSlug(slug: string): string {
-  return kapitalAwal(slug.replace(/_/g, " "));
+export function dariSlug(slug: string, locale = "id"): string {
+  return kapitalAwal(slug.replace(/_/g, " "), locale);
 }
 
-export function tanggalPendek(iso: string | null | undefined): string | null {
+export function tanggalPendek(iso: string | null | undefined, locale = "id"): string | null {
   if (!iso) return null;
   const ms = Date.parse(iso);
   if (Number.isNaN(ms)) return null;
-  return new Date(ms).toLocaleDateString("id-ID", {
+  return new Date(ms).toLocaleDateString(dateTag(locale), {
     timeZone: "Asia/Jakarta",
     day: "numeric",
     month: "short",
@@ -97,11 +118,11 @@ export function tanggalPendek(iso: string | null | undefined): string | null {
   });
 }
 
-export function jamPendek(iso: string | null | undefined): string | null {
+export function jamPendek(iso: string | null | undefined, locale = "id"): string | null {
   if (!iso) return null;
   const ms = Date.parse(iso);
   if (Number.isNaN(ms)) return null;
-  return new Date(ms).toLocaleString("id-ID", {
+  return new Date(ms).toLocaleString(dateTag(locale), {
     timeZone: "Asia/Jakarta",
     day: "numeric",
     month: "short",
@@ -111,15 +132,10 @@ export function jamPendek(iso: string | null | undefined): string | null {
 }
 
 /**
- * Status vocabulary. Colours come from the Aceh status tokens only:
+ * Status colours come from the Aceh status tokens only:
  * neutral reads teal (--info), warn reads gold (--warn), danger reads burnt (--danger).
+ * Labels live in peringatanDini.tone.{neutral,warn,danger}.
  */
-export const TONE_LABEL: Record<PeringatanTone, string> = {
-  neutral: "Normal",
-  warn: "Waspada",
-  danger: "Bahaya",
-};
-
 export const TONE_DOT: Record<PeringatanTone, string> = {
   neutral: "bg-[var(--info)]",
   warn: "bg-[var(--warn)]",

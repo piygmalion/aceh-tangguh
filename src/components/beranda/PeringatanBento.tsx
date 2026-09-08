@@ -3,12 +3,13 @@
 import Image from "next/image";
 import type { LucideIcon } from "lucide-react";
 import { ArrowUpRight, CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { SITE_MEDIA } from "@/lib/media";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { usePeringatan } from "./data";
-import { jamPendek, rapikanTanda, TONE_CHIP, TONE_DOT, TONE_LABEL } from "./format";
+import { jamPendek, rapikanTanda, TONE_CHIP, TONE_DOT } from "./format";
 import { PanelError, PanelSkeleton, SectionHeading } from "./primitives";
 
 type Kartu = {
@@ -25,25 +26,30 @@ type Kartu = {
   basi: boolean;
 };
 
+type BerandaT = (key: string, values?: Record<string, string | number>) => string;
+
 const URUTAN_TONE: Record<PeringatanTone, number> = { danger: 0, warn: 1, neutral: 2 };
 
-function bangunKartu(pd: PeringatanDiniResponse): Kartu[] {
+function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): Kartu[] {
   const kartu: Kartu[] = [];
+  const lowerTag = locale === "en" ? "en-US" : "id-ID";
 
   if (pd.cuaca) {
     kartu.push({
       key: "cuaca",
-      bahaya: "Cuaca ekstrem",
-      lembaga: "BMKG",
+      bahaya: t("feed.cuaca"),
+      lembaga: t("lembaga.cuaca"),
       Icon: CloudRain,
       tone: pd.cuaca.tone,
       ringkas: pd.cuaca.empty
-        ? "Tidak ada peringatan cuaca aktif"
-        : `${pd.cuaca.highlights.length + pd.cuaca.extra_count} kabupaten/kota berstatus perhatian`,
+        ? t("peringatan.cuacaEmpty")
+        : t("peringatan.cuacaCount", {
+            count: pd.cuaca.highlights.length + pd.cuaca.extra_count,
+          }),
       rincian: pd.cuaca.highlights
         .slice(0, 4)
-        .map((h) => `${h.kabupaten}: ${h.kondisi.toLocaleLowerCase("id-ID")}`),
-      stempel: jamPendek(pd.cuaca.fetched_at),
+        .map((h) => `${h.kabupaten}: ${h.kondisi.toLocaleLowerCase(lowerTag)}`),
+      stempel: jamPendek(pd.cuaca.fetched_at, locale),
       href: pd.cuaca.href,
       external: false,
       basi: pd.cuaca.stale,
@@ -54,16 +60,16 @@ function bangunKartu(pd: PeringatanDiniResponse): Kartu[] {
     const ev = pd.magma.event;
     kartu.push({
       key: "magma",
-      bahaya: "Gempa bumi",
-      lembaga: "MAGMA ESDM",
+      bahaya: t("feed.magma"),
+      lembaga: t("lembaga.magma"),
       Icon: Mountain,
       tone: pd.magma.tone,
-      ringkas: pd.magma.empty || !ev ? "Tidak ada gempa terkini" : ev.magnitude_text,
+      ringkas: pd.magma.empty || !ev ? t("peringatan.magmaEmpty") : ev.magnitude_text,
       rincian:
         pd.magma.empty || !ev
           ? []
           : [ev.wilayah, ev.koordinat_kedalaman, ev.waktu_kejadian].filter(Boolean),
-      stempel: jamPendek(pd.magma.fetched_at),
+      stempel: jamPendek(pd.magma.fetched_at, locale),
       href: pd.magma.href,
       external: true,
       basi: pd.magma.stale,
@@ -73,17 +79,17 @@ function bangunKartu(pd: PeringatanDiniResponse): Kartu[] {
   if (pd.sipongi) {
     kartu.push({
       key: "sipongi",
-      bahaya: "Kebakaran hutan dan lahan",
-      lembaga: "SIPONGI",
+      bahaya: t("feed.sipongi"),
+      lembaga: t("lembaga.sipongi"),
       Icon: Flame,
       tone: pd.sipongi.tone,
       ringkas: pd.sipongi.empty
-        ? "Tidak ada titik panas terpantau"
-        : `${pd.sipongi.points.length} titik panas terpantau`,
+        ? t("peringatan.sipongiEmpty")
+        : t("peringatan.sipongiCount", { count: pd.sipongi.points.length }),
       rincian: pd.sipongi.points
         .slice(0, 4)
-        .map((p) => `${p.kabkota}, Kec. ${p.kecamatan}`),
-      stempel: jamPendek(pd.sipongi.fetched_at),
+        .map((p) => `${p.kabkota}, ${t("peringatan.kecamatan", { name: p.kecamatan })}`),
+      stempel: jamPendek(pd.sipongi.fetched_at, locale),
       href: pd.sipongi.href,
       external: true,
       basi: pd.sipongi.stale,
@@ -93,17 +99,17 @@ function bangunKartu(pd: PeringatanDiniResponse): Kartu[] {
   if (pd.tatonas) {
     kartu.push({
       key: "tatonas",
-      bahaya: "Tinggi muka air",
-      lembaga: "Tatonas",
+      bahaya: t("feed.tatonas"),
+      lembaga: t("lembaga.tatonas"),
       Icon: Droplets,
       tone: pd.tatonas.tone,
       ringkas: pd.tatonas.empty
-        ? "Seluruh pos pantau normal"
-        : `${pd.tatonas.highlights.length} pos di atas ambang`,
+        ? t("peringatan.tatonasEmpty")
+        : t("peringatan.tatonasCount", { count: pd.tatonas.highlights.length }),
       rincian: pd.tatonas.highlights
         .slice(0, 4)
         .map((h) => `${h.pos_name}: ${h.level}`),
-      stempel: jamPendek(pd.tatonas.fetched_at),
+      stempel: jamPendek(pd.tatonas.fetched_at, locale),
       href: pd.tatonas.href,
       external: true,
       basi: pd.tatonas.stale,
@@ -113,17 +119,19 @@ function bangunKartu(pd: PeringatanDiniResponse): Kartu[] {
   if (pd.maritim) {
     kartu.push({
       key: "maritim",
-      bahaya: "Gelombang laut",
-      lembaga: "BMKG Maritim",
+      bahaya: t("feed.maritim"),
+      lembaga: t("lembaga.maritim"),
       Icon: Waves,
       tone: pd.maritim.tone,
       ringkas: pd.maritim.empty
-        ? "Perairan Aceh dalam batas aman"
-        : `${pd.maritim.highlights.length + pd.maritim.extra_count} perairan perlu perhatian`,
+        ? t("peringatan.maritimEmpty")
+        : t("peringatan.maritimCount", {
+            count: pd.maritim.highlights.length + pd.maritim.extra_count,
+          }),
       rincian: pd.maritim.highlights
         .slice(0, 4)
         .map((h) => `${h.nama}: ${h.wave_cat}`),
-      stempel: jamPendek(pd.maritim.fetched_at),
+      stempel: jamPendek(pd.maritim.fetched_at, locale),
       href: pd.maritim.href,
       external: true,
       basi: pd.maritim.stale,
@@ -134,6 +142,7 @@ function bangunKartu(pd: PeringatanDiniResponse): Kartu[] {
 }
 
 function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
+  const tp = useTranslations("peringatanDini");
   const { Icon } = kartu;
   return (
     <div className="flex items-start justify-between gap-3">
@@ -167,13 +176,14 @@ function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           TONE_CHIP[kartu.tone],
         )}
       >
-        {TONE_LABEL[kartu.tone]}
+        {tp(`tone.${kartu.tone}`)}
       </span>
     </div>
   );
 }
 
 function Kaki({ kartu }: { kartu: Kartu }) {
+  const t = useTranslations("beranda");
   return (
     <div
       className={cn(
@@ -182,10 +192,10 @@ function Kaki({ kartu }: { kartu: Kartu }) {
       )}
     >
       <span className="truncate tabular-nums">
-        {kartu.basi ? "Snapshot arsip" : (kartu.stempel ?? "Waktu tidak tercatat")}
+        {kartu.basi ? t("peringatan.snapshot") : (kartu.stempel ?? t("peringatan.waktuKosong"))}
       </span>
       <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-[var(--primary)]">
-        Sumber
+        {t("peringatan.sumber")}
         <ArrowUpRight size={13} aria-hidden />
       </span>
     </div>
@@ -193,6 +203,8 @@ function Kaki({ kartu }: { kartu: Kartu }) {
 }
 
 function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
+  const t = useTranslations("beranda");
+  const tp = useTranslations("peringatanDini");
   const foto = SITE_MEDIA.heroSlides[1];
   const isi = (
     <>
@@ -264,7 +276,11 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
       target={kartu.external ? "_blank" : undefined}
       rel={kartu.external ? "noopener noreferrer" : undefined}
       className={kelas}
-      aria-label={`${kartu.bahaya} menurut ${kartu.lembaga}, status ${TONE_LABEL[kartu.tone]}`}
+      aria-label={t("peringatan.ariaKartu", {
+        bahaya: kartu.bahaya,
+        lembaga: kartu.lembaga,
+        tone: tp(`tone.${kartu.tone}`),
+      })}
     >
       {isi}
     </a>
@@ -272,16 +288,18 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
 }
 
 export function PeringatanBento() {
+  const t = useTranslations("beranda");
+  const locale = useLocale();
   const { data, isLoading, isError } = usePeringatan();
-  const kartu = data ? bangunKartu(data) : [];
+  const kartu = data ? bangunKartu(data, t, locale) : [];
   const [utama, ...sisanya] = kartu;
 
   return (
-    <section id="peringatan" className="scroll-mt-24 px-4 py-16 md:py-20">
+    <section id="status" className="scroll-mt-24 px-4 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          title="Peringatan dini dari lima sumber resmi"
-          lead="Aceh Tangguh membaca BMKG, MAGMA ESDM, SIPONGI, dan pos telemetri Tatonas secara berkala. Setiap kartu menautkan ke sumber aslinya."
+          title={t("peringatan.title")}
+          lead={t("peringatan.lead")}
           aside={
             <a
               href="#risiko"
@@ -290,7 +308,7 @@ export function PeringatanBento() {
                 TYPE_FLOOR_CLASS,
               )}
             >
-              Lihat risiko jangka panjang
+              {t("peringatan.toRisiko")}
             </a>
           }
         />
@@ -306,10 +324,7 @@ export function PeringatanBento() {
 
         {isError ? (
           <div className="mt-8">
-            <PanelError>
-              Data peringatan dini belum bisa dimuat. Sumber resmi tetap dapat diakses
-              langsung melalui halaman Sumber data.
-            </PanelError>
+            <PanelError>{t("peringatan.error")}</PanelError>
           </div>
         ) : null}
 

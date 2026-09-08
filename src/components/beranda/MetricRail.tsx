@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowUpRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { jiwaTerdampak } from "@/lib/dibi-types";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
@@ -10,6 +11,7 @@ import { angkaRingkas, rupiahRingkas } from "./format";
 import { Figure, PanelSkeleton } from "./primitives";
 
 type Metric = {
+  key: string;
   label: string;
   value: number;
   decimals?: 0 | 1 | 2;
@@ -32,69 +34,84 @@ const tautanClass = cn(
  * Hairline dividers rather than cards, so the figures read as one instrument.
  */
 export function MetricRail() {
+  const t = useTranslations("beranda");
+  const locale = useLocale();
   const { data: dibi } = useDibi();
   const { data: irbi } = useIrbi();
   const { data: anggaran } = useAnggaran();
 
-  const terdampak = angkaRingkas(dibi ? jiwaTerdampak(dibi.totals) : 0);
-  const dana = rupiahRingkas(anggaran?.totalRp ?? 0);
+  const terdampak = angkaRingkas(dibi ? jiwaTerdampak(dibi.totals) : 0, locale);
+  const dana = rupiahRingkas(anggaran?.totalRp ?? 0, locale);
 
   const metrics: Metric[] = [
     {
-      label: "Kejadian tercatat",
+      key: "kejadian",
+      label: t("metrics.kejadian"),
       value: dibi?.totals.kejadian ?? 0,
       note: dibi
-        ? `Aceh ${dibi.metadata.year_from}-${dibi.metadata.year_to} menurut DIBI BNPB`
-        : "Data Informasi Bencana Indonesia",
+        ? t("metrics.kejadianNote", {
+            from: dibi.metadata.year_from,
+            to: dibi.metadata.year_to,
+          })
+        : t("metrics.kejadianNoteFallback"),
       href: "/data-bencana",
-      tautan: "Telusuri kejadian",
+      tautan: t("metrics.kejadianLink"),
       siap: Boolean(dibi),
     },
     {
-      label: "Jiwa terdampak",
+      key: "terdampak",
+      label: t("metrics.terdampak"),
       value: terdampak.n,
       decimals: terdampak.decimals,
       unit: terdampak.unit,
-      note: "Menderita, mengungsi, luka, dan sakit",
+      note: t("metrics.terdampakNote"),
       href: "/analisis-data",
-      tautan: "Buka analisis",
+      tautan: t("metrics.terdampakLink"),
       siap: Boolean(dibi),
     },
     {
-      label: "Indeks risiko provinsi",
+      key: "irbi",
+      label: t("metrics.irbi"),
       value: irbi?.nilai_irb_provinsi ?? 0,
       decimals: 2,
       note: irbi
-        ? `Kelas tinggi pada ${irbi.total_kabupaten_kota} kabupaten/kota, IRBI ${irbi.tahun}`
-        : "Indeks Risiko Bencana Indonesia",
+        ? t("metrics.irbiNote", {
+            count: irbi.total_kabupaten_kota,
+            year: irbi.tahun,
+          })
+        : t("metrics.irbiNoteFallback"),
       href: "#risiko",
-      tautan: "Lihat peringkat",
+      tautan: t("metrics.irbiLink"),
       siap: Boolean(irbi),
     },
     {
-      label: `Anggaran penanganan ${anggaran?.tahun ?? 2026}`,
+      key: "anggaran",
+      label: t("metrics.anggaran", { year: anggaran?.tahun ?? 2026 }),
       value: dana.n,
       decimals: dana.decimals,
       prefix: "Rp",
       unit: dana.unit,
       note: anggaran
-        ? `${anggaran.totalKegiatan} kegiatan dalam ${anggaran.sumber}`
-        : "Penjabaran APBA tahun berjalan",
+        ? t("metrics.anggaranNote", {
+            count: anggaran.totalKegiatan,
+            sumber: anggaran.sumber,
+          })
+        : t("metrics.anggaranNoteFallback"),
       href: "/anggaran-bencana",
-      tautan: "Rincian anggaran",
+      tautan: t("metrics.anggaranLink"),
       siap: Boolean(anggaran),
     },
   ];
 
   return (
     <section
-      aria-label="Angka kunci Aceh Tangguh"
+      aria-label={t("metrics.aria")}
       className="relative z-10 -mt-16 px-4 pb-2"
     >
       <dl className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-[var(--border)] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] shadow-[var(--shadow-elevated)] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
         {metrics.map((m, i) => (
           <div
-            key={m.label}
+            key={m.key}
             className={cn(
               "group relative px-5 py-6 lg:px-7",
               "sm:border-[var(--border)]",

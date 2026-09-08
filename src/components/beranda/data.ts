@@ -8,7 +8,7 @@ import type { WeatherApiResponse } from "@/lib/weather-types";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 
 /**
- * IRBI ships as `Record<string, unknown>` in `@/lib/irbi`. The preview only reads
+ * IRBI ships as `Record<string, unknown>` in `@/lib/irbi`. The beranda only reads
  * a handful of fields, so it narrows them here rather than widening the shared type.
  */
 export type IrbiKabView = {
@@ -35,7 +35,7 @@ export type AnggaranView = {
   sumber: string;
   totalRp: number;
   totalKegiatan: number;
-  perFase: { fase: string; kegiatan: number; rp: number }[];
+  perFase: { faseKey: string; kegiatan: number; rp: number }[];
   perubahanPct: number;
 };
 
@@ -47,7 +47,7 @@ const QUERY = {
 
 async function ambil<T>(path: string, label: string): Promise<T> {
   const res = await fetchPublicApi(path);
-  if (!res.ok) throw new Error(`Gagal memuat ${label} (${res.status})`);
+  if (!res.ok) throw new Error(`Failed to load ${label} (${res.status})`);
   return (await res.json()) as T;
 }
 
@@ -61,9 +61,9 @@ function teks(value: unknown, fallback = ""): string {
 
 export function usePeringatan() {
   return useQuery({
-    queryKey: ["beranda-alt", "peringatan-dini"],
+    queryKey: ["beranda", "peringatan-dini"],
     queryFn: () =>
-      ambil<PeringatanDiniResponse>("/api/peringatan-dini", "peringatan dini"),
+      ambil<PeringatanDiniResponse>("/api/peringatan-dini", "peringatan-dini"),
     refetchInterval: 10 * 60_000,
     ...QUERY,
   });
@@ -71,8 +71,8 @@ export function usePeringatan() {
 
 export function useCuaca() {
   return useQuery({
-    queryKey: ["beranda-alt", "weather"],
-    queryFn: () => ambil<WeatherApiResponse>("/api/weather", "cuaca kabupaten"),
+    queryKey: ["beranda", "weather"],
+    queryFn: () => ambil<WeatherApiResponse>("/api/weather", "weather"),
     refetchInterval: 15 * 60_000,
     ...QUERY,
   });
@@ -80,44 +80,44 @@ export function useCuaca() {
 
 export function useDibi() {
   return useQuery({
-    queryKey: ["beranda-alt", "dibi"],
-    queryFn: () => ambil<DibiAcehResponse>("/api/dibi/aceh", "DIBI Aceh"),
+    queryKey: ["beranda", "dibi"],
+    queryFn: () => ambil<DibiAcehResponse>("/api/dibi/aceh", "dibi"),
     ...QUERY,
   });
 }
 
 export function usePrrpka() {
   return useQuery({
-    queryKey: ["beranda-alt", "prrpka"],
+    queryKey: ["beranda", "prrpka"],
     queryFn: () =>
-      ambil<PrrpkaSummaryResponse>("/api/prrpka/summary", "ringkasan PRRPKA"),
+      ambil<PrrpkaSummaryResponse>("/api/prrpka/summary", "prrpka"),
     ...QUERY,
   });
 }
 
 export function useIrbi() {
   return useQuery({
-    queryKey: ["beranda-alt", "irbi"],
+    queryKey: ["beranda", "irbi"],
     queryFn: async (): Promise<IrbiView> => {
       const raw = await ambil<{
         metadata?: Record<string, unknown>;
         kabupaten_kota?: Record<string, unknown>[];
-      }>("/api/irbi", "IRBI 2025");
+      }>("/api/irbi", "irbi");
       const meta = raw.metadata ?? {};
       const kabupaten = (raw.kabupaten_kota ?? [])
         .map((row) => ({
-          kabupaten_kota: teks(row.kabupaten_kota, "Tanpa nama"),
+          kabupaten_kota: teks(row.kabupaten_kota),
           irb_2025: nomor(row.irb_2025),
-          kelas_risiko: teks(row.kelas_risiko, "TIDAK DIKETAHUI"),
-          ancaman_tertinggi: teks(row.ancaman_tertinggi, "tidak tercatat"),
+          kelas_risiko: teks(row.kelas_risiko),
+          ancaman_tertinggi: teks(row.ancaman_tertinggi),
           skor_ancaman_tertinggi: nomor(row.skor_ancaman_tertinggi),
-          kelas_ancaman_tertinggi: teks(row.kelas_ancaman_tertinggi, ""),
+          kelas_ancaman_tertinggi: teks(row.kelas_ancaman_tertinggi),
         }))
         .sort((a, b) => b.irb_2025 - a.irb_2025);
 
       return {
         nilai_irb_provinsi: nomor(meta.nilai_irb_provinsi),
-        kelas_risiko_provinsi: teks(meta.kelas_risiko_provinsi, "TIDAK DIKETAHUI"),
+        kelas_risiko_provinsi: teks(meta.kelas_risiko_provinsi),
         jumlah_penduduk_2025: nomor(meta.jumlah_penduduk_2025),
         total_kabupaten_kota: nomor(meta.total_kabupaten_kota) || kabupaten.length,
         luas_wilayah_km2: nomor(meta.luas_wilayah_km2),
@@ -129,17 +129,9 @@ export function useIrbi() {
   });
 }
 
-const FASE_LABEL: Record<string, string> = {
-  tanggap_darurat: "Tanggap darurat",
-  mitigasi: "Mitigasi",
-  penanganan: "Penanganan",
-  kesiapsiagaan: "Kesiapsiagaan",
-  rehabilitasi: "Rehabilitasi",
-};
-
 export function useAnggaran() {
   return useQuery({
-    queryKey: ["beranda-alt", "anggaran"],
+    queryKey: ["beranda", "anggaran"],
     queryFn: async (): Promise<AnggaranView> => {
       const raw = await ambil<{
         analisis?: {
@@ -147,13 +139,13 @@ export function useAnggaran() {
           per_fase?: Record<string, { kegiatan?: number; anggaran_rp?: number }>;
           perbandingan_2025_2026?: Record<string, unknown>;
         };
-      }>("/api/anggaran", "anggaran APBA");
+      }>("/api/anggaran", "anggaran");
 
       const analisis = raw.analisis ?? {};
       const meta = analisis.metadata ?? {};
       const perFase = Object.entries(analisis.per_fase ?? {})
         .map(([key, value]) => ({
-          fase: FASE_LABEL[key] ?? teks(key),
+          faseKey: key,
           kegiatan: nomor(value?.kegiatan),
           rp: nomor(value?.anggaran_rp),
         }))
