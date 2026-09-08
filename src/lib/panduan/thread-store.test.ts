@@ -9,6 +9,7 @@ import {
   TANGGAPI_THREAD_MAX_MESSAGES,
   TANGGAPI_THREAD_STORAGE,
 } from "./thread-store";
+import type { GuideHref } from "./types";
 
 function mockSession() {
   const data = new Map<string, string>();
@@ -71,9 +72,12 @@ describe("tanggapi thread store", () => {
       id: `m-${i}`,
       role: "bot" as const,
       body: `pesan ${i}`,
-      links: [{ href: "/destana" as const, labelKey: "linkDestana" }],
+      links: [{ href: "/destana" as GuideHref, labelKey: "linkDestana" }],
     }));
-    messages[0].links = [{ href: "/peta", labelKey: "linkPeta" }, { href: "/not-a-page" as never, labelKey: "x" }];
+    messages[0].links = [
+      { href: "/peta" as GuideHref, labelKey: "linkPeta" },
+      { href: "/not-a-page" as never, labelKey: "x" },
+    ];
     const thread = serializeTanggapiThread({ messages, slots: {} });
     assert.equal(thread.messages.length, TANGGAPI_THREAD_MAX_MESSAGES);
     assert.equal(thread.messages[0]?.id, "m-5");

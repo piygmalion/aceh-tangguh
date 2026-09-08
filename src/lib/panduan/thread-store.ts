@@ -51,7 +51,7 @@ const INTENTS = new Set<GuideIntentId>([
 ]);
 
 const SLOT_INTENTS = new Set<Exclude<GuideIntentId, "unknown">>(
-  [...INTENTS].filter((id): id is Exclude<GuideIntentId, "unknown"> => id !== "unknown")
+  Array.from(INTENTS).filter((id): id is Exclude<GuideIntentId, "unknown"> => id !== "unknown")
 );
 
 export type StoredThreadMessage = {
