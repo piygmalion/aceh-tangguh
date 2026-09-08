@@ -28,8 +28,17 @@ export const AREA_FILL_LAYER_IDS = [
   "area-fill-village",
 ] as const;
 
+export const AREA_HIGHLIGHT_LAYER_IDS = [
+  "area-highlight-fill",
+  "area-highlight-line",
+] as const;
+
 export function isAreaFillLayerId(id: string | undefined): boolean {
-  return !!id && (AREA_FILL_LAYER_IDS as readonly string[]).includes(id);
+  if (!id) return false;
+  return (
+    (AREA_FILL_LAYER_IDS as readonly string[]).includes(id) ||
+    (AREA_HIGHLIGHT_LAYER_IDS as readonly string[]).includes(id)
+  );
 }
 
 /** Desa and R3P share the kab → kecamatan → desa PMTiles stack. */
@@ -413,10 +422,24 @@ export function areaHighlightFilter(
   }
   if (isKab) {
     if (kodeKab) {
-      parts.push(["==", ["get", "kode_kab"], kodeKab] as FilterSpecification);
-      parts.push(["==", ["get", "kode_kabupaten"], kodeKab] as FilterSpecification);
+      parts.push([
+        "all",
+        ["==", ["get", "level"], "kab"],
+        ["==", ["get", "kode_kab"], kodeKab],
+      ] as FilterSpecification);
+      parts.push([
+        "all",
+        ["==", ["get", "level"], "kab"],
+        ["==", ["get", "kode_kabupaten"], kodeKab],
+      ] as FilterSpecification);
     }
-    if (name) parts.push(["==", ["get", "name"], name] as FilterSpecification);
+    if (name) {
+      parts.push([
+        "all",
+        ["==", ["get", "level"], "kab"],
+        ["==", ["get", "name"], name],
+      ] as FilterSpecification);
+    }
   }
   if (!isKab && !isKec && !kodeDesa && name && kecamatan) {
     parts.push([

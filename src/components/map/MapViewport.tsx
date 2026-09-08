@@ -42,7 +42,9 @@ import {
   AREA_FILL_LAYER_IDS,
   AREA_HIGHLIGHT_FILL,
   AREA_HIGHLIGHT_FILL_OPACITY,
+  AREA_HIGHLIGHT_LAYER_IDS,
   AREA_HIGHLIGHT_LINE,
+  MARKER_CLUSTERS_LAYER,
   KAB_OVERVIEW_AREA_KEY,
   KECAMATAN_OVERVIEW_MAX_ZOOM,
   PMTILES_KECAMATAN,
@@ -513,6 +515,16 @@ export function MapViewport({
     [areaLayer, lodFocus]
   );
 
+  const areaBeforeId = sortedKeys.length > 0 ? MARKER_CLUSTERS_LAYER : overlaySlot;
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || !lodFocus?.kodeKecamatan) return;
+    if (map.getZoom() < VILLAGE_MESH_MIN_ZOOM) {
+      map.easeTo({ zoom: VILLAGE_MESH_MIN_ZOOM, duration: 400 });
+    }
+  }, [lodFocus?.kodeKecamatan]);
+
   const otherPmtilesMeta =
     areaLayer && !villageLod ? PMTILES_AREA[areaLayer] : undefined;
 
@@ -554,8 +566,8 @@ export function MapViewport({
     staleTime: 60_000,
   });
 
-  const useKecamatanPmtiles = Boolean(showKecamatanLayer && kecamatanPmtilesOk);
-  const useVillagePmtiles = Boolean(showVillageLayer && villagePmtilesOk);
+  const useKecamatanPmtiles = Boolean(showKecamatanLayer && kecamatanPmtilesOk !== false);
+  const useVillagePmtiles = Boolean(showVillageLayer && villagePmtilesOk !== false);
   const useOtherPmtiles = Boolean(otherPmtilesMeta && otherPmtilesOk && !krbRecolor);
 
   const needKabGeojson = Boolean(villageLod && lodBand === "kabupaten" && !krbRecolor);
@@ -893,7 +905,7 @@ export function MapViewport({
           ...POINT_LAYER_IDS,
           "krb-kawasan-circles",
           ...overlayInteractiveIds,
-          ...(villageClickEnabled ? [...AREA_FILL_LAYER_IDS] : []),
+          ...(villageClickEnabled ? [...AREA_FILL_LAYER_IDS, ...AREA_HIGHLIGHT_LAYER_IDS] : []),
         ]}
         onLoad={onMapLoad}
         onClick={onMapClick}
@@ -1073,7 +1085,7 @@ export function MapViewport({
               idPrefix="kab"
               areaLayer={areaLayer}
               outlineKind="kab"
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
             />
@@ -1087,7 +1099,7 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="kecamatan"
               filter={villageFilter}
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               maxzoom={KECAMATAN_OVERVIEW_MAX_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
@@ -1101,7 +1113,7 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="kecamatan"
               filter={villageFilter}
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               maxzoom={KECAMATAN_OVERVIEW_MAX_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
@@ -1116,7 +1128,7 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="village"
               filter={villageFilter}
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               minzoom={VILLAGE_MESH_MIN_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
@@ -1130,7 +1142,7 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="village"
               filter={villageFilter}
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               minzoom={VILLAGE_MESH_MIN_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
@@ -1143,7 +1155,7 @@ export function MapViewport({
               sourceLayer={otherPmtilesMeta.sourceLayer}
               areaLayer={areaLayer}
               outlineKind="kab"
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={false}
             />
@@ -1154,7 +1166,7 @@ export function MapViewport({
             <AreaOverlayLayers
               areaLayer={areaLayer}
               outlineKind="kab"
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={false}
             />

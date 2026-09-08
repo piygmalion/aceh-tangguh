@@ -173,6 +173,7 @@ describe("overlay beforeId", () => {
     assert.equal(isAreaFillLayerId("area-fill-kab"), true);
     assert.equal(isAreaFillLayerId("area-fill-kecamatan"), true);
     assert.equal(isAreaFillLayerId("area-fill-village"), true);
+    assert.equal(isAreaFillLayerId("area-highlight-fill"), true);
     assert.equal(isAreaFillLayerId("marker-clusters"), false);
   });
 });
@@ -395,6 +396,7 @@ describe("area highlight filter", () => {
     assert.equal(kabRaw.includes("1107"), true);
     assert.equal(kabRaw.includes("Aceh Barat"), true);
     assert.equal(kabRaw.includes("kode_kecamatan"), false);
+    assert.equal(kabRaw.includes('["get","level"]'), true);
 
     const kec = areaHighlightFilter({
       name: "Johan Pahlawan",

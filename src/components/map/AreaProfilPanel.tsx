@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Home, X } from "lucide-react";
@@ -432,6 +432,8 @@ export function AreaProfilPanel({
     null
   );
   const [activeDesa, setActiveDesa] = useState<DesaListItem | null>(null);
+  const kecamatanListRef = useRef<HTMLElement | null>(null);
+  const desaListRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setView(areaProfilViewOnOpen(selection));
@@ -550,6 +552,34 @@ export function AreaProfilPanel({
   const desaDrill = kec
     ? areaProfilDesaDrillTarget(selection, kec.desa)
     : null;
+  const canOpenKecamatanList = Boolean(kab && kab.kecamatan_list.length > 0);
+  const canOpenDesaList = Boolean(kec && kec.desa.length > 0);
+
+  const drillKecamatan = () => {
+    if (kecamatanDrill) {
+      openKecamatan(kecamatanDrill);
+      return;
+    }
+    kecamatanListRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  };
+
+  const drillDesa = () => {
+    if (activeKecamatan) {
+      onNavigate?.(areaProfilSelectionForKecamatan(selection, activeKecamatan));
+    } else if (selection.kodeKecamatan) {
+      onNavigate?.({
+        ...selection,
+        level: "kecamatan",
+        kecamatan: selection.kecamatan,
+        kodeKecamatan: selection.kodeKecamatan,
+      });
+    }
+    if (desaDrill) {
+      openDesa(desaDrill);
+      return;
+    }
+    desaListRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  };
 
   const loading =
     view === "kabupaten"
@@ -642,7 +672,7 @@ export function AreaProfilPanel({
               <div className="flex flex-col gap-4">
                 <MetricSections metrics={kab.metrics} leadWith={metricLead} />
                 <Separator />
-                <section>
+                <section ref={kecamatanListRef}>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
                     {t("kecamatanLabel")}
                   </h3>
@@ -687,7 +717,7 @@ export function AreaProfilPanel({
               <div className="flex flex-col gap-4">
                 <MetricSections metrics={kec.metrics} leadWith={metricLead} />
                 <Separator />
-                <section>
+                <section ref={desaListRef}>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
                     {t("desaLabel")}
                   </h3>
@@ -752,8 +782,8 @@ export function AreaProfilPanel({
               type="button"
               size="sm"
               className={cn("ml-auto rounded-xl", TYPE_FLOOR_CLASS)}
-              disabled={!kecamatanDrill}
-              onClick={() => kecamatanDrill && openKecamatan(kecamatanDrill)}
+              disabled={!canOpenKecamatanList}
+              onClick={drillKecamatan}
             >
               {t("viewKecamatan")}
             </Button>
@@ -763,8 +793,8 @@ export function AreaProfilPanel({
               type="button"
               size="sm"
               className={cn("ml-auto rounded-xl", TYPE_FLOOR_CLASS)}
-              disabled={!desaDrill}
-              onClick={() => desaDrill && openDesa(desaDrill)}
+              disabled={!canOpenDesaList && !selection.kodeKecamatan && !activeKecamatan}
+              onClick={drillDesa}
             >
               {t("viewDesa")}
             </Button>
