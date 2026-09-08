@@ -462,6 +462,14 @@ Bukan gelombang 35 (FE-43 dasbor operasi sudah selesai). Lima kartu `#status` ja
 | --- | --- | --- | --- | --- |
 | FE-44 | frontend | Slideshow lima kartu Peringatan Dini | jurnal/FE-44.md | selesai |
 
+## Permintaan beranda — desain fotografis ke produksi
+
+Bukan gelombang 35. Desain pratinjau `/preview/beranda` menjadi `/[locale]`. Namespace i18n baru `beranda` (ID+EN). WeatherNext tetap dialog di `CuacaStrip`. Komponen lama tidak dihapus. `npm test` 708 lulus; `tsc` hijau. Browser `/id` dan `/en` menampilkan papan status lima umpan. DATA-4 tetap tertahan. Jangan POST nasional.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-45 | frontend | Beranda produksi dari pratinjau fotografis | jurnal/FE-45.md | selesai |
+
 ## Tindak lanjut — gateway WhatsApp (BE-33)
 
 `WHATSAPP_GATEWAY_URL` adalah URL layanan pengirim, bukan secret. Adapter Fonnte/Wablas di `sendWhatsAppGateway` supaya Daily Brief + laporan memakai format provider. Token tetap dari dashboard Fonnte setelah HP pengirim dipasangkan. Bukan rute publik baru. Jangan menulis nilai token. DATA-4 tetap tertahan. Jangan G32.
