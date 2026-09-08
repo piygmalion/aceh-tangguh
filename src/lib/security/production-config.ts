@@ -48,6 +48,9 @@ export function assertProductionConfig(): void {
   if (!process.env.DAILY_BRIEF_CRON_SECRET?.trim()) {
     warnings.push("DAILY_BRIEF_CRON_SECRET (Daily Brief WhatsApp cron disabled)");
   }
+  if (!process.env.WHATSAPP_GATEWAY_URL?.trim()) {
+    warnings.push("WHATSAPP_GATEWAY_URL (outbound WhatsApp send disabled)");
+  }
 
   for (const item of warnings) {
     console.warn(`[production-config] ${item}`);

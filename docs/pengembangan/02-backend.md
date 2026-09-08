@@ -142,6 +142,10 @@ Jurnal: `jurnal/BE-29.md`. Gelombang 31. Jangan dikode sebelum AN-38. Compose mu
 
 Jurnal: `jurnal/BE-31.md`. Gelombang 33. Kontrak AN-41. `GET/POST /api/admin/users` + `PATCH/DELETE /api/admin/users/[id]` + `GET/PATCH /api/admin/roles`. Super_admin + `rejectCrossOrigin`. Tanpa password. Jangan merevoke helper SQL. Jangan DATA-4.
 
+### BE-33 — adapter Fonnte/Wablas
+
+Jurnal: `jurnal/BE-33.md`. Tindak lanjut kirim WA. `sendWhatsAppGateway` memetakan Fonnte (`target`) dan Wablas (`phone`) dari `WHATSAPP_GATEWAY_URL`. Bukan rute publik baru. Jangan menulis nilai token. Jangan DATA-4. Jangan G32.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan merge `/api/weather`.

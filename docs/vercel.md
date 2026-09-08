@@ -52,6 +52,8 @@ Set di Vercel → Project → Settings → Environment Variables (Production + P
 | `WEATHER_INOVASI_CRON_SECRET` | `POST /api/weather/inovasi/refresh` dan alias `POST /api/cron/weather-inovasi` | Bearer terpisah; opsional. Tanpa ini + tanpa allowlist EE, strip inovasi tetap `unconfigured` (bukan angka palsu). Jangan reuse `WEATHER_CRON_SECRET`. Path lama tetap. |
 | `OVERLAY_CRON_SECRET` | `POST /api/cron/overlay-live` | Bearer; jangan reuse secret lain |
 | `DAILY_BRIEF_CRON_SECRET` | `POST /api/cron/daily-brief` | Bearer; jangan reuse secret overlay/cuaca/laporan |
+| `WHATSAPP_GATEWAY_URL` | Daily Brief + laporan WA | Fonnte: `https://api.fonnte.com/send`. Bukan secret. |
+| `WHATSAPP_GATEWAY_TOKEN` | Daily Brief + laporan WA | Token dashboard Fonnte/Wablas. Jangan commit. |
 
 Setelah URL Vercel hidup, isi GitHub variable:
 

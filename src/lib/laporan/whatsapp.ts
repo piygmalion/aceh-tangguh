@@ -39,6 +39,47 @@ export function normalizeWhatsAppPhone(raw: string): string {
   return digits;
 }
 
+export type WhatsAppGatewayKind = "fonnte" | "wablas" | "generic";
+
+export type WhatsAppGatewayRequest = {
+  url: string;
+  headers: Record<string, string>;
+  body: Record<string, string>;
+};
+
+export function classifyWhatsAppGateway(url: string): WhatsAppGatewayKind {
+  let host = "";
+  try {
+    host = new URL(url).hostname.toLowerCase();
+  } catch {
+    return "generic";
+  }
+  if (host === "api.fonnte.com" || host.endsWith(".fonnte.com")) return "fonnte";
+  if (host === "wablas.com" || host.endsWith(".wablas.com")) return "wablas";
+  return "generic";
+}
+
+export function buildWhatsAppGatewayRequest(
+  url: string,
+  token: string | undefined,
+  phone: string,
+  message: string
+): WhatsAppGatewayRequest {
+  const normalized = normalizeWhatsAppPhone(phone);
+  const kind = classifyWhatsAppGateway(url);
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (kind === "fonnte") {
+    if (token) headers.Authorization = token;
+    return { url, headers, body: { target: normalized, message } };
+  }
+  if (kind === "wablas") {
+    if (token) headers.Authorization = token;
+    return { url, headers, body: { phone: normalized, message } };
+  }
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return { url, headers, body: { phone: normalized, message, text: message } };
+}
+
 export async function sendWhatsAppGateway(phone: string, message: string): Promise<void> {
   const url = process.env.WHATSAPP_GATEWAY_URL?.trim();
   const token = process.env.WHATSAPP_GATEWAY_TOKEN?.trim();
@@ -51,17 +92,11 @@ export async function sendWhatsAppGateway(phone: string, message: string): Promi
     return;
   }
 
-  const res = await fetch(url, {
+  const req = buildWhatsAppGatewayRequest(url, token, phone, message);
+  const res = await fetch(req.url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify({
-      phone: normalizeWhatsAppPhone(phone),
-      message,
-      text: message,
-    }),
+    headers: req.headers,
+    body: JSON.stringify(req.body),
   });
 
   if (!res.ok) {
