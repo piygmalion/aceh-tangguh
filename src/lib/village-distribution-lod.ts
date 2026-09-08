@@ -13,6 +13,10 @@ export const VILLAGE_DISTRIBUTION_TERCILES = Object.freeze({ t1: 106, t2: 1184 }
 
 /** Desa outline paint still interpolates with zoom so polygons are not a blob. */
 export const VILLAGE_OUTLINE_MIN_ZOOM = 11;
+/** After a kab focus: kecamatan choropleth below this zoom. */
+export const KECAMATAN_OVERVIEW_MAX_ZOOM = 11;
+/** After a kab focus: desa mesh at and above this zoom. */
+export const VILLAGE_MESH_MIN_ZOOM = 11;
 
 export const BASEMAP_LABEL_PLACE_LAYER = "basemap-label-place";
 export const MARKER_CLUSTERS_LAYER = "marker-clusters";
@@ -314,6 +318,9 @@ export function villageLayerFilter(
 }
 
 export const AREA_OUTLINE_COLOR = COLOR_TOKENS.forest;
+export const AREA_HIGHLIGHT_FILL = COLOR_TOKENS.awas;
+export const AREA_HIGHLIGHT_LINE = COLOR_TOKENS.awas;
+export const AREA_HIGHLIGHT_FILL_OPACITY = 0.28;
 
 export const KAB_OUTLINE_PAINT = {
   "line-color": AREA_OUTLINE_COLOR,
@@ -321,8 +328,14 @@ export const KAB_OUTLINE_PAINT = {
   "line-opacity": 0.65,
 } as const;
 
+export const KECAMATAN_OUTLINE_PAINT = {
+  "line-color": COLOR_TOKENS.paper,
+  "line-width": 1.1,
+  "line-opacity": 0.9,
+} as const;
+
 export const VILLAGE_OUTLINE_PAINT = {
-  "line-color": AREA_OUTLINE_COLOR,
+  "line-color": COLOR_TOKENS.paper,
   "line-width": [
     "interpolate",
     ["linear"],
@@ -344,7 +357,77 @@ export const VILLAGE_OUTLINE_PAINT = {
 } as const;
 
 export function areaOutlinePaint(kind: "kab" | "kecamatan" | "village") {
-  return kind === "village" ? VILLAGE_OUTLINE_PAINT : KAB_OUTLINE_PAINT;
+  if (kind === "village") return VILLAGE_OUTLINE_PAINT;
+  if (kind === "kecamatan") return KECAMATAN_OUTLINE_PAINT;
+  return KAB_OUTLINE_PAINT;
+}
+
+export function villageLodShowsKecamatanLayer(band: VillageLodBand): boolean {
+  return band === "kecamatan" || band === "village";
+}
+
+export function villageLodShowsVillageLayer(band: VillageLodBand): boolean {
+  return band === "kecamatan" || band === "village";
+}
+
+export function lodFocusFromSelection(
+  sel: VillageClickSelection | null | undefined
+): VillageLodFocus | null {
+  if (!sel) return null;
+  const kodeKab = sel.kodeKabupaten?.trim() || undefined;
+  const level = sel.level?.trim().toLowerCase() ?? "";
+  const kabupaten =
+    sel.kabupaten?.trim() ||
+    (level === "kab" || level === "kabupaten" ? sel.name?.trim() : "") ||
+    undefined;
+  const kodeKecamatan = sel.kodeKecamatan?.trim() || undefined;
+  if (!kodeKab && !kabupaten && !kodeKecamatan) return null;
+  const focus: VillageLodFocus = {};
+  if (kodeKab) focus.kodeKab = kodeKab;
+  if (kabupaten) focus.kabupaten = kabupaten;
+  if (kodeKecamatan) focus.kodeKecamatan = kodeKecamatan;
+  return focus;
+}
+
+export function areaHighlightFilter(
+  sel: VillageClickSelection | null | undefined
+): FilterSpecification {
+  if (!sel) return ["==", ["get", "name"], "__none__"];
+  const parts: FilterSpecification[] = [];
+  const kodeDesa = sel.kodeDesa?.trim() ?? "";
+  const kodeKec = sel.kodeKecamatan?.trim() ?? "";
+  const kodeKab = sel.kodeKabupaten?.trim() ?? "";
+  const name = sel.name?.trim() ?? "";
+  const kecamatan = sel.kecamatan?.trim() ?? "";
+  const level = sel.level?.trim().toLowerCase() ?? "";
+  const isKab = level === "kab" || level === "kabupaten";
+  const isKec = level === "kecamatan";
+
+  if (kodeDesa) {
+    parts.push(["==", ["get", "kode_desa_kelurahan"], kodeDesa] as FilterSpecification);
+  }
+  if (kodeKec && (isKec || !kodeDesa)) {
+    parts.push(["==", ["get", "kode_kecamatan"], kodeKec] as FilterSpecification);
+    if (name) parts.push(["==", ["get", "name"], name] as FilterSpecification);
+    if (kecamatan) parts.push(["==", ["get", "kecamatan"], kecamatan] as FilterSpecification);
+  }
+  if (isKab) {
+    if (kodeKab) {
+      parts.push(["==", ["get", "kode_kab"], kodeKab] as FilterSpecification);
+      parts.push(["==", ["get", "kode_kabupaten"], kodeKab] as FilterSpecification);
+    }
+    if (name) parts.push(["==", ["get", "name"], name] as FilterSpecification);
+  }
+  if (!isKab && !isKec && !kodeDesa && name && kecamatan) {
+    parts.push([
+      "all",
+      ["==", ["get", "name"], name],
+      ["==", ["get", "kecamatan"], kecamatan],
+    ] as FilterSpecification);
+  }
+  if (parts.length === 0) return ["==", ["get", "name"], "__none__"];
+  if (parts.length === 1) return parts[0];
+  return ["any", ...parts] as FilterSpecification;
 }
 
 function extendBounds(

@@ -1,7 +1,9 @@
 import type { Feature, Point } from "geojson";
 import type { BasemapId, MarkerLayerKey } from "@/lib/types";
+import { STATUS_HEX } from "@/lib/chart-colors";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import { isTruncatedAcehLongitude, isTruncatedCoordQuality } from "@/lib/coord-quality";
+import { TYPE_FLOOR_PX } from "@/lib/type-floor";
 
 /** Haloed GPU dots while chrome icons are still loading. Unclustered pins use icons at every zoom. */
 export const MAP_DOT_MAX_ZOOM = 0;
@@ -45,6 +47,45 @@ export const MAP_ICON_ZOOM_STEPS = 3;
 export const MAP_UNCLUSTERED_ICON_ZOOM = 10;
 /** Cluster through z=9; unclustered icons from z=10. */
 export const MAP_CLUSTER_MAX_ZOOM = MAP_UNCLUSTERED_ICON_ZOOM - 1;
+
+/** Supercluster radius — wide enough that overview shows numbered groups, not a dot field. */
+export const MAP_CLUSTER_RADIUS = 56;
+/** Paper disc + status-token ring so clusters read as counts, not 7px dots. */
+export const MAP_CLUSTER_FILL = COLOR_TOKENS.paper;
+export const MAP_CLUSTER_RING_WIDTH_PX = 4;
+export const MAP_CLUSTER_COUNT_TEXT_PX = TYPE_FLOOR_PX;
+
+/** Count breaks for ring color / radius. Density only — not invented casualty severity. */
+export const MAP_CLUSTER_COUNT_STEPS = Object.freeze({ mid: 25, high: 80 });
+
+export function clusterCircleRadiusExpr(): unknown[] {
+  return [
+    "step",
+    ["get", "point_count"],
+    22,
+    MAP_CLUSTER_COUNT_STEPS.mid,
+    30,
+    MAP_CLUSTER_COUNT_STEPS.high,
+    38,
+  ];
+}
+
+/** Ring uses forest/sage/status tokens from existing point_count. No victim ranks. */
+export function clusterRingColorExpr(): unknown[] {
+  return [
+    "step",
+    ["get", "point_count"],
+    STATUS_HEX.RENDAH,
+    MAP_CLUSTER_COUNT_STEPS.mid,
+    STATUS_HEX.SEDANG,
+    MAP_CLUSTER_COUNT_STEPS.high,
+    STATUS_HEX.TINGGI,
+  ];
+}
+
+export function clusterCountTextColor(): string {
+  return COLOR_TOKENS.ink;
+}
 
 export type MarkerRenderMode = "dot" | "approx" | "pin" | "stack";
 

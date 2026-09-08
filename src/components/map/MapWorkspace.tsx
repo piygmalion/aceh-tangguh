@@ -26,10 +26,18 @@ function MapWorkspaceInner() {
   } = useMapUrlState();
   const [villageSelection, setVillageSelection] =
     useState<VillageClickSelection | null>(null);
+  const [lodSelection, setLodSelection] =
+    useState<VillageClickSelection | null>(null);
 
   useEffect(() => {
     setVillageSelection(null);
+    setLodSelection(null);
   }, [state.areaLayer]);
+
+  const onVillageClick = (sel: VillageClickSelection) => {
+    setVillageSelection(sel);
+    setLodSelection(sel);
+  };
 
   return (
     <div className="relative h-[100svh] w-full overflow-hidden bg-[var(--bg)] text-[var(--text)]">
@@ -42,15 +50,19 @@ function MapWorkspaceInner() {
         areaLayer={state.areaLayer}
         krbJenis={state.krbJenis ?? null}
         disasterJenis={state.disasterJenis}
-        villageSelection={villageSelection}
-        onVillageClick={setVillageSelection}
+        villageSelection={lodSelection ?? villageSelection}
+        onVillageClick={onVillageClick}
         overlays={state.overlays}
       />
       {villageSelection && isAdminLodArea(state.areaLayer) ? (
         <AreaProfilPanel
           selection={villageSelection}
           variant={state.areaLayer === "r3pDistribution" ? "r3p" : "desa"}
-          onClose={() => setVillageSelection(null)}
+          onClose={() => {
+            setVillageSelection(null);
+            setLodSelection(null);
+          }}
+          onNavigate={setLodSelection}
         />
       ) : null}
       <SiteNav />
