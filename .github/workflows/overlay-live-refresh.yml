@@ -2,7 +2,7 @@ name: Overlay live refresh
 
 on:
   schedule:
-    # Every 15 minutes (UTC) — matches TATONAS_STALE_MS
+    # Every 15 minutes (UTC). Ledger expires_at is 2h (OVERLAY_WEATHER_LIKE_TTL_MS).
     - cron: "*/15 * * * *"
   workflow_dispatch:
 
