@@ -86,13 +86,12 @@ describe("overview cluster rings", () => {
     assert.ok(MAP_CLUSTER_COUNT_TEXT_PX >= 13);
 
     const radius = clusterCircleRadiusExpr();
-    const raw = JSON.stringify(radius);
     assert.equal(radius[0], "step");
     assert.deepEqual(radius[1], ["get", "point_count"]);
-    assert.equal(raw.includes("interpolate"), true);
-    assert.equal(raw.includes('["zoom"]'), true);
-    assert.match(raw, /6,\s*36|6,36/);
-    assert.ok(raw.includes("26") || raw.includes("22"));
+    assert.equal(typeof radius[2], "number");
+    assert.ok((radius[2] as number) >= 32);
+    assert.ok((radius[4] as number) >= 40);
+    assert.ok((radius[6] as number) >= 50);
 
     const ring = clusterRingColorExpr();
     const ringRaw = JSON.stringify(ring);
