@@ -86,19 +86,20 @@ describe("overview cluster rings", () => {
     assert.ok(MAP_CLUSTER_COUNT_TEXT_PX >= 13);
 
     const radius = clusterCircleRadiusExpr();
+    const raw = JSON.stringify(radius);
     assert.equal(radius[0], "step");
     assert.deepEqual(radius[1], ["get", "point_count"]);
-    assert.equal(typeof radius[2], "number");
-    assert.ok((radius[2] as number) >= 20);
-    assert.ok((radius[4] as number) >= 28);
-    assert.ok((radius[6] as number) >= 36);
+    assert.equal(raw.includes("interpolate"), true);
+    assert.equal(raw.includes('["zoom"]'), true);
+    assert.match(raw, /6,\s*28|6,28/);
+    assert.ok(raw.includes("22") || raw.includes("20"));
 
     const ring = clusterRingColorExpr();
-    const raw = JSON.stringify(ring);
-    assert.equal(raw.includes("point_count"), true);
-    assert.equal(raw.includes(STATUS_HEX.RENDAH), true);
-    assert.equal(raw.includes(STATUS_HEX.SEDANG), true);
-    assert.equal(raw.includes(STATUS_HEX.TINGGI) || raw.includes(COLOR_TOKENS.awas), true);
+    const ringRaw = JSON.stringify(ring);
+    assert.equal(ringRaw.includes("point_count"), true);
+    assert.equal(ringRaw.includes(STATUS_HEX.RENDAH), true);
+    assert.equal(ringRaw.includes(STATUS_HEX.SEDANG), true);
+    assert.equal(ringRaw.includes(STATUS_HEX.TINGGI) || ringRaw.includes(COLOR_TOKENS.awas), true);
     assert.equal(clusterCountTextColor(), COLOR_TOKENS.ink);
   });
 

@@ -5,6 +5,7 @@ import { describe, it } from "node:test";
 import { COLOR_TOKENS } from "./layer-colors";
 import {
   AREA_HIGHLIGHT_FILL,
+  AREA_HIGHLIGHT_LAYER_IDS,
   AREA_HIGHLIGHT_LINE,
   AREA_OUTLINE_COLOR,
   BASEMAP_LABEL_PLACE_LAYER,
@@ -17,11 +18,15 @@ import {
   PMTILES_VILLAGE,
   VILLAGE_DISTRIBUTION_TERCILES,
   VILLAGE_MESH_MIN_ZOOM,
+  VILLAGE_MESH_FILL,
+  VILLAGE_MESH_FILL_OPACITY,
   VILLAGE_OUTLINE_MIN_ZOOM,
   VILLAGE_OUTLINE_PAINT,
   adminLodBand,
   adminLodTiles,
+  areaFillUsesMeshWash,
   areaHighlightFilter,
+  areaHighlightLayerId,
   geometryBounds,
   isAdminLodArea,
   isAreaFillLayerId,
@@ -174,7 +179,36 @@ describe("overlay beforeId", () => {
     assert.equal(isAreaFillLayerId("area-fill-kecamatan"), true);
     assert.equal(isAreaFillLayerId("area-fill-village"), true);
     assert.equal(isAreaFillLayerId("area-highlight-fill"), true);
+    assert.equal(isAreaFillLayerId("area-highlight-fill-kecamatan"), true);
+    assert.equal(isAreaFillLayerId("area-highlight-fill-village"), true);
+    assert.equal(isAreaFillLayerId("area-highlight-line-kab"), true);
     assert.equal(isAreaFillLayerId("marker-clusters"), false);
+  });
+
+  it("prefixes highlight layers so kab, kecamatan, and desa can paint at once", () => {
+    assert.equal(areaHighlightLayerId("fill"), "area-highlight-fill");
+    assert.equal(areaHighlightLayerId("line"), "area-highlight-line");
+    assert.equal(areaHighlightLayerId("fill", "kab"), "area-highlight-fill-kab");
+    assert.equal(
+      areaHighlightLayerId("fill", "kecamatan"),
+      "area-highlight-fill-kecamatan"
+    );
+    assert.equal(
+      areaHighlightLayerId("line", "village"),
+      "area-highlight-line-village"
+    );
+    assert.ok(AREA_HIGHLIGHT_LAYER_IDS.includes("area-highlight-fill-kecamatan"));
+    assert.ok(AREA_HIGHLIGHT_LAYER_IDS.includes("area-highlight-fill-village"));
+    assert.ok(AREA_HIGHLIGHT_LAYER_IDS.includes("area-highlight-line-kab"));
+  });
+
+  it("uses a muted paper wash for the desa mesh, not choropleth buckets", () => {
+    assert.equal(VILLAGE_MESH_FILL, COLOR_TOKENS.paper);
+    assert.ok(VILLAGE_MESH_FILL_OPACITY > 0);
+    assert.ok(VILLAGE_MESH_FILL_OPACITY <= 0.16);
+    assert.equal(areaFillUsesMeshWash("village"), true);
+    assert.equal(areaFillUsesMeshWash("kecamatan"), false);
+    assert.equal(areaFillUsesMeshWash("kab"), false);
   });
 });
 
@@ -380,6 +414,11 @@ describe("click drill source lock", () => {
     assert.equal(viewport.includes("areaHighlightFilter"), true);
     assert.equal(viewport.includes("rebucketVillageKabFeature"), true);
     assert.equal(viewport.includes("r3p-kab.pmtiles"), false);
+    assert.equal(viewport.includes('id="area-highlight-fill"'), false);
+    assert.match(viewport, /areaHighlightLayerId\("fill"/);
+    assert.match(viewport, /areaHighlightLayerId\("line"/);
+    assert.match(viewport, /VILLAGE_MESH_FILL/);
+    assert.match(viewport, /areaFillUsesMeshWash/);
   });
 });
 
