@@ -76,6 +76,7 @@ import {
   MAP_CLUSTER_MAX_ZOOM,
   MAP_CLUSTER_RADIUS,
   MAP_CLUSTER_RING_WIDTH_PX,
+  MAP_DOT_MAX_ZOOM,
   MAP_DOT_RADIUS_PX,
   MAP_DOT_STROKE_PX,
   MAP_ICON_MIN_ZOOM,
@@ -263,20 +264,12 @@ function MarkerClusterSource({
       <Layer
         id="marker-dots"
         type="circle"
-        filter={
-          chromeIconsReady
-            ? [
-                "all",
-                ["!", ["has", "point_count"]],
-                ["!=", ["get", "renderMode"], "stack"],
-                ["!=", ["get", "renderMode"], "pin"],
-              ]
-            : [
-                "all",
-                ["!", ["has", "point_count"]],
-                ["!=", ["get", "renderMode"], "stack"],
-              ]
-        }
+        maxzoom={chromeIconsReady ? MAP_DOT_MAX_ZOOM : 24}
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["!=", ["get", "renderMode"], "stack"],
+        ]}
         paint={{
           "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
           "circle-radius": MAP_DOT_RADIUS_PX,

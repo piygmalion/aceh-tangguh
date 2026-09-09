@@ -54,9 +54,9 @@ function asPointFeature(
 }
 
 describe("signed map-chrome sizes", () => {
-  it("keeps 7px fallback dots and 24/28 pins for unclustered points at every zoom", () => {
-    assert.equal(MAP_DOT_MAX_ZOOM, 0);
-    assert.equal(MAP_ICON_MIN_ZOOM, 0);
+  it("keeps 7px fallback dots and 24/28 pins; unclustered icons start at the third +1 zoom", () => {
+    assert.equal(MAP_DOT_MAX_ZOOM, MAP_UNCLUSTERED_ICON_ZOOM);
+    assert.equal(MAP_ICON_MIN_ZOOM, MAP_UNCLUSTERED_ICON_ZOOM);
     assert.equal(MAP_DOT_RADIUS_PX, 7);
     assert.equal(MAP_DOT_STROKE_PX, 1.5);
     assert.equal(MAP_PAPER_STROKE, COLOR_TOKENS.paper);
@@ -78,7 +78,7 @@ describe("signed map-chrome sizes", () => {
 
 describe("overview cluster rings", () => {
   it("keeps numbered rings larger than 7px dots and uses status tokens, not invented severity", () => {
-    assert.equal(MAP_CLUSTER_RADIUS, 56);
+    assert.equal(MAP_CLUSTER_RADIUS, 80);
     assert.equal(MAP_CLUSTER_RING_WIDTH_PX, 4);
     assert.ok(MAP_CLUSTER_RING_WIDTH_PX > MAP_DOT_STROKE_PX);
     assert.equal(MAP_CLUSTER_FILL, COLOR_TOKENS.paper);
@@ -91,8 +91,8 @@ describe("overview cluster rings", () => {
     assert.deepEqual(radius[1], ["get", "point_count"]);
     assert.equal(raw.includes("interpolate"), true);
     assert.equal(raw.includes('["zoom"]'), true);
-    assert.match(raw, /6,\s*28|6,28/);
-    assert.ok(raw.includes("22") || raw.includes("20"));
+    assert.match(raw, /6,\s*36|6,36/);
+    assert.ok(raw.includes("26") || raw.includes("22"));
 
     const ring = clusterRingColorExpr();
     const ringRaw = JSON.stringify(ring);
@@ -114,6 +114,8 @@ describe("overview cluster rings", () => {
     assert.match(viewport, /MAP_CLUSTER_FILL/);
     assert.match(viewport, /MAP_CLUSTER_RING_WIDTH_PX/);
     assert.match(viewport, /MAP_CLUSTER_COUNT_TEXT_PX/);
+    assert.match(viewport, /minzoom=\{MAP_ICON_MIN_ZOOM\}/);
+    assert.match(viewport, /maxzoom=\{chromeIconsReady \? MAP_DOT_MAX_ZOOM : 24\}/);
     assert.equal(viewport.includes('"circle-radius": 16'), false);
     assert.equal(viewport.includes('"text-size": 12'), false);
     assert.ok(

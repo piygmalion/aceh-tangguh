@@ -5,9 +5,6 @@ import { COLOR_TOKENS } from "@/lib/layer-colors";
 import { isTruncatedAcehLongitude, isTruncatedCoordQuality } from "@/lib/coord-quality";
 import { TYPE_FLOOR_PX } from "@/lib/type-floor";
 
-/** Haloed GPU dots while chrome icons are still loading. Unclustered pins use icons at every zoom. */
-export const MAP_DOT_MAX_ZOOM = 0;
-export const MAP_ICON_MIN_ZOOM = 0;
 /** MapLibre circle-radius — 7px haloed dots. */
 export const MAP_DOT_RADIUS_PX = 7;
 export const MAP_DOT_STROKE_PX = 1.5;
@@ -45,11 +42,15 @@ export const TOOLBAR_GLYPH_PX = 20;
 export const MAP_ICON_ZOOM_STEPS = 3;
 /** First zoom at which clustered points split into icons (7 + 3). */
 export const MAP_UNCLUSTERED_ICON_ZOOM = 10;
+/** Unclustered pins only after the third +1 from DEFAULT_VIEW (FE-47). */
+export const MAP_ICON_MIN_ZOOM = MAP_UNCLUSTERED_ICON_ZOOM;
+/** Haloed GPU dots below icon zoom, and while chrome icons are still loading. */
+export const MAP_DOT_MAX_ZOOM = MAP_UNCLUSTERED_ICON_ZOOM;
 /** Cluster through z=9; unclustered icons from z=10. */
 export const MAP_CLUSTER_MAX_ZOOM = MAP_UNCLUSTERED_ICON_ZOOM - 1;
 
-/** Supercluster radius — wide enough that overview shows numbered groups, not a dot field. */
-export const MAP_CLUSTER_RADIUS = 56;
+/** Supercluster radius — wide enough that overview shows numbered groups, not a pin field. */
+export const MAP_CLUSTER_RADIUS = 80;
 /** Paper disc + status-token ring so clusters read as counts, not 7px dots. */
 export const MAP_CLUSTER_FILL = COLOR_TOKENS.paper;
 export const MAP_CLUSTER_RING_WIDTH_PX = 4;
@@ -62,11 +63,11 @@ export function clusterCircleRadiusExpr(): unknown[] {
   return [
     "step",
     ["get", "point_count"],
-    ["interpolate", ["linear"], ["zoom"], 6, 28, 10, 22],
+    ["interpolate", ["linear"], ["zoom"], 6, 36, 10, 26],
     MAP_CLUSTER_COUNT_STEPS.mid,
-    ["interpolate", ["linear"], ["zoom"], 6, 36, 10, 30],
+    ["interpolate", ["linear"], ["zoom"], 6, 46, 10, 34],
     MAP_CLUSTER_COUNT_STEPS.high,
-    ["interpolate", ["linear"], ["zoom"], 6, 44, 10, 38],
+    ["interpolate", ["linear"], ["zoom"], 6, 56, 10, 42],
   ];
 }
 
