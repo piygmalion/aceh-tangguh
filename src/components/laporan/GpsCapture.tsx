@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { WilayahCascadeFields } from "@/components/laporan/WilayahCascadeFields";
 import { applyLokasiCoords } from "@/lib/laporan/gps-lokasi";
 
 const LokasiMapPicker = dynamic(
@@ -133,31 +134,10 @@ export function GpsCapture({ value, onChange }: Props) {
             onChange={(e) => onChange({ ...value, longitude: Number(e.target.value) })}
           />
         </Field>
-        <Field className="sm:col-span-2">
-          <FieldLabel htmlFor="gps-kabupaten">{t("kabupaten")}</FieldLabel>
-          <Input
-            id="gps-kabupaten"
-            required
-            value={value.kabupaten_kota}
-            onChange={(e) => onChange({ ...value, kabupaten_kota: e.target.value })}
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="gps-kecamatan">{t("kecamatan")}</FieldLabel>
-          <Input
-            id="gps-kecamatan"
-            value={value.kecamatan}
-            onChange={(e) => onChange({ ...value, kecamatan: e.target.value })}
-          />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="gps-desa">{t("desa")}</FieldLabel>
-          <Input
-            id="gps-desa"
-            value={value.desa}
-            onChange={(e) => onChange({ ...value, desa: e.target.value })}
-          />
-        </Field>
+        <WilayahCascadeFields
+          value={value}
+          onChange={(wilayah) => onChange({ ...value, ...wilayah })}
+        />
       </FieldGroup>
     </div>
   );
