@@ -198,3 +198,20 @@ export function matchOptionByNama(
   if (!key) return null;
   return options.find((row) => row.nama.trim().toLowerCase() === key) ?? null;
 }
+
+/** Prefer existing kode/id from the loaded list so the select value stays aligned. */
+export function resolveOptionFromList(
+  current: WilayahOption | null,
+  options: readonly WilayahOption[]
+): WilayahOption | null {
+  if (!current) return null;
+  if (current.kode) {
+    const byKode = findOptionBySelectValue(options, current.kode);
+    if (byKode) return byKode;
+  }
+  if (current.id) {
+    const byId = findOptionBySelectValue(options, `id:${current.id}`);
+    if (byId) return byId;
+  }
+  return matchOptionByNama(options, current.nama);
+}

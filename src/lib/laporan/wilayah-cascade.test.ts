@@ -17,6 +17,8 @@ import {
   kabupatenOptionsFromRegistry,
   kecamatanOptionsForKabupaten,
   resolveKabupatenOption,
+  optionSelectValue,
+  resolveOptionFromList,
   toLokasiNames,
   wilayahDesaApiPath,
   wilayahKecamatanApiPath,
@@ -229,6 +231,32 @@ describe("wilayah cascade — clearing a parent clears children", () => {
     });
     assert.equal(next.desa?.kode, null);
     assert.equal(toLokasiNames(next).desa, NULL_KODE_DESA_NAMES[0]);
+  });
+});
+
+describe("wilayah cascade — select value stays on existing kode", () => {
+  it("aligns a name-only kecamatan onto the profil kode so the select does not reset", () => {
+    const hydrated = hydrateSelectionFromLokasi({
+      kabupaten_kota: "Aceh Selatan",
+      kecamatan: "Bakongan",
+      desa: "Keude Bakongan",
+    });
+    assert.equal(hydrated.kecamatan?.kode, null);
+    assert.equal(optionSelectValue(hydrated.kecamatan!), "nama:Bakongan");
+
+    const kec = resolveOptionFromList(
+      hydrated.kecamatan,
+      kecamatanOptionsForKabupaten([BAKONGAN], "1101")
+    );
+    assert.equal(kec?.kode, "110101");
+    assert.equal(optionSelectValue(kec!), "110101");
+
+    const desa = resolveOptionFromList(
+      hydrated.desa,
+      desaOptionsForKecamatan([KEUDE_BAKONGAN], { kode: "110101", nama: "Bakongan" })
+    );
+    assert.equal(desa?.kode, "1101012001");
+    assert.equal(optionSelectValue(desa!), "1101012001");
   });
 });
 
