@@ -599,6 +599,7 @@ Bukan G31 OTP publik. Bukan pager FE-50. Adopt `inviteUserByEmail` + `verifyOtp`
 | FE-52 | frontend | Pager jendela daftar (chrome) | jurnal/FE-52.md | selesai |
 | FE-54 | frontend | URL search/filter daftar kejadian | jurnal/FE-54.md | selesai |
 | FE-55 | frontend | Cluster cincin + hierarki kab/kec/desa | jurnal/FE-55.md | selesai |
+| FE-56 | frontend | Cascade kab/kec/desa pada form laporan | jurnal/FE-56.md | selesai |
 
 DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
 
