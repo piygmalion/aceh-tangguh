@@ -75,10 +75,12 @@ export function chipsForPathname(pathname: string): GuideChipKey[] {
     return DEFAULT_CHIPS;
   }
   if (hint === "kejadian") {
-    return ["kejadian", "analisisData", ...DEFAULT_CHIPS.filter((key) => key !== "kejadian")].slice(
-      0,
-      7
-    );
+    const ordered: GuideChipKey[] = [
+      "kejadian",
+      "analisisData",
+      ...DEFAULT_CHIPS.filter((key) => key !== "kejadian"),
+    ];
+    return ordered.slice(0, 7);
   }
   const lead = GUIDE_CHIP_KEYS.find((key) => key === hint);
   const rest = DEFAULT_CHIPS.filter((key) => key !== lead);
