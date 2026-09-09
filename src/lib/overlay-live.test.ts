@@ -76,12 +76,11 @@ describe("overlay live fail vs empty", () => {
 });
 
 describe("overlay live read vs refresh", () => {
-  it("uses TATONAS_STALE_MS for stations and weather 2h for other live layers", () => {
-    assert.equal(overlayLiveTtlMs("tatonasStations"), TATONAS_STALE_MS);
-    assert.equal(overlayLiveTtlMs("tatonasStations"), 15 * 60 * 1000);
+  it("uses weather-like 2h TTL for every live overlay ledger, including tatonasStations", () => {
     assert.equal(OVERLAY_WEATHER_LIKE_TTL_MS, 2 * 60 * 60 * 1000);
+    assert.equal(TATONAS_STALE_MS, 15 * 60 * 1000);
+    assert.notEqual(TATONAS_STALE_MS, OVERLAY_WEATHER_LIKE_TTL_MS);
     for (const key of OVERLAY_LIVE_REFRESH_KEYS) {
-      if (key === "tatonasStations") continue;
       assert.equal(overlayLiveTtlMs(key), OVERLAY_WEATHER_LIKE_TTL_MS);
     }
     assert.equal(
@@ -90,8 +89,34 @@ describe("overlay live read vs refresh", () => {
     );
     assert.equal(
       overlayLiveExpiresAt("tatonasStations", nowMs),
-      new Date(nowMs + TATONAS_STALE_MS).toISOString(),
+      new Date(nowMs + OVERLAY_WEATHER_LIKE_TTL_MS).toISOString(),
     );
+  });
+
+  it("does not mark a fresh ledger collection stale because a feature reading is stale", () => {
+    const staleStation: Feature<Point> = {
+      type: "Feature",
+      id: "tatonas-offline",
+      geometry: { type: "Point", coordinates: [95.3, 5.5] },
+      properties: { layer: "tatonasStations", title: "Pos cache", stale: true },
+    };
+    const fresh = resolveOverlayLiveRead(
+      [{ expires_at: overlayLiveExpiresAt("tatonasStations", nowMs), feature: staleStation }],
+      nowMs,
+      { ok: true, feature_count: 1 },
+    );
+    assert.equal(fresh.status, 200);
+    assert.equal(fresh.body.stale, undefined);
+    assert.equal(fresh.body.features[0].properties?.stale, true);
+
+    const expired = resolveOverlayLiveRead(
+      [{ expires_at: new Date(nowMs - 1).toISOString(), feature: staleStation }],
+      nowMs,
+      { ok: true, feature_count: 1 },
+    );
+    assert.equal(expired.status, 200);
+    assert.equal(expired.body.stale, true);
+    assert.equal(expired.body.features[0].properties?.stale, true);
   });
 
   it("plans a layer clear when refresh succeeds with zero Aceh features", () => {

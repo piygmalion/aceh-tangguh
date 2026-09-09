@@ -6,7 +6,6 @@ import { extractMarkersGempa, type MagmaRaw } from "@/lib/peringatan-dini/magma-
 import { SIPONGI_OPSROOM, SIPONGI_PETA } from "@/lib/peringatan-dini-types";
 import { fetchTatonasDtData } from "@/lib/tatonas/client";
 import { parseTatonasStations } from "@/lib/tatonas/parse";
-import { TATONAS_STALE_MS } from "@/lib/tatonas/types";
 import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import type { OverlayLayerKey } from "@/lib/overlay-layers";
 import type { Database, Json } from "@/lib/supabase/types";
@@ -60,8 +59,9 @@ export function isOverlayLiveRefreshKey(key: OverlayLayerKey): key is OverlayLiv
   return (OVERLAY_LIVE_REFRESH_KEYS as readonly string[]).includes(key);
 }
 
-export function overlayLiveTtlMs(key: OverlayLiveRefreshKey): number {
-  return key === "tatonasStations" ? TATONAS_STALE_MS : OVERLAY_WEATHER_LIKE_TTL_MS;
+/** Ledger / row `expires_at` for live overlays. Per-station Tatonas readings still use `TATONAS_STALE_MS`. */
+export function overlayLiveTtlMs(_key: OverlayLiveRefreshKey): number {
+  return OVERLAY_WEATHER_LIKE_TTL_MS;
 }
 
 export function overlayLiveExpiresAt(key: OverlayLiveRefreshKey, nowMs: number): string {

@@ -64,6 +64,27 @@ describe("parseOverlayResponse", () => {
     assert.equal(parsed.collection.features.length, 1);
   });
 
+  it("does not treat per-feature stale as collection stale", () => {
+    const parsed = parseOverlayResponse({
+      ok: true,
+      status: 200,
+      body: {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            id: "tatonas-offline",
+            geometry: { type: "Point", coordinates: [95.3, 5.5] },
+            properties: { layer: "tatonasStations", title: "Pos", stale: true },
+          },
+        ],
+      },
+    });
+    assert.equal(parsed.health, "ok");
+    assert.equal(parsed.stale, false);
+    assert.equal(parsed.collection.features[0]?.properties?.stale, true);
+  });
+
   it("treats a successful empty collection as ok, not stale", () => {
     const parsed = parseOverlayResponse({
       ok: true,

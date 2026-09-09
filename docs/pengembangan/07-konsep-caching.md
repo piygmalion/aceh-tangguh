@@ -38,7 +38,7 @@ L0  Fixture  — jika L1 kosong atau hulu belum pernah sukses
 
 | Tabel / objek | Penulis | Pembaca | TTL |
 | --- | --- | --- | --- |
-| `overlay_live_features` + `overlay_live_refresh` | `POST /api/cron/overlay-live` | `GET /api/overlay/{kunci-hidup}` | 2 jam (Tatonas: `TATONAS_STALE_MS`) |
+| `overlay_live_features` + `overlay_live_refresh` | `POST /api/cron/overlay-live` | `GET /api/overlay/{kunci-hidup}` | 2 jam (`OVERLAY_WEATHER_LIKE_TTL_MS`; Tatonas baca stasiun tetap `TATONAS_STALE_MS`) |
 | `maritime_forecast_cache` | cron overlay (`refreshMaritimeForecasts`) | GET overlay maritim | 2 jam `expires_at` |
 | `maritime_warning_cache` | cron overlay (`refreshMaritimeWarnings`) | GET PD maritim + properti overlay | `expires_at` buletin |
 | `weather_forecasts` | `POST /api/weather/refresh` (+ alias `/api/cron/weather`) | `GET /api/weather` | sama jendela overlay |
