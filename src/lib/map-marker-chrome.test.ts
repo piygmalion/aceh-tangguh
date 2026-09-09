@@ -115,6 +115,11 @@ describe("overview cluster rings", () => {
     assert.match(viewport, /MAP_CLUSTER_COUNT_TEXT_PX/);
     assert.equal(viewport.includes('"circle-radius": 16'), false);
     assert.equal(viewport.includes('"text-size": 12'), false);
+    assert.ok(
+      viewport.lastIndexOf("<MarkerClusterSource") >
+        viewport.indexOf('id="area-layer-kab"'),
+      "clusters must paint after kabupaten fill"
+    );
   });
 });
 

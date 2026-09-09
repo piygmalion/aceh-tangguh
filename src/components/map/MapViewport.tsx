@@ -44,7 +44,6 @@ import {
   AREA_HIGHLIGHT_FILL_OPACITY,
   AREA_HIGHLIGHT_LAYER_IDS,
   AREA_HIGHLIGHT_LINE,
-  MARKER_CLUSTERS_LAYER,
   KAB_OVERVIEW_AREA_KEY,
   KECAMATAN_OVERVIEW_MAX_ZOOM,
   PMTILES_KECAMATAN,
@@ -211,6 +210,154 @@ function pmtilesProtocolUrl(path: string): string | null {
 
 function overlayLayerId(base: string, prefix?: string): string {
   return prefix ? `${base}-${prefix}` : base;
+}
+
+function MarkerClusterSource({
+  data,
+  haloStroke,
+  chromeIconsReady,
+}: {
+  data: FeatureCollection;
+  haloStroke: string;
+  chromeIconsReady: boolean;
+}) {
+  return (
+    <Source
+      id="markers"
+      type="geojson"
+      data={data}
+      generateId
+      cluster
+      clusterMaxZoom={MAP_CLUSTER_MAX_ZOOM}
+      clusterRadius={MAP_CLUSTER_RADIUS}
+    >
+      <Layer
+        id="marker-clusters"
+        type="circle"
+        filter={["has", "point_count"]}
+        paint={{
+          "circle-color": MAP_CLUSTER_FILL,
+          "circle-radius": clusterCircleRadiusExpr() as never,
+          "circle-stroke-width": MAP_CLUSTER_RING_WIDTH_PX,
+          "circle-stroke-color": clusterRingColorExpr() as never,
+          "circle-opacity": 0.96,
+        }}
+      />
+      <Layer
+        id="marker-cluster-count"
+        type="symbol"
+        filter={["has", "point_count"]}
+        layout={{
+          "text-field": ["get", "point_count_abbreviated"],
+          "text-size": MAP_CLUSTER_COUNT_TEXT_PX,
+          "text-font": ["Noto Sans Regular", "Open Sans Regular"],
+        }}
+        paint={{
+          "text-color": clusterCountTextColor(),
+        }}
+      />
+      <Layer
+        id="marker-dots"
+        type="circle"
+        filter={
+          chromeIconsReady
+            ? [
+                "all",
+                ["!", ["has", "point_count"]],
+                ["!=", ["get", "renderMode"], "stack"],
+                ["!=", ["get", "renderMode"], "pin"],
+              ]
+            : [
+                "all",
+                ["!", ["has", "point_count"]],
+                ["!=", ["get", "renderMode"], "stack"],
+              ]
+        }
+        paint={{
+          "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
+          "circle-radius": MAP_DOT_RADIUS_PX,
+          "circle-stroke-width": MAP_DOT_STROKE_PX,
+          "circle-stroke-color": haloStroke,
+          "circle-opacity": 0.95,
+        }}
+      />
+      <Layer
+        id="marker-approx"
+        type="circle"
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "renderMode"], "approx"],
+        ]}
+        paint={{
+          "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
+          "circle-radius": MAP_DOT_RADIUS_PX,
+          "circle-stroke-width": MAP_DOT_STROKE_PX,
+          "circle-stroke-color": haloStroke,
+          "circle-opacity": 0.88,
+        }}
+      />
+      <Layer
+        id="marker-stacks"
+        type="circle"
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "renderMode"], "stack"],
+        ]}
+        paint={{
+          "circle-color": CLUSTER_COLORS.low,
+          "circle-radius": [
+            "step",
+            ["get", "stackCount"],
+            14,
+            8,
+            18,
+            16,
+            22,
+          ],
+          "circle-stroke-width": MAP_DOT_STROKE_PX,
+          "circle-stroke-color": haloStroke,
+          "circle-opacity": 0.94,
+        }}
+      />
+      <Layer
+        id="marker-stack-count"
+        type="symbol"
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "renderMode"], "stack"],
+        ]}
+        layout={{
+          "text-field": ["to-string", ["get", "stackCount"]],
+          "text-size": MAP_CLUSTER_COUNT_TEXT_PX,
+          "text-font": ["Noto Sans Regular", "Open Sans Regular"],
+        }}
+        paint={{ "text-color": CLUSTER_COLORS.textOnLow }}
+      />
+      <Layer
+        id="marker-icons"
+        type="symbol"
+        minzoom={MAP_ICON_MIN_ZOOM}
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "renderMode"], "pin"],
+        ]}
+        layout={{
+          "icon-image": [
+            "coalesce",
+            ["image", ["get", "icon"]],
+            ["image", "layer:disasterEvents"],
+          ],
+          "icon-size": 1,
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+        }}
+      />
+    </Source>
+  );
 }
 
 function AreaHighlightLayers({
@@ -515,7 +662,7 @@ export function MapViewport({
     [areaLayer, lodFocus]
   );
 
-  const areaBeforeId = sortedKeys.length > 0 ? MARKER_CLUSTERS_LAYER : overlaySlot;
+  const areaBeforeId = overlaySlot;
 
   useEffect(() => {
     const map = mapRef.current?.getMap();
@@ -926,143 +1073,6 @@ export function MapViewport({
         maxPitch={0}
       >
         <NavigationControl position="top-left" />
-        {sortedKeys.length > 0 && (
-          <Source
-            id="markers"
-            type="geojson"
-            data={markerGeojson}
-            generateId
-            cluster
-            clusterMaxZoom={MAP_CLUSTER_MAX_ZOOM}
-            clusterRadius={MAP_CLUSTER_RADIUS}
-          >
-            <Layer
-              id="marker-clusters"
-              type="circle"
-              filter={["has", "point_count"]}
-              paint={{
-                "circle-color": MAP_CLUSTER_FILL,
-                "circle-radius": clusterCircleRadiusExpr() as never,
-                "circle-stroke-width": MAP_CLUSTER_RING_WIDTH_PX,
-                "circle-stroke-color": clusterRingColorExpr() as never,
-                "circle-opacity": 0.96,
-              }}
-            />
-            <Layer
-              id="marker-cluster-count"
-              type="symbol"
-              filter={["has", "point_count"]}
-              layout={{
-                "text-field": ["get", "point_count_abbreviated"],
-                "text-size": MAP_CLUSTER_COUNT_TEXT_PX,
-                "text-font": ["Noto Sans Regular", "Open Sans Regular"],
-              }}
-              paint={{
-                "text-color": clusterCountTextColor(),
-              }}
-            />
-            <Layer
-              id="marker-dots"
-              type="circle"
-              filter={
-                chromeIconsReady
-                  ? [
-                      "all",
-                      ["!", ["has", "point_count"]],
-                      ["!=", ["get", "renderMode"], "stack"],
-                      ["!=", ["get", "renderMode"], "pin"],
-                    ]
-                  : [
-                      "all",
-                      ["!", ["has", "point_count"]],
-                      ["!=", ["get", "renderMode"], "stack"],
-                    ]
-              }
-              paint={{
-                "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
-                "circle-radius": MAP_DOT_RADIUS_PX,
-                "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": haloStroke,
-                "circle-opacity": 0.95,
-              }}
-            />
-            <Layer
-              id="marker-approx"
-              type="circle"
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["==", ["get", "renderMode"], "approx"],
-              ]}
-              paint={{
-                "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
-                "circle-radius": MAP_DOT_RADIUS_PX,
-                "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": haloStroke,
-                "circle-opacity": 0.88,
-              }}
-            />
-            <Layer
-              id="marker-stacks"
-              type="circle"
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["==", ["get", "renderMode"], "stack"],
-              ]}
-              paint={{
-                "circle-color": CLUSTER_COLORS.low,
-                "circle-radius": [
-                  "step",
-                  ["get", "stackCount"],
-                  14,
-                  8,
-                  18,
-                  16,
-                  22,
-                ],
-                "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": haloStroke,
-                "circle-opacity": 0.94,
-              }}
-            />
-            <Layer
-              id="marker-stack-count"
-              type="symbol"
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["==", ["get", "renderMode"], "stack"],
-              ]}
-              layout={{
-                "text-field": ["to-string", ["get", "stackCount"]],
-                "text-size": MAP_CLUSTER_COUNT_TEXT_PX,
-                "text-font": ["Noto Sans Regular", "Open Sans Regular"],
-              }}
-              paint={{ "text-color": CLUSTER_COLORS.textOnLow }}
-            />
-            <Layer
-              id="marker-icons"
-              type="symbol"
-              minzoom={MAP_ICON_MIN_ZOOM}
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["==", ["get", "renderMode"], "pin"],
-              ]}
-              layout={{
-                "icon-image": [
-                  "coalesce",
-                  ["image", ["get", "icon"]],
-                  ["image", "layer:disasterEvents"],
-                ],
-                "icon-size": 1,
-                "icon-allow-overlap": true,
-                "icon-ignore-placement": true,
-              }}
-            />
-          </Source>
-        )}
         {kawasanGeojson && (
           <Source id="krb-kawasan" type="geojson" data={kawasanGeojson}>
             <Layer
@@ -1171,6 +1181,13 @@ export function MapViewport({
               villageClickEnabled={false}
             />
           </Source>
+        )}
+        {sortedKeys.length > 0 && (
+          <MarkerClusterSource
+            data={markerGeojson}
+            haloStroke={haloStroke}
+            chromeIconsReady={chromeIconsReady}
+          />
         )}
         {overlays.length > 0 && (
           <MapOverlays
