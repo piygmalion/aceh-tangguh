@@ -7,7 +7,11 @@ import { COORD_QUALITY_TRUNCATED, isTruncatedAcehLongitude } from "./coord-quali
 import type { KejadianFixture } from "./kejadian-types";
 import { DEFAULT_VIEW } from "./types";
 import {
+  MAP_CLUSTER_COUNT_TEXT_PX,
+  MAP_CLUSTER_FILL,
   MAP_CLUSTER_MAX_ZOOM,
+  MAP_CLUSTER_RADIUS,
+  MAP_CLUSTER_RING_WIDTH_PX,
   MAP_DOT_MAX_ZOOM,
   MAP_DOT_RADIUS_PX,
   MAP_DOT_STROKE_PX,
@@ -21,6 +25,9 @@ import {
   TOOLBAR_DISC_PX,
   TOOLBAR_GLYPH_PX,
   annotateDisasterDesa,
+  clusterCircleRadiusExpr,
+  clusterCountTextColor,
+  clusterRingColorExpr,
   markerHaloStroke,
   desaByIdFromKejadian,
   isUnknownDesaLabel,
@@ -29,6 +36,8 @@ import {
   stackSharedCentroidDisasterEvents,
 } from "./map-marker-chrome";
 import { COLOR_TOKENS, LAYER_COLORS } from "./layer-colors";
+import { STATUS_HEX } from "./chart-colors";
+import { TYPE_FLOOR_PX } from "./type-floor";
 
 function asPointFeature(
   id: string,
@@ -45,9 +54,9 @@ function asPointFeature(
 }
 
 describe("signed map-chrome sizes", () => {
-  it("keeps 7px fallback dots and 24/28 pins for unclustered points at every zoom", () => {
-    assert.equal(MAP_DOT_MAX_ZOOM, 0);
-    assert.equal(MAP_ICON_MIN_ZOOM, 0);
+  it("keeps 7px fallback dots and 24/28 pins; unclustered icons start at the third +1 zoom", () => {
+    assert.equal(MAP_DOT_MAX_ZOOM, MAP_UNCLUSTERED_ICON_ZOOM);
+    assert.equal(MAP_ICON_MIN_ZOOM, MAP_UNCLUSTERED_ICON_ZOOM);
     assert.equal(MAP_DOT_RADIUS_PX, 7);
     assert.equal(MAP_DOT_STROKE_PX, 1.5);
     assert.equal(MAP_PAPER_STROKE, COLOR_TOKENS.paper);
@@ -64,6 +73,58 @@ describe("signed map-chrome sizes", () => {
     assert.equal(MAP_UNCLUSTERED_ICON_ZOOM, 10);
     assert.equal(MAP_CLUSTER_MAX_ZOOM, 9);
     assert.equal(MAP_CLUSTER_MAX_ZOOM, MAP_UNCLUSTERED_ICON_ZOOM - 1);
+  });
+});
+
+describe("overview cluster rings", () => {
+  it("keeps numbered rings larger than 7px dots and uses status tokens, not invented severity", () => {
+    assert.equal(MAP_CLUSTER_RADIUS, 80);
+    assert.equal(MAP_CLUSTER_RING_WIDTH_PX, 4);
+    assert.ok(MAP_CLUSTER_RING_WIDTH_PX > MAP_DOT_STROKE_PX);
+    assert.equal(MAP_CLUSTER_FILL, COLOR_TOKENS.paper);
+    assert.equal(MAP_CLUSTER_COUNT_TEXT_PX, TYPE_FLOOR_PX);
+    assert.ok(MAP_CLUSTER_COUNT_TEXT_PX >= 13);
+
+    const radius = clusterCircleRadiusExpr();
+    assert.equal(radius[0], "step");
+    assert.deepEqual(radius[1], ["get", "point_count"]);
+    assert.equal(typeof radius[2], "number");
+    assert.ok((radius[2] as number) >= 32);
+    assert.ok((radius[4] as number) >= 40);
+    assert.ok((radius[6] as number) >= 50);
+
+    const ring = clusterRingColorExpr();
+    const ringRaw = JSON.stringify(ring);
+    assert.equal(ringRaw.includes("point_count"), true);
+    assert.equal(ringRaw.includes(STATUS_HEX.RENDAH), true);
+    assert.equal(ringRaw.includes(STATUS_HEX.SEDANG), true);
+    assert.equal(ringRaw.includes(STATUS_HEX.TINGGI) || ringRaw.includes(COLOR_TOKENS.awas), true);
+    assert.equal(clusterCountTextColor(), COLOR_TOKENS.ink);
+  });
+
+  it("MapViewport paints marker-clusters from the signed ring helpers", () => {
+    const viewport = readFileSync(
+      path.join(process.cwd(), "src/components/map/MapViewport.tsx"),
+      "utf8"
+    );
+    assert.match(viewport, /clusterRadius=\{MAP_CLUSTER_RADIUS\}/);
+    assert.match(viewport, /clusterCircleRadiusExpr/);
+    assert.match(viewport, /clusterRingColorExpr/);
+    assert.match(viewport, /MAP_CLUSTER_FILL/);
+    assert.match(viewport, /MAP_CLUSTER_RING_WIDTH_PX/);
+    assert.match(viewport, /MAP_CLUSTER_COUNT_TEXT_PX/);
+    assert.match(viewport, /minzoom=\{MAP_ICON_MIN_ZOOM\}/);
+    assert.match(viewport, /maxzoom=\{chromeIconsReady \? MAP_DOT_MAX_ZOOM : 24\}/);
+    assert.equal(viewport.includes('"circle-radius": 16'), false);
+    assert.equal(viewport.includes('"text-size": 12'), false);
+    assert.match(viewport, /markerGeojson\.features\.length > 0/);
+    assert.match(viewport, /Noto Sans Regular/);
+    assert.equal(viewport.includes("Open Sans Regular"), false);
+    assert.ok(
+      viewport.lastIndexOf("<MarkerClusterSource") >
+        viewport.indexOf('id="area-layer-kab"'),
+      "clusters must paint after kabupaten fill"
+    );
   });
 });
 

@@ -1,4 +1,8 @@
-import type { VillageClickSelection } from "@/lib/profil-desa";
+import type {
+  DesaListItem,
+  KecamatanListItem,
+  VillageClickSelection,
+} from "@/lib/profil-desa";
 
 export const AREA_PROFIL_VIEWS = ["kabupaten", "kecamatan", "desa"] as const;
 
@@ -189,4 +193,92 @@ export function profilDesaApiPath(
 ): string {
   const qs = params.toString();
   return qs ? `${AREA_PROFIL_ROUTES[level]}?${qs}` : AREA_PROFIL_ROUTES[level];
+}
+
+export type AreaProfilVariant = "desa" | "r3p";
+
+export function areaProfilKickerKey(
+  view: AreaProfilView,
+  variant: AreaProfilVariant
+):
+  | "distribusiKabupaten"
+  | "distribusiKecamatan"
+  | "distribusiDesa"
+  | "r3pKabKicker" {
+  if (view === "desa") return "distribusiDesa";
+  if (view === "kecamatan") return "distribusiKecamatan";
+  return variant === "r3p" ? "r3pKabKicker" : "distribusiKabupaten";
+}
+
+export function areaProfilKecamatanDrillTarget(
+  selection: VillageClickSelection,
+  list: readonly KecamatanListItem[]
+): KecamatanListItem | null {
+  const kode = selection.kodeKecamatan?.trim() ?? "";
+  if (kode) {
+    return list.find((row) => row.kode_kecamatan === kode) ?? null;
+  }
+  const name = selection.kecamatan?.trim().toLowerCase() ?? "";
+  if (!name) return null;
+  return (
+    list.find((row) => row.kecamatan.trim().toLowerCase() === name) ?? null
+  );
+}
+
+export function areaProfilDesaDrillTarget(
+  selection: VillageClickSelection,
+  list: readonly DesaListItem[]
+): DesaListItem | null {
+  const kode = selection.kodeDesa?.trim() ?? "";
+  if (kode) {
+    return list.find((row) => row.kode === kode) ?? null;
+  }
+  const name = selection.name?.trim().toLowerCase() ?? "";
+  if (!name) return null;
+  return list.find((row) => row.nama.trim().toLowerCase() === name) ?? null;
+}
+
+export function areaProfilSelectionForKabupaten(
+  selection: VillageClickSelection
+): VillageClickSelection {
+  const kabupaten = kabupatenNameFromSelection(selection);
+  return {
+    name: kabupaten,
+    kabupaten,
+    kecamatan: "",
+    kodeKabupaten: selection.kodeKabupaten,
+    level: "kab",
+  };
+}
+
+export function areaProfilSelectionForKecamatan(
+  selection: VillageClickSelection,
+  item: KecamatanListItem
+): VillageClickSelection {
+  return {
+    name: item.kecamatan,
+    kabupaten: kabupatenNameFromSelection(selection) || selection.kabupaten,
+    kecamatan: item.kecamatan,
+    kodeKabupaten: selection.kodeKabupaten,
+    kodeKecamatan: item.kode_kecamatan?.trim() || selection.kodeKecamatan,
+    level: "kecamatan",
+  };
+}
+
+export function areaProfilSelectionForDesa(
+  selection: VillageClickSelection,
+  item: DesaListItem
+): VillageClickSelection {
+  return {
+    name: item.nama,
+    kabupaten:
+      item.kabupaten ||
+      kabupatenNameFromSelection(selection) ||
+      selection.kabupaten,
+    kecamatan: item.kecamatan || selection.kecamatan,
+    kodeDesa: item.kode?.trim() || undefined,
+    kodeKecamatan: selection.kodeKecamatan,
+    kodeKabupaten: selection.kodeKabupaten,
+    level: "desa",
+  };
 }

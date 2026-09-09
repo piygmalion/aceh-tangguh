@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Home, X } from "lucide-react";
@@ -9,6 +9,12 @@ import {
   areaProfilBack,
   areaProfilBreadcrumbLevels,
   areaProfilBreadcrumbTarget,
+  areaProfilDesaDrillTarget,
+  areaProfilKecamatanDrillTarget,
+  areaProfilKickerKey,
+  areaProfilSelectionForDesa,
+  areaProfilSelectionForKabupaten,
+  areaProfilSelectionForKecamatan,
   areaProfilViewOnOpen,
   kabupatenNameFromSelection,
   hasKabupatenQuery,
@@ -412,10 +418,12 @@ export function AreaProfilPanel({
   selection,
   variant = "desa",
   onClose,
+  onNavigate,
 }: {
   selection: VillageClickSelection;
   variant?: "desa" | "r3p";
   onClose: () => void;
+  onNavigate?: (sel: VillageClickSelection) => void;
 }) {
   const t = useTranslations("profilDesa");
   const tPanduan = useTranslations("panduan");
@@ -424,6 +432,8 @@ export function AreaProfilPanel({
     null
   );
   const [activeDesa, setActiveDesa] = useState<DesaListItem | null>(null);
+  const kecamatanListRef = useRef<HTMLElement | null>(null);
+  const desaListRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     setView(areaProfilViewOnOpen(selection));
@@ -503,13 +513,7 @@ export function AreaProfilPanel({
       : view === "kecamatan"
         ? (kec?.badge ?? activeKecamatan?.badge ?? null)
         : (kab?.badge ?? null);
-  const levelKicker =
-    view === "desa"
-      ? t("desaLabel")
-      : view === "kecamatan"
-        ? t("kecamatanLabel")
-        : t("kabupatenLabel");
-  const kicker = variant === "r3p" ? `${t("r3pKicker")} · ${levelKicker}` : levelKicker;
+  const kicker = t(areaProfilKickerKey(view, variant));
   const metricLead = variant === "r3p" ? "kerusakan" : "populasi";
   const showClickedHint = Boolean(selection.name) && view !== "desa";
 
@@ -519,6 +523,13 @@ export function AreaProfilPanel({
       onClose();
       return;
     }
+    if (next === "kabupaten") {
+      setActiveKecamatan(null);
+      setActiveDesa(null);
+      onNavigate?.(areaProfilSelectionForKabupaten(selection));
+    } else {
+      setActiveDesa(null);
+    }
     setView(next);
   };
 
@@ -526,11 +537,48 @@ export function AreaProfilPanel({
     setActiveKecamatan(item);
     setActiveDesa(null);
     setView("kecamatan");
+    onNavigate?.(areaProfilSelectionForKecamatan(selection, item));
   };
 
   const openDesa = (item: DesaListItem) => {
     setActiveDesa(item);
     setView("desa");
+    onNavigate?.(areaProfilSelectionForDesa(selection, item));
+  };
+
+  const kecamatanDrill = kab
+    ? areaProfilKecamatanDrillTarget(selection, kab.kecamatan_list)
+    : null;
+  const desaDrill = kec
+    ? areaProfilDesaDrillTarget(selection, kec.desa)
+    : null;
+  const canOpenKecamatanList = Boolean(kab && kab.kecamatan_list.length > 0);
+  const canOpenDesaList = Boolean(kec && kec.desa.length > 0);
+
+  const drillKecamatan = () => {
+    if (kecamatanDrill) {
+      openKecamatan(kecamatanDrill);
+      return;
+    }
+    kecamatanListRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  };
+
+  const drillDesa = () => {
+    if (activeKecamatan) {
+      onNavigate?.(areaProfilSelectionForKecamatan(selection, activeKecamatan));
+    } else if (selection.kodeKecamatan) {
+      onNavigate?.({
+        ...selection,
+        level: "kecamatan",
+        kecamatan: selection.kecamatan,
+        kodeKecamatan: selection.kodeKecamatan,
+      });
+    }
+    if (desaDrill) {
+      openDesa(desaDrill);
+      return;
+    }
+    desaListRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
   };
 
   const loading =
@@ -575,7 +623,17 @@ export function AreaProfilPanel({
               <h2 className="truncate text-base font-semibold tracking-tight">{title}</h2>
               {badge ? <BadgeChip badge={badge} /> : null}
             </div>
-            <ProfilBreadcrumb view={view} onGo={setView} />
+            <ProfilBreadcrumb
+              view={view}
+              onGo={(next) => {
+                if (next === "kabupaten") {
+                  setActiveKecamatan(null);
+                  setActiveDesa(null);
+                  onNavigate?.(areaProfilSelectionForKabupaten(selection));
+                }
+                setView(next);
+              }}
+            />
             {showClickedHint ? (
               <p className={cn("mt-0.5 truncate text-muted-foreground", TYPE_FLOOR_CLASS)}>
                 {t("clickedHint", { name: selection.name })}
@@ -614,7 +672,7 @@ export function AreaProfilPanel({
               <div className="flex flex-col gap-4">
                 <MetricSections metrics={kab.metrics} leadWith={metricLead} />
                 <Separator />
-                <section>
+                <section ref={kecamatanListRef}>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
                     {t("kecamatanLabel")}
                   </h3>
@@ -659,7 +717,7 @@ export function AreaProfilPanel({
               <div className="flex flex-col gap-4">
                 <MetricSections metrics={kec.metrics} leadWith={metricLead} />
                 <Separator />
-                <section>
+                <section ref={desaListRef}>
                   <h3 className={cn("mb-2 text-muted-foreground", TYPE_KICKER_CLASS)}>
                     {t("desaLabel")}
                   </h3>
@@ -717,8 +775,30 @@ export function AreaProfilPanel({
             onClick={goBack}
           >
             <ArrowLeft />
-            {t("back")}
+            {view === "desa" ? t("backToKecamatan") : t("back")}
           </Button>
+          {view === "kabupaten" ? (
+            <Button
+              type="button"
+              size="sm"
+              className={cn("ml-auto rounded-xl", TYPE_FLOOR_CLASS)}
+              disabled={!canOpenKecamatanList}
+              onClick={drillKecamatan}
+            >
+              {t("viewKecamatan")}
+            </Button>
+          ) : null}
+          {view === "kecamatan" ? (
+            <Button
+              type="button"
+              size="sm"
+              className={cn("ml-auto rounded-xl", TYPE_FLOOR_CLASS)}
+              disabled={!canOpenDesaList && !selection.kodeKecamatan && !activeKecamatan}
+              onClick={drillDesa}
+            >
+              {t("viewDesa")}
+            </Button>
+          ) : null}
           {shouldShowTanggapiCta({
             view,
             kodeDesa: desaQuery.data?.kode_desa ?? activeDesa?.kode,

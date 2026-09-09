@@ -154,7 +154,7 @@ describe("FE-37 Tanggapi × Distribusi SoT", () => {
     const ia = read("src/lib/area-profil-ia.ts");
 
     assert.equal(panel.includes("desa-list"), false);
-    assert.equal(panel.includes("viewDesa"), false);
+    assert.match(panel, /t\("viewDesa"\)/);
     assert.equal(/params\.set\("kode_desa_kelurahan"/.test(panel), false);
     assert.equal(/params\.set\("kode_desa"/.test(panel), false);
     assert.match(panel, /areaProfilViewOnOpen/);

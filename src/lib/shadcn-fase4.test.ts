@@ -73,10 +73,10 @@ describe("shadcn Fase 4 AreaProfilPanel", () => {
     assert.deepEqual(leftover, [], "AreaProfilPanel still uses space-y-*");
   });
 
-  it("keeps Distribusi IA #50 locks (no desa-list, no viewDesa, same helpers)", () => {
+  it("keeps Distribusi IA #50 locks (no desa-list, same helpers)", () => {
     const src = read(PANEL);
     assert.equal(src.includes("desa-list"), false);
-    assert.equal(src.includes("viewDesa"), false);
+    assert.match(src, /t\("viewDesa"\)/);
     assert.equal(src.includes("locationLine"), false);
     assert.match(src, /useState<AreaProfilView>\(AREA_PROFIL_INITIAL_VIEW\)/);
     assert.match(src, /areaProfilViewOnOpen/);

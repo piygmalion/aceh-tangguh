@@ -40,31 +40,49 @@ import { CLUSTER_COLORS, COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
 import { markerIconImageId } from "@/lib/layer-icons";
 import {
   AREA_FILL_LAYER_IDS,
+  AREA_HIGHLIGHT_FILL,
+  AREA_HIGHLIGHT_FILL_OPACITY,
+  AREA_HIGHLIGHT_LAYER_IDS,
+  AREA_HIGHLIGHT_LINE,
   KAB_OVERVIEW_AREA_KEY,
+  KECAMATAN_OVERVIEW_MAX_ZOOM,
   PMTILES_KECAMATAN,
   PMTILES_VILLAGE,
+  VILLAGE_MESH_FILL,
+  VILLAGE_MESH_FILL_OPACITY,
+  VILLAGE_MESH_MIN_ZOOM,
   adminLodBand,
+  areaFillUsesMeshWash,
+  areaHighlightFilter,
+  areaHighlightLayerId,
   areaOutlinePaint,
   geometryBounds,
   isAdminLodArea,
   isAreaFillLayerId,
   isKabAreaFeature,
   isKecamatanAreaFeature,
-  mergeVillageLodFocus,
+  lodFocusFromSelection,
   overlayBeforeId,
   rebucketVillageKabFeature,
-  readKabLodFocus,
   readVillageSelection,
   unionBounds,
   villageLayerFilter,
-  withKecamatanFocus,
-  type VillageLodFocus,
+  villageLodShowsKecamatanLayer,
+  villageLodShowsVillageLayer,
 } from "@/lib/village-distribution-lod";
 import {
+  MAP_CLUSTER_COUNT_TEXT_PX,
+  MAP_CLUSTER_FILL,
   MAP_CLUSTER_MAX_ZOOM,
+  MAP_CLUSTER_RADIUS,
+  MAP_CLUSTER_RING_WIDTH_PX,
+  MAP_DOT_MAX_ZOOM,
   MAP_DOT_RADIUS_PX,
   MAP_DOT_STROKE_PX,
   MAP_ICON_MIN_ZOOM,
+  clusterCircleRadiusExpr,
+  clusterCountTextColor,
+  clusterRingColorExpr,
   markerHaloStroke,
   markerRenderMode,
   parseStackItems,
@@ -199,59 +217,196 @@ function overlayLayerId(base: string, prefix?: string): string {
   return prefix ? `${base}-${prefix}` : base;
 }
 
-function highlightFilter(sel: VillageClickSelection | null): FilterSpecification {
-  if (!sel) return ["==", ["get", "name"], "__none__"];
-  const byName: FilterSpecification = [
-    "all",
-    ["==", ["get", "name"], sel.name],
-    ["==", ["get", "kecamatan"], sel.kecamatan],
-  ];
-  if (!sel.kodeDesa) return byName;
-  return [
-    "any",
-    ["==", ["get", "kode_desa_kelurahan"], sel.kodeDesa],
-    byName,
-  ];
+function MarkerClusterSource({
+  data,
+  haloStroke,
+  chromeIconsReady,
+}: {
+  data: FeatureCollection;
+  haloStroke: string;
+  chromeIconsReady: boolean;
+}) {
+  return (
+    <Source
+      id="markers"
+      type="geojson"
+      data={data}
+      generateId
+      cluster
+      clusterMaxZoom={MAP_CLUSTER_MAX_ZOOM}
+      clusterRadius={MAP_CLUSTER_RADIUS}
+    >
+      <Layer
+        id="marker-clusters"
+        type="circle"
+        filter={["has", "point_count"]}
+        paint={{
+          "circle-color": MAP_CLUSTER_FILL,
+          "circle-radius": clusterCircleRadiusExpr() as never,
+          "circle-stroke-width": MAP_CLUSTER_RING_WIDTH_PX,
+          "circle-stroke-color": clusterRingColorExpr() as never,
+          "circle-opacity": 0.96,
+        }}
+      />
+      <Layer
+        id="marker-cluster-count"
+        type="symbol"
+        filter={["has", "point_count"]}
+        layout={{
+          "text-field": ["get", "point_count_abbreviated"],
+          "text-size": MAP_CLUSTER_COUNT_TEXT_PX,
+          "text-font": ["Noto Sans Regular"],
+        }}
+        paint={{
+          "text-color": clusterCountTextColor(),
+        }}
+      />
+      <Layer
+        id="marker-dots"
+        type="circle"
+        maxzoom={chromeIconsReady ? MAP_DOT_MAX_ZOOM : 24}
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["!=", ["get", "renderMode"], "stack"],
+        ]}
+        paint={{
+          "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
+          "circle-radius": MAP_DOT_RADIUS_PX,
+          "circle-stroke-width": MAP_DOT_STROKE_PX,
+          "circle-stroke-color": haloStroke,
+          "circle-opacity": 0.95,
+        }}
+      />
+      <Layer
+        id="marker-approx"
+        type="circle"
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "renderMode"], "approx"],
+        ]}
+        paint={{
+          "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
+          "circle-radius": MAP_DOT_RADIUS_PX,
+          "circle-stroke-width": MAP_DOT_STROKE_PX,
+          "circle-stroke-color": haloStroke,
+          "circle-opacity": 0.88,
+        }}
+      />
+      <Layer
+        id="marker-stacks"
+        type="circle"
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "renderMode"], "stack"],
+        ]}
+        paint={{
+          "circle-color": CLUSTER_COLORS.low,
+          "circle-radius": [
+            "step",
+            ["get", "stackCount"],
+            14,
+            8,
+            18,
+            16,
+            22,
+          ],
+          "circle-stroke-width": MAP_DOT_STROKE_PX,
+          "circle-stroke-color": haloStroke,
+          "circle-opacity": 0.94,
+        }}
+      />
+      <Layer
+        id="marker-stack-count"
+        type="symbol"
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "renderMode"], "stack"],
+        ]}
+        layout={{
+          "text-field": ["to-string", ["get", "stackCount"]],
+          "text-size": MAP_CLUSTER_COUNT_TEXT_PX,
+          "text-font": ["Noto Sans Regular"],
+        }}
+        paint={{ "text-color": CLUSTER_COLORS.textOnLow }}
+      />
+      <Layer
+        id="marker-icons"
+        type="symbol"
+        minzoom={MAP_ICON_MIN_ZOOM}
+        filter={[
+          "all",
+          ["!", ["has", "point_count"]],
+          ["==", ["get", "renderMode"], "pin"],
+        ]}
+        layout={{
+          "icon-image": [
+            "coalesce",
+            ["image", ["get", "icon"]],
+            ["image", "layer:disasterEvents"],
+          ],
+          "icon-size": 1,
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+        }}
+      />
+    </Source>
+  );
 }
 
 function AreaHighlightLayers({
+  idPrefix,
   source,
   sourceLayer,
   selection,
   beforeId,
+  minzoom,
+  maxzoom,
 }: {
+  idPrefix?: string;
   source?: string;
   sourceLayer?: string;
   selection: VillageClickSelection | null;
   beforeId?: string;
+  minzoom?: number;
+  maxzoom?: number;
 }) {
-  const filter = highlightFilter(selection);
+  const filter = areaHighlightFilter(selection);
   const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
   const before = beforeId ? { beforeId } : {};
   const sourceProp = source ? { source } : {};
+  const zoomRange = {
+    ...(minzoom != null ? { minzoom } : {}),
+    ...(maxzoom != null ? { maxzoom } : {}),
+  };
   return (
     <>
       <Layer
-        id="area-highlight-fill"
+        id={areaHighlightLayerId("fill", idPrefix)}
         type="fill"
         {...sourceProp}
         {...layerProps}
         {...before}
+        {...zoomRange}
         filter={filter}
         paint={{
-          "fill-color": COLOR_TOKENS.gold,
-          "fill-opacity": 0.22,
+          "fill-color": AREA_HIGHLIGHT_FILL,
+          "fill-opacity": AREA_HIGHLIGHT_FILL_OPACITY,
         }}
       />
       <Layer
-        id="area-highlight-line"
+        id={areaHighlightLayerId("line", idPrefix)}
         type="line"
         {...sourceProp}
         {...layerProps}
         {...before}
+        {...zoomRange}
         filter={filter}
         paint={{
-          "line-color": COLOR_TOKENS.orange,
+          "line-color": AREA_HIGHLIGHT_LINE,
           "line-width": 2.25,
           "line-opacity": 0.95,
         }}
@@ -294,31 +449,36 @@ function AreaOverlayLayers({
     ...(minzoom != null ? { minzoom } : {}),
     ...(maxzoom != null ? { maxzoom } : {}),
   };
-  const fillPaint = sourceLayer
+  const fillPaint = areaFillUsesMeshWash(outlineKind)
     ? {
-        "fill-color": fillColorExpr(areaLayer) as never,
-        "fill-opacity": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          6,
-          0.35,
-          10,
-          0.5,
-        ],
+        "fill-color": VILLAGE_MESH_FILL,
+        "fill-opacity": VILLAGE_MESH_FILL_OPACITY,
       }
-    : {
-        "fill-color": ["get", "fillColor"],
-        "fill-opacity": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          6,
-          0.35,
-          10,
-          0.5,
-        ],
-      };
+    : sourceLayer
+      ? {
+          "fill-color": fillColorExpr(areaLayer) as never,
+          "fill-opacity": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            6,
+            0.35,
+            10,
+            0.5,
+          ],
+        }
+      : {
+          "fill-color": ["get", "fillColor"],
+          "fill-opacity": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            6,
+            0.35,
+            10,
+            0.5,
+          ],
+        };
   return (
     <>
       <Layer
@@ -344,10 +504,13 @@ function AreaOverlayLayers({
       />
       {villageClickEnabled && (
         <AreaHighlightLayers
+          idPrefix={idPrefix}
           source={source}
           sourceLayer={sourceLayer}
           selection={villageSelection}
           beforeId={beforeId}
+          minzoom={minzoom}
+          maxzoom={maxzoom}
         />
       )}
     </>
@@ -421,7 +584,6 @@ export function MapViewport({
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
   const [chromeIconsReady, setChromeIconsReady] = useState(false);
-  const [kabFocus, setKabFocus] = useState<VillageLodFocus | null>(null);
   const [overlaySlot, setOverlaySlot] = useState<string | undefined>();
   const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const villageClickEnabled = isAdminLodArea(areaLayer);
@@ -489,10 +651,6 @@ export function MapViewport({
     };
   }, [mapStyle, loadChromeIcons]);
 
-  useEffect(() => {
-    setKabFocus(null);
-  }, [areaLayer]);
-
   const overlayInteractiveIds = useMemo(
     () => overlayInteractiveLayerIds(overlays, { pointAsSymbol: chromeIconsReady }),
     [overlays, chromeIconsReady]
@@ -508,19 +666,28 @@ export function MapViewport({
     return new Set(disasterJenis);
   }, [disasterJenis]);
 
-  const lodFocus = useMemo(
-    () => mergeVillageLodFocus(kabFocus, villageSelection),
-    [kabFocus, villageSelection]
-  );
-
   const villageLod = isAdminLodArea(areaLayer);
-  const lodBand = adminLodBand(villageLod ? lodFocus : null);
+  const lodFocus = useMemo(
+    () => (villageLod ? lodFocusFromSelection(villageSelection) : null),
+    [villageLod, villageSelection]
+  );
+  const lodBand = adminLodBand(lodFocus);
 
   const villageFilter = useMemo(
     () =>
       isAdminLodArea(areaLayer) ? villageLayerFilter(lodFocus) : undefined,
     [areaLayer, lodFocus]
   );
+
+  const areaBeforeId = overlaySlot;
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || !lodFocus?.kodeKecamatan) return;
+    if (map.getZoom() < VILLAGE_MESH_MIN_ZOOM) {
+      map.easeTo({ zoom: VILLAGE_MESH_MIN_ZOOM, duration: 400 });
+    }
+  }, [lodFocus?.kodeKecamatan]);
 
   const otherPmtilesMeta =
     areaLayer && !villageLod ? PMTILES_AREA[areaLayer] : undefined;
@@ -534,17 +701,24 @@ export function MapViewport({
     staleTime: 60_000,
   });
 
+  const showKecamatanLayer = Boolean(
+    villageLod && villageLodShowsKecamatanLayer(lodBand) && !krbRecolor
+  );
+  const showVillageLayer = Boolean(
+    villageLod && villageLodShowsVillageLayer(lodBand) && !krbRecolor
+  );
+
   const { data: kecamatanPmtilesOk } = useQuery({
     queryKey: ["pmtiles-exists", PMTILES_KECAMATAN.url],
     queryFn: () => pmtilesExists(PMTILES_KECAMATAN.url),
-    enabled: villageLod && lodBand === "kecamatan" && !krbRecolor,
+    enabled: showKecamatanLayer,
     staleTime: 60_000,
   });
 
   const { data: villagePmtilesOk } = useQuery({
     queryKey: ["pmtiles-exists", PMTILES_VILLAGE.url],
     queryFn: () => pmtilesExists(PMTILES_VILLAGE.url),
-    enabled: villageLod && lodBand === "village" && !krbRecolor,
+    enabled: showVillageLayer,
     staleTime: 60_000,
   });
 
@@ -556,21 +730,13 @@ export function MapViewport({
     staleTime: 60_000,
   });
 
-  const useKecamatanPmtiles = Boolean(
-    villageLod && lodBand === "kecamatan" && kecamatanPmtilesOk && !krbRecolor
-  );
-  const useVillagePmtiles = Boolean(
-    villageLod && lodBand === "village" && villagePmtilesOk && !krbRecolor
-  );
+  const useKecamatanPmtiles = Boolean(showKecamatanLayer && kecamatanPmtilesOk !== false);
+  const useVillagePmtiles = Boolean(showVillageLayer && villagePmtilesOk !== false);
   const useOtherPmtiles = Boolean(otherPmtilesMeta && otherPmtilesOk && !krbRecolor);
 
   const needKabGeojson = Boolean(villageLod && lodBand === "kabupaten" && !krbRecolor);
-  const needKecamatanGeojson = Boolean(
-    villageLod && lodBand === "kecamatan" && kecamatanPmtilesOk === false && !krbRecolor
-  );
-  const needVillageGeojson = Boolean(
-    villageLod && lodBand === "village" && villagePmtilesOk === false && !krbRecolor
-  );
+  const needKecamatanGeojson = Boolean(showKecamatanLayer && kecamatanPmtilesOk === false);
+  const needVillageGeojson = Boolean(showVillageLayer && villagePmtilesOk === false);
   const needAreaGeojson =
     areaLayer != null &&
     (krbRecolor ||
@@ -834,8 +1000,6 @@ export function MapViewport({
       const map = mapRef.current?.getMap();
 
       if (isKabAreaFeature(props, lodBand)) {
-        const nextFocus = readKabLodFocus(props);
-        if (nextFocus) setKabFocus(nextFocus);
         if (sel) onVillageClick?.(sel);
         if (map) {
           const kode = String(props?.kode_kab ?? props?.kode_kabupaten ?? "");
@@ -860,11 +1024,6 @@ export function MapViewport({
 
       if (isKecamatanAreaFeature(props)) {
         const kodeKecamatan = String(props?.kode_kecamatan ?? "").trim();
-        if (kodeKecamatan) {
-          setKabFocus((prev) =>
-            withKecamatanFocus(prev ?? readKabLodFocus(props), kodeKecamatan)
-          );
-        }
         if (sel) onVillageClick?.(sel);
         if (map) {
           fitRenderedAreaBounds(
@@ -910,7 +1069,7 @@ export function MapViewport({
           ...POINT_LAYER_IDS,
           "krb-kawasan-circles",
           ...overlayInteractiveIds,
-          ...(villageClickEnabled ? [...AREA_FILL_LAYER_IDS] : []),
+          ...(villageClickEnabled ? [...AREA_FILL_LAYER_IDS, ...AREA_HIGHLIGHT_LAYER_IDS] : []),
         ]}
         onLoad={onMapLoad}
         onClick={onMapClick}
@@ -931,163 +1090,6 @@ export function MapViewport({
         maxPitch={0}
       >
         <NavigationControl position="top-left" />
-        {sortedKeys.length > 0 && (
-          <Source
-            id="markers"
-            type="geojson"
-            data={markerGeojson}
-            generateId
-            cluster
-            clusterMaxZoom={MAP_CLUSTER_MAX_ZOOM}
-            clusterRadius={48}
-          >
-            <Layer
-              id="marker-clusters"
-              type="circle"
-              filter={["has", "point_count"]}
-              paint={{
-                "circle-color": [
-                  "step",
-                  ["get", "point_count"],
-                  CLUSTER_COLORS.high,
-                  25,
-                  CLUSTER_COLORS.low,
-                ],
-                "circle-radius": [
-                  "step",
-                  ["get", "point_count"],
-                  16,
-                  25,
-                  20,
-                  80,
-                  26,
-                ],
-                "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": haloStroke,
-                "circle-opacity": 0.92,
-              }}
-            />
-            <Layer
-              id="marker-cluster-count"
-              type="symbol"
-              filter={["has", "point_count"]}
-              layout={{
-                "text-field": ["get", "point_count_abbreviated"],
-                "text-size": 12,
-                "text-font": ["Noto Sans Regular", "Open Sans Regular"],
-              }}
-              paint={{
-                "text-color": [
-                  "step",
-                  ["get", "point_count"],
-                  CLUSTER_COLORS.textOnHigh,
-                  25,
-                  CLUSTER_COLORS.textOnLow,
-                ],
-              }}
-            />
-            <Layer
-              id="marker-dots"
-              type="circle"
-              filter={
-                chromeIconsReady
-                  ? [
-                      "all",
-                      ["!", ["has", "point_count"]],
-                      ["!=", ["get", "renderMode"], "stack"],
-                      ["!=", ["get", "renderMode"], "pin"],
-                    ]
-                  : [
-                      "all",
-                      ["!", ["has", "point_count"]],
-                      ["!=", ["get", "renderMode"], "stack"],
-                    ]
-              }
-              paint={{
-                "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
-                "circle-radius": MAP_DOT_RADIUS_PX,
-                "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": haloStroke,
-                "circle-opacity": 0.95,
-              }}
-            />
-            <Layer
-              id="marker-approx"
-              type="circle"
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["==", ["get", "renderMode"], "approx"],
-              ]}
-              paint={{
-                "circle-color": ["coalesce", ["get", "color"], COLOR_TOKENS.ink],
-                "circle-radius": MAP_DOT_RADIUS_PX,
-                "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": haloStroke,
-                "circle-opacity": 0.88,
-              }}
-            />
-            <Layer
-              id="marker-stacks"
-              type="circle"
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["==", ["get", "renderMode"], "stack"],
-              ]}
-              paint={{
-                "circle-color": CLUSTER_COLORS.low,
-                "circle-radius": [
-                  "step",
-                  ["get", "stackCount"],
-                  14,
-                  8,
-                  18,
-                  16,
-                  22,
-                ],
-                "circle-stroke-width": MAP_DOT_STROKE_PX,
-                "circle-stroke-color": haloStroke,
-                "circle-opacity": 0.94,
-              }}
-            />
-            <Layer
-              id="marker-stack-count"
-              type="symbol"
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["==", ["get", "renderMode"], "stack"],
-              ]}
-              layout={{
-                "text-field": ["to-string", ["get", "stackCount"]],
-                "text-size": 12,
-                "text-font": ["Noto Sans Regular", "Open Sans Regular"],
-              }}
-              paint={{ "text-color": CLUSTER_COLORS.textOnLow }}
-            />
-            <Layer
-              id="marker-icons"
-              type="symbol"
-              minzoom={MAP_ICON_MIN_ZOOM}
-              filter={[
-                "all",
-                ["!", ["has", "point_count"]],
-                ["==", ["get", "renderMode"], "pin"],
-              ]}
-              layout={{
-                "icon-image": [
-                  "coalesce",
-                  ["image", ["get", "icon"]],
-                  ["image", "layer:disasterEvents"],
-                ],
-                "icon-size": 1,
-                "icon-allow-overlap": true,
-                "icon-ignore-placement": true,
-              }}
-            />
-          </Source>
-        )}
         {kawasanGeojson && (
           <Source id="krb-kawasan" type="geojson" data={kawasanGeojson}>
             <Layer
@@ -1110,7 +1112,7 @@ export function MapViewport({
               idPrefix="kab"
               areaLayer={areaLayer}
               outlineKind="kab"
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
             />
@@ -1124,7 +1126,8 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="kecamatan"
               filter={villageFilter}
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
+              maxzoom={KECAMATAN_OVERVIEW_MAX_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
             />
@@ -1137,7 +1140,8 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="kecamatan"
               filter={villageFilter}
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
+              maxzoom={KECAMATAN_OVERVIEW_MAX_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
             />
@@ -1151,7 +1155,8 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="village"
               filter={villageFilter}
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
+              minzoom={VILLAGE_MESH_MIN_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
             />
@@ -1164,7 +1169,8 @@ export function MapViewport({
               areaLayer={areaLayer}
               outlineKind="village"
               filter={villageFilter}
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
+              minzoom={VILLAGE_MESH_MIN_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
             />
@@ -1176,7 +1182,7 @@ export function MapViewport({
               sourceLayer={otherPmtilesMeta.sourceLayer}
               areaLayer={areaLayer}
               outlineKind="kab"
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={false}
             />
@@ -1187,11 +1193,18 @@ export function MapViewport({
             <AreaOverlayLayers
               areaLayer={areaLayer}
               outlineKind="kab"
-              beforeId={overlaySlot}
+              beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={false}
             />
           </Source>
+        )}
+        {sortedKeys.length > 0 && markerGeojson.features.length > 0 && (
+          <MarkerClusterSource
+            data={markerGeojson}
+            haloStroke={haloStroke}
+            chromeIconsReady={chromeIconsReady}
+          />
         )}
         {overlays.length > 0 && (
           <MapOverlays
