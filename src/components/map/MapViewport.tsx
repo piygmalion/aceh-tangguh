@@ -255,7 +255,7 @@ function MarkerClusterSource({
         layout={{
           "text-field": ["get", "point_count_abbreviated"],
           "text-size": MAP_CLUSTER_COUNT_TEXT_PX,
-          "text-font": ["Noto Sans Regular", "Open Sans Regular"],
+          "text-font": ["Noto Sans Regular"],
         }}
         paint={{
           "text-color": clusterCountTextColor(),
@@ -329,7 +329,7 @@ function MarkerClusterSource({
         layout={{
           "text-field": ["to-string", ["get", "stackCount"]],
           "text-size": MAP_CLUSTER_COUNT_TEXT_PX,
-          "text-font": ["Noto Sans Regular", "Open Sans Regular"],
+          "text-font": ["Noto Sans Regular"],
         }}
         paint={{ "text-color": CLUSTER_COLORS.textOnLow }}
       />
@@ -1199,7 +1199,7 @@ export function MapViewport({
             />
           </Source>
         )}
-        {sortedKeys.length > 0 && (
+        {sortedKeys.length > 0 && markerGeojson.features.length > 0 && (
           <MarkerClusterSource
             data={markerGeojson}
             haloStroke={haloStroke}

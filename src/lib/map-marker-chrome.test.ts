@@ -117,6 +117,9 @@ describe("overview cluster rings", () => {
     assert.match(viewport, /maxzoom=\{chromeIconsReady \? MAP_DOT_MAX_ZOOM : 24\}/);
     assert.equal(viewport.includes('"circle-radius": 16'), false);
     assert.equal(viewport.includes('"text-size": 12'), false);
+    assert.match(viewport, /markerGeojson\.features\.length > 0/);
+    assert.match(viewport, /Noto Sans Regular/);
+    assert.equal(viewport.includes("Open Sans Regular"), false);
     assert.ok(
       viewport.lastIndexOf("<MarkerClusterSource") >
         viewport.indexOf('id="area-layer-kab"'),
