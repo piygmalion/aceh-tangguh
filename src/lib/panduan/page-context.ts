@@ -5,6 +5,7 @@ export const GUIDE_CHIP_KEYS = [
   "peringatan",
   "cuaca",
   "kejadian",
+  "analisisData",
   "destana",
   "nomor",
   "lapor",
@@ -63,15 +64,21 @@ export function pageIntentHint(pathname: string): Exclude<GuideIntentId, "unknow
 }
 
 function withHomeResearch(chips: GuideChipKey[]): GuideChipKey[] {
-  const withoutLapor = chips.filter((key) => key !== "lapor");
-  return [...withoutLapor, "risetBanding", "risetDibi", "lapor"];
+  const withoutLapor = chips.filter((key) => key !== "lapor" && key !== "analisisData");
+  return [...withoutLapor, "analisisData", "risetBanding", "risetDibi", "lapor"];
 }
 
 export function chipsForPathname(pathname: string): GuideChipKey[] {
   const hint = pageIntentHint(pathname);
   if (!hint) return withHomeResearch(DEFAULT_CHIPS);
-  if (hint === "metodologi" || hint === "anggaran" || hint === "analisisData") {
+  if (hint === "metodologi" || hint === "anggaran") {
     return DEFAULT_CHIPS;
+  }
+  if (hint === "kejadian") {
+    return ["kejadian", "analisisData", ...DEFAULT_CHIPS.filter((key) => key !== "kejadian")].slice(
+      0,
+      7
+    );
   }
   const lead = GUIDE_CHIP_KEYS.find((key) => key === hint);
   const rest = DEFAULT_CHIPS.filter((key) => key !== lead);

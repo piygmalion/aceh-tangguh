@@ -184,9 +184,9 @@ function staticConceptCards(): KnowledgeCard[] {
       sourceId: "concept-analisis-data",
       title: "Analisis data bencana",
       bodyId:
-        "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana. Filter mengubah grafik dan URL. Bukan artikel publikasi Tanggapi Aceh. Angka DIBI nasional tidak dijumlahkan ke total halaman itu.",
+        "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana. Filter jenis, kabupaten/kota, waktu, dan metrik tersimpan di URL yang bisa dibagikan; grafik mengikuti filter itu. Bukan artikel publikasi Tanggapi Aceh (BTT) di tanggapi.acehprov.go.id. Angka DIBI nasional tidak dijumlahkan ke total halaman itu. Jika umpan gagal, halaman menandai data tertunda — angka korban tidak diisi dari ingatan.",
       bodyEn:
-        "The Data analysis page slices the same event catalogue as Disaster data. Filters update the charts and the URL. It is not a Tanggapi Aceh publication article. National DIBI figures are not added into that page’s totals.",
+        "The Data analysis page slices the same event catalogue as Disaster data. Type, district/city, time, and metric filters live in a shareable URL; the charts follow that filter. It is not a Tanggapi Aceh (BTT) publication article at tanggapi.acehprov.go.id. National DIBI figures are not added into that page’s totals. If the feed fails, the page marks data delayed — casualty figures are not filled from memory.",
       href: "/analisis-data",
       labelKey: "linkAnalisisData",
       terms: [
@@ -194,6 +194,65 @@ function staticConceptCards(): KnowledgeCard[] {
         "analisis data bencana",
         "disaster analysis",
         "disaster data analysis",
+        "halaman analisis",
+        "disaster-analysis",
+      ],
+    },
+    {
+      sourceId: "concept-analisis-filter-url",
+      title: "Filter dan URL Analisis data",
+      bodyId:
+        "Filter Analisis data: jenis, kabupaten/kota, kecamatan, dari/sampai, dan metrik. Tiap ubahan menulis query URL (jenis, kab, kec, from, to, metric) tanpa menggulir. Salin tautan untuk membagikan irisan yang sama. Bukan DIBI nasional.",
+      bodyEn:
+        "Data analysis filters: type, district/city, subdistrict, from/to, and metric. Each change writes the URL query (jenis, kab, kec, from, to, metric) without scrolling. Copy the link to share the same slice. Not national DIBI.",
+      href: "/analisis-data",
+      labelKey: "linkAnalisisData",
+      terms: [
+        "filter analisis",
+        "url analisis",
+        "cara memakai analisis",
+        "analysis filters",
+        "shareable url",
+        "from",
+        "to",
+        "metric",
+      ],
+    },
+    {
+      sourceId: "concept-analisis-grafik",
+      title: "Grafik Analisis data",
+      bodyId:
+        "Grafik Analisis data: batang menurut jenis dan kabupaten mengikuti filter; klik batang mengubah irisan. Tren waktu adalah garis jumlah per periode. Banding kabupaten atau tahun menumpuk irisan kedua. Saya tidak mengarang angka di grafik.",
+      bodyEn:
+        "Data analysis charts: bars by type and district follow the filter; clicking a bar changes the slice. The time trend is a line of counts per period. Compare district or year stacks a second slice. Chart figures are not invented.",
+      href: "/analisis-data",
+      labelKey: "linkAnalisisData",
+      terms: [
+        "grafik analisis",
+        "tren waktu analisis",
+        "analysis charts",
+        "membaca grafik",
+        "batang",
+        "tren waktu",
+      ],
+    },
+    {
+      sourceId: "concept-analisis-vs-sumber",
+      title: "Analisis data vs Data bencana, DIBI, BTT",
+      bodyId:
+        "Analisis data memotong katalog yang sama dengan Data bencana. DIBI BNPB adalah agregat historis di laci terpisah dan tidak dijumlahkan ke KPI halaman itu. Publikasi Tanggapi Aceh di tanggapi.acehprov.go.id adalah artikel kebijakan BTT, bukan ruang kerja ini.",
+      bodyEn:
+        "Data analysis slices the same catalogue as Disaster data. BNPB DIBI is a separate historical drawer and is not added into that page’s KPIs. Tanggapi Aceh publications at tanggapi.acehprov.go.id are BTT policy articles, not this workspace.",
+      href: "/analisis-data",
+      labelKey: "linkAnalisisData",
+      terms: [
+        "beda analisis data",
+        "analisis data vs",
+        "analisis vs data bencana",
+        "disaster analysis vs",
+        "bukan dibi",
+        "bukan publikasi tanggapi",
+        "tanggapi aceh btt",
       ],
     },
     {

@@ -167,8 +167,23 @@ export const GUIDE_INTENTS: GuideIntentDef[] = [
     id: "analisisData",
     priority: 85,
     patterns: {
-      id: ["analisis data", "analisis data bencana"],
-      en: ["disaster analysis", "disaster data analysis"],
+      id: [
+        "analisis data",
+        "analisis data bencana",
+        "halaman analisis",
+        "ruang kerja analisis",
+        "filter analisis",
+        "grafik analisis",
+        "analisis interaktif",
+      ],
+      en: [
+        "disaster analysis",
+        "disaster data analysis",
+        "analysis page",
+        "analysis filters",
+        "analysis charts",
+        "interactive analysis",
+      ],
     },
   },
   {

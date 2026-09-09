@@ -54,6 +54,75 @@ const GUIDE_INTENTS = new Set<Exclude<GuideIntentId, "unknown">>([
 /** Always-on curated answers. CMS rows are merged in front of this list. */
 export const STATIC_GUIDE_FAQ: GuideFaqEntry[] = [
   {
+    id: "beda-analisis-data-sumber",
+    intent: "analisisData",
+    patterns: {
+      id: [
+        "beda analisis data",
+        "analisis data vs",
+        "analisis vs data bencana",
+        "bukan dibi",
+        "bukan publikasi tanggapi",
+      ],
+      en: [
+        "disaster analysis vs",
+        "difference between disaster analysis",
+        "not dibi",
+        "not a publication",
+      ],
+    },
+    bodyId:
+      "Analisis data memotong katalog kejadian Aceh yang sama dengan tabel Data bencana. DIBI BNPB adalah agregat historis di laci terpisah — tidak dijumlahkan ke KPI halaman itu. Publikasi Tanggapi Aceh di tanggapi.acehprov.go.id adalah artikel kebijakan BTT, bukan ruang kerja grafik ini.",
+    bodyEn:
+      "Data analysis slices the same Aceh event catalogue as the Disaster data table. BNPB DIBI is a separate historical drawer — not added into that page’s KPIs. Tanggapi Aceh publications at tanggapi.acehprov.go.id are BTT policy articles, not this chart workspace.",
+    href: "/analisis-data",
+    labelKey: "linkAnalisisData",
+  },
+  {
+    id: "filter-url-analisis-data",
+    intent: "analisisData",
+    patterns: {
+      id: [
+        "filter analisis",
+        "cara memakai analisis",
+        "cara pakai analisis",
+        "url analisis",
+        "tautan analisis",
+      ],
+      en: [
+        "analysis filters",
+        "how to use disaster analysis",
+        "shareable url",
+        "filter disaster analysis",
+      ],
+    },
+    bodyId:
+      "Di Analisis data, ubah jenis, kabupaten/kota, kecamatan, dari/sampai, atau metrik. Perubahan menulis query URL (jenis, kab, kec, from, to, metric) tanpa menggulir halaman. Salin tautan untuk membagikan irisan yang sama. Katalognya sama dengan Data bencana, bukan DIBI nasional.",
+    bodyEn:
+      "On Data analysis, change type, district/city, subdistrict, from/to, or metric. Changes write the URL query (jenis, kab, kec, from, to, metric) without scrolling the page. Copy the link to share the same slice. It is the Disaster data catalogue, not national DIBI.",
+    href: "/analisis-data",
+    labelKey: "linkAnalisisData",
+  },
+  {
+    id: "grafik-analisis-data",
+    intent: "analisisData",
+    patterns: {
+      id: [
+        "grafik analisis",
+        "membaca grafik analisis",
+        "tren waktu analisis",
+        "cara membaca grafik analisis",
+      ],
+      en: ["analysis charts", "how to read disaster analysis", "read the charts"],
+    },
+    bodyId:
+      "Batang menurut jenis dan kabupaten memotong filter yang sama; klik batang mengubah irisan. Tren waktu adalah garis jumlah per periode pada filter. Banding kabupaten atau tahun menumpuk irisan kedua. Panel ancaman IRBI/KRB adalah analogi histori, bukan prakiraan resmi. Saya tidak mengarang angka di grafik.",
+    bodyEn:
+      "Bars by type and district follow the same filter; clicking a bar changes the slice. The time trend is a line of counts per period on that filter. Compare district or year stacks a second slice. The IRBI/KRB threat panel is a historical analog, not an official forecast. I do not invent chart figures.",
+    href: "/analisis-data",
+    labelKey: "linkAnalisisData",
+  },
+  {
     id: "apa-itu-analisis-data",
     intent: "analisisData",
     patterns: {
@@ -61,9 +130,9 @@ export const STATIC_GUIDE_FAQ: GuideFaqEntry[] = [
       en: ["disaster data analysis", "disaster analysis"],
     },
     bodyId:
-      "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana: jenis, kabupaten, dan waktu lewat URL yang bisa dibagikan. Bukan artikel publikasi. Angka DIBI nasional tidak dijumlahkan ke total halaman itu.",
+      "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana. Filter jenis, kabupaten/kota, waktu, dan metrik tersimpan di URL yang bisa dibagikan; grafik mengikuti filter itu. Bukan artikel publikasi Tanggapi Aceh (BTT) di tanggapi.acehprov.go.id. Angka DIBI nasional tidak dijumlahkan ke total halaman itu. Jika umpan gagal, halaman menandai data tertunda — angka korban tidak saya isi sendiri.",
     bodyEn:
-      "The Data analysis page slices the same event catalogue as Disaster data: type, district, and time through a shareable URL. It is not a publication article. National DIBI figures are not added into that page’s totals.",
+      "The Data analysis page slices the same event catalogue as Disaster data. Type, district/city, time, and metric filters live in a shareable URL; the charts follow that filter. It is not a Tanggapi Aceh (BTT) publication article at tanggapi.acehprov.go.id. National DIBI figures are not added into that page’s totals. If the feed fails, the page marks data delayed — I will not invent casualty figures.",
     href: "/analisis-data",
     labelKey: "linkAnalisisData",
   },

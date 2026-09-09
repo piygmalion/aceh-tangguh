@@ -589,6 +589,14 @@ Bukan G31 OTP publik. Bukan pager FE-50. Adopt `inviteUserByEmail` + `verifyOtp`
 | FE-53 | frontend | `/admin/set-password` + chip pending | jurnal/FE-53.md | selesai |
 | AN-54 | analis | Uji penerimaan | jurnal/AN-54.md | selesai |
 
+## Tindak lanjut — Tanggapi analisis data (FE-57)
+
+Bukan pelaporan warga. ID FE-56 sudah cascade wilayah di main (#104). Chip `analisisData` di beranda + lead di `/analisis-data`. FAQ filter/URL, grafik, dan beda vs Data bencana / DIBI / BTT. `validateGroundedBody` tidak diubah. DATA-4 tetap tertahan. Jangan POST nasional. Jangan membuka P2 Juklak.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-57 | frontend | Tanggapi jalur analisis data | jurnal/FE-57.md | siap-kode |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

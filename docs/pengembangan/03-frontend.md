@@ -227,6 +227,10 @@ Jurnal: `jurnal/FE-51.md`. Gelombang 36. Kontrak AN-49. Input berkas pada kolom 
 
 Jurnal: `jurnal/FE-54.md`. Bukan G36. Bukan FE-53 (set sandi). Parser `list-url.ts` + `useListUrlState`. Data bencana dan daftar SIK ops. `kabupaten` bukan `kab`. Jangan nuqs. Jangan peta/Analisis. Jangan menimpa FE-50/FE-51/FE-52/FE-53.
 
+### FE-57 — Tanggapi jalur analisis data
+
+Jurnal: `jurnal/FE-57.md`. Perkaya FAQ/kartu/chip/V1 untuk `/analisis-data`. Jangan pelaporan warga. Jangan melemahkan `validateGroundedBody`. Jangan menimpa FE-54 / FE-55 / FE-56 (cascade wilayah).
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.
