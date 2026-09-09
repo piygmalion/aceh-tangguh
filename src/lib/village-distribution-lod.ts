@@ -31,7 +31,21 @@ export const AREA_FILL_LAYER_IDS = [
 export const AREA_HIGHLIGHT_LAYER_IDS = [
   "area-highlight-fill",
   "area-highlight-line",
+  "area-highlight-fill-kab",
+  "area-highlight-line-kab",
+  "area-highlight-fill-kecamatan",
+  "area-highlight-line-kecamatan",
+  "area-highlight-fill-village",
+  "area-highlight-line-village",
 ] as const;
+
+export function areaHighlightLayerId(
+  kind: "fill" | "line",
+  prefix?: string
+): string {
+  const base = kind === "fill" ? "area-highlight-fill" : "area-highlight-line";
+  return prefix ? `${base}-${prefix}` : base;
+}
 
 export function isAreaFillLayerId(id: string | undefined): boolean {
   if (!id) return false;
@@ -330,6 +344,13 @@ export const AREA_OUTLINE_COLOR = COLOR_TOKENS.forest;
 export const AREA_HIGHLIGHT_FILL = COLOR_TOKENS.awas;
 export const AREA_HIGHLIGHT_LINE = COLOR_TOKENS.awas;
 export const AREA_HIGHLIGHT_FILL_OPACITY = 0.28;
+/** Desa mesh: paper wash so grey outlines read; only the selection uses awas. */
+export const VILLAGE_MESH_FILL = COLOR_TOKENS.paper;
+export const VILLAGE_MESH_FILL_OPACITY = 0.12;
+
+export function areaFillUsesMeshWash(kind: "kab" | "kecamatan" | "village"): boolean {
+  return kind === "village";
+}
 
 export const KAB_OUTLINE_PAINT = {
   "line-color": AREA_OUTLINE_COLOR,

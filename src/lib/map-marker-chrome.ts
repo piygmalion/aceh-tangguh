@@ -62,11 +62,11 @@ export function clusterCircleRadiusExpr(): unknown[] {
   return [
     "step",
     ["get", "point_count"],
-    22,
+    ["interpolate", ["linear"], ["zoom"], 6, 28, 10, 22],
     MAP_CLUSTER_COUNT_STEPS.mid,
-    30,
+    ["interpolate", ["linear"], ["zoom"], 6, 36, 10, 30],
     MAP_CLUSTER_COUNT_STEPS.high,
-    38,
+    ["interpolate", ["linear"], ["zoom"], 6, 44, 10, 38],
   ];
 }
 

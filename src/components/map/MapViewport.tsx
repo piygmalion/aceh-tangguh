@@ -48,9 +48,13 @@ import {
   KECAMATAN_OVERVIEW_MAX_ZOOM,
   PMTILES_KECAMATAN,
   PMTILES_VILLAGE,
+  VILLAGE_MESH_FILL,
+  VILLAGE_MESH_FILL_OPACITY,
   VILLAGE_MESH_MIN_ZOOM,
   adminLodBand,
+  areaFillUsesMeshWash,
   areaHighlightFilter,
+  areaHighlightLayerId,
   areaOutlinePaint,
   geometryBounds,
   isAdminLodArea,
@@ -361,28 +365,39 @@ function MarkerClusterSource({
 }
 
 function AreaHighlightLayers({
+  idPrefix,
   source,
   sourceLayer,
   selection,
   beforeId,
+  minzoom,
+  maxzoom,
 }: {
+  idPrefix?: string;
   source?: string;
   sourceLayer?: string;
   selection: VillageClickSelection | null;
   beforeId?: string;
+  minzoom?: number;
+  maxzoom?: number;
 }) {
   const filter = areaHighlightFilter(selection);
   const layerProps = sourceLayer ? { "source-layer": sourceLayer } : {};
   const before = beforeId ? { beforeId } : {};
   const sourceProp = source ? { source } : {};
+  const zoomRange = {
+    ...(minzoom != null ? { minzoom } : {}),
+    ...(maxzoom != null ? { maxzoom } : {}),
+  };
   return (
     <>
       <Layer
-        id="area-highlight-fill"
+        id={areaHighlightLayerId("fill", idPrefix)}
         type="fill"
         {...sourceProp}
         {...layerProps}
         {...before}
+        {...zoomRange}
         filter={filter}
         paint={{
           "fill-color": AREA_HIGHLIGHT_FILL,
@@ -390,11 +405,12 @@ function AreaHighlightLayers({
         }}
       />
       <Layer
-        id="area-highlight-line"
+        id={areaHighlightLayerId("line", idPrefix)}
         type="line"
         {...sourceProp}
         {...layerProps}
         {...before}
+        {...zoomRange}
         filter={filter}
         paint={{
           "line-color": AREA_HIGHLIGHT_LINE,
@@ -440,31 +456,36 @@ function AreaOverlayLayers({
     ...(minzoom != null ? { minzoom } : {}),
     ...(maxzoom != null ? { maxzoom } : {}),
   };
-  const fillPaint = sourceLayer
+  const fillPaint = areaFillUsesMeshWash(outlineKind)
     ? {
-        "fill-color": fillColorExpr(areaLayer) as never,
-        "fill-opacity": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          6,
-          0.35,
-          10,
-          0.5,
-        ],
+        "fill-color": VILLAGE_MESH_FILL,
+        "fill-opacity": VILLAGE_MESH_FILL_OPACITY,
       }
-    : {
-        "fill-color": ["get", "fillColor"],
-        "fill-opacity": [
-          "interpolate",
-          ["linear"],
-          ["zoom"],
-          6,
-          0.35,
-          10,
-          0.5,
-        ],
-      };
+    : sourceLayer
+      ? {
+          "fill-color": fillColorExpr(areaLayer) as never,
+          "fill-opacity": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            6,
+            0.35,
+            10,
+            0.5,
+          ],
+        }
+      : {
+          "fill-color": ["get", "fillColor"],
+          "fill-opacity": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            6,
+            0.35,
+            10,
+            0.5,
+          ],
+        };
   return (
     <>
       <Layer
@@ -490,10 +511,13 @@ function AreaOverlayLayers({
       />
       {villageClickEnabled && (
         <AreaHighlightLayers
+          idPrefix={idPrefix}
           source={source}
           sourceLayer={sourceLayer}
           selection={villageSelection}
           beforeId={beforeId}
+          minzoom={minzoom}
+          maxzoom={maxzoom}
         />
       )}
     </>
