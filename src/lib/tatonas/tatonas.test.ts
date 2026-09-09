@@ -9,7 +9,7 @@ import {
   parseTatonasStations,
   signTatonasPath,
 } from "./parse";
-import type { TatonasDtData, TatonasStation } from "./types";
+import { TATONAS_STALE_MS, type TatonasDtData, type TatonasStation } from "./types";
 
 const SAMPLE: TatonasDtData = {
   plantData: {
@@ -174,6 +174,23 @@ describe("parseTatonasStations", () => {
     assert.equal(card.stale, false);
     assert.equal(card.tone, "danger");
     assert.equal(card.empty, false);
+  });
+
+  it("marks a reading stale after TATONAS_STALE_MS, not the overlay cache window", () => {
+    assert.equal(TATONAS_STALE_MS, 15 * 60 * 1000);
+    const occurredMs = Date.parse("2026-09-03T04:30:00.000Z");
+    const justFresh = parseTatonasStations(SAMPLE, occurredMs + TATONAS_STALE_MS);
+    const justStale = parseTatonasStations(SAMPLE, occurredMs + TATONAS_STALE_MS + 1);
+    assert.equal(justFresh[0]?.stale, false);
+    assert.equal(justStale[0]?.stale, true);
+    const staleAmanNow = occurredMs + TATONAS_STALE_MS + 1;
+    const staleStations = parseTatonasStations(SAMPLE, staleAmanNow).map((s) => ({
+      ...s,
+      level: "AMAN" as const,
+    }));
+    const card = cardFromStations(staleStations, { source: "live" });
+    assert.equal(card.stale, true);
+    assert.equal(card.tone, "neutral");
   });
 });
 
