@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   DEFAULT_VIEW,
   type AreaLayerKey,
@@ -25,31 +25,72 @@ import {
   encodeOverlayLayers,
   parseOverlayLayers,
 } from "@/lib/overlay-layers";
+import {
+  createMapUrlWriter,
+  type MapUrlPatch,
+} from "@/lib/map-url-sync";
 
 export { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 
+const VIEW_SYNC_MS = 250;
+
 export function useMapUrlState() {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const routerSearch = searchParams.toString();
+  const [searchOverride, setSearchOverride] = useState<string | null>(null);
+  const search = searchOverride ?? routerSearch;
+
+  const pathnameRef = useRef(pathname);
+  pathnameRef.current = pathname;
+  const searchRef = useRef(search);
+  searchRef.current = search;
+
+  const writerRef = useRef<ReturnType<typeof createMapUrlWriter> | null>(null);
+
+  useEffect(() => {
+    setSearchOverride(null);
+  }, [routerSearch]);
+
+  useEffect(() => {
+    const writer = createMapUrlWriter({
+      getLivePathname: () =>
+        typeof window !== "undefined" ? window.location.pathname : pathnameRef.current,
+      getHash: () => (typeof window !== "undefined" ? window.location.hash : ""),
+      replaceState: (href) => {
+        if (typeof window === "undefined") return;
+        window.history.replaceState(window.history.state, "", href);
+      },
+    });
+    writerRef.current = writer;
+    const unbind =
+      typeof document === "undefined" ? () => {} : writer.bindDocumentClick(document);
+    return () => {
+      unbind();
+      writer.cancel();
+      writerRef.current = null;
+    };
+  }, []);
+
+  const params = useMemo(() => new URLSearchParams(search), [search]);
 
   const resolved = useMemo(
     () =>
       resolveMapUrlAliases({
-        cluster: searchParams.get("cluster"),
-        hazard: searchParams.get("hazard"),
-        layersRaw: searchParams.get("layers"),
-        disasterJenisRaw: searchParams.get("disasterJenis"),
-        areaRaw: searchParams.get("area"),
+        cluster: params.get("cluster"),
+        hazard: params.get("hazard"),
+        layersRaw: params.get("layers"),
+        disasterJenisRaw: params.get("disasterJenis"),
+        areaRaw: params.get("area"),
       }),
-    [searchParams]
+    [params]
   );
 
   const state: MapUrlState = useMemo(() => {
-    const lat = Number(searchParams.get("lat") ?? DEFAULT_VIEW.latitude);
-    const lng = Number(searchParams.get("lng") ?? DEFAULT_VIEW.longitude);
-    const z = Number(searchParams.get("z") ?? DEFAULT_VIEW.zoom);
-    const basemap = (searchParams.get("basemap") as BasemapId) || "positron";
+    const lat = Number(params.get("lat") ?? DEFAULT_VIEW.latitude);
+    const lng = Number(params.get("lng") ?? DEFAULT_VIEW.longitude);
+    const z = Number(params.get("z") ?? DEFAULT_VIEW.zoom);
+    const basemap = (params.get("basemap") as BasemapId) || "positron";
     return {
       view: {
         latitude: Number.isFinite(lat) ? lat : DEFAULT_VIEW.latitude,
@@ -57,39 +98,55 @@ export function useMapUrlState() {
         zoom: Number.isFinite(z) ? z : DEFAULT_VIEW.zoom,
       },
       basemap: isBasemapId(basemap) ? basemap : "positron",
-      preferVector: searchParams.get("vector") === "1",
+      preferVector: params.get("vector") === "1",
       areaLayer: resolved.areaLayer,
       markerLayers: resolved.markerLayers,
       disasterJenis: resolved.disasterJenis,
-      hazard: parseHazardKind(searchParams.get("hazard")),
-      cluster: parseClusterId(searchParams.get("cluster")),
-      krbJenis: parseKrbJenis(searchParams.get("krbJenis")),
-      overlays: parseOverlayLayers(searchParams.get("overlays")),
+      hazard: parseHazardKind(params.get("hazard")),
+      cluster: parseClusterId(params.get("cluster")),
+      krbJenis: parseKrbJenis(params.get("krbJenis")),
+      overlays: parseOverlayLayers(params.get("overlays")),
     };
-  }, [resolved, searchParams]);
+  }, [resolved, params]);
 
-  const push = useCallback(
-    (patch: Record<string, string | null>) => {
-      const params = new URLSearchParams(searchParams.toString());
-      Object.entries(patch).forEach(([k, v]) => {
-        if (v === null || v === "") params.delete(k);
-        else params.set(k, v);
-      });
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    },
-    [pathname, router, searchParams]
-  );
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
-  const setView = useCallback(
-    (v: Partial<MapViewState>) => {
-      push({
-        lat: String(v.latitude ?? state.view.latitude),
-        lng: String(v.longitude ?? state.view.longitude),
-        z: String(v.zoom ?? state.view.zoom),
-      });
-    },
-    [push, state.view]
-  );
+  const push = useCallback((patch: MapUrlPatch) => {
+    const writer = writerRef.current;
+    if (!writer) return;
+    const plan = writer.write({
+      currentPathname: pathnameRef.current,
+      currentSearch: searchRef.current,
+      patch,
+    });
+    if (plan.method === "replaceState") {
+      setSearchOverride(plan.search);
+    }
+  }, []);
+
+  const setView = useCallback((v: Partial<MapViewState>) => {
+    const writer = writerRef.current;
+    if (!writer) return;
+    writer.schedule(
+      () => {
+        const view = stateRef.current.view;
+        return {
+          currentPathname: pathnameRef.current,
+          currentSearch: searchRef.current,
+          patch: {
+            lat: String(v.latitude ?? view.latitude),
+            lng: String(v.longitude ?? view.longitude),
+            z: String(v.zoom ?? view.zoom),
+          },
+        };
+      },
+      VIEW_SYNC_MS,
+      (plan) => {
+        if (plan.method === "replaceState") setSearchOverride(plan.search);
+      }
+    );
+  }, []);
 
   const setBasemap = useCallback((b: BasemapId) => push({ basemap: b }), [push]);
 

@@ -585,7 +585,6 @@ export function MapViewport({
   const [vectorFailed, setVectorFailed] = useState(false);
   const [chromeIconsReady, setChromeIconsReady] = useState(false);
   const [overlaySlot, setOverlaySlot] = useState<string | undefined>();
-  const moveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const villageClickEnabled = isAdminLodArea(areaLayer);
 
   const syncOverlayBeforeId = useCallback(() => {
@@ -1044,14 +1043,11 @@ export function MapViewport({
 
   const onMoveEnd = useCallback(
     (e: ViewStateChangeEvent) => {
-      if (moveTimer.current) clearTimeout(moveTimer.current);
-      moveTimer.current = setTimeout(() => {
-        onViewChange({
-          longitude: e.viewState.longitude,
-          latitude: e.viewState.latitude,
-          zoom: e.viewState.zoom,
-        });
-      }, 250);
+      onViewChange({
+        longitude: e.viewState.longitude,
+        latitude: e.viewState.latitude,
+        zoom: e.viewState.zoom,
+      });
     },
     [onViewChange]
   );
