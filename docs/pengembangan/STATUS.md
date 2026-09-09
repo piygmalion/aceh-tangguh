@@ -595,7 +595,7 @@ Bukan pelaporan warga. ID FE-56 sudah cascade wilayah di main (#104). Chip `anal
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
-| FE-57 | frontend | Tanggapi jalur analisis data | jurnal/FE-57.md | siap-kode |
+| FE-57 | frontend | Tanggapi jalur analisis data | jurnal/FE-57.md | selesai |
 
 ## Gelombang kemudian
 
