@@ -2,27 +2,18 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Link } from "@/i18n/routing";
+import { DailyBriefBody } from "@/components/daily-brief/DailyBriefSituasi";
 import { parseBriefYmd } from "@/lib/daily-brief/compose";
 import { loadPublicBrief } from "@/lib/daily-brief/service";
 import { GlassPanel } from "@/components/ui/GlassPanel";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
-import type { DailyBriefFeedKind } from "@/lib/daily-brief/compose";
 
 export const dynamic = "force-dynamic";
 export function generateStaticParams() {
   return [];
 }
 export const dynamicParams = true;
-
-const FEED_KEYS: Record<DailyBriefFeedKind, "cuaca" | "magma" | "sipongi" | "tatonas" | "gempa" | "kejadian"> = {
-  cuaca: "cuaca",
-  magma: "magma",
-  sipongi: "sipongi",
-  tatonas: "tatonas",
-  gempa: "gempa",
-  kejadian: "kejadian",
-};
 
 export default async function DailyBriefPage({
   params,
@@ -53,22 +44,7 @@ export default async function DailyBriefPage({
             <p className="text-sm text-[var(--text-dim)]">{t("notFound")}</p>
           </GlassPanel>
         ) : (
-          <div className="mt-8 flex flex-col gap-3">
-            {summary.feeds.map((feed) => (
-              <GlassPanel key={feed.kind} className="p-4">
-                <p className="text-sm font-medium">{t(FEED_KEYS[feed.kind])}</p>
-                <p className={cn("mt-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                  {feed.availability === "unavailable"
-                    ? t("unavailable")
-                    : feed.availability === "empty" || !feed.headline
-                      ? t("empty")
-                      : feed.headline}
-                  {feed.availability === "stale" ? ` · ${t("stale")}` : ""}
-                </p>
-                <p className={cn("mt-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{feed.sourceLabel}</p>
-              </GlassPanel>
-            ))}
-          </div>
+          <DailyBriefBody summary={summary} t={(key) => t(key as never)} />
         )}
 
         <p className={cn("mt-8 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("disclaimer")}</p>

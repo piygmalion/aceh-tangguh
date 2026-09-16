@@ -49,4 +49,11 @@ describe("BE-29 daily brief cron and API", () => {
     assert.equal(from, "2026-09-06T17:00:00.000Z");
     assert.equal(to, "2026-09-07T17:00:00.000Z");
   });
+
+  it("BE-39 loaders do not read casualty tables or DATA-4 logger kinds", () => {
+    const src = read("src/lib/daily-brief/service.ts");
+    assert.match(src, /kejadian_operasi/);
+    assert.match(src, /sipongiHotspots/);
+    assert.doesNotMatch(src, /kejadian_korban|kejadian_dampak|logger_kind|loggerKind/);
+  });
 });

@@ -6,14 +6,20 @@ import {
 } from "@/lib/laporan/whatsapp";
 import { createServerClient, createServiceClient } from "@/lib/supabase/server";
 import type { DailyBriefSubscriberStatus } from "@/lib/sik/db-tables";
+import { todayJakartaYmd } from "@/lib/sik/kunci-statis";
+import type { Json } from "@/lib/supabase/json";
 import {
   buildDailyBriefWhatsApp,
   composeDailyBrief,
   maskWhatsAppPhone,
   parseBriefYmd,
+  type DailyBriefFeedKind,
   type DailyBriefSummary,
+  type HotspotBriefItem,
+  type KejadianBriefItem,
   type LiveStatsInput,
   type OverlayQuakeInput,
+  type OverlayQuakeRow,
   type SubscriberPublic,
 } from "./compose";
 
@@ -23,6 +29,66 @@ export function jakartaDayUtcBounds(briefDate: string): { from: string; to: stri
   const from = new Date(`${briefDate}T00:00:00+07:00`);
   const to = new Date(from.getTime() + 24 * 60 * 60 * 1000);
   return { from: from.toISOString(), to: to.toISOString() };
+}
+
+export function previousJakartaYmd(briefDate: string): string {
+  const noon = new Date(`${briefDate}T12:00:00+07:00`);
+  return todayJakartaYmd(new Date(noon.getTime() - 24 * 60 * 60 * 1000));
+}
+
+function asText(value: unknown): string | null {
+  if (value == null) return null;
+  const text = String(value).trim();
+  return text.length ? text : null;
+}
+
+function asProps(value: Json | null | undefined): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return value as Record<string, unknown>;
+}
+
+function mapOverlayQuake(row: {
+  latitude: number;
+  longitude: number;
+  occurred_at: string | null;
+  properties: Json;
+}): OverlayQuakeRow {
+  const props = asProps(row.properties);
+  return {
+    title: asText(props.title),
+    magnitude: asText(props.magnitude ?? props.status),
+    depth: asText(props.kedalaman ?? props.depth),
+    occurredAt: row.occurred_at,
+    lat: row.latitude,
+    lng: row.longitude,
+  };
+}
+
+function mapHotspotCoord(row: {
+  latitude: number;
+  longitude: number;
+  properties: Json;
+}): HotspotBriefItem | null {
+  const props = asProps(row.properties);
+  const titleParts = asText(props.title)
+    ?.split(",")
+    .map((part) => part.trim())
+    .filter(Boolean) ?? [];
+  const desa = asText(props.desa) ?? titleParts[0] ?? null;
+  const kecamatan = asText(props.kecamatan) ?? titleParts[1] ?? null;
+  const kabkota = asText(props.kabkota) ?? titleParts[2] ?? null;
+  if (!desa || !kecamatan || !kabkota) return null;
+  const confidenceRaw = (asText(props.confidence_level) ?? asText(props.status) ?? "").toLowerCase();
+  const confidence: "medium" | "high" = confidenceRaw === "high" ? "high" : "medium";
+  return {
+    kabkota,
+    kecamatan,
+    desa,
+    confidence,
+    tanggal: asText(props.tanggal) ?? asText(props.date_hotspot) ?? "",
+    lat: row.latitude,
+    lng: row.longitude,
+  };
 }
 
 export async function countBmkgQuakesForDate(briefDate: string): Promise<OverlayQuakeInput> {
@@ -39,6 +105,34 @@ export async function countBmkgQuakesForDate(briefDate: string): Promise<Overlay
   return { queryOk: true, count };
 }
 
+export async function listBmkgQuakesForDate(briefDate: string): Promise<OverlayQuakeRow[]> {
+  const client = createServiceClient() ?? createServerClient();
+  if (!client) return [];
+  const { from, to } = jakartaDayUtcBounds(briefDate);
+  const { data, error } = await client
+    .from("overlay_live_features")
+    .select("latitude, longitude, occurred_at, properties")
+    .eq("layer_key", "bmkgQuakes")
+    .gte("occurred_at", from)
+    .lt("occurred_at", to)
+    .order("occurred_at", { ascending: false })
+    .limit(5);
+  if (error || !data) return [];
+  return data.map(mapOverlayQuake);
+}
+
+export async function loadSipongiHotspotCoords(): Promise<HotspotBriefItem[]> {
+  const client = createServiceClient() ?? createServerClient();
+  if (!client) return [];
+  const { data, error } = await client
+    .from("overlay_live_features")
+    .select("latitude, longitude, properties")
+    .eq("layer_key", "sipongiHotspots")
+    .limit(200);
+  if (error || !data) return [];
+  return data.map(mapHotspotCoord).filter((row): row is HotspotBriefItem => row != null);
+}
+
 export async function loadLiveStatsForBrief(): Promise<LiveStatsInput> {
   const client = createServiceClient() ?? createServerClient();
   if (!client) return { rowOk: false, activeIncidents: null };
@@ -47,13 +141,93 @@ export async function loadLiveStatsForBrief(): Promise<LiveStatsInput> {
   return { rowOk: true, activeIncidents: data.active_incidents };
 }
 
+export async function loadActiveKejadian(): Promise<{
+  stats: LiveStatsInput;
+  items: KejadianBriefItem[] | undefined;
+}> {
+  const client = createServiceClient() ?? createServerClient();
+  if (!client) {
+    return { stats: await loadLiveStatsForBrief(), items: undefined };
+  }
+  const query = client
+    .from("kejadian_operasi")
+    .select(
+      "id, nomor, jenis_bencana, nama_kejadian, status, kabupaten, kecamatan, desa_ringkas, waktu_kejadian, latitude, longitude",
+      { count: "exact" }
+    )
+    .eq("status", "aktif")
+    .order("waktu_kejadian", { ascending: false })
+    .limit(5);
+  const { data, error, count } = await query;
+  if (error) {
+    return { stats: await loadLiveStatsForBrief(), items: undefined };
+  }
+  const items: KejadianBriefItem[] = (data ?? []).map((row) => ({
+    id: row.id,
+    nomor: row.nomor,
+    jenis: row.jenis_bencana,
+    nama: row.nama_kejadian,
+    status: row.status,
+    kabupaten: row.kabupaten,
+    kecamatan: row.kecamatan,
+    desa: row.desa_ringkas,
+    waktu: row.waktu_kejadian,
+    lat: row.latitude,
+    lng: row.longitude,
+  }));
+  return {
+    stats: { rowOk: true, activeIncidents: count ?? items.length },
+    items,
+  };
+}
+
+export async function loadYesterdayCounts(briefDate: string): Promise<{
+  yesterdayDate: string | null;
+  yesterdayCounts: Partial<Record<DailyBriefFeedKind, number | null>> | null;
+}> {
+  const client = createServiceClient() ?? createServerClient();
+  const yesterdayDate = previousJakartaYmd(briefDate);
+  if (!client) return { yesterdayDate: null, yesterdayCounts: null };
+  const { data, error } = await client
+    .from("daily_briefs")
+    .select("summary")
+    .eq("brief_date", yesterdayDate)
+    .maybeSingle();
+  if (error || !data?.summary || typeof data.summary !== "object") {
+    return { yesterdayDate: null, yesterdayCounts: null };
+  }
+  const summary = data.summary as DailyBriefSummary;
+  if (!Array.isArray(summary.feeds)) {
+    return { yesterdayDate: null, yesterdayCounts: null };
+  }
+  const yesterdayCounts: Partial<Record<DailyBriefFeedKind, number | null>> = {};
+  for (const feed of summary.feeds) {
+    yesterdayCounts[feed.kind] = feed.count;
+  }
+  return { yesterdayDate, yesterdayCounts };
+}
+
 export async function buildTodaySummary(briefDate: string): Promise<DailyBriefSummary> {
-  const [peringatan, gempa, kejadian] = await Promise.all([
+  const [peringatan, gempa, overlayQuakes, hotspotCoords, kejadianLoad, yesterday] = await Promise.all([
     getPeringatanDini(),
     countBmkgQuakesForDate(briefDate),
-    loadLiveStatsForBrief(),
+    listBmkgQuakesForDate(briefDate),
+    loadSipongiHotspotCoords(),
+    loadActiveKejadian(),
+    loadYesterdayCounts(briefDate),
   ]);
-  return composeDailyBrief({ briefDate, peringatan, gempa, kejadian });
+  return composeDailyBrief({
+    briefDate,
+    composedAt: new Date().toISOString(),
+    peringatan,
+    gempa,
+    overlayQuakes: gempa.queryOk ? overlayQuakes : [],
+    hotspotCoords,
+    kejadian: kejadianLoad.stats,
+    kejadianItems: kejadianLoad.items,
+    yesterdayDate: yesterday.yesterdayDate,
+    yesterdayCounts: yesterday.yesterdayCounts,
+  });
 }
 
 export async function loadPublicBrief(ymd: string): Promise<DailyBriefSummary | null> {

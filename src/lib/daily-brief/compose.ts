@@ -1,5 +1,6 @@
 import { todayJakartaYmd } from "@/lib/sik/kunci-statis";
 import type { PeringatanDiniResponse, PeringatanSource } from "@/lib/peringatan-dini-types";
+import { composeSituasi } from "./situasi";
 
 export type FeedAvailability = "live" | "empty" | "unavailable" | "stale";
 
@@ -19,11 +20,165 @@ export type DailyBriefFeed = {
   sourceLabel: string;
 };
 
-export type DailyBriefSummary = {
+export type DailyBriefPriority = "tinggi" | "sedang" | "rendah" | "informasional";
+
+export type DailyBriefHeader = {
+  briefDate: string;
+  composedAt: string;
+  period: string;
+  coverage: string;
+  worstPriority: DailyBriefPriority;
+};
+
+export type DailyBriefExecutive = {
+  what: string;
+  where: string;
+  howSerious: string;
+  whoWhat: string;
+  nextAction: string;
+  briefDate: string;
+};
+
+export type DailyBriefPriorityRow = {
+  kind: DailyBriefFeedKind;
+  priority: DailyBriefPriority;
+  issue: string;
+  location: string;
+  status: string;
+  action: string;
+};
+
+export type OverlayQuakeRow = {
+  title: string | null;
+  magnitude: string | null;
+  depth: string | null;
+  occurredAt: string | null;
+  lat: number | null;
+  lng: number | null;
+};
+
+export type HotspotBriefItem = {
+  kabkota: string;
+  kecamatan: string;
+  desa: string;
+  confidence: "medium" | "high";
+  tanggal: string;
+  lat: number | null;
+  lng: number | null;
+};
+
+export type PosBriefItem = {
+  posName: string;
+  sensor: string;
+  value: number | null;
+  satuan: string;
+  level: string;
+  timeLocal: string | null;
+};
+
+export type KejadianBriefItem = {
+  id: string;
+  nomor: string;
+  jenis: string;
+  nama: string;
+  status: string;
+  kabupaten: string | null;
+  kecamatan: string | null;
+  desa: string | null;
+  waktu: string | null;
+  lat: number | null;
+  lng: number | null;
+};
+
+export type DailyBriefAction = {
+  window: "1-3h";
+  text: string;
+};
+
+export type DailyBriefQuality = {
+  staleKinds: DailyBriefFeedKind[];
+  yesterdayDate: string | null;
+  sipongiDelta: number | null;
+  tatonasDelta: number | null;
+  gempaDelta: number | null;
+  kejadianDelta: number | null;
+};
+
+export type DailyBriefSectors = {
+  cuaca: {
+    availability: FeedAvailability;
+    kabupaten: string | null;
+    kondisi: string | null;
+    rainMm: number | null;
+    periode: string | null;
+    fetchedAt: string | null;
+    sourceLabel: string;
+    href: string;
+  };
+  magma: {
+    availability: FeedAvailability;
+    headline: string | null;
+    magnitudeText: string | null;
+    wilayah: string | null;
+    waktu: string | null;
+    depthText: string | null;
+    intensitas: string | null;
+    fetchedAt: string | null;
+    href: string;
+  };
+  overlayGempa: {
+    availability: FeedAvailability;
+    count: number | null;
+    items: OverlayQuakeRow[];
+    href: string;
+  };
+  hotspot: {
+    availability: FeedAvailability;
+    count: number | null;
+    items: HotspotBriefItem[];
+    fetchedAt: string | null;
+    href: string;
+  };
+  pos: {
+    availability: FeedAvailability;
+    count: number | null;
+    items: PosBriefItem[];
+    fetchedAt: string | null;
+    href: string;
+  };
+  kejadian: {
+    availability: FeedAvailability;
+    count: number | null;
+    items: KejadianBriefItem[];
+    href: string;
+  };
+};
+
+export type DailyBriefSummaryV1 = {
   briefDate: string;
   feeds: DailyBriefFeed[];
   disclaimer: string;
+  version?: undefined;
 };
+
+export type DailyBriefSummaryV2 = {
+  version: 2;
+  briefDate: string;
+  feeds: DailyBriefFeed[];
+  disclaimer: string;
+  header: DailyBriefHeader;
+  executive: DailyBriefExecutive;
+  priorities: DailyBriefPriorityRow[];
+  sectors: DailyBriefSectors;
+  actions: DailyBriefAction[];
+  quality: DailyBriefQuality;
+};
+
+export type DailyBriefSummary = DailyBriefSummaryV1 | DailyBriefSummaryV2;
+
+export function isDailyBriefV2(summary: DailyBriefSummary): summary is DailyBriefSummaryV2 {
+  return summary.version === 2 && Array.isArray(summary.feeds);
+}
 
 export type DailyBriefSubscriberStatus = "active" | "inactive" | "unsubscribed";
 
@@ -50,6 +205,12 @@ export type ComposeInput = {
   peringatan: PeringatanDiniResponse;
   gempa: OverlayQuakeInput;
   kejadian: LiveStatsInput;
+  composedAt?: string;
+  overlayQuakes?: OverlayQuakeRow[];
+  hotspotCoords?: HotspotBriefItem[];
+  kejadianItems?: KejadianBriefItem[];
+  yesterdayDate?: string | null;
+  yesterdayCounts?: Partial<Record<DailyBriefFeedKind, number | null>> | null;
 };
 
 const DISCLAIMER =
@@ -142,10 +303,6 @@ export function composeDailyBrief(input: ComposeInput): DailyBriefSummary {
 
   const tatonasCount =
     tatonasAvail === "unavailable" ? null : input.peringatan.tatonas.highlights.length;
-  const tatonasText =
-    tatonasCount != null && tatonasCount > 0
-      ? `${tatonasCount} pos di atas ambang umpan`
-      : null;
 
   const gempaAvail: FeedAvailability = input.gempa.queryOk
     ? input.gempa.count === 0
@@ -157,10 +314,7 @@ export function composeDailyBrief(input: ComposeInput): DailyBriefSummary {
   const kejadianAvail: FeedAvailability = input.kejadian.rowOk ? "live" : "unavailable";
   const kejadianCount = input.kejadian.rowOk ? input.kejadian.activeIncidents : null;
 
-  return {
-    briefDate: input.briefDate,
-    disclaimer: DISCLAIMER,
-    feeds: [
+  const feeds: DailyBriefFeed[] = [
       {
         kind: "cuaca",
         availability: cuacaAvail,
@@ -185,7 +339,12 @@ export function composeDailyBrief(input: ComposeInput): DailyBriefSummary {
       {
         kind: "tatonas",
         availability: tatonasAvail,
-        headline: cardHeadline(tatonasAvail, tatonasText),
+        headline: cardHeadline(
+          tatonasAvail,
+          tatonasCount != null && tatonasCount > 0
+            ? `${tatonasCount} pos melewati ambang pemantauan`
+            : null
+        ),
         count: tatonasCount,
         sourceLabel: "Tatonas",
       },
@@ -211,10 +370,22 @@ export function composeDailyBrief(input: ComposeInput): DailyBriefSummary {
               ? null
               : `${kejadianCount} kejadian operasional aktif`,
         count: kejadianCount,
-        sourceLabel: "live_stats",
+        sourceLabel: input.kejadianItems ? "kejadian_operasi" : "live_stats",
       },
-    ],
-  };
+    ];
+
+  return composeSituasi({
+    briefDate: input.briefDate,
+    composedAt: input.composedAt ?? new Date().toISOString(),
+    peringatan: input.peringatan,
+    feeds,
+    disclaimer: DISCLAIMER,
+    overlayQuakes: gempaAvail === "unavailable" ? [] : (input.overlayQuakes ?? []),
+    hotspotCoords: input.hotspotCoords ?? [],
+    kejadianItems: kejadianAvail === "unavailable" ? [] : (input.kejadianItems ?? []),
+    yesterdayDate: input.yesterdayDate ?? null,
+    yesterdayCounts: input.yesterdayCounts ?? null,
+  });
 }
 
 export function composeForJakartaToday(
@@ -225,6 +396,7 @@ export function composeForJakartaToday(
 ): DailyBriefSummary {
   return composeDailyBrief({
     briefDate: todayJakartaYmd(now),
+    composedAt: now.toISOString(),
     peringatan,
     gempa,
     kejadian,
