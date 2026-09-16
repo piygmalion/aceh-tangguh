@@ -193,4 +193,30 @@ describe("AN-43 FE-43 inventory", () => {
     assert.notEqual(id.admin.opsDashTitle, en.admin.opsDashTitle);
     assert.equal(id.admin.navOverview, "Ringkasan");
   });
+
+    it("FE-56: feed cards link to existing module hrefs and filters are not a hard four-id list", () => {
+    const ui = read("src/components/admin/OpsDashboard.tsx");
+    const id = JSON.parse(read("messages/id.json")) as { admin: Record<string, string> };
+    const en = JSON.parse(read("messages/en.json")) as { admin: Record<string, string> };
+    assert.match(ui, /OPS_FEED_HREFS/);
+    assert.match(ui, /opsDashOpenAria/);
+    assert.match(ui, /view\.feeds\.map\(\(feed\) => feed\.id\)/);
+    assert.doesNotMatch(ui, /FilterId = "all" \| "logistik" \| "kejadian" \| "destana" \| "rehab"/);
+    assert.match(ui, /href=\{feed\.href\}/);
+    assert.match(ui, /href=\{OPS_FEED_HREFS\[row\.module\]\}/);
+    const keys = [
+      "opsDashVolumeHintModerasi",
+      "opsDashVolumeHintKejadian",
+      "opsDashOpenAria",
+      "opsDashEmptyModule",
+      "opsDashNeedsWork",
+    ] as const;
+    for (const key of keys) {
+      assert.equal(typeof id.admin[key], "string");
+      assert.equal(typeof en.admin[key], "string");
+      assert.notEqual(id.admin[key], en.admin[key]);
+    }
+    assert.doesNotMatch(id.admin.opsDashVolumeHintKejadian, /\u2014|\u2013/);
+    assert.doesNotMatch(en.admin.opsDashVolumeHintKejadian, /\u2014|\u2013/);
+  });
 });

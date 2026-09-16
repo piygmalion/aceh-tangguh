@@ -650,3 +650,11 @@ Compose v2 halaman pimpinan + kartu operasional dari umpan hidup. Ticket FE-58 (
 | FE-58 | frontend | /brief/[ymd] pimpinan + kartu | jurnal/FE-58.md | selesai |
 | AN-56 | analis | Uji penerimaan situasi | jurnal/AN-56.md | selesai |
 
+## Polish — dasbor staf alur lebih jelas (FE-59)
+
+UI `/admin/operasi` alur modul lebih jelas (volume hints, empty states). Tidak mengubah rumus volume/progres Ringkasan. Ticket FE-59 (FE-56 = wilayah cascade).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-59 | frontend | Dasbor staf alur lebih jelas | jurnal/FE-59.md | selesai |
+
