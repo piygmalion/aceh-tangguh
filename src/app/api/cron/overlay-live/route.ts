@@ -34,6 +34,9 @@ export async function POST(request: Request) {
     refreshMaritimeWarnings(),
   ]);
   revalidateTag("maritime-perairan");
+  revalidateTag("peringatan-magma");
+  revalidateTag("peringatan-sipongi");
+  revalidateTag("peringatan-tatonas");
   const failed = result.layers.filter((layer) => !layer.ok);
   return NextResponse.json({
     refreshed: result.layers.filter((layer) => layer.ok).length,

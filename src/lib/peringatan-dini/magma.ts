@@ -1,24 +1,24 @@
 import { unstable_cache } from "next/cache";
 import { ACEH_BBOX } from "@/lib/basemap";
-import type { MagmaCard } from "@/lib/peringatan-dini-types";
-import { fetchMagmaLive, getMagmaPeringatanFromLive } from "./magma-live";
+import { readOverlayLiveForPd } from "@/lib/overlay-live";
+import { unavailableMagmaCard, type MagmaCard } from "@/lib/peringatan-dini-types";
+import { magmaCardFromOverlayRead } from "./overlay-cards";
 
-export {
-  extractMarkersGempa,
-  formatCoordDepth,
-  formatWib,
-  parseMagmaHomepage,
-} from "./magma-parse";
-export { fetchMagmaLive, getMagmaPeringatanFromLive } from "./magma-live";
-
-const getCachedMagmaLive = unstable_cache(
-  fetchMagmaLive,
+const getCachedMagmaOverlay = unstable_cache(
+  async () => readOverlayLiveForPd("magmaQuakes"),
   ["peringatan-magma-aceh"],
   { revalidate: 600, tags: ["peringatan-magma"] },
 );
 
 export async function getMagmaPeringatan(): Promise<MagmaCard> {
-  return getMagmaPeringatanFromLive(getCachedMagmaLive);
+  try {
+    const select = await getCachedMagmaOverlay();
+    if (select.kind === "select-impossible") return unavailableMagmaCard();
+    return magmaCardFromOverlayRead(select.result);
+  } catch (err) {
+    console.error("[peringatan-dini/magma]", err);
+    return unavailableMagmaCard();
+  }
 }
 
 export const MAGMA_BBOX = ACEH_BBOX;

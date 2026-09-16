@@ -155,7 +155,6 @@ describe("AN-52 MAGMA / Sipongi / Tatonas cards from overlay L1", () => {
     assert.equal(card.stale, false);
     assert.equal(card.empty, true);
     assert.equal(card.event, null);
-    assert.equal(card.event?.magnitude, undefined);
   });
 
   it("picks the latest MAGMA event, not the full overlay list", async () => {

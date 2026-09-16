@@ -170,11 +170,11 @@ Jangan dikode sebelum AN-28. Jangan menulis nilai secret. Jangan POST nasional.
 
 Kontrak: [07-konsep-caching.md](07-konsep-caching.md). Jangan DATA-4. Jangan merge `/api/weather`. Jangan Upstash sebagai store overlay.
 
-C1 ([AN-51.md](jurnal/AN-51.md)): GET PD MAGMA/Sipongi/Tatonas baca L1 + `revalidateTag` dari cron.
+C1 ([AN-51.md](jurnal/AN-51.md)): GET PD MAGMA/Sipongi/Tatonas baca L1 + `revalidateTag` dari cron (BE-37 / AN-52).
 
 ### BE-37 — GET PD dari overlay
 
-Jurnal: `jurnal/BE-37.md`. Kontrak AN-51. Jangan scrape pada GET. Jangan menimpa BE-36. Jangan DATA-4.
+Jurnal: `jurnal/BE-37.md`. Gelombang ECC-C1. Kontrak AN-51. GET MAGMA/Sipongi/Tatonas baca L1; cron `revalidateTag` `peringatan-*`. Jangan scrape pada GET. Jangan menimpa BE-36. Jangan DATA-4.
 
 ### BE-38 — undangan staf redirectTo + confirm
 

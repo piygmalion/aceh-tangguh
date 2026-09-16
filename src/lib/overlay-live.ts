@@ -2,7 +2,7 @@ import { readFile } from "fs/promises";
 import path from "path";
 import type { Feature, FeatureCollection, Point } from "geojson";
 import { isAcehRelevant, isInsideAcehBbox } from "@/lib/peringatan-dini/aceh";
-import { extractMarkersGempa, type MagmaRaw } from "@/lib/peringatan-dini/magma-parse";
+import { extractMarkersGempa, occurredIso, type MagmaRaw } from "@/lib/peringatan-dini/magma-parse";
 import { SIPONGI_OPSROOM, SIPONGI_PETA } from "@/lib/peringatan-dini-types";
 import { fetchTatonasDtData } from "@/lib/tatonas/client";
 import { parseTatonasStations } from "@/lib/tatonas/parse";
@@ -305,6 +305,15 @@ function magmaToPoint(raw: MagmaRaw, layer: OverlayLayerKey): Feature<Point> | n
       depth: raw.depth,
       nearest_volcano: raw.nearest_volcano,
       href: "https://magma.esdm.go.id/",
+      datetime_wib: raw.datetime_wib || raw.datetime_wib_str,
+      datetime_utc: raw.datetime_utc,
+      area: raw.area,
+      koter: raw.koter,
+      mmi: raw.mmi,
+      merusak: raw.merusak,
+      magtype: raw.magtype,
+      latlon_text: raw.latlon_text,
+      occurred_at: occurredIso(raw),
     },
   });
 }
@@ -427,6 +436,12 @@ async function fetchSipongiPoints(): Promise<Feature<Point>[]> {
           tanggal: props.date_hotspot,
           sumber: props.sumber,
           href: SIPONGI_PETA,
+          desa: props.desa,
+          kecamatan: props.kecamatan,
+          kabkota: props.kabkota,
+          confidence_level: level,
+          date_hotspot_ori: props.date_hotspot_ori,
+          occurred_at: props.date_hotspot_ori,
         },
       }),
     );
@@ -469,7 +484,10 @@ async function fetchTatonasPoints(): Promise<Feature<Point>[]> {
         title: s.pos_name,
         status: s.level,
         extra: {
+          pos_name: s.pos_name,
           jenis: s.logger_kind.toUpperCase(),
+          logger_kind: s.logger_kind,
+          sensor: s.primary?.nm_sensor,
           value: s.primary?.value ?? undefined,
           satuan: s.primary?.satuan || undefined,
           level: s.level,
@@ -779,6 +797,29 @@ export async function refreshAllOverlayLive(
     layers.push(await refreshOverlayLive(key, nowMs));
   }
   return { layers, purged: await purgeExpiredOverlayRows() };
+}
+
+export type OverlayLivePdSelect =
+  | { kind: "select-impossible" }
+  | { kind: "ok"; result: OverlayLiveResult };
+
+/**
+ * GET PD read. Distinguishes "no Supabase / SELECT threw" from AN-5 503-equivalent
+ * (DB alive, no rows, not empty-ok). Overlay HTTP status is not copied to the PD route.
+ */
+export async function readOverlayLiveForPd(
+  key: OverlayLiveRefreshKey,
+): Promise<OverlayLivePdSelect> {
+  try {
+    const client = createServerClient();
+    if (!client) return { kind: "select-impossible" };
+    const rows = await readStoredLive(key);
+    if (rows === null) return { kind: "select-impossible" };
+    const ledger = await readStoredRefresh(key);
+    return { kind: "ok", result: resolveOverlayLiveRead(rows, Date.now(), ledger) };
+  } catch {
+    return { kind: "select-impossible" };
+  }
 }
 
 export async function loadOverlayLive(key: OverlayLayerKey): Promise<OverlayLiveResult> {
