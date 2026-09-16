@@ -55,6 +55,46 @@ describe("planMapUrlWrite", () => {
     assert.equal(new URLSearchParams(plan.search).get("area"), "villageDistribution");
   });
 
+  it("writes nasa and nasaDate on /peta without touching overlays", () => {
+    const plan = planMapUrlWrite({
+      currentPathname: "/id/peta",
+      livePathname: "/id/peta",
+      currentSearch: "overlays=sipongiHotspots&layers=laporanKejadian",
+      patch: { nasa: "gibsTrueColor,firmsHotspots", nasaDate: "2026-09-08" },
+    });
+    assert.equal(plan.method, "replaceState");
+    const qs = new URLSearchParams(plan.search);
+    assert.equal(qs.get("nasa"), "gibsTrueColor,firmsHotspots");
+    assert.equal(qs.get("nasaDate"), "2026-09-08");
+    assert.equal(qs.get("overlays"), "sipongiHotspots");
+    assert.equal(qs.get("layers"), "laporanKejadian");
+  });
+
+  it("keeps nasa query when a camera patch is applied", () => {
+    const plan = planMapUrlWrite({
+      currentPathname: "/id/peta",
+      livePathname: "/id/peta",
+      currentSearch: "lat=4.4&nasa=gibsTrueColor&nasaDate=2026-09-08",
+      patch: { lat: "4.5", z: "9" },
+    });
+    assert.equal(plan.method, "replaceState");
+    const qs = new URLSearchParams(plan.search);
+    assert.equal(qs.get("lat"), "4.5");
+    assert.equal(qs.get("nasa"), "gibsTrueColor");
+    assert.equal(qs.get("nasaDate"), "2026-09-08");
+  });
+
+  it("skips nasa writes after leaving /peta so App Router nav is not bounced", () => {
+    const plan = planMapUrlWrite({
+      currentPathname: "/id/peta",
+      livePathname: "/id/data-bencana",
+      currentSearch: "nasa=gibsTrueColor",
+      patch: { nasa: "gibsTrueColor,firmsHotspots" },
+    });
+    assert.equal(plan.method, "skip");
+    assert.equal(plan.href, "");
+  });
+
   it("skips when the live location has already left the map", () => {
     const plan = planMapUrlWrite({
       currentPathname: "/id/peta",

@@ -150,6 +150,10 @@ Jurnal: `jurnal/BE-33.md`. Tindak lanjut kirim WA. `sendWhatsAppGateway` memetak
 
 Jurnal: `jurnal/BE-36.md`. Gelombang 36. Kontrak AN-49. `POST /api/admin/cms/upload`; `requireSuperAdminApi`; magic bytes + `sharp`; bucket `cms-media`. Jangan `guardPublicPost`. Jangan mengubah rute laporan. Jangan DATA-4. Jangan BE-37 (C1). **Pengecualian wilayah:** `security/attack-surface.md` (daftar rute staf).
 
+### BE-40 — modul nasa-nrt + GET FIRMS / waktu GIBS
+
+Jurnal: `jurnal/BE-40.md`. Gelombang 37. Kontrak AN-57. `GET /api/nasa-nrt/firms` + `GET /api/nasa-nrt/gibs/time`. Tanpa proxy ubin. Tanpa overlay live / calon. `FIRMS_MAP_KEY` server-only; unconfigured/upstream = 503. Jangan merge `/api/weather`. Jangan BE-37 (C1). Jangan menulis nilai kunci.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan DATA-4. Jangan merge `/api/weather`.

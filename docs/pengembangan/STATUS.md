@@ -597,6 +597,20 @@ Bukan pelaporan warga. ID FE-56 sudah cascade wilayah di main (#104). Chip `anal
 | --- | --- | --- | --- | --- |
 | FE-57 | frontend | Tanggapi jalur analisis data | jurnal/FE-57.md | selesai |
 
+## Gelombang 37 — konteks satelit NASA GIBS/FIRMS (NRT)
+
+Kontrak [AN-57.md](jurnal/AN-57.md). GIBS WMTS + titik FIRMS = konteks visual tidak resmi. Bukan peringatan BPBA, bukan calon, bukan kartu PD, bukan Daily Brief. `?nasa=` terpisah dari `?overlays=`. Tanpa proxy ubin. Tanpa tabel baru. `FIRMS_MAP_KEY` hanya server; jangan menulis nilai. Jangan DATA-4. Jangan merge `/api/weather`. Jangan C1 / BE-37.
+
+ID peta frontend = **FE-60** (FE-57 di `main` adalah Tanggapi analisis #106). Persistensi URL memakai `history.replaceState` (#103); jangan `router.replace`.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| KOORD-G37 | ecc | Rencana search-first + urutan tiket | jurnal/KOORD-G37.md | selesai |
+| AN-57 | analis | Naskah GIBS NRT + FIRMS | jurnal/AN-57.md | selesai |
+| BE-40 | backend | Modul nasa-nrt + GET FIRMS / waktu GIBS | jurnal/BE-40.md | selesai |
+| FE-60 | frontend | Raster GIBS + titik FIRMS di peta | jurnal/FE-60.md | selesai |
+| AN-58 | analis | Uji isolasi + penerimaan G37 | jurnal/AN-58.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

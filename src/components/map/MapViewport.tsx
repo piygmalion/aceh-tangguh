@@ -98,6 +98,13 @@ import {
   pickOverlayHit,
   type OverlayHit,
 } from "@/components/map/MapOverlays";
+import {
+  NasaNrtOverlays,
+  nasaNrtInteractiveLayerIds,
+  pickNasaFirmsHit,
+} from "@/components/map/NasaNrtOverlays";
+import { defaultGibsDate } from "@/lib/nasa-nrt/layers";
+import type { FirmsFeature, NasaNrtLayerKey } from "@/lib/nasa-nrt/types";
 import { readCoordQuality } from "@/lib/coord-quality";
 
 const POINT_LAYER_IDS = [
@@ -555,6 +562,8 @@ export function MapViewport({
   villageSelection = null,
   onVillageClick,
   overlays = [],
+  nasaLayers = [],
+  nasaDate,
 }: {
   view: MapViewState;
   onViewChange: (v: Partial<MapViewState>) => void;
@@ -568,6 +577,8 @@ export function MapViewport({
   villageSelection?: VillageClickSelection | null;
   onVillageClick?: (sel: VillageClickSelection) => void;
   overlays?: OverlayLayerKey[];
+  nasaLayers?: NasaNrtLayerKey[];
+  nasaDate?: string;
 }) {
   const t = useTranslations("map");
   const mapRef = useRef<MapRef>(null);
@@ -581,6 +592,7 @@ export function MapViewport({
   } | null>(null);
   const [cardId, setCardId] = useState<string | null>(null);
   const [overlayPopup, setOverlayPopup] = useState<OverlayHit | null>(null);
+  const [nasaFirmsPopup, setNasaFirmsPopup] = useState<FirmsFeature | null>(null);
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
   const [chromeIconsReady, setChromeIconsReady] = useState(false);
@@ -654,6 +666,11 @@ export function MapViewport({
     () => overlayInteractiveLayerIds(overlays, { pointAsSymbol: chromeIconsReady }),
     [overlays, chromeIconsReady]
   );
+  const nasaInteractiveIds = useMemo(
+    () => nasaNrtInteractiveLayerIds(nasaLayers),
+    [nasaLayers],
+  );
+  const resolvedNasaDate = nasaDate ?? defaultGibsDate();
 
   const sortedKeys = useMemo(
     () => [...markerLayers].sort(),
@@ -914,7 +931,7 @@ export function MapViewport({
 
   useEffect(() => {
     syncOverlayBeforeId();
-  }, [sortedKeys, overlays, areaLayer, useKecamatanPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
+  }, [sortedKeys, overlays, nasaLayers, areaLayer, useKecamatanPmtiles, useVillagePmtiles, useOtherPmtiles, syncOverlayBeforeId]);
 
   const onMapClick = useCallback(
     (e: MapLayerMouseEvent) => {
@@ -951,12 +968,22 @@ export function MapViewport({
         });
         setCardId(id);
         setOverlayPopup(null);
+        setNasaFirmsPopup(null);
+        return;
+      }
+
+      const firmsHit = pickNasaFirmsHit(e.features);
+      if (firmsHit) {
+        setPopup(null);
+        setOverlayPopup(null);
+        setNasaFirmsPopup(firmsHit);
         return;
       }
 
       const overlayHit = pickOverlayHit(e.features, e.lngLat);
       if (overlayHit) {
         setPopup(null);
+        setNasaFirmsPopup(null);
         setOverlayPopup(overlayHit);
         return;
       }
@@ -987,6 +1014,7 @@ export function MapViewport({
         });
         setCardId(kawasanId);
         setOverlayPopup(null);
+        setNasaFirmsPopup(null);
         return;
       }
 
@@ -1065,6 +1093,7 @@ export function MapViewport({
           ...POINT_LAYER_IDS,
           "krb-kawasan-circles",
           ...overlayInteractiveIds,
+          ...nasaInteractiveIds,
           ...(villageClickEnabled ? [...AREA_FILL_LAYER_IDS, ...AREA_HIGHLIGHT_LAYER_IDS] : []),
         ]}
         onLoad={onMapLoad}
@@ -1211,6 +1240,15 @@ export function MapViewport({
             iconsReady={chromeIconsReady}
           />
         )}
+        {nasaLayers.length > 0 ? (
+          <NasaNrtOverlays
+            layers={nasaLayers}
+            nasaDate={resolvedNasaDate}
+            beforeId={overlaySlot}
+            popup={nasaFirmsPopup}
+            onPopupClose={() => setNasaFirmsPopup(null)}
+          />
+        ) : null}
         {popup && (
           <Popup
             longitude={popup.lng}
