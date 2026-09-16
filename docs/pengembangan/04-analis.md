@@ -280,6 +280,14 @@ Jurnal: `jurnal/AN-53.md`. Tulisan. Undang → `token_hash` → set sandi. Janga
 
 Jurnal: `jurnal/AN-54.md`. Setelah BE-38 / FE-53. Helper + rute + i18n; bukan E2E kotak masuk. Jangan DATA-4.
 
+### AN-57 — naskah GIBS NRT + FIRMS
+
+Jurnal: `jurnal/AN-57.md`. Gelombang 37. Tulisan. Allowlist GIBS WMTS + FIRMS Area API. Bukan calon/PD/brief. `?nasa=` terpisah. Jangan DATA-4. Jangan C1. Jangan menulis nilai `FIRMS_MAP_KEY`.
+
+### AN-58 — uji isolasi G37
+
+Jurnal: `jurnal/AN-58.md`. Gelombang 37. Setelah BE-40 / FE-60. Isolasi overlay-live/calon/PD/brief; parser URL; HTTP FIRMS; i18n pil. Jangan PoC. Jangan DATA-4.
+
 ### AN-45 — naskah konsep Authentication
 
 Jurnal: `jurnal/AN-45.md`. Tulisan. Peta tiga bidang identitas + empat lapisan otorisasi. Jangan dikode dari naskah ini. Jangan OTP. Jangan RBAC dinamis. Jangan DATA-4.

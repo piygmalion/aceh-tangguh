@@ -26,6 +26,8 @@ describe("overlay layer URL tokens", () => {
     assert.equal(isOverlayLayerKey("disasterEvents"), false);
     assert.deepEqual(parseOverlayLayers("tatonasStations"), ["tatonasStations"]);
     assert.equal(isOverlayLayerKey("tatonasStations"), true);
+    assert.equal(isOverlayLayerKey("gibsTrueColor"), false);
+    assert.deepEqual(parseOverlayLayers("sipongiHotspots,firmsHotspots"), ["sipongiHotspots"]);
   });
 
   it("builds interactive layer ids and parses them back", () => {

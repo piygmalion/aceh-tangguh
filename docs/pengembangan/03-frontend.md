@@ -231,6 +231,10 @@ Jurnal: `jurnal/FE-54.md`. Bukan G36. Bukan FE-53 (set sandi). Parser `list-url.
 
 Jurnal: `jurnal/FE-57.md`. Perkaya FAQ/kartu/chip/V1 untuk `/analisis-data`. Jangan pelaporan warga. Jangan melemahkan `validateGroundedBody`. Jangan menimpa FE-54 / FE-55 / FE-56 (cascade wilayah).
 
+### FE-60 — raster GIBS + titik FIRMS di peta
+
+Jurnal: `jurnal/FE-60.md`. Gelombang 37. Kontrak AN-57. `?nasa=` / `?nasaDate=` lewat `history.replaceState` (#103). i18n `map.nasaNrt*` / `gibs*` / `firms*`. Bukan overlay resmi. Jangan menimpa FE-57 Tanggapi. Jangan `router.replace`. Jangan mengubah type floor / ukuran marker.
+
 ## Tiket gelombang ECC-S — kerapian
 
 Kontrak: [06-skema-kerapian.md](06-skema-kerapian.md). Jangan menimpa kunci i18n yang sudah ada. Jangan menggabungkan strip cuaca resmi dan inovasi.

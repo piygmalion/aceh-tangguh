@@ -1,3 +1,5 @@
+import type { NasaNrtLayerKey } from "@/lib/nasa-nrt/types";
+
 export type Locale = "id" | "en";
 export type Theme = "light" | "dark";
 export type RasterBasemapId =
@@ -115,6 +117,10 @@ export interface MapUrlState {
   markerLayers: MarkerLayerKey[];
   /** Geospasial overlays (default none). */
   overlays: OverlayLayerKey[];
+  /** Unofficial NASA NRT context (`?nasa=`). Not OverlayLayerKey. */
+  nasaLayers: NasaNrtLayerKey[];
+  /** GIBS TIME YYYY-MM-DD (`?nasaDate=`). */
+  nasaDate: string;
   /** Active jenis_bencana filters; empty = all jenis when disasterEvents is on. */
   disasterJenis: string[];
   hazard?: HazardKind;

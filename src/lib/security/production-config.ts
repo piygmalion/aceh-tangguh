@@ -51,6 +51,9 @@ export function assertProductionConfig(): void {
   if (!process.env.WHATSAPP_GATEWAY_URL?.trim()) {
     warnings.push("WHATSAPP_GATEWAY_URL (outbound WhatsApp send disabled)");
   }
+  if (!process.env.FIRMS_MAP_KEY?.trim()) {
+    warnings.push("FIRMS_MAP_KEY (NASA FIRMS NRT overlay disabled)");
+  }
 
   for (const item of warnings) {
     console.warn(`[production-config] ${item}`);
