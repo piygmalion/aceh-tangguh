@@ -25,6 +25,12 @@ import {
   encodeOverlayLayers,
   parseOverlayLayers,
 } from "@/lib/overlay-layers";
+import {
+  encodeNasaNrtLayers,
+  parseNasaDate,
+  parseNasaNrtLayers,
+} from "@/lib/nasa-nrt/layers";
+import type { NasaNrtLayerKey } from "@/lib/nasa-nrt/types";
 
 export { DEFAULT_LAYERS } from "@/lib/map-url-aliases";
 
@@ -65,6 +71,8 @@ export function useMapUrlState() {
       cluster: parseClusterId(searchParams.get("cluster")),
       krbJenis: parseKrbJenis(searchParams.get("krbJenis")),
       overlays: parseOverlayLayers(searchParams.get("overlays")),
+      nasaLayers: parseNasaNrtLayers(searchParams.get("nasa")),
+      nasaDate: parseNasaDate(searchParams.get("nasaDate")),
     };
   }, [resolved, searchParams]);
 
@@ -179,6 +187,21 @@ export function useMapUrlState() {
     [push, state.overlays]
   );
 
+  const toggleNasaLayer = useCallback(
+    (key: NasaNrtLayerKey) => {
+      const next = new Set(state.nasaLayers);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      push({ nasa: encodeNasaNrtLayers(Array.from(next)) });
+    },
+    [push, state.nasaLayers],
+  );
+
+  const setNasaDate = useCallback(
+    (ymd: string) => push({ nasaDate: parseNasaDate(ymd) }),
+    [push],
+  );
+
   return {
     state,
     setView,
@@ -190,5 +213,7 @@ export function useMapUrlState() {
     toggleDisasterJenis,
     toggleFasilitasUmum,
     toggleOverlay,
+    toggleNasaLayer,
+    setNasaDate,
   };
 }

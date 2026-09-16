@@ -14,7 +14,7 @@ import {
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
 import type { AreaLayerKey, LegendModel, MarkerLayerKey, OverlayLayerKey } from "@/lib/types";
-import { LAYER_COLORS } from "@/lib/layer-colors";
+import { COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
 import { MapLayerIcon } from "@/components/map/MapLayerIcon";
 import {
   DISASTER_JENIS,
@@ -39,6 +39,7 @@ import {
 import { KRB_JENIS_KODE } from "@/lib/krb-by-kab";
 import { STATUS_HEX } from "@/lib/chart-colors";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { NASA_NRT_LAYER_KEYS, type FirmsResponse, type NasaNrtLayerKey } from "@/lib/nasa-nrt/types";
 import { cn } from "@/lib/utils";
 
 async function fetchAreaLegend(key: AreaLayerKey): Promise<LegendModel | null> {
@@ -100,6 +101,10 @@ export function MapToolbar({
   onToggleFasilitasUmum,
   overlays = [],
   onToggleOverlay,
+  nasaLayers = [],
+  nasaDate,
+  onToggleNasaLayer,
+  onNasaDateChange,
 }: {
   areaLayer: AreaLayerKey | null;
   krbJenis?: string | null;
@@ -112,6 +117,10 @@ export function MapToolbar({
   onToggleFasilitasUmum: () => void;
   overlays?: OverlayLayerKey[];
   onToggleOverlay?: (k: OverlayLayerKey) => void;
+  nasaLayers?: NasaNrtLayerKey[];
+  nasaDate?: string;
+  onToggleNasaLayer?: (k: NasaNrtLayerKey) => void;
+  onNasaDateChange?: (ymd: string) => void;
 }) {
   const t = useTranslations("map");
   const {
@@ -133,11 +142,22 @@ export function MapToolbar({
     enabled: areaLayer != null && tab === "legenda",
   });
 
+  const { data: firms } = useQuery({
+    queryKey: qk.nasaNrtFirms,
+    queryFn: async () => {
+      const res = await fetchPublicApi("/api/nasa-nrt/firms");
+      return (await res.json()) as FirmsResponse;
+    },
+    enabled: nasaLayers.includes("firmsHotspots"),
+    staleTime: 5 * 60_000,
+  });
+
   const parentDisasterOn = markerLayers.includes("disasterEvents");
   const parentFasilitasOn = FASILITAS_UMUM_LAYER_KEYS.some((k) =>
     markerLayers.includes(k)
   );
-  const activeCount = markerLayers.length + (areaLayer ? 1 : 0) + overlays.length;
+  const activeCount =
+    markerLayers.length + (areaLayer ? 1 : 0) + overlays.length + nasaLayers.length;
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: "distribusi", label: t("distribusi") },
@@ -516,8 +536,62 @@ export function MapToolbar({
                   })}
                 </fieldset>
               ))}
+              <fieldset className="map-chrome-inset space-y-0.5 rounded-xl p-2">
+                <legend className={cn("mb-1 px-1 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                  {t("nasaNrtGroup")}
+                </legend>
+                <Chip tone="warn" className={cn("mb-1 px-2 py-0.5", TYPE_FLOOR_CLASS)}>
+                  {t("nasaNrtPill")}
+                </Chip>
+                {NASA_NRT_LAYER_KEYS.map((key) => {
+                  const active = nasaLayers.includes(key);
+                  return (
+                    <label
+                      key={key}
+                      className="map-option"
+                      data-active={active ? "true" : "false"}
+                    >
+                      <input
+                        className="map-check"
+                        type="checkbox"
+                        checked={active}
+                        onChange={() => onToggleNasaLayer?.(key)}
+                      />
+                      <MapLayerIcon fallbackColor={COLOR_TOKENS.awas} />
+                      <span className="min-w-0 flex-1">
+                        <span className="leading-snug">{t(key)}</span>
+                        {key === "firmsHotspots" && firms?.metadata.status === "unconfigured" ? (
+                          <Chip tone="danger" className={cn("mt-0.5 px-2 py-0.5", TYPE_FLOOR_CLASS)}>
+                            {t("nasaNrtFirmsUnconfigured")}
+                          </Chip>
+                        ) : null}
+                        {key === "firmsHotspots" && firms?.metadata.status === "upstream" ? (
+                          <Chip tone="danger" className={cn("mt-0.5 px-2 py-0.5", TYPE_FLOOR_CLASS)}>
+                            {t("nasaNrtFirmsUpstream")}
+                          </Chip>
+                        ) : null}
+                      </span>
+                    </label>
+                  );
+                })}
+                <label className={cn("mt-2 block px-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                  {t("nasaNrtDate")}
+                  <input
+                    type="date"
+                    className="mt-1 w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-2 py-1 text-[var(--text)]"
+                    value={nasaDate ?? ""}
+                    onChange={(e) => onNasaDateChange?.(e.target.value)}
+                  />
+                </label>
+                <p className={cn("px-1 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                  {t("nasaNrtCloudHint")}
+                </p>
+              </fieldset>
               <p className={cn("px-1 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                 {t("overlayAttribution")}
+              </p>
+              <p className={cn("px-1 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                {t("nasaNrtAttribution")}
               </p>
             </div>
           )}
@@ -655,7 +729,25 @@ export function MapToolbar({
                   </ul>
                 </div>
               )}
-              {markerLayers.length === 0 && !areaLayer && overlays.length === 0 && (
+              {nasaLayers.length > 0 && (
+                <div className="map-chrome-inset rounded-xl p-3">
+                  <div className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+                    {t("nasaNrtGroup")}
+                  </div>
+                  <ul className="space-y-2">
+                    {nasaLayers.map((key) => (
+                      <li key={key} className="flex items-center gap-2.5">
+                        <MapLayerIcon fallbackColor={COLOR_TOKENS.awas} size="sm" />
+                        <span>{t(key)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className={cn("mt-3 leading-snug text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                    {t("nasaNrtAttribution")}
+                  </p>
+                </div>
+              )}
+              {markerLayers.length === 0 && !areaLayer && overlays.length === 0 && nasaLayers.length === 0 && (
                 <p className="rounded-xl border border-dashed border-[var(--border)] px-3 py-4 text-center text-[var(--text-dim)]">
                   {t("legendEmpty")}
                 </p>

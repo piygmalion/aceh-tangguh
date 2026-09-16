@@ -152,6 +152,19 @@ async function resolveStaticGet(input: string): Promise<Response> {
   if (path === "/api/weather/inovasi") {
     return jsonResponse(await fetchJson("/fixtures/weather-inovasi-snapshot.json"));
   }
+  if (path === "/api/nasa-nrt/firms") {
+    const { emptyFirmsResponse } = await import("@/lib/nasa-nrt/types");
+    return jsonResponse(emptyFirmsResponse("unconfigured"), 503);
+  }
+  if (path === "/api/nasa-nrt/gibs/time") {
+    const { defaultGibsDate } = await import("@/lib/nasa-nrt/layers");
+    return jsonResponse({
+      official: false,
+      validation: "unofficial_nrt",
+      defaultDate: defaultGibsDate(),
+      source: "utc-yesterday",
+    });
+  }
   if (path === "/api/peringatan-dini") {
     const [weather, sipongi, tatonas] = await Promise.all([
       fetchJson("/fixtures/weather-snapshot.json") as Promise<WeatherApiResponse>,

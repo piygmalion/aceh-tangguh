@@ -456,6 +456,32 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     href: "https://sipongi.gakkum.kehutanan.go.id/peta",
   },
   {
+    id: "nasa-gibs",
+    titleId: "NASA GIBS — citra NRT (bukan resmi)",
+    titleEn: "NASA GIBS — NRT imagery (unofficial)",
+    source:
+      "NASA EOSDIS Global Imagery Browse Services WMTS EPSG:3857 (best). Allowlist: VIIRS_SNPP_CorrectedReflectance_TrueColor, VIIRS_SNPP_Thermal_Anomalies_375m_Night. TIME is UTC calendar day.",
+    license: "NASA GIBS / EOSDIS — attribution required. Not an official BPBA warning.",
+    date: "Near-real-time daily tiles (default UTC yesterday)",
+    format: "WMTS JPEG/PNG → MapLibre raster on /peta (?nasa=)",
+    usedFor:
+      "Visual context on the map only. Does not create calon kejadian. Does not replace Sipongi, BMKG, or MAGMA. Cloudy tiles are not “no fire”.",
+    href: "https://nasa-gibs.github.io/gibs-api-docs/access-basics/",
+  },
+  {
+    id: "nasa-firms",
+    titleId: "NASA FIRMS — hotspot NRT (bukan resmi)",
+    titleEn: "NASA FIRMS — NRT hotspots (unofficial)",
+    source:
+      "FIRMS Area CSV VIIRS_SNPP_NRT clipped to ACEH_BBOX. Server-only FIRMS_MAP_KEY. GET /api/nasa-nrt/firms.",
+    license: "NASA FIRMS / EOSDIS — attribution required. Unofficial NRT; confirm against Sipongi.",
+    date: "Live CSV (~10 min cache); unconfigured or upstream = HTTP 503",
+    format: "CSV → GeoJSON FeatureCollection",
+    usedFor:
+      "Map ?nasa=firmsHotspots visual confirmation of Sipongi. Never overlay_live_features. Never calon. Never Peringatan Dini card.",
+    href: "https://firms.modaps.eosdis.nasa.gov/api/",
+  },
+  {
     id: "tatonas-monitoring",
     titleId: "Tatonas — pos hidrologi Aceh",
     titleEn: "Tatonas — Aceh hydrology stations",

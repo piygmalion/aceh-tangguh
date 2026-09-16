@@ -23,6 +23,8 @@ function MapWorkspaceInner() {
     toggleDisasterJenis,
     toggleFasilitasUmum,
     toggleOverlay,
+    toggleNasaLayer,
+    setNasaDate,
   } = useMapUrlState();
   const [villageSelection, setVillageSelection] =
     useState<VillageClickSelection | null>(null);
@@ -45,6 +47,8 @@ function MapWorkspaceInner() {
         villageSelection={villageSelection}
         onVillageClick={setVillageSelection}
         overlays={state.overlays}
+        nasaLayers={state.nasaLayers}
+        nasaDate={state.nasaDate}
       />
       {villageSelection && isAdminLodArea(state.areaLayer) ? (
         <AreaProfilPanel
@@ -66,6 +70,10 @@ function MapWorkspaceInner() {
         onToggleFasilitasUmum={toggleFasilitasUmum}
         overlays={state.overlays}
         onToggleOverlay={toggleOverlay}
+        nasaLayers={state.nasaLayers}
+        nasaDate={state.nasaDate}
+        onToggleNasaLayer={toggleNasaLayer}
+        onNasaDateChange={setNasaDate}
       />
       <MapSettings
         basemap={state.basemap}
