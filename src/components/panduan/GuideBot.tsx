@@ -39,6 +39,7 @@ const CHIP_QUERY: Record<GuideChipKey, { id: string; en: string }> = {
   peringatan: { id: "peringatan dini", en: "early warning" },
   cuaca: { id: "cuaca", en: "weather" },
   kejadian: { id: "kejadian aktif", en: "active incidents" },
+  analisisData: { id: "analisis data", en: "disaster analysis" },
   destana: { id: "destana", en: "destana" },
   nomor: { id: "nomor penting", en: "emergency contacts" },
   lapor: { id: "cara lapor", en: "how to report" },

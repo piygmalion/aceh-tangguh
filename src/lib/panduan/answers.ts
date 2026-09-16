@@ -165,15 +165,25 @@ function composeFaq(match: GuideMatch, ctx: GuideContext, locale: GuideLocale): 
       : match.intent === "destana" && (ctx.destanaDesa || ctx.destana)
         ? composeDestana(match, ctx, locale).body
         : "";
+  const links = [
+    link(faq.href, faq.labelKey, {
+      hash: faq.hash,
+      accent: faq.href.startsWith("/lapor"),
+    }),
+  ];
+  if (match.intent === "analisisData") {
+    for (const extra of [
+      link("/analisis-data", "linkAnalisisData"),
+      link("/data-bencana", "linkDataBencana"),
+      link("/publikasi", "linkPublikasi"),
+    ]) {
+      if (!links.some((row) => row.href === extra.href)) links.push(extra);
+    }
+  }
   return {
     intent: match.intent,
     body: [t(locale, faq.bodyId, faq.bodyEn), live].filter(Boolean).join(" "),
-    links: [
-      link(faq.href, faq.labelKey, {
-        hash: faq.hash,
-        accent: faq.href.startsWith("/lapor"),
-      }),
-    ],
+    links,
     source: t(locale, "FAQ kurasi situs", "Curated site FAQ"),
   };
 }
@@ -445,13 +455,13 @@ function composeAnalisisData(locale: GuideLocale): GuideAnswer {
     intent: "analisisData",
     body: t(
       locale,
-      "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana. Filter jenis, kabupaten, dan waktu langsung mengubah grafik dan URL. Bukan artikel publikasi, dan angka DIBI tidak dijumlahkan ke total halaman itu.",
-      "The Data analysis page slices the same event catalogue as Disaster data. Type, district, and time filters update the charts and the URL immediately. It is not a publication article, and DIBI figures are not added into that page’s totals."
+      "Halaman Analisis data memotong katalog kejadian yang sama dengan Data bencana. Filter jenis, kabupaten/kota, waktu, dan metrik menulis URL yang bisa dibagikan; grafik batang dan tren waktu mengikuti filter itu. Bukan artikel publikasi Tanggapi Aceh (BTT) di tanggapi.acehprov.go.id, dan angka DIBI nasional tidak dijumlahkan ke total halaman itu. Jika data tertunda, bilang tertunda — angka korban tidak saya isi sendiri.",
+      "The Data analysis page slices the same event catalogue as Disaster data. Type, district/city, time, and metric filters write a shareable URL; bar charts and the time trend follow that filter. It is not a Tanggapi Aceh (BTT) publication article at tanggapi.acehprov.go.id, and national DIBI figures are not added into that page’s totals. If data is delayed, say so — I will not invent casualty figures."
     ),
     links: [
       link("/analisis-data", "linkAnalisisData"),
       link("/data-bencana", "linkDataBencana"),
-      link("/peta", "linkPeta"),
+      link("/publikasi", "linkPublikasi"),
     ],
     source: t(locale, "Katalog kejadian publik", "Public event catalogue"),
   };
