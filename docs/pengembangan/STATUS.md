@@ -624,3 +624,15 @@ Koordinator + data + backend + analis membaca ulang 70 rute API dan 35 migrasi (
 Perbaikan aman di review ini: `POST /api/sik/public` memakai `guardPublicPost` (kontrak `attack-surface.md` ~8/jam); uji inventaris mengunci enam rute POST publik; STATUS tidak lagi mengklaim cron overlay 404.
 
 Tertutup di G15–G16: GET maritim hanya baca (BE-16); hook peta memakai tabel AN-19 (FE-17); dump RPC marker (DATA-11, tidak di-apply); `matchesKabScope` fail-closed + filter `/sik/resource` (AN-20 / BE-17 / AN-21). DATA-4 dan Juklak P2 tidak dibuka. Kalimat gelombang 2–12 yang menyebut secret/migrasi “belum diterapkan dari tiket ini” adalah catatan waktu tiket, bukan fakta operasional hari ini.
+
+## Tindak lanjut — Daily Brief situasi (AN-55 / FE-58)
+
+Compose v2 halaman pimpinan + kartu operasional dari umpan hidup. Ticket FE-58 (bukan FE-55 map clusters). JSON summary version 2; feeds v1 tetap untuk WA. Jangan DATA-4 / G32.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| AN-55 | analis | Naskah Daily Brief situasi | jurnal/AN-55.md | selesai |
+| BE-39 | backend | Compose v2 + loader | jurnal/BE-39.md | selesai |
+| FE-58 | frontend | /brief/[ymd] pimpinan + kartu | jurnal/FE-58.md | selesai |
+| AN-56 | analis | Uji penerimaan situasi | jurnal/AN-56.md | selesai |
+

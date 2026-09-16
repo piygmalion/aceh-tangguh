@@ -64,6 +64,21 @@ describe("AN-39 Daily Brief acceptance", () => {
     assert.doesNotMatch(cron, /composeGroundedAnswer|PANDUAN_LLM/);
   });
 
+  it("AN-56 keeps v1 feed layout, empty date, and no invented casualties or KRB", () => {
+    const page = read("src/app/[locale]/brief/[ymd]/page.tsx");
+    const situasi = read("src/components/daily-brief/DailyBriefSituasi.tsx");
+    assert.match(page, /DailyBriefBody/);
+    assert.match(situasi, /isDailyBriefV2/);
+    assert.match(situasi, /FeedList/);
+    assert.match(situasi, /priorityFeed|notOfficialSiaga/);
+    assert.doesNotMatch(situasi, /kejadian_korban|IRBI|KRB|loggerKind/);
+    assert.doesNotMatch(page, /phone_enc|subscriber/);
+    assert.match(ns("id").priorityFeed, /Prioritas pemantauan umpan/);
+    assert.match(ns("en").priorityFeed, /Feed monitoring priority/);
+    assert.match(ns("id").belumAda, /Belum ada/);
+    assert.match(ns("en").notFound, /No brief has been composed/);
+  });
+
   it("production-config warns when the daily brief secret is unset", () => {
     const src = read("src/lib/security/production-config.ts");
     assert.match(src, /DAILY_BRIEF_CRON_SECRET/);
