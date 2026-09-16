@@ -318,11 +318,11 @@ Kontrak: [07-konsep-caching.md](07-konsep-caching.md). AN-ECC-6 mengunci L0–L3
 
 ### AN-51 — naskah GET PD baca L1 (C1)
 
-Jurnal: `jurnal/AN-51.md`. Tulisan. MAGMA/Sipongi/Tatonas GET tanpa scrape. Jangan AN-47. Jangan G36. Jangan DATA-4.
+Jurnal: `jurnal/AN-51.md`. Kontrak. MAGMA/Sipongi/Tatonas GET tanpa scrape. Jangan AN-47. Jangan G36. Jangan DATA-4.
 
 ### AN-52 — uji GET PD tanpa scrape
 
-Jurnal: `jurnal/AN-52.md`. Setelah BE-37. Tes sumber + cabang kartu. Jangan PoC. Jangan DATA-4.
+Jurnal: `jurnal/AN-52.md`. Isolasi GET + cabang L1 kosong vs cache stale. Jangan PoC. Jangan DATA-4.
 
 ## Saat menutup tiket
 

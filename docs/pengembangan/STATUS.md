@@ -560,15 +560,13 @@ Skill `search-first` + `aceh-ecc`. Naskah: [07-konsep-caching.md](07-konsep-cach
 
 ## Gelombang ECC-C1 — GET PD baca L1
 
-Kontrak [AN-51.md](jurnal/AN-51.md). MAGMA / Sipongi / Tatonas pada `GET /api/peringatan-dini` hanya SELECT overlay + ledger. Cron tetap scrape `no-store`. Agregat PD tetap HTTP 200. Overlay hidup tetap 200 vs 503. Jangan AN-47. Jangan G36. Jangan DATA-4. Jangan merge cuaca. Jangan Upstash overlay.
+Kontrak [AN-51.md](jurnal/AN-51.md). MAGMA / Sipongi / Tatonas pada `GET /api/peringatan-dini` hanya SELECT overlay + ledger. Cron tetap scrape `no-store` lalu `revalidateTag` `peringatan-*`. Agregat PD tetap HTTP 200. Overlay hidup tetap 200 vs 503. MAGMA L1 kosong = `unavailable` tanpa event (bukan snapshot Bener Meriah). Jangan AN-47. Jangan G36. Jangan DATA-4. Jangan merge cuaca. Jangan Upstash overlay.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
 | AN-51 | analis | Naskah GET PD baca L1 | jurnal/AN-51.md | siap-kode |
-| BE-37 | backend | GET PD dari overlay + tag cron | jurnal/BE-37.md | draf |
-| AN-52 | analis | Uji GET PD tanpa scrape hulu | jurnal/AN-52.md | draf |
-
-BE-37 boleh dikode setelah bacaan ulang AN-51. AN-52 menutup C1. Jangan commit dari tiket naskah ini.
+| BE-37 | backend | GET PD dari overlay + tag cron | jurnal/BE-37.md | selesai |
+| AN-52 | analis | Uji GET PD tanpa scrape hulu | jurnal/AN-52.md | selesai |
 
 ## Naskah — urutan keparahan vs katalog (AN-47)
 

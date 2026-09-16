@@ -60,15 +60,15 @@ Tag yang sudah ada (harus di-revalidate dari penulis L1):
 | --- | --- | --- | --- |
 | `maritime-perairan` | `getCachedAcehWaterForecasts` | 3600 s | cron overlay |
 | `weather` | `getCachedForecasts` | 3600 s | refresh cuaca |
-| `peringatan-magma` | `getCachedMagmaLive` | 600 s | **tidak** — GET masih scrape hulu |
-| `peringatan-sipongi` | `getCachedSipongiLive` | 600 s | **tidak** — GET masih scrape hulu |
-| `peringatan-tatonas` | `getCachedTatonasLive` | 600 s | **tidak** — GET masih scrape hulu |
+| `peringatan-magma` | SELECT `magmaQuakes` (`readOverlayLiveForPd`) | 600 s | cron overlay (BE-37) |
+| `peringatan-sipongi` | SELECT `sipongiHotspots` (`readOverlayLiveForPd`) | 600 s | cron overlay (BE-37) |
+| `peringatan-tatonas` | SELECT `tatonasStations` (`readOverlayLiveForPd`) | 600 s | cron overlay (BE-37) |
 | `dibi` | `getCachedDibiAceh` | 600 s | tidak (hulu publik + fixture) |
 | `tatonas-dashboard-key` | kunci tanda tangan | 3600 s | bukan data overlay |
 
 Fetch Data Cache HTTP: `next: { revalidate }` pada BMKG cuaca / Open-Meteo / Sentinel (6 jam). Umpan overlay di cron tetap `cache: "no-store"` agar ingest tidak memakai salinan CDN.
 
-**Celah konsep (bukan tiket kode di naskah ini):** kartu PD MAGMA / Sipongi / Tatonas masih scrape pada GET lewat L2, sementara overlay peta untuk sumber yang sama sudah L1-only. Sasaran C1: GET PD membaca L1 (atau turunan yang sama) + cron `revalidateTag` tag `peringatan-*`. Jangan mengarang titik. Jangan DATA-4. Jangan menimpa G36 (AN-49 / BE-36 / FE-51 unggah CMS).
+**C1 (AN-51 / BE-37 / AN-52):** kartu PD MAGMA / Sipongi / Tatonas membaca L1 yang sama dengan overlay peta. `unstable_cache` membungkus SELECT, bukan scrape. Cron overlay memanggil `revalidateTag` `peringatan-*` setelah persist. Jangan mengarang titik. Jangan DATA-4. Jangan menimpa G36.
 
 ## L3 — klien
 
@@ -108,7 +108,7 @@ ID di bawah **bukan** AN-47 (keparahan vs katalog) dan **bukan** G36 (AN-49 / DA
 | BE-37 | backend | GET `/api/peringatan-dini` baca L1; perkaya properties cron; `revalidateTag` `peringatan-*` |
 | AN-52 | analis | Uji: GET tidak memanggil hulu; cron tetap `no-store`; `npm test` |
 
-Jangan membuka kode BE-37 sebelum AN-51 `siap-kode`. Jangan menulis nilai secret. Jangan merge `/api/weather`. Jangan menimpa unggah `cms-media`.
+C1 dikode di BE-37 setelah AN-51 `siap-kode`. Jangan menulis nilai secret. Jangan merge `/api/weather`. Jangan menimpa unggah `cms-media`. Jangan mengulang scrape-GET.
 
 ### ECC-C2 — katalog tag (opsional)
 

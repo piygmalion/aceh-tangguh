@@ -96,7 +96,7 @@ export function formatCoordDepth(raw: MagmaRaw): string {
   return `${Math.abs(lat).toFixed(2)}°${ns} ${Math.abs(lon).toFixed(2)}°${ew}${depth}`;
 }
 
-function occurredIso(raw: MagmaRaw): string | null {
+export function occurredIso(raw: MagmaRaw): string | null {
   const wib = raw.datetime_wib || raw.datetime_wib_str;
   if (wib) {
     const iso = wib.trim().replace(" ", "T");
@@ -112,7 +112,7 @@ function occurredIso(raw: MagmaRaw): string | null {
   return null;
 }
 
-function magmaTone(event: MagmaEvent | null, raw?: MagmaRaw): PeringatanTone {
+export function magmaTone(event: MagmaEvent | null, raw?: MagmaRaw): PeringatanTone {
   if (!event) return "neutral";
   const mag = event.magnitude ?? 0;
   if ((raw?.merusak ?? 0) > 0 || mag >= 5) return "danger";
@@ -120,7 +120,7 @@ function magmaTone(event: MagmaEvent | null, raw?: MagmaRaw): PeringatanTone {
   return "warn";
 }
 
-function normalizeEvent(raw: MagmaRaw): MagmaEvent {
+export function normalizeEvent(raw: MagmaRaw): MagmaEvent {
   const mag = typeof raw.magnitude === "number" ? raw.magnitude : null;
   const unit = raw.magtype || "SR";
   const volcano = (raw.nearest_volcano ?? "").trim();
