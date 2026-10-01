@@ -19,7 +19,7 @@ import type { DibiMetrics } from "@/lib/dibi-types";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { useDibi } from "./data";
-import { angka, angkaRingkas, rupiahDariJuta } from "./format";
+import { angka, angkaRingkas, rupiahDariJuta, tanggalCadangan } from "./format";
 import { Bar, Figure, PanelError, PanelSkeleton, Sumber } from "./primitives";
 
 const selectClass =
@@ -157,6 +157,8 @@ export function DataHero() {
   }, [data, yearFrom, yearTo, kabupaten, jenis]);
 
   const updated = data ? formatUpdated(data.metadata.fetched_at, locale) : null;
+  const standbyDate =
+    data?.source === "fixture" ? tanggalCadangan(data.metadata.fetched_at, locale) : null;
   const metrics = view?.counters.metrics ?? null;
   const scopeNote =
     view?.counters.scope === "kabupaten"
@@ -436,9 +438,11 @@ export function DataHero() {
             </p>
 
             <Sumber href={data.metadata.source_url}>
-              {updated
-                ? t("statistik.sumber", { updated })
-                : t("statistik.sumberUndated")}
+              {standbyDate
+                ? t("statistik.sumberCadangan", { date: standbyDate })
+                : updated
+                  ? t("statistik.sumber", { updated })
+                  : t("statistik.sumberUndated")}
             </Sumber>
           </>
         ) : null}

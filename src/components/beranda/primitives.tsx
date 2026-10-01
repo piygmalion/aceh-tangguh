@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
-import { useInView, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import type { ReactNode } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { angka, desimal } from "./format";
 
 /**
- * Counts up to `value` on first view, formatted for the active locale.
+ * Prints the final figure immediately. A short fade-in is opacity only, so a
+ * screenshot never reads a spring value on the way to the real total.
  * The shared NumberTicker formats en-US, which prints 2,526 where Aceh reads 2.526.
  */
 export function StatNumber({
@@ -21,43 +22,21 @@ export function StatNumber({
   className?: string;
 }) {
   const locale = useLocale();
-  const ref = useRef<HTMLSpanElement>(null);
   const reduced = useReducedMotion();
-  const motionValue = useMotionValue(0);
-  const spring = useSpring(motionValue, { damping: 60, stiffness: 110 });
-  const inView = useInView(ref, { once: true, margin: "0px 0px -80px 0px" });
-
-  const format = (n: number) =>
-    decimals === 0 ? angka(n, locale) : desimal(n, decimals, locale);
-
-  useEffect(() => {
-    if (!inView) return;
-    if (reduced) {
-      if (ref.current) ref.current.textContent = format(value);
-      return;
-    }
-    motionValue.set(value);
-    // format is derived from `decimals` and `locale`, which are covered below.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, motionValue, reduced, value, decimals, locale]);
-
-  useEffect(
-    () =>
-      spring.on("change", (latest) => {
-        if (ref.current) ref.current.textContent = format(latest);
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [spring, decimals, locale],
-  );
+  const text = decimals === 0 ? angka(value, locale) : desimal(value, decimals, locale);
+  const fade = reduced === false;
 
   return (
     <span className={cn("tabular-nums", className)}>
-      {/* Assistive tech reads the real figure; the counter below is decoration only,
-          otherwise every off-screen number is announced as zero. */}
-      <span className="sr-only">{format(value)}</span>
-      <span ref={ref} aria-hidden>
-        {format(reduced ? value : 0)}
-      </span>
+      <span className="sr-only">{text}</span>
+      <motion.span
+        aria-hidden
+        initial={fade ? { opacity: 0 } : false}
+        animate={{ opacity: 1 }}
+        transition={fade ? { duration: 0.3, ease: "easeOut" } : { duration: 0 }}
+      >
+        {text}
+      </motion.span>
     </span>
   );
 }

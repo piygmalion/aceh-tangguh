@@ -78,6 +78,18 @@ describe("FE-62 beranda mengikuti urutan SIAGA", () => {
     }
     assert.match(id.beranda.statistik.sumber, /DIBI BNPB/);
     assert.match(en.beranda.statistik.sumber, /DIBI BNPB/);
+    assert.match(id.beranda.statistik.sumberCadangan, /data cadangan per \{date\}/);
+    assert.match(en.beranda.statistik.sumberCadangan, /standby data as of \{date\}/);
+    const hero = read("src/components/beranda/DataHero.tsx");
+    assert.match(hero, /tanggalCadangan\(data\.metadata\.fetched_at/);
+    assert.doesNotMatch(hero, /new Date\(\)/);
+    const stat = read("src/components/beranda/primitives.tsx");
+    assert.match(stat, /sr-only/);
+    assert.match(stat, /useReducedMotion/);
+    assert.match(stat, /duration: 0\.3/);
+    assert.doesNotMatch(stat, /useSpring|useMotionValue|textContent/);
+    const footer = read("src/components/SiteFooter.tsx");
+    assert.doesNotMatch(footer, /Placeholder|Kominsa|brand final/);
     assert.match(id.beranda.statistik.menderitaNote, /Tidak dipisah/);
     const blob = JSON.stringify(id.beranda) + JSON.stringify(en.beranda);
     assert.doesNotMatch(blob, /App Store|Google Play|Kejadian Bahaya/);
