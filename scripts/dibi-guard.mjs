@@ -19,6 +19,9 @@ export function assessDibiLive(live, baselineKejadian) {
   if (typeof total !== "number" || !Number.isFinite(total) || sum == null || total !== sum) {
     return { ok: false, reason: "year-sum-mismatch" };
   }
+  if (!Array.isArray(live?.by_kabupaten) || live.by_kabupaten.length === 0) {
+    return { ok: false, reason: "empty-kabupaten" };
+  }
   if (
     typeof baselineKejadian === "number" &&
     Number.isFinite(baselineKejadian) &&

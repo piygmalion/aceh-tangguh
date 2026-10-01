@@ -159,7 +159,7 @@ async function dibiFetch(url, { cookie, csrf, body } = {}) {
 function queryBody(sliceId, columns) {
   return {
     datasource: { id: 1, type: "table" },
-    force: false,
+    force: process.env.DIBI_REFRESH_FORCE === "true",
     queries: [
       {
         filters: FILTERS,

@@ -70,13 +70,15 @@ function Counter({
   label,
   note,
   children,
+  className,
 }: {
   label: string;
   note?: string;
   children: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="bg-[var(--band-bg)] px-4 py-4 text-[var(--band-fg)]">
+    <div className={cn("bg-[var(--band-bg)] px-4 py-4 text-[var(--band-fg)]", className)}>
       <p className={cn("text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{label}</p>
       <div className="mt-1">{children}</div>
       {note ? (
@@ -132,7 +134,7 @@ function Counters({
     <div
       id="dibi"
       data-number-band
-      className="mt-8 overflow-hidden rounded-2xl border border-[var(--band-bg)] border-t-[3px] border-t-[var(--band-rule)] bg-[var(--band-bg)]"
+      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-bg)] border-t-[3px] border-t-[var(--band-rule)] bg-[var(--band-bg)]"
     >
       <div className="grid grid-cols-2 gap-px bg-white/15 sm:grid-cols-3 lg:grid-cols-6">
         <Counter label={t("statistik.kejadian")}>
@@ -147,7 +149,7 @@ function Counters({
         <Counter label={t("statistik.luka")}>
           <BandValue value={metrics ? metrics.luka_sakit : null} locale={locale} missing={missing} />
         </Counter>
-        <Counter label={t("statistik.menderita")} note={t("statistik.menderitaNote")}>
+        <Counter className="col-span-2 sm:col-span-1" label={t("statistik.menderita")} note={t("statistik.menderitaNote")}>
           <BandValue
             value={menderita ? menderita.n : null}
             decimals={menderita?.decimals ?? 0}
@@ -156,7 +158,7 @@ function Counters({
             missing={missing}
           />
         </Counter>
-        <Counter label={t("dibi.kerugian")} note={t("dibi.kerugianNote")}>
+        <Counter className="col-span-2 sm:col-span-1" label={t("dibi.kerugian")} note={t("dibi.kerugianNote")}>
           <BandValue
             value={kerugian ? kerugian.n : null}
             decimals={kerugian?.decimals ?? 0}
@@ -257,7 +259,7 @@ export function DataHero() {
 
         {data && view ? (
           <>
-            <fieldset className="mt-8" aria-describedby="dibi-catatan">
+            <fieldset className="relative z-40 mt-8" aria-describedby="dibi-catatan">
               <legend className="sr-only">{t("statistik.filtersAria")}</legend>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div>

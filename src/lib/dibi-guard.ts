@@ -3,7 +3,7 @@ import type { DibiAcehPayload } from "./dibi-types";
 /** Reject a live refresh when kejadian falls by more than this share of the last good fixture. */
 export const DIBI_KEJADIAN_DROP_LIMIT = 0.02;
 
-export type DibiGuardReason = "year-sum-mismatch" | "kejadian-drop";
+export type DibiGuardReason = "year-sum-mismatch" | "kejadian-drop" | "empty-kabupaten";
 
 export type DibiGuardVerdict =
   | { ok: true }
@@ -28,17 +28,26 @@ export function sumTahunKejadian(rows: readonly YearRow[] | undefined): number |
 
 /**
  * A live DIBI payload is usable only when the published total matches the year
- * rows, and kejadian has not dropped by more than 2% from the last validated fixture.
- * A drop of exactly 2% still passes. A missing baseline only checks the year sum.
+ * rows, `by_kabupaten` has at least one row, and kejadian has not dropped by
+ * more than 2% from the last validated fixture.
+ * A drop of exactly 2% still passes. A missing baseline only checks the year sum
+ * and the kabupaten list.
  */
 export function assessDibiLive(
-  live: { totals?: { kejadian?: number }; by_tahun?: readonly YearRow[] },
+  live: {
+    totals?: { kejadian?: number };
+    by_tahun?: readonly YearRow[];
+    by_kabupaten?: readonly unknown[];
+  },
   baselineKejadian: number | null | undefined,
 ): DibiGuardVerdict {
   const total = live?.totals?.kejadian;
   const sum = sumTahunKejadian(live?.by_tahun);
   if (typeof total !== "number" || !Number.isFinite(total) || sum == null || total !== sum) {
     return { ok: false, reason: "year-sum-mismatch" };
+  }
+  if (!Array.isArray(live?.by_kabupaten) || live.by_kabupaten.length === 0) {
+    return { ok: false, reason: "empty-kabupaten" };
   }
   if (
     typeof baselineKejadian === "number" &&

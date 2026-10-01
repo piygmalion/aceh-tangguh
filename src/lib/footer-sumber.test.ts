@@ -15,10 +15,10 @@ const LOCKED_FOOTER_IDS = [
   "compiled-r3p",
   "publikasi-kegiatan",
   "publikasi-btt",
+  "dibi-aceh",
 ] as const;
 
 const EXCLUDED_FOOTER_IDS = [
-  "dibi-aceh",
   "magma-gempa",
   "sipongi-hotspot",
   "village-borders",
@@ -26,7 +26,7 @@ const EXCLUDED_FOOTER_IDS = [
 
 describe("footer sumber column", () => {
   it("lists the locked catalog sources only and does not invent ids", () => {
-    assert.equal(FOOTER_SUMBER.length, 4);
+    assert.equal(FOOTER_SUMBER.length, 5);
     assert.equal(FOOTER_SUMBER.length, FOOTER_SUMBER_IDS.length);
     const catalogIds = new Set(DATA_SOURCES.map((row) => row.id));
     for (const row of FOOTER_SUMBER) {
@@ -41,13 +41,16 @@ describe("footer sumber column", () => {
       const label = `${row.labelId} ${row.labelEn}`;
       assert.doesNotMatch(label, /APBA|PRRPKA|anggaran|PERGUB/i);
     }
-    assert.equal(idSet.has("dibi-aceh"), false);
+    assert.equal(idSet.has("dibi-aceh"), true);
+    const dibi = FOOTER_SUMBER.find((row) => row.id === "dibi-aceh");
+    assert.equal(dibi?.labelId, "DIBI BNPB");
+    assert.equal(dibi?.labelEn, "DIBI BNPB");
     assert.equal(idSet.has("magma-gempa"), false);
     assert.equal(idSet.has("sipongi-hotspot"), false);
     assert.equal(idSet.has("village-borders"), false);
   });
 
-  it("keeps DIBI / MAGMA / Sipongi / Geoportal in the catalog, not the footer", () => {
+  it("keeps MAGMA / Sipongi / Geoportal in the catalog, not the footer", () => {
     const catalogIds = new Set(DATA_SOURCES.map((row) => row.id));
     const footerIdSet = new Set<string>(FOOTER_SUMBER_IDS);
     for (const id of EXCLUDED_FOOTER_IDS) {

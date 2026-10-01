@@ -5,6 +5,11 @@ on:
     # Weekday 09:00 WIB (Asia/Jakarta, UTC+7) — not midnight
     - cron: "0 2 * * 1-5"
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Bypass the Superset chart cache for this manual run"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -20,6 +25,8 @@ jobs:
           node-version: "20"
 
       - name: Build DIBI Aceh fixture
+        env:
+          DIBI_REFRESH_FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force == true && 'true' || 'false' }}
         run: npm run build:dibi
 
       - name: Validate and commit fixture if changed
@@ -61,3 +68,12 @@ jobs:
           fi
         env:
           FILE: public/fixtures/dibi-aceh.json
+
+      - name: Report failure
+        if: failure()
+        run: |
+          {
+            echo "### DIBI refresh failed"
+            echo "The Aceh fixture was not updated."
+            echo "A manual run can set force to bypass the Superset chart cache. The kejadian guard still rejects a payload whose year rows do not add up, whose event count drops by more than 2 percent, or whose kabupaten list is empty."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -81,7 +81,7 @@ export function Figure({
         <StatNumber value={value} decimals={decimals} />
       </span>
       {unit ? (
-        <span className="text-[0.4em] font-medium uppercase tracking-[0.08em] opacity-65">
+        <span className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] opacity-65">
           {unit}
         </span>
       ) : null}

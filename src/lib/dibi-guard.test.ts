@@ -60,6 +60,15 @@ describe("penjaga payload DIBI", () => {
     assert.deepEqual(assessDibiLive(payload([110]), 100), { ok: true });
   });
 
+  it("rejects a live payload with no kabupaten rows", () => {
+    const live = payload([100]);
+    live.by_kabupaten = [];
+    assert.deepEqual(assessDibiLive(live, 100), { ok: false, reason: "empty-kabupaten" });
+    const missing = payload([100]);
+    delete (missing as { by_kabupaten?: unknown }).by_kabupaten;
+    assert.deepEqual(assessDibiLive(missing, null), { ok: false, reason: "empty-kabupaten" });
+  });
+
   it("keeps the last accepted live payload when the new one fails, else asks for the fixture", () => {
     const good = payload([100, 75]);
     const partial = payload([80], 100);

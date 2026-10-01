@@ -21,11 +21,31 @@ describe("penjaga skrip refresh DIBI", () => {
     const truncated = {
       totals: { kejadian: 2392 },
       by_tahun: [{ kejadian: 2392 }],
+      by_kabupaten: [{ kabupaten: "Aceh Besar" }],
     };
     assert.deepEqual(assessDibiLive(truncated, 2568), { ok: false, reason: "kejadian-drop" });
-    assert.deepEqual(assessDibiLive({ totals: { kejadian: 2569 }, by_tahun: [{ kejadian: 2569 }] }, 2568), {
-      ok: true,
-    });
+    assert.deepEqual(
+      assessDibiLive(
+        {
+          totals: { kejadian: 2569 },
+          by_tahun: [{ kejadian: 2569 }],
+          by_kabupaten: [{ kabupaten: "Aceh Besar" }],
+        },
+        2568,
+      ),
+      { ok: true },
+    );
+    assert.deepEqual(
+      assessDibiLive(
+        {
+          totals: { kejadian: 2569 },
+          by_tahun: [{ kejadian: 2569 }],
+          by_kabupaten: [],
+        },
+        2568,
+      ),
+      { ok: false, reason: "empty-kabupaten" },
+    );
   });
 
   it("fails the refresh script before it writes the fixture", () => {

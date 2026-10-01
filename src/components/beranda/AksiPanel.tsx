@@ -18,11 +18,6 @@ const LANGKAH = [
 
 const LAYANAN = [
   {
-    href: "/destana" as const,
-    namaKey: "aksi.destanaNama",
-    isiKey: "aksi.destanaIsi",
-  },
-  {
     href: "/nomor-penting" as const,
     namaKey: "aksi.nomorNama",
     isiKey: "aksi.nomorIsi",

@@ -60,7 +60,7 @@ function toneKelas(kelas?: string): string {
   if (!kelas) return "text-[var(--text-dim)]";
   const k = kelas.toUpperCase();
   if (k.includes("TINGGI")) return "text-[var(--danger)]";
-  if (k.includes("SEDANG") || k.includes("MEDIUM")) return "text-[var(--warn)]";
+  if (k.includes("SEDANG") || k.includes("MEDIUM")) return "text-[var(--text)]";
   return "text-[var(--info)]";
 }
 

@@ -267,6 +267,7 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
       href={kartu.href}
       target={kartu.external ? "_blank" : undefined}
       rel={kartu.external ? "noopener noreferrer" : undefined}
+      data-peringatan={kartu.key}
       className={kelas}
       aria-label={t("peringatan.ariaKartu", {
         bahaya: kartu.bahaya,
@@ -287,7 +288,7 @@ export function PeringatanBento() {
   const [utama, ...sisanya] = kartu;
 
   return (
-    <section id="status" className="scroll-mt-24 px-4 py-16 md:py-20">
+    <section id="status" className="relative z-40 scroll-mt-24 px-4 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           title={t("peringatan.title")}
