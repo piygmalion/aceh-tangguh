@@ -132,12 +132,26 @@ export function GuideBot() {
   const [session, setSession] = useState<GuideSlots>({});
   const [faq, setFaq] = useState<GuideFaqEntry[]>(STATIC_GUIDE_FAQ);
   const [showBubble, setShowBubble] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [threadReady, setThreadReady] = useState(false);
   const sessionRef = useRef(session);
   sessionRef.current = session;
   const welcomeLock = useRef(false);
 
   const visible = shouldShowGuideBot(pathname);
+
+  useEffect(() => {
+    const sync = () => {
+      setMobileNavOpen(document.documentElement.getAttribute("data-mobile-nav") === "open");
+    };
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-mobile-nav"],
+    });
+    return () => observer.disconnect();
+  }, []);
   const chipKeys = chipsForPathname(pathname);
 
   const dismissBubble = useCallback(() => {
@@ -427,7 +441,13 @@ export function GuideBot() {
   if (!visible && !open) return null;
 
   return (
-    <div className="pointer-events-none fixed bottom-[max(5rem,calc(env(safe-area-inset-bottom)+4.5rem))] right-3 z-[55] flex flex-col items-end gap-2 sm:right-6">
+    <div
+      data-tanggapi
+      className={cn(
+        "pointer-events-none fixed bottom-[max(5rem,calc(env(safe-area-inset-bottom)+4.5rem))] right-3 z-30 flex flex-col items-end gap-2 sm:right-6",
+        mobileNavOpen && "hidden",
+      )}
+    >
       <AnimatePresence>
         {open ? (
           <motion.div
@@ -462,7 +482,7 @@ export function GuideBot() {
         ) : null}
       </AnimatePresence>
       <AnimatePresence>
-        {visible && showBubble && !open ? (
+        {visible && showBubble && !open && !mobileNavOpen ? (
           <motion.div
             key="bubble"
             initial={{ opacity: 0, y: 6 }}

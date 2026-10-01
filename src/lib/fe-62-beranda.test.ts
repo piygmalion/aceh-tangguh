@@ -86,10 +86,30 @@ describe("FE-62 beranda mengikuti urutan SIAGA", () => {
     };
     assert.equal(idFitur.beranda.fitur.analisisTitle, "Analisis data bencana");
     assert.equal(enFitur.beranda.fitur.analisisTitle, "Disaster data analysis");
+    assert.equal(
+      idFitur.beranda.fitur.analisisIsi,
+      "Potong kejadian Aceh menurut jenis, wilayah, dan waktu dari katalog Aceh Tangguh. Agregat DIBI bisa ditampilkan terpisah.",
+    );
+    assert.equal(
+      enFitur.beranda.fitur.analisisIsi,
+      "Slice Aceh events by type, area, and time from the Aceh Tangguh catalog. DIBI aggregates can be shown separately.",
+    );
     assert.equal(idFitur.beranda.fitur.destanaTitle, undefined);
     assert.equal(enFitur.beranda.fitur.destanaTitle, undefined);
+    assert.doesNotMatch(idFitur.beranda.fitur.analisisIsi, /katalog yang sama/);
+    assert.doesNotMatch(enFitur.beranda.fitur.analisisIsi, /same catalogue/);
     assert.doesNotMatch(idFitur.beranda.fitur.analisisIsi, /\d/);
     assert.doesNotMatch(enFitur.beranda.fitur.analisisIsi, /\d/);
+    const idAksi = JSON.parse(read("messages/id.json")) as {
+      beranda: { aksi: Record<string, string> };
+    };
+    const enAksi = JSON.parse(read("messages/en.json")) as {
+      beranda: { aksi: Record<string, string> };
+    };
+    assert.equal(idAksi.beranda.aksi.destanaNama, undefined);
+    assert.equal(idAksi.beranda.aksi.destanaIsi, undefined);
+    assert.equal(enAksi.beranda.aksi.destanaNama, undefined);
+    assert.equal(enAksi.beranda.aksi.destanaIsi, undefined);
     assert.match(id.beranda.statistik.sumber, /DIBI BNPB/);
     assert.match(en.beranda.statistik.sumber, /DIBI BNPB/);
     assert.match(id.beranda.statistik.sumberCadangan, /data cadangan per \{date\}/);

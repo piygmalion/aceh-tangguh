@@ -111,8 +111,11 @@ export function SiteNav() {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
+    if (open) document.documentElement.setAttribute("data-mobile-nav", "open");
+    else document.documentElement.removeAttribute("data-mobile-nav");
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.removeAttribute("data-mobile-nav");
     };
   }, [open]);
 

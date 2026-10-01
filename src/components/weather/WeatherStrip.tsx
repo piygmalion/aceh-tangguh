@@ -89,7 +89,7 @@ function riskTone(kelas?: string): "danger" | "warn" | "neutral" {
   if (!kelas) return "neutral";
   const k = kelas.toUpperCase();
   if (k === "TINGGI" || k === "SANGAT TINGGI") return "danger";
-  if (k === "SEDANG" || k === "MEDIUM") return "warn";
+  if (k === "SEDANG" || k === "MEDIUM") return "neutral";
   return "neutral";
 }
 

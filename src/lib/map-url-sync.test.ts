@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, it } from "node:test";
+import { DEFAULT_LAYERS, parseMarkerLayers } from "./map-url-aliases";
+import { LIVE_MARKER_LAYER_KEYS } from "./map-layers-catalog";
 import {
   applySearchParamsPatch,
   composeMapHref,
@@ -256,5 +258,25 @@ describe("map URL hook must not fight App Router", () => {
     const src = read("src/components/map/MapViewport.tsx");
     assert.equal(src.includes("moveTimer"), false);
     assert.match(src, /onMoveEnd=\{onMoveEnd\}/);
+  });
+});
+
+describe("public ?layers= links stay on live marker keys", () => {
+  it("resolves beranda teaser, unused teaser, and kejadian-table links", () => {
+    const live = new Set<string>(LIVE_MARKER_LAYER_KEYS);
+    const peta = read("src/components/beranda/PetaPanel.tsx");
+    const teaser = read("src/components/MapTeaserSection.tsx");
+    const table = read("src/components/kejadian/KejadianTable.tsx");
+    for (const key of ["disasterEvents", "facHealth", "laporanKejadian"]) {
+      assert.match(peta, new RegExp(`key: "${key}"`));
+      assert.equal(live.has(key), true, key);
+      assert.deepEqual(parseMarkerLayers(key), [key]);
+    }
+    assert.match(teaser, /DEFAULT_LAYERS/);
+    assert.match(table, /layers: "disasterEvents"/);
+    for (const key of DEFAULT_LAYERS) {
+      assert.equal(live.has(key), true, key);
+      assert.deepEqual(parseMarkerLayers(key), [key]);
+    }
   });
 });

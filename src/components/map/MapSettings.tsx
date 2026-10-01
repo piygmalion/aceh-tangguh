@@ -76,7 +76,7 @@ export function MapSettings({
   return (
     <div
       ref={panelRef}
-      className="absolute bottom-[5.75rem] left-3 z-30 sm:bottom-6 md:left-3"
+      className="absolute bottom-[5.75rem] left-3 z-30 flex flex-col-reverse items-start gap-2 sm:bottom-6 md:left-3"
     >
       <button
         type="button"
@@ -93,7 +93,7 @@ export function MapSettings({
         <div
           role="dialog"
           aria-label={t("settings")}
-          className="map-chrome-elevated absolute bottom-[calc(100%+0.5rem)] left-0 max-h-[min(32rem,calc(100svh-8rem))] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl p-3 text-sm"
+          className="map-chrome-elevated max-h-[min(32rem,calc(100svh-8rem))] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl p-3 pb-6 text-sm"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="font-semibold">{t("settings")}</div>
