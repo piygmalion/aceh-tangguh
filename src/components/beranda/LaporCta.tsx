@@ -8,9 +8,13 @@ export function LaporCta() {
   const t = useTranslations("beranda");
 
   return (
-    <section id="partisipasi" className="scroll-mt-24 bg-[var(--primary)] text-[var(--primary-fg)]">
-      <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-12 md:flex-row md:items-center md:justify-between md:py-14">
-        <h2 className="max-w-2xl text-[1.35rem] font-semibold leading-snug tracking-[-0.02em] sm:text-[1.6rem]">
+    <section
+      id="partisipasi"
+      data-section-density="compact"
+      className="section-y-compact scroll-mt-24 bg-[var(--primary)] text-[var(--primary-fg)]"
+    >
+      <div className="mx-auto flex max-w-6xl flex-row items-center justify-between gap-3 px-4 sm:gap-6">
+        <h2 className="type-h3 min-w-0">
           {t("lapor.title")}
         </h2>
         <Link

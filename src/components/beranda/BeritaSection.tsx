@@ -7,15 +7,15 @@ import { Link } from "@/i18n/routing";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { SectionHeading } from "./primitives";
+import { SectionShell } from "./SectionShell";
 
 export function BeritaSection() {
   const t = useTranslations("beranda");
 
   return (
-    <section id="berita" className="scroll-mt-24 px-4 py-16 md:py-20">
+    <SectionShell id="berita" density="spacious" raised>
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          kicker={t("berita.kicker")}
           title={t("berita.title")}
           lead={t("berita.lead")}
           aside={
@@ -35,6 +35,6 @@ export function BeritaSection() {
           <KegiatanSlideshow />
         </div>
       </div>
-    </section>
+    </SectionShell>
   );
 }

@@ -55,7 +55,7 @@ export function Figure({
   decimals?: 0 | 1 | 2;
   prefix?: string;
   tone?: "text" | "primary" | "accent" | "danger" | "warn" | "band";
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }) {
   const toneClass = {
     text: "text-[var(--text)]",
@@ -70,14 +70,15 @@ export function Figure({
     sm: "text-[1.5rem] sm:text-[1.75rem]",
     md: "text-[2rem] sm:text-[2.25rem]",
     lg: "text-[2.5rem] sm:text-[3rem]",
+    xl: "type-figure-xl",
   }[size];
 
   return (
     <p className={cn("flex items-baseline gap-1.5 font-semibold", toneClass)}>
       {prefix ? (
-        <span className="text-[0.55em] font-medium opacity-70">{prefix}</span>
+        <span className="text-[0.8125rem] font-medium opacity-70">{prefix}</span>
       ) : null}
-      <span className={cn(sizeClass, "leading-[1.12] tracking-[-0.04em]")}>
+      <span className={cn(sizeClass, size !== "xl" && "leading-[1.12] tracking-[-0.04em]")}>
         <StatNumber value={value} decimals={decimals} />
       </span>
       {unit ? (
@@ -112,14 +113,11 @@ export function SectionHeading({
         {kicker ? (
           <p className={cn("type-kicker mb-2.5 text-[var(--eyebrow)]")}>{kicker}</p>
         ) : null}
-        <h2
-          id={id}
-          className="text-[1.6rem] font-semibold leading-[1.18] tracking-[-0.028em] sm:text-[2rem]"
-        >
+        <h2 id={id} className="type-h2">
           {title}
         </h2>
         {lead ? (
-          <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-dim)]">
+          <p className="type-lead mt-3 text-[var(--text-dim)]">
             {lead}
           </p>
         ) : null}

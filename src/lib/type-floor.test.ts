@@ -49,12 +49,12 @@ const SKIP_SUB_FLOOR = new Set([
 ]);
 
 describe("signed type-floor", () => {
-  it("locks 13px / 0.8125rem floor, 0.06em kicker tracking, 3.5rem hero cap", () => {
+  it("locks 13px / 0.8125rem floor, 0.06em kicker tracking, 4rem display cap", () => {
     assert.equal(TYPE_FLOOR_PX, 13);
     assert.equal(TYPE_FLOOR_REM, 0.8125);
     assert.equal(TYPE_KICKER_TRACKING_EM, 0.06);
-    assert.equal(TYPE_HERO_DISPLAY_MAX_REM, 3.5);
-    assert.equal(TYPE_HERO_LEADING, 1.12);
+    assert.equal(TYPE_HERO_DISPLAY_MAX_REM, 4);
+    assert.equal(TYPE_HERO_LEADING, 1.05);
     assert.equal(TYPE_FLOOR_CLASS.includes("type-floor"), true);
     assert.equal(TYPE_FLOOR_CLASS.includes("text-[0.8125rem]"), true);
     assert.equal(TYPE_KICKER_CLASS, "type-kicker");
@@ -67,8 +67,10 @@ describe("signed type-floor", () => {
     const css = readFileSync(path.join(ROOT, "src/app/globals.css"), "utf8");
     assert.match(css, /--type-floor:\s*0\.8125rem/);
     assert.match(css, /--type-kicker-tracking:\s*0\.06em/);
-    assert.match(css, /--type-hero-display-max:\s*3.5rem/);
-    assert.match(css, /--type-hero-leading:\s*1\.12/);
+    assert.match(css, /--type-display:\s*clamp\(2\.5rem,\s*2rem \+ 2\.6vw,\s*4rem\)/);
+    assert.match(css, /--type-hero-display-max:\s*4rem/);
+    assert.match(css, /--type-hero-leading:\s*1\.05/);
+    assert.match(css, /font-weight:\s*800/);
     assert.match(css, /\.type-kicker\s*\{/);
     assert.match(css, /\.type-stamp\s*\{/);
     assert.match(css, /\.type-hero-display\s*\{/);

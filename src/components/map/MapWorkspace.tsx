@@ -71,7 +71,7 @@ function MapWorkspaceInner() {
         />
       ) : null}
       <SiteNav />
-      <StatusLegend className="absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:bottom-4 md:left-4 md:top-auto md:w-auto" />
+      <StatusLegend className="absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:hidden" />
       <MapToolbar
         areaLayer={state.areaLayer}
         krbJenis={state.krbJenis ?? null}
@@ -89,12 +89,16 @@ function MapWorkspaceInner() {
         onToggleNasaLayer={toggleNasaLayer}
         onNasaDateChange={setNasaDate}
       />
-      <MapSettings
-        basemap={state.basemap}
-        onBasemapChange={setBasemap}
-        preferVector={state.preferVector}
-        onPreferVectorChange={setPreferVector}
-      />
+      <div className="pointer-events-none absolute bottom-[5.75rem] left-3 z-30 flex flex-col items-start gap-3 sm:bottom-6 md:bottom-4 md:left-4">
+        <MapSettings
+          basemap={state.basemap}
+          onBasemapChange={setBasemap}
+          preferVector={state.preferVector}
+          onPreferVectorChange={setPreferVector}
+          className="pointer-events-auto static bottom-auto left-auto sm:bottom-auto"
+        />
+        <StatusLegend className="pointer-events-auto hidden md:block" />
+      </div>
       <ReportFAB />
     </div>
   );

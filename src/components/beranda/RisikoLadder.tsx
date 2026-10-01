@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useIrbi, type IrbiKabView } from "./data";
 import { angka, dariSlug, desimal, kapitalAwal, kelasRisikoBar, kelasRisikoChip } from "./format";
 import { Bar, PanelError, PanelSkeleton, SectionHeading, Sumber } from "./primitives";
+import { SectionShell } from "./SectionShell";
 
 const AWAL_TAMPIL = 10;
 
@@ -92,13 +93,9 @@ export function RisikoLadder() {
   const tersisa = Math.max(0, daftar.length - AWAL_TAMPIL);
 
   return (
-    <section
-      id="risiko"
-      className="scroll-mt-24 border-y border-[var(--border)] bg-[var(--bg-raised)] px-4 py-16 md:py-20"
-    >
+    <SectionShell id="risiko" density="default" raised>
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          kicker={t("risiko.kicker")}
           title={t("risiko.title")}
           lead={t("risiko.lead")}
           aside={
@@ -185,6 +182,6 @@ export function RisikoLadder() {
           </>
         ) : null}
       </div>
-    </section>
+    </SectionShell>
   );
 }

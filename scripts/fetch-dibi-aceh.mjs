@@ -2,7 +2,7 @@
  * Refresh public/fixtures/dibi-aceh.json from the public BNPB DIBI dashboard.
  * Usage: node scripts/fetch-dibi-aceh.mjs
  */
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -286,6 +286,10 @@ async function main() {
   }
   const verdict = assessDibiLive(payload, baselineKejadian);
   if (!verdict.ok) {
+    writeFileSync(
+      path.join(root, ".github/dibi-refresh-verdict.json"),
+      `${JSON.stringify({ ok: false, reason: verdict.reason })}\n`,
+    );
     console.error(
       `DIBI refresh rejected (${verdict.reason}); fixture left unchanged`,
     );
@@ -298,6 +302,14 @@ async function main() {
 }
 
 main().catch((err) => {
+  try {
+    writeFileSync(
+      path.join(root, ".github/dibi-refresh-verdict.json"),
+      `${JSON.stringify({ ok: false, reason: "fetch-failed" })}\n`,
+    );
+  } catch {
+    /* the workflow still counts a missing verdict as a fetch failure */
+  }
   console.error(err);
   process.exit(1);
 });
