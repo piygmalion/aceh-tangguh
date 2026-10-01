@@ -345,7 +345,13 @@ export const AREA_OUTLINE_COLOR = "rgba(17, 17, 17, 0.35)";
 /** Dark basemap: #FFFFFF at 30%. */
 export const AREA_OUTLINE_COLOR_DARK = "rgba(255, 255, 255, 0.30)";
 
-const DARK_OUTLINE_BASEMAPS = new Set<BasemapId>(["dark", "brand-dark", "satellite"]);
+/** Dark canvases and imagery. Sentinel-2 cloudless is imagery, so the outline is white at 30%. */
+const DARK_OUTLINE_BASEMAPS = new Set<BasemapId>([
+  "dark",
+  "brand-dark",
+  "satellite",
+  "sentinel",
+]);
 
 export function areaOutlineColor(basemap?: BasemapId | null): string {
   if (basemap && DARK_OUTLINE_BASEMAPS.has(basemap)) return AREA_OUTLINE_COLOR_DARK;
