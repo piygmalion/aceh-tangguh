@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { FOOTER_SUMBER } from "./data-sources";
 import { messagesForPublicClient } from "./i18n/public-messages";
 import { composeGuideAnswer } from "./panduan/answers";
 import { contextToChunks } from "./panduan/retrieve";
@@ -63,6 +64,10 @@ describe("FE-61 anggaran dan pemulihan hanya untuk staf", () => {
     assert.doesNotMatch(nav, /anggaran-bencana/);
     assert.doesNotMatch(footer, /anggaran-bencana/);
     assert.doesNotMatch(publikasi, /anggaran-bencana/);
+    assert.equal(
+      FOOTER_SUMBER.some((row) => /APBA|PRRPKA|anggaran|PERGUB/i.test(`${row.id} ${row.labelId} ${row.labelEn}`)),
+      false,
+    );
   });
 
   it("drops public budget copy from both locales", () => {

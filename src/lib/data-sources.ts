@@ -511,8 +511,9 @@ export const DATA_SOURCES: DataSourceEntry[] = [
 
 /**
  * Footer “Sumber data” column — Data + Designer lock.
- * Five DB-backed catalog rows first. DIBI / MAGMA / Sipongi / Geoportal
- * exist in DATA_SOURCES but are not listed here (optional extras only).
+ * Public catalog rows only. APBA stays off this column (staff console, FE-61).
+ * DIBI / MAGMA / Sipongi / Geoportal exist in DATA_SOURCES but are not listed
+ * here (optional extras only).
  * Do not invent sources or URLs; hashes match existing `/sumber-data#id`.
  */
 export const FOOTER_SUMBER_IDS = [
@@ -520,7 +521,6 @@ export const FOOTER_SUMBER_IDS = [
   "compiled-r3p",
   "publikasi-kegiatan",
   "publikasi-btt",
-  "analisis-anggaran-2026",
 ] as const;
 
 export type FooterSumberId = (typeof FOOTER_SUMBER_IDS)[number];
@@ -556,11 +556,5 @@ export const FOOTER_SUMBER: FooterSumberLink[] = [
     labelId: "Tanggapi",
     labelEn: "Tanggapi",
     hash: "publikasi-btt",
-  },
-  {
-    id: "analisis-anggaran-2026",
-    labelId: "PERGUB APBA",
-    labelEn: "PERGUB APBA",
-    hash: "analisis-anggaran-2026",
   },
 ];
