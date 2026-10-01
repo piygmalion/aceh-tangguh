@@ -115,8 +115,8 @@ describe("agregasi filter DIBI beranda", () => {
     const view = aggregateDibiBeranda(fixture, { yearFrom: null, yearTo: null });
     assert.equal(view.trend.length, fixture.by_tahun.length);
     assert.equal(view.counters.metrics?.kejadian, fixture.totals.kejadian);
-    assert.equal(view.counters.metrics?.kejadian, 2568);
-    assert.equal(displayedBandMetrics(view)?.kejadian, 2568);
+    assert.ok((fixture.totals.kejadian ?? 0) > 0);
+    assert.equal(displayedBandMetrics(view)?.kejadian, fixture.totals.kejadian);
   });
 
   it("uses one kabupaten row for all years and does not scale it by the year filter", () => {
