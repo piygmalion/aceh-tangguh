@@ -117,6 +117,22 @@ describe("FE-62 beranda mengikuti urutan SIAGA", () => {
     const hero = read("src/components/beranda/DataHero.tsx");
     assert.match(hero, /tanggalCadangan\(data\.metadata\.fetched_at/);
     assert.doesNotMatch(hero, /new Date\(\)/);
+    assert.equal((hero.match(/col-span-2 sm:col-span-1/g) || []).length, 2);
+    assert.match(hero, /id="dibi"[\s\S]*relative z-40/);
+    const idMap = JSON.parse(read("messages/id.json")) as { map: Record<string, string> };
+    const enMap = JSON.parse(read("messages/en.json")) as { map: Record<string, string> };
+    assert.equal(
+      idMap.map.basemapHint,
+      "Raster OSM (Carto jika kunci terpasang) · Esri · Sentinel-2 · tiga preset merek (vektor OSM, jatuh ke raster jika gagal).",
+    );
+    assert.equal(
+      enMap.map.basemapHint,
+      "OSM raster (Carto when a key is set) · Esri · Sentinel-2 · three brand presets (OSM vector, raster fallback).",
+    );
+    assert.match(idMap.map.basemapVectorOptional, /kembali ke raster/);
+    assert.match(enMap.map.basemapVectorOptional, /falls back to raster/);
+    assert.equal(idMap.map.basemapKindRaster, "Raster");
+    assert.equal(enMap.map.basemapKindRaster, "Raster");
     const stat = read("src/components/beranda/primitives.tsx");
     assert.match(stat, /sr-only/);
     assert.match(stat, /useReducedMotion/);

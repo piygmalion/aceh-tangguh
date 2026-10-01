@@ -134,7 +134,7 @@ function Counters({
     <div
       id="dibi"
       data-number-band
-      className="mt-8 overflow-hidden rounded-2xl border border-[var(--band-bg)] border-t-[3px] border-t-[var(--band-rule)] bg-[var(--band-bg)]"
+      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-bg)] border-t-[3px] border-t-[var(--band-rule)] bg-[var(--band-bg)]"
     >
       <div className="grid grid-cols-2 gap-px bg-white/15 sm:grid-cols-3 lg:grid-cols-6">
         <Counter label={t("statistik.kejadian")}>
@@ -149,7 +149,7 @@ function Counters({
         <Counter label={t("statistik.luka")}>
           <BandValue value={metrics ? metrics.luka_sakit : null} locale={locale} missing={missing} />
         </Counter>
-        <Counter label={t("statistik.menderita")} note={t("statistik.menderitaNote")}>
+        <Counter className="col-span-2 sm:col-span-1" label={t("statistik.menderita")} note={t("statistik.menderitaNote")}>
           <BandValue
             value={menderita ? menderita.n : null}
             decimals={menderita?.decimals ?? 0}
