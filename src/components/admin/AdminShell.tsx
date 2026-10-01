@@ -9,6 +9,7 @@ import {
   Building2,
   Database,
   FileStack,
+  Landmark,
   LayoutDashboard,
   Phone,
   ShieldCheck,
@@ -72,13 +73,15 @@ export function AdminShell({
       | "/admin/staf"
       | "/admin/cms"
       | "/admin/database"
-      | "/admin/daily-brief";
+      | "/admin/daily-brief"
+      | "/admin/anggaran";
     label: string;
     icon: typeof LayoutDashboard;
     module?: SikModule;
     superOnly?: boolean;
   }> = [
     { href: "/admin", label: t("navOverview"), icon: LayoutDashboard, module: "overview" },
+    { href: "/admin/anggaran", label: t("navAnggaran"), icon: Landmark },
     { href: "/admin/operasi", label: t("navOpsDash"), icon: Activity, module: "overview" },
     { href: "/admin/moderasi", label: t("navModeration"), icon: ShieldCheck, module: "moderasi" },
     { href: "/admin/sik/kejadian", label: t("navKejadianOps"), icon: Siren, module: "kejadian" },

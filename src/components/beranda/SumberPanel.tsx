@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 import { SectionHeading } from "./primitives";
 
 type SumberRow = {
-  lembagaKey: "sumber.dibi" | "sumber.irbi" | "sumber.bmkg" | "sumber.maritim" | "sumber.magma" | "sumber.sipongi" | "sumber.tatonas" | "sumber.prrpka" | "sumber.apba";
-  isiKey: "sumber.dibiIsi" | "sumber.irbiIsi" | "sumber.bmkgIsi" | "sumber.maritimIsi" | "sumber.magmaIsi" | "sumber.sipongiIsi" | "sumber.tatonasIsi" | "sumber.prrpkaIsi" | "sumber.apbaIsi";
+  lembagaKey: "sumber.dibi" | "sumber.irbi" | "sumber.bmkg" | "sumber.maritim" | "sumber.magma" | "sumber.sipongi" | "sumber.tatonas";
+  isiKey: "sumber.dibiIsi" | "sumber.irbiIsi" | "sumber.bmkgIsi" | "sumber.maritimIsi" | "sumber.magmaIsi" | "sumber.sipongiIsi" | "sumber.tatonasIsi";
   href?: string;
 };
 
@@ -50,14 +50,6 @@ const SUMBER: SumberRow[] = [
   {
     lembagaKey: "sumber.tatonas",
     isiKey: "sumber.tatonasIsi",
-  },
-  {
-    lembagaKey: "sumber.prrpka",
-    isiKey: "sumber.prrpkaIsi",
-  },
-  {
-    lembagaKey: "sumber.apba",
-    isiKey: "sumber.apbaIsi",
   },
 ];
 

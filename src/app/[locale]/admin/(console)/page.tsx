@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { GlassPanel } from "@/components/ui/GlassPanel";
+import { PemulihanPanel } from "@/components/beranda/PemulihanPanel";
 import { OperationalStatsSection } from "@/components/sik/OperationalStatsSection";
 import { isSuperAdmin } from "@/lib/auth/types";
 import { canAccessModule } from "@/lib/sik/roles";
@@ -119,6 +120,7 @@ export default async function AdminOverviewPage() {
           </p>
         ) : null}
       </GlassPanel>
+      <PemulihanPanel />
       <OperationalStatsSection />
       <div className="grid gap-3 md:grid-cols-2">
         {cards.map((card) => (

@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 
 type NavItem = {
   key: string;
-  href: "/peta" | "/data-bencana" | "/analisis-data" | "/anggaran-bencana" | "/publikasi" | "/destana" | "/nomor-penting" | "/pelatihan" | "/mitra";
+  href: "/peta" | "/data-bencana" | "/analisis-data" | "/publikasi" | "/destana" | "/nomor-penting" | "/pelatihan" | "/mitra";
   label: string;
 };
 
@@ -87,7 +87,6 @@ export function SiteNav() {
   const dataItems: NavItem[] = [
     { key: "dataBencana", href: "/data-bencana", label: t("dataBencana") },
     { key: "analisisData", href: "/analisis-data", label: t("analisisData") },
-    { key: "anggaranBencana", href: "/anggaran-bencana", label: t("anggaranBencana") },
     { key: "publikasi", href: "/publikasi", label: t("publikasi") },
   ];
   const siagaItems: NavItem[] = [

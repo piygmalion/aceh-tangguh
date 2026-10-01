@@ -1,4 +1,3 @@
-import { formatRpCompact } from "@/lib/anggaran-format";
 import { DATA_SOURCES } from "@/lib/data-sources";
 import { compileAlertBrief } from "./alert-brief";
 import { HOME_TOUR_STEPS } from "./tour-steps";
@@ -121,10 +120,6 @@ export function composeTourStep(index: number, locale: GuideLocale): GuideAnswer
     tourDibi: {
       id: "Dasbor DIBI BNPB untuk Aceh: rekap historis, bukan status darurat hari ini.",
       en: "BNPB DIBI dashboard for Aceh: historical totals, not today’s emergency status.",
-    },
-    tourPrrpka: {
-      id: "Panel R3P/PRRPKA menampilkan rencana rehab-rekon. Metodologi pencocokan desa ada di halaman Metodologi.",
-      en: "The R3P/PRRPKA panel shows rehab-recon planning. Village matching is explained on Methodology.",
     },
     tourPeta: {
       id: "Teaser peta. Peta penuh adalah ruang kerja, bukan halaman pemasaran.",
@@ -495,24 +490,16 @@ function composeDibi(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
   };
 }
 
-function composeAnggaran(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
-  if (ctx.failed.includes("anggaran") || !ctx.anggaran) {
-    return {
-      intent: "anggaran",
-      body: failedNote(locale, t(locale, "anggaran", "budget")),
-      links: [link("/anggaran-bencana", "linkAnggaran")],
-    };
-  }
-  const loc = locale === "en" ? "en-US" : "id-ID";
+function composeAnggaran(_ctx: GuideContext, locale: GuideLocale): GuideAnswer {
   return {
     intent: "anggaran",
     body: t(
       locale,
-      `Anggaran penanganan ${ctx.anggaran.tahun}: ${formatRpCompact(ctx.anggaran.totalRp, loc)} pada ${ctx.anggaran.kegiatan} kegiatan (analisis situs). Rincian fase dan SKPD ada di halaman anggaran.`,
-      `Response budget ${ctx.anggaran.tahun}: ${formatRpCompact(ctx.anggaran.totalRp, loc)} across ${ctx.anggaran.kegiatan} activities (site analysis). Phase and SKPD detail is on the budget page.`
+      "Data anggaran hanya tersedia untuk staf internal.",
+      "Budget figures are available only to internal staff."
     ),
-    links: [link("/anggaran-bencana", "linkAnggaran")],
-    source: t(locale, "Analisis anggaran situs", "Site budget analysis"),
+    links: [],
+    source: t(locale, "Konsol staf", "Staff console"),
   };
 }
 

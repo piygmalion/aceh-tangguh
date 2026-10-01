@@ -37,7 +37,7 @@ async function loadR3PFromSupabase(
 export async function loadR3PSummaryFixture(): Promise<R3PSummaryResponse> {
   if (cache) return cache;
 
-  const file = path.join(process.cwd(), "public/fixtures/r3p-slideshow.json");
+  const file = path.join(process.cwd(), "data/staff/r3p-slideshow.json");
   const raw = await readFile(file, "utf8");
   const data = JSON.parse(raw) as R3PSlideshow;
 

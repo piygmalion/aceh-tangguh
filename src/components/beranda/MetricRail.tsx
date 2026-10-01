@@ -6,8 +6,8 @@ import { Link } from "@/i18n/routing";
 import { jiwaTerdampak } from "@/lib/dibi-types";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
-import { useAnggaran, useDibi, useIrbi } from "./data";
-import { angkaRingkas, rupiahRingkas } from "./format";
+import { useDibi, useIrbi } from "./data";
+import { angkaRingkas } from "./format";
 import { Figure, PanelSkeleton } from "./primitives";
 
 type Metric = {
@@ -19,7 +19,7 @@ type Metric = {
   prefix?: string;
   note: string;
   /** Same-page anchors use a plain link; page routes go through the typed Link. */
-  href: "/data-bencana" | "/analisis-data" | "/anggaran-bencana" | "#risiko";
+  href: "/data-bencana" | "/analisis-data" | "#risiko";
   tautan: string;
   siap: boolean;
 };
@@ -30,7 +30,7 @@ const tautanClass = cn(
 );
 
 /**
- * Credibility rail: the four numbers that establish what this observatory holds.
+ * Credibility rail: the three public numbers that establish what this observatory holds.
  * Hairline dividers rather than cards, so the figures read as one instrument.
  */
 export function MetricRail() {
@@ -38,10 +38,8 @@ export function MetricRail() {
   const locale = useLocale();
   const { data: dibi } = useDibi();
   const { data: irbi } = useIrbi();
-  const { data: anggaran } = useAnggaran();
 
   const terdampak = angkaRingkas(dibi ? jiwaTerdampak(dibi.totals) : 0, locale);
-  const dana = rupiahRingkas(anggaran?.totalRp ?? 0, locale);
 
   const metrics: Metric[] = [
     {
@@ -84,23 +82,6 @@ export function MetricRail() {
       tautan: t("metrics.irbiLink"),
       siap: Boolean(irbi),
     },
-    {
-      key: "anggaran",
-      label: t("metrics.anggaran", { year: anggaran?.tahun ?? 2026 }),
-      value: dana.n,
-      decimals: dana.decimals,
-      prefix: "Rp",
-      unit: dana.unit,
-      note: anggaran
-        ? t("metrics.anggaranNote", {
-            count: anggaran.totalKegiatan,
-            sumber: anggaran.sumber,
-          })
-        : t("metrics.anggaranNoteFallback"),
-      href: "/anggaran-bencana",
-      tautan: t("metrics.anggaranLink"),
-      siap: Boolean(anggaran),
-    },
   ];
 
   return (
@@ -108,17 +89,9 @@ export function MetricRail() {
       aria-label={t("metrics.aria")}
       className="relative z-10 -mt-16 px-4 pb-2"
     >
-      <dl className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-[var(--border)] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] shadow-[var(--shadow-elevated)] sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4 lg:divide-x">
-        {metrics.map((m, i) => (
-          <div
-            key={m.key}
-            className={cn(
-              "group relative px-5 py-6 lg:px-7",
-              "sm:border-[var(--border)]",
-              i % 2 === 0 ? "sm:border-r" : "",
-              i < 2 ? "sm:border-b lg:border-b-0" : "",
-            )}
-          >
+      <dl className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-[var(--border)] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] shadow-[var(--shadow-elevated)] md:grid-cols-3 md:divide-x md:divide-y-0">
+        {metrics.map((m) => (
+          <div key={m.key} className="group relative px-5 py-6 lg:px-7">
             <dt className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{m.label}</dt>
             <dd className="mt-2">
               {m.siap ? (

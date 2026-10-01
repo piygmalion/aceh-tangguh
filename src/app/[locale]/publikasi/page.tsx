@@ -22,10 +22,6 @@ export default async function PublikasiPage({
             {t("backHome")}
           </Link>
           {" · "}
-          <Link href="/anggaran-bencana" className="hover:text-[var(--primary)]">
-            {t("seeAnggaran")}
-          </Link>
-          {" · "}
           <Link href="/sumber-data" className="hover:text-[var(--primary)]">
             {t("seeSumber")}
           </Link>

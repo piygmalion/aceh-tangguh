@@ -91,7 +91,7 @@ export function PemulihanPanel() {
           lead={t("pemulihan.lead")}
           aside={
             <Link
-              href="/anggaran-bencana"
+              href="/admin/anggaran"
               className={cn(
                 "inline-flex h-10 items-center gap-1.5 rounded-full border border-[var(--border)] px-4 font-semibold transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]",
                 TYPE_FLOOR_CLASS,

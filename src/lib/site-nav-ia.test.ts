@@ -18,7 +18,7 @@ describe("nav IA groups", () => {
     assert.match(nav, /dataItems/);
     assert.match(nav, /siagaItems/);
     assert.match(nav, /href: "\/data-bencana"/);
-    assert.match(nav, /href: "\/anggaran-bencana"/);
+    assert.doesNotMatch(nav, /anggaran-bencana/);
     assert.match(nav, /href: "\/publikasi"/);
     assert.match(nav, /href: "\/destana"/);
     assert.match(nav, /href: "\/nomor-penting"/);

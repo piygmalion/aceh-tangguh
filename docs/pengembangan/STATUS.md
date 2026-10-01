@@ -609,6 +609,16 @@ ID peta frontend = **FE-60** (FE-57 di `main` adalah Tanggapi analisis #106). Pe
 | FE-60 | frontend | Raster GIBS + titik FIRMS di peta | jurnal/FE-60.md | selesai |
 | AN-58 | analis | Uji isolasi + penerimaan G37 | jurnal/AN-58.md | selesai |
 
+## Tindak lanjut — anggaran dan pemulihan hanya staf (FE-61)
+
+Keputusan pemilik. Panel pemulihan, ubin anggaran, rincian APBA, dan angka PRRPKA tidak lagi di permukaan publik. Dasbor `/admin` dan `/admin/anggaran` memakai `requireStaffPage` yang sudah ada (`super_admin` dan `admin`, plus peran staf lain yang sudah lolos guard itu). Tidak ada izin keuangan baru. Alias peta `pemulihan` dan lapisan `r3pDistribution` tidak diubah. Jangan migrasi RLS di tiket ini.
+
+Tindak lanjut data: `public.anggaran_analisis`, `public.anggaran_kegiatan`, dan `public.r3p_summary` masih punya kebijakan SELECT untuk `anon`. Rute aplikasi tidak lagi membaca tabel itu untuk pengunjung anonim, dan tidak memakai service role untuk angka ini.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-61 | frontend | Anggaran dan pemulihan hanya untuk staf | jurnal/FE-61.md | selesai |
+
 ## Gelombang kemudian
 
 | id | agent | judul | jurnal | status |

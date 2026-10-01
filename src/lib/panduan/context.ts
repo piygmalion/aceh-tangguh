@@ -4,7 +4,6 @@ import type { PeringatanDiniResponse } from "@/lib/peringatan-dini-types";
 import type { WeatherApiResponse } from "@/lib/weather-types";
 import type { LiveStats } from "@/lib/types";
 import type { DibiAcehResponse } from "@/lib/dibi-types";
-import type { AnggaranApiResponse } from "@/lib/anggaran-types";
 import type { IrbiSummaryPayload } from "@/lib/irbi-by-kab";
 import type { KrbPayload } from "@/lib/krb-filter";
 import { CONTEXT_FOR_INTENT } from "./intents";
@@ -311,24 +310,6 @@ export async function loadGuideContext(
           topKategori: top?.kategori_bencana,
           meninggal: data.totals.meninggal,
           fetchedAt: data.metadata.fetched_at,
-        };
-      })
-    );
-  }
-
-  if (need.has("anggaran")) {
-    tasks.push(
-      getJson<AnggaranApiResponse>("/api/anggaran").then((data) => {
-        const meta = data?.analisis?.metadata;
-        if (!meta || typeof meta.total_anggaran_rp !== "number") {
-          mark("anggaran", false);
-          ctx.anggaran = null;
-          return;
-        }
-        ctx.anggaran = {
-          tahun: meta.tahun_anggaran,
-          totalRp: meta.total_anggaran_rp,
-          kegiatan: meta.total_kegiatan,
         };
       })
     );

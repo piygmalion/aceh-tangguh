@@ -89,7 +89,7 @@ async function loadAnggaranFromSupabase(
 export async function loadAnggaranFixtures(): Promise<AnggaranApiResponse> {
   if (cache) return cache;
 
-  const base = path.join(process.cwd(), "public/fixtures");
+  const base = path.join(process.cwd(), "data/staff");
   const [analisisRaw, kegiatanRaw] = await Promise.all([
     readFile(path.join(base, "analisis-anggaran-2026.json"), "utf8"),
     readFile(path.join(base, "kegiatan-penanganan-2026.json"), "utf8"),

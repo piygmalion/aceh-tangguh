@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { messagesForPublicClient } from "./i18n/public-messages";
 import { composeGuideAnswer } from "./panduan/answers";
 import { contextToChunks } from "./panduan/retrieve";
 import type { GuideContext } from "./panduan/types";
@@ -75,6 +76,18 @@ describe("FE-61 anggaran dan pemulihan hanya untuk staf", () => {
       assert.equal(typeof msg.admin.navAnggaran, "string");
       assert.equal(typeof msg.beranda.metrics.kejadian, "string");
       assert.equal(typeof msg.beranda.metrics.irbi, "string");
+      const raw = JSON.parse(read(`messages/${locale}.json`)) as {
+        anggaranBencana?: { lead?: string };
+      };
+      assert.doesNotMatch(raw.anggaranBencana?.lead ?? "", /176|24 kegiatan|24 activities/);
+      const pub = messagesForPublicClient(
+        JSON.parse(read(`messages/${locale}.json`)) as Parameters<typeof messagesForPublicClient>[0]
+      );
+      assert.equal(pub.anggaranBencana, undefined);
+      assert.equal(pub.prrpkaChart, undefined);
+      const beranda = pub.beranda as { pemulihan?: unknown } | undefined;
+      assert.equal(beranda?.pemulihan, undefined);
+      assert.doesNotMatch(JSON.stringify(pub), /176/);
     }
   });
 
@@ -122,10 +135,13 @@ describe("FE-61 anggaran dan pemulihan hanya untuk staf", () => {
     const shell = read("src/components/admin/AdminShell.tsx");
     assert.match(dash, /<PemulihanPanel/);
     assert.match(layout, /requireStaffPage/);
+    assert.match(layout, /getMessages/);
     assert.doesNotMatch(layout, /requireSuperAdminPage/);
+    const publicLayout = read("src/app/[locale]/layout.tsx");
+    assert.match(publicLayout, /messagesForPublicClient/);
     assert.match(detail, /AnggaranDashboard/);
     assert.doesNotMatch(detail, /requireSuperAdminPage/);
-    assert.match(panel, /href: "\/admin\/anggaran"/);
+    assert.match(panel, /href="\/admin\/anggaran"/);
     assert.doesNotMatch(panel, /anggaran-bencana/);
     assert.match(shell, /href: "\/admin\/anggaran"/);
     const legacy = read("src/app/[locale]/anggaran-bencana/page.tsx");

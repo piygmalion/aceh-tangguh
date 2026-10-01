@@ -30,7 +30,6 @@ const RESEARCH_KEY_TERMS: { key: GuideContextKey; terms: string[] }[] = [
   { key: "dibi", terms: ["dibi", "historis", "dampak"] },
   { key: "irbi", terms: ["irbi", "indeks risiko"] },
   { key: "krb", terms: ["krb", "kawasan rawan"] },
-  { key: "anggaran", terms: ["anggaran", "btt", "belanja tidak terduga"] },
   { key: "publikasi", terms: ["publikasi", "artikel", "tanggapi aceh"] },
 ];
 
@@ -76,7 +75,6 @@ export function contextKeysForRetrieval(match: GuideMatch): GuideContextKey[] {
     keys.add("peringatan");
   }
   if (/\bdibi\b/.test(text)) keys.add("dibi");
-  if (/anggaran/.test(text)) keys.add("anggaran");
   if (/pelatihan/.test(text)) keys.add("pelatihan");
   if (/mitra/.test(text)) keys.add("mitra");
   if (/publikasi/.test(text)) keys.add("publikasi");
@@ -333,18 +331,6 @@ export function contextToChunks(ctx: GuideContext, locale: GuideLocale): Retriev
       href: "/",
       hash: "dibi",
       labelKey: "linkDibi",
-    });
-  }
-
-  if (failed.has("anggaran")) {
-    chunks.push(delayedChunk("live:anggaran", "anggaran", "/anggaran-bencana", "linkAnggaran", locale));
-  } else if (ctx.anggaran) {
-    chunks.push({
-      sourceId: "live:anggaran",
-      title: locale === "en" ? "Budget" : "Anggaran",
-      text: `${ctx.anggaran.tahun}: ${ctx.anggaran.totalRp} (${ctx.anggaran.kegiatan} ${locale === "en" ? "activities" : "kegiatan"}).`,
-      href: "/anggaran-bencana",
-      labelKey: "linkAnggaran",
     });
   }
 

@@ -4,7 +4,6 @@ export const HOME_TOUR_STEPS = [
   { hash: "cuaca", copyKey: "tourCuaca" },
   { hash: "sik", copyKey: "tourSik" },
   { hash: "dibi", copyKey: "tourDibi" },
-  { hash: "prrpka", copyKey: "tourPrrpka" },
   { hash: "peta-teaser", copyKey: "tourPeta" },
   { hash: "partisipasi", copyKey: "tourLapor" },
   { hash: "transparansi", copyKey: "tourTransparansi" },

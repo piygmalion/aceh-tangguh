@@ -23,7 +23,6 @@ const DATA_SOURCE_IDS = new Set([
   "magma-gempa",
   "sipongi-hotspot",
   "tatonas-monitoring",
-  "analisis-anggaran-2026",
   "publikasi-btt",
   "publikasi-kegiatan",
   "laporan-kejadian",
@@ -318,8 +317,8 @@ function dataSourceCards(): KnowledgeCard[] {
     title: row.titleId,
     bodyId: `${row.titleId}. Sumber: ${row.source}. Dipakai untuk: ${row.usedFor}`.slice(0, 480),
     bodyEn: `${row.titleEn}. Source: ${row.source}. Used for: ${row.usedFor}`.slice(0, 480),
-    href: row.id === "analisis-anggaran-2026" ? "/anggaran-bencana" : "/sumber-data",
-    labelKey: row.id === "analisis-anggaran-2026" ? "linkAnggaran" : "linkSumber",
+    href: "/sumber-data",
+    labelKey: "linkSumber",
     terms: [row.id.replaceAll("-", " "), row.titleId, row.titleEn],
   }));
 }
