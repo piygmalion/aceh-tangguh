@@ -11,7 +11,7 @@ import {
   type MarkerLayerKey,
   type OverlayLayerKey,
 } from "@/lib/types";
-import { isBasemapId } from "@/lib/basemap";
+import { normalizeBasemapId, rewriteHiddenDarkBasemap } from "@/lib/basemap";
 import { nextDisasterJenisToggle } from "@/lib/disaster-jenis";
 import {
   canonicalMapUrlPatch,
@@ -96,14 +96,13 @@ export function useMapUrlState() {
     const lat = Number(params.get("lat") ?? DEFAULT_VIEW.latitude);
     const lng = Number(params.get("lng") ?? DEFAULT_VIEW.longitude);
     const z = Number(params.get("z") ?? DEFAULT_VIEW.zoom);
-    const basemap = (params.get("basemap") as BasemapId) || "positron";
     return {
       view: {
         latitude: Number.isFinite(lat) ? lat : DEFAULT_VIEW.latitude,
         longitude: Number.isFinite(lng) ? lng : DEFAULT_VIEW.longitude,
         zoom: Number.isFinite(z) ? z : DEFAULT_VIEW.zoom,
       },
-      basemap: isBasemapId(basemap) ? basemap : "positron",
+      basemap: normalizeBasemapId(params.get("basemap")),
       preferVector: params.get("vector") === "1",
       areaLayer: resolved.areaLayer,
       markerLayers: resolved.markerLayers,
@@ -157,6 +156,11 @@ export function useMapUrlState() {
   }, []);
 
   const setBasemap = useCallback((b: BasemapId) => push({ basemap: b }), [push]);
+
+  useEffect(() => {
+    if (!rewriteHiddenDarkBasemap(search)) return;
+    push({ basemap: "positron" });
+  }, [search, push]);
 
   const setPreferVector = useCallback(
     (on: boolean) => push({ vector: on ? "1" : null }),

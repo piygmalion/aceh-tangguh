@@ -1,5 +1,6 @@
 import type { FilterSpecification } from "maplibre-gl";
 import type { Geometry, Position } from "geojson";
+import { cartoBasemapKeyPresent } from "@/lib/basemap";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import type { VillageClickSelection } from "@/lib/profil-desa";
 import { overlayPmtilesUrl } from "@/lib/tiles-url";
@@ -348,6 +349,7 @@ export const AREA_OUTLINE_COLOR_DARK = "rgba(255, 255, 255, 0.30)";
 const DARK_OUTLINE_BASEMAPS = new Set<BasemapId>(["dark", "brand-dark", "satellite", "sentinel"]);
 
 export function areaOutlineColor(basemap?: BasemapId | null): string {
+  if (basemap === "dark" && !cartoBasemapKeyPresent()) return AREA_OUTLINE_COLOR;
   if (basemap && DARK_OUTLINE_BASEMAPS.has(basemap)) return AREA_OUTLINE_COLOR_DARK;
   return AREA_OUTLINE_COLOR;
 }

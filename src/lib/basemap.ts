@@ -22,7 +22,30 @@ export const BASEMAP_IDS: BasemapId[] = [
 ];
 
 export function isBasemapId(value: string | null | undefined): value is BasemapId {
-  return !!value && (BASEMAP_IDS as string[]).includes(value);
+  if (!value || !(BASEMAP_IDS as string[]).includes(value)) return false;
+  if (value === "dark" && !cartoBasemapKeyPresent()) return false;
+  return true;
+}
+
+export function normalizeBasemapId(value: string | null | undefined): BasemapId {
+  return isBasemapId(value) ? value : "positron";
+}
+
+/** Picker list. Gelap is omitted while dark Carto tiles cannot load. */
+export function visibleBasemapOptions(): BasemapOption[] {
+  return BASEMAP_OPTIONS.filter((option) => isBasemapId(option.id));
+}
+
+/**
+ * Legacy `?basemap=dark` without a Carto key becomes positron.
+ * Returns null when the query should stay as written.
+ */
+export function rewriteHiddenDarkBasemap(search: string): string | null {
+  const raw = search.startsWith("?") ? search.slice(1) : search;
+  const params = new URLSearchParams(raw);
+  if (params.get("basemap") !== "dark" || isBasemapId("dark")) return null;
+  params.set("basemap", "positron");
+  return params.toString();
 }
 
 /** Aceh operational AOI — used for STAC scans, not for clamping the map camera. */

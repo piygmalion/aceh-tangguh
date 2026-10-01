@@ -147,6 +147,7 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(areaOutlineColor("brand-grey"), AREA_OUTLINE_COLOR);
     assert.equal(areaOutlineColor("brand-dark"), AREA_OUTLINE_COLOR_DARK);
     assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
+    assert.equal(areaOutlineColor("satellite"), AREA_OUTLINE_COLOR_DARK);
     assert.equal(KECAMATAN_OUTLINE_PAINT["line-color"], COLOR_TOKENS.paper);
     assert.equal(VILLAGE_OUTLINE_PAINT["line-color"], COLOR_TOKENS.paper);
     const opacity = VILLAGE_OUTLINE_PAINT["line-opacity"];
@@ -154,6 +155,25 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(opacity[4], 0.3);
     assert.equal(opacity[5], 13);
     assert.equal(opacity[6], 0.45);
+  });
+
+  it("dark without the key gives the ink outline, and the key keeps the white outline", () => {
+    const prev = process.env.NEXT_PUBLIC_CARTO_API_KEY;
+    try {
+      delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
+      assert.equal(areaOutlineColor("dark"), AREA_OUTLINE_COLOR);
+      assert.equal(areaOutlineColor("positron"), AREA_OUTLINE_COLOR);
+      assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
+      assert.equal(areaOutlineColor("satellite"), AREA_OUTLINE_COLOR_DARK);
+      assert.equal(areaOutlineColor("brand-dark"), AREA_OUTLINE_COLOR_DARK);
+
+      process.env.NEXT_PUBLIC_CARTO_API_KEY = "present";
+      assert.equal(areaOutlineColor("dark"), AREA_OUTLINE_COLOR_DARK);
+      assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
+    } finally {
+      if (prev === undefined) delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
+      else process.env.NEXT_PUBLIC_CARTO_API_KEY = prev;
+    }
   });
 
   it("keeps kecamatan overview below z11 and desa mesh at z≥11 after a kab focus", () => {
