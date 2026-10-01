@@ -10,6 +10,7 @@ import { FixtureDataBanner } from "@/components/preview/FixtureDataBanner";
 import { GuideBot } from "@/components/panduan/GuideBot";
 import { isStaticExport } from "@/lib/preview/env";
 import { routing } from "@/i18n/routing";
+import { messagesForPublicClient } from "@/lib/i18n/public-messages";
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -42,7 +43,7 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className={plusJakarta.className}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messagesForPublicClient(messages)}>
           <QueryProvider>
             <ThemeProvider>
               {isStaticExport() ? <StaticPreviewBanner /> : <FixtureDataBanner />}

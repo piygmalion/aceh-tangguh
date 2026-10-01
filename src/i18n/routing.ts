@@ -83,6 +83,7 @@ export const routing = defineRouting({
       en: "/brief/[ymd]",
     },
     "/admin/daily-brief": "/admin/daily-brief",
+    "/admin/anggaran": "/admin/anggaran",
   },
 });
 

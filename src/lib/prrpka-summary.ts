@@ -17,9 +17,9 @@ export { PRRPKA_DOC_PATH, buildPrrpkaSummary } from "@/lib/prrpka-types";
 
 /**
  * Homepage PRRPKA section is fixture-driven.
- * There is no `r3p_summary` / PRRPKA seed table in Supabase for this view;
- * `/api/prrpka/summary` (and `/api/r3p/summary`) read
- * `public/fixtures/prrpka_aceh.json` + `public/fixtures/prrpka_ringkasan.json`.
+ * There is no `r3p_summary` / PRRPKA seed table in Supabase for this view.
+ * Staff routes `/api/prrpka/summary` and `/api/r3p/summary` read
+ * `data/staff/prrpka_aceh.json` + `data/staff/prrpka_ringkasan.json`.
  */
 let cache: PrrpkaSummaryResponse | null = null;
 
@@ -33,8 +33,8 @@ export async function loadPrrpkaSummary(): Promise<PrrpkaSummaryResponse> {
   if (cache) return cache;
 
   const [acehRaw, ringkasanRaw] = await Promise.all([
-    readJson("public/fixtures/prrpka_aceh.json"),
-    readJson("public/fixtures/prrpka_ringkasan.json"),
+    readJson("data/staff/prrpka_aceh.json"),
+    readJson("data/staff/prrpka_ringkasan.json"),
   ]);
 
   const aceh = asPrrpkaAcehFixture(acehRaw);

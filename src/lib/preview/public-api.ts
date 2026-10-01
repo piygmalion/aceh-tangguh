@@ -10,11 +10,6 @@ import {
 } from "@/lib/kejadian-analisis";
 import { filterAndPaginateKejadian } from "@/lib/kejadian-query";
 import type { KejadianFixture, KejadianQuery } from "@/lib/kejadian-types";
-import {
-  asPrrpkaAcehFixture,
-  asPrrpkaRingkasan,
-  buildPrrpkaSummary,
-} from "@/lib/prrpka-types";
 import type { LegendModel } from "@/lib/types";
 import { unavailableMagmaCard, type SipongiCard, type TatonasCard } from "@/lib/peringatan-dini-types";
 import { emptyTatonasCard } from "@/lib/tatonas/parse";
@@ -127,17 +122,8 @@ async function resolveStaticGet(input: string): Promise<Response> {
   if (path === "/api/hazards") {
     return jsonResponse(STATIC_UNAVAILABLE, 503);
   }
-  if (path === "/api/prrpka/summary" || path === "/api/r3p/summary") {
-    const [acehRaw, ringkasanRaw] = await Promise.all([
-      fetchJson("/fixtures/prrpka_aceh.json"),
-      fetchJson("/fixtures/prrpka_ringkasan.json"),
-    ]);
-    const aceh = asPrrpkaAcehFixture(acehRaw);
-    const ringkasan = asPrrpkaRingkasan(ringkasanRaw);
-    if (!aceh || !ringkasan) {
-      return jsonResponse({ error: "Invalid PRRPKA fixtures" }, 500);
-    }
-    return jsonResponse(buildPrrpkaSummary(aceh, ringkasan));
+  if (path === "/api/prrpka/summary" || path === "/api/r3p/summary" || path === "/api/anggaran") {
+    return jsonResponse({ error: "unauthorized" }, 401);
   }
   if (path === "/api/dibi/aceh") {
     const data = (await fetchJson("/fixtures/dibi-aceh.json")) as Record<
@@ -326,19 +312,6 @@ async function resolveStaticGet(input: string): Promise<Response> {
         "fixture"
       )
     );
-  }
-  if (path === "/api/anggaran") {
-    const [analisis, kegiatanFile] = await Promise.all([
-      fetchJson("/fixtures/analisis-anggaran-2026.json"),
-      fetchJson("/fixtures/kegiatan-penanganan-2026.json") as Promise<{
-        kegiatan?: unknown[];
-      }>,
-    ]);
-    return jsonResponse({
-      analisis,
-      kegiatan: kegiatanFile.kegiatan ?? [],
-      source: "fixture",
-    });
   }
   if (path === "/api/publikasi/kegiatan") {
     const data = (await fetchJson("/fixtures/publikasi-kegiatan.json")) as {

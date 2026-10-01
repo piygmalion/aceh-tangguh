@@ -304,7 +304,7 @@ export const CONTEXT_FOR_INTENT: Record<
   kejadian: ["liveStats", "sikStats", "kejadian"],
   analisisData: [],
   dibi: ["dibi"],
-  anggaran: ["anggaran"],
+  anggaran: [],
   irbi: ["irbi"],
   krb: ["krb", "irbi"],
   pelatihan: ["pelatihan"],

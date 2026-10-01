@@ -68,7 +68,7 @@ Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
    npm run update:profil-sheet -- --apply
    ```
 
-Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kejadian, markers, anggaran, publikasi, IRBI analysis) is read from Supabase first; loaders fall back to fixtures if env is missing, a query fails, or the table is empty. The homepage PRRPKA section is fixture-driven (`prrpka_aceh.json` + `prrpka_ringkasan.json`); there is no matching Supabase seed table.
+Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kejadian, markers, publikasi, IRBI analysis) is read from Supabase first; loaders fall back to fixtures if env is missing, a query fails, or the table is empty. Anggaran and PRRPKA fixtures live in `data/staff/` and are served only to a staff session (`GET /api/anggaran`, `/api/prrpka/summary`, `/api/r3p/summary` return 401 without one). There is no public homepage PRRPKA section.
 
 ### API endpoints
 
@@ -99,10 +99,10 @@ Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kej
 | GET | `/api/boundaries` | GeoJSON fixtures |
 | GET | `/api/kejadian` | `kejadian_bencana` (filter/paginate), else fixture |
 | GET | `/api/kejadian/[id]` | Single event detail |
-| GET | `/api/anggaran` | `anggaran_analisis` + `anggaran_kegiatan`, else fixture |
+| GET | `/api/anggaran` | Staff only — `anggaran_analisis` + `anggaran_kegiatan`, else `data/staff` fixture. Anonymous: 401 |
 | GET | `/api/publikasi` | `publikasi` + `publikasi_meta`, else fixture |
-| GET | `/api/prrpka/summary` | PRRPKA fixtures (`prrpka_aceh.json` + `prrpka_ringkasan.json`) |
-| GET | `/api/r3p/summary` | Same PRRPKA payload (legacy path) |
+| GET | `/api/prrpka/summary` | Staff only — PRRPKA fixtures in `data/staff`. Anonymous: 401 |
+| GET | `/api/r3p/summary` | Staff only — same PRRPKA payload (legacy path). Anonymous: 401 |
 | GET | `/api/dibi/aceh` | Live BNPB DIBI Superset (Aceh-only), else `dibi-aceh.json` |
 | GET | `/api/weather` | 23 kab/kota forecasts (BMKG / Open-Meteo + `weather-snapshot.json`) |
 | GET | `/api/weather/inovasi` | Experimental WeatherNext 3 context only — not official BMKG; empty if unconfigured |
@@ -116,7 +116,7 @@ Homepage **Peringatan Dini** (`#status`) summarises existing weather plus live M
 
 | Locale | Path |
 |--------|------|
-| id | `/id/admin` staff dashboard (login at `/id/admin/login`) |
+| id | `/id/admin` staff dashboard (login at `/id/admin/login`); recovery funding at `/id/admin/anggaran` |
 | id | `/id` homepage |
 | id | `/id/peta` map |
 | id | `/id/lapor` report form |

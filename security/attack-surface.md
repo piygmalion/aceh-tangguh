@@ -25,7 +25,7 @@ Roles: `super_admin`, `admin` → `admin_provinsi`, `admin_kabkota` (scoped), `a
 | `/id/peta` | MapLibre map |
 | `/id/lapor`, `/id/lapor/kejadian`, `/id/lapor/penanganan` | Citizen forms |
 | `/id/data-bencana` | Event table (`/en/disaster-data`) |
-| `/id/anggaran-bencana`, `/id/publikasi` | Budget / publications |
+| `/id/publikasi` | Publications |
 | `/id/destana`, `/id/nomor-penting`, `/id/pelatihan`, `/id/mitra` | Public SIK pages |
 | `/id/sumber-data`, `/id/metodologi` | Docs |
 | `/id/brief/[ymd]` | Daily Brief publik (tanpa PII) |
@@ -39,6 +39,7 @@ Roles: `super_admin`, `admin` → `admin_provinsi`, `admin_kabkota` (scoped), `a
 | `/auth/confirm` | Public GET; one-time `token_hash`; rate-limited per IP; not locale-prefixed |
 | `/id/admin/denied` | Signed in, no profile |
 | `/id/admin`, `/id/admin/moderasi` | Staff |
+| `/id/admin/anggaran` | Staff (`requireStaffPage`). Public `/id/anggaran-bencana` and `/en/disaster-budget` redirect here; anonymous visitors are sent to login and see no figures |
 | `/id/admin/operasi` | Staff (`overview`) — baca agregat, tanpa API baru |
 | `/id/admin/daily-brief` | Provinsi ops (`dailyBrief`) |
 | `/id/admin/sik/*` | Staff + `canAccessModule` |
@@ -46,7 +47,7 @@ Roles: `super_admin`, `admin` → `admin_provinsi`, `admin_kabkota` (scoped), `a
 
 ## Public GET APIs
 
-`GET /api/stats/live`, `/api/peringatan-dini`, `/api/peringatan-dini/magma`, `/api/peringatan-dini/sipongi`, `/api/peringatan-dini/tatonas`, `/api/peringatan-dini/maritim`, `/api/weather`, `/api/weather/inovasi`, `/api/weather/[kab]`, `/api/dibi/aceh`, `/api/irbi`, `/api/krb`, `/api/kejadian`, `/api/kejadian/analisis`, `/api/kejadian/[id]`, `/api/anggaran`, `/api/publikasi`, `/api/publikasi/kegiatan`, `/api/prrpka/summary`, `/api/r3p/summary`, `/api/layers/catalog`, `/api/layers/meta/[layerKey]`, `/api/layers/areas/[key]`, `/api/layers/markers`, `/api/layers/markers/summary`, `/api/boundaries`, `/api/laporan/peta`, `/api/profil-desa/desa`, `/api/profil-desa/kecamatan`, `/api/profil-desa/kabupaten`, `/api/sentinel/status`, `/api/sik/public`, `/api/overlay/[key]`, `/api/overlay/static/[key]`, `/api/overlay/tiles/[...parts]`, `/api/overlay/maritime/perairan`, `/api/overlay/maritime/pelabuhan/[kode]`, `/api/nasa-nrt/firms`, `/api/nasa-nrt/gibs/time`, `/api/brief/[ymd]` (snapshot tanpa PII), `/api/admin/me` (null session if logged out).
+`GET /api/stats/live`, `/api/peringatan-dini`, `/api/peringatan-dini/magma`, `/api/peringatan-dini/sipongi`, `/api/peringatan-dini/tatonas`, `/api/peringatan-dini/maritim`, `/api/weather`, `/api/weather/inovasi`, `/api/weather/[kab]`, `/api/dibi/aceh`, `/api/irbi`, `/api/krb`, `/api/kejadian`, `/api/kejadian/analisis`, `/api/kejadian/[id]`, `/api/publikasi`, `/api/publikasi/kegiatan`, `/api/layers/catalog`, `/api/layers/meta/[layerKey]`, `/api/layers/areas/[key]`, `/api/layers/markers`, `/api/layers/markers/summary`, `/api/boundaries`, `/api/laporan/peta`, `/api/profil-desa/desa`, `/api/profil-desa/kecamatan`, `/api/profil-desa/kabupaten`, `/api/sentinel/status`, `/api/sik/public`, `/api/overlay/[key]`, `/api/overlay/static/[key]`, `/api/overlay/tiles/[...parts]`, `/api/overlay/maritime/perairan`, `/api/overlay/maritime/pelabuhan/[kode]`, `/api/nasa-nrt/firms`, `/api/nasa-nrt/gibs/time`, `/api/brief/[ymd]` (snapshot tanpa PII), `/api/admin/me` (null session if logged out).
 
 `GET /api/nasa-nrt/firms` is unofficial NRT (AN-57): no `FIRMS_MAP_KEY` or upstream failure → **503** empty; zero points in `ACEH_BBOX` → **200** empty. Does not write `overlay_live_features`. GIBS tiles are not proxied.
 
@@ -77,6 +78,7 @@ Dua jalur laporan: `laporan_*` + `/api/admin/laporan` (hidup) versus tabel waris
 
 | Auth | Methods | Path |
 | --- | --- | --- |
+| Staff (`requireStaffApi`). Anonim 401. Bukan service role | GET | `/api/anggaran`, `/api/prrpka/summary`, `/api/r3p/summary` |
 | Staff + `moderasi`; kab 403 (tanpa kolom kab) | GET, PATCH | `/api/admin/reports` (tabel warisan `reports`) |
 | Staff + `moderasi`; kab filter AN-22 (`authorizeLaporanList` / `matchesLaporanKabScope`) | GET, PATCH | `/api/admin/laporan` |
 | Super-admin + `rejectCrossOrigin` pada POST; undangan Auth + `redirectTo` `/auth/confirm` | GET, POST | `/api/admin/users` |

@@ -4,7 +4,6 @@ import { CuacaStrip } from "@/components/beranda/CuacaStrip";
 import { DibiPanel } from "@/components/beranda/DibiPanel";
 import { HeroBoard } from "@/components/beranda/HeroBoard";
 import { MetricRail } from "@/components/beranda/MetricRail";
-import { PemulihanPanel } from "@/components/beranda/PemulihanPanel";
 import { PeringatanBento } from "@/components/beranda/PeringatanBento";
 import { PetaPanel } from "@/components/beranda/PetaPanel";
 import { RisikoLadder } from "@/components/beranda/RisikoLadder";
@@ -29,7 +28,6 @@ export default async function HomePage({
         <PeringatanBento />
         <RisikoLadder />
         <DibiPanel />
-        <PemulihanPanel />
         <PetaPanel />
         <AksiPanel />
         <SumberPanel />

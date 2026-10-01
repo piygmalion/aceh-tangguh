@@ -218,7 +218,7 @@ def chapter_blocks() -> list[dict]:
         {
             "type": "p",
             "text": (
-                "PRRPKA di beranda tetap fixture-only (prrpka_aceh.json + prrpka_ringkasan.json). "
+                "PRRPKA hanya di konsol staf, fixture di data/staff (prrpka_aceh.json + prrpka_ringkasan.json). "
                 "Tidak ada tabel seed Supabase yang setara. "
                 "Pola baca domain lain: trySupabaseThenFixture di src/lib/supabase/fallback.ts."
             ),

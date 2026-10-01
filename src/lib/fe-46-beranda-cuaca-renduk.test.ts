@@ -105,16 +105,14 @@ describe("FE-46 cuaca slideshow, copy, footer, renduk", () => {
     assert.match(footer, /md:grid-cols-3/);
   });
 
-  it("mounts Renduk / PRRPKA charts at the bottom of analisis-data", () => {
+  it("keeps Renduk / PRRPKA charts off the public analisis page", () => {
     const page = read("src/app/[locale]/analisis-data/page.tsx");
-    assert.match(page, /R3PChartSection/);
+    assert.doesNotMatch(page, /R3PChartSection/);
     assert.match(page, /AnalisisWorkspace/);
-    const workspaceIdx = page.indexOf("AnalisisWorkspace");
-    const rendukIdx = page.indexOf("R3PChartSection");
-    assert.ok(rendukIdx > workspaceIdx, "Renduk section must sit below AnalisisWorkspace");
+    const staff = read("src/app/[locale]/admin/(console)/anggaran/page.tsx");
+    assert.match(staff, /R3PChartSection/);
+    assert.match(staff, /renduk/);
     const chart = read("src/components/R3PChartSection.tsx");
-    assert.match(chart, /sectionId|"renduk"|id=\{/);
-    assert.match(page, /renduk/);
     assert.match(chart, /\/api\/prrpka\/summary/);
   });
 });
