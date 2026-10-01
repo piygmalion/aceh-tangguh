@@ -1,6 +1,7 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { unstable_cache } from "next/cache";
+import { assessDibiLive, chooseDibiDelivery } from "./dibi-guard";
 import {
   DIBI_DASHBOARD_URL,
   DIBI_KATEGORI_BENCANA,
@@ -368,9 +369,27 @@ async function fetchDibiAcehLive(): Promise<DibiAcehPayload> {
   };
 }
 
+let lastAcceptedDibi: DibiAcehPayload | null = null;
+
+async function baselineKejadian(): Promise<number | null> {
+  try {
+    const fixture = await loadDibiAcehFixture();
+    return fixture.totals.kejadian;
+  } catch {
+    return null;
+  }
+}
+
 const getCachedDibiAceh = unstable_cache(
-  fetchDibiAcehLive,
-  ["dibi-aceh-dashboard-2"],
+  async () => {
+    const live = await fetchDibiAcehLive();
+    const verdict = assessDibiLive(live, await baselineKejadian());
+    if (!verdict.ok) {
+      throw new Error(`DIBI live rejected: ${verdict.reason}`);
+    }
+    return live;
+  },
+  ["dibi-aceh-dashboard-2-guarded"],
   { revalidate: 600, tags: ["dibi"] },
 );
 
@@ -383,13 +402,17 @@ async function loadDibiAcehFixture(): Promise<DibiAcehPayload> {
 }
 
 export async function getDibiAceh(): Promise<DibiAcehResponse> {
+  let live: DibiAcehPayload | null = null;
   try {
-    const live = await getCachedDibiAceh();
-    if (live.by_kabupaten.length > 0) {
-      return { ...live, source: "dibi" };
-    }
+    live = await getCachedDibiAceh();
   } catch (err) {
     console.error("[dibi]", err);
+  }
+
+  const chosen = chooseDibiDelivery(live, await baselineKejadian(), lastAcceptedDibi);
+  if (chosen) {
+    lastAcceptedDibi = chosen.payload;
+    return { ...chosen.payload, source: "dibi" };
   }
 
   const fixture = await loadDibiAcehFixture();
