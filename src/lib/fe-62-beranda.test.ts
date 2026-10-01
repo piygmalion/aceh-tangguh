@@ -56,7 +56,9 @@ describe("FE-62 beranda mengikuti urutan SIAGA", () => {
     assert.doesNotMatch(tentang, /App Store|Google Play|play\.google|apps\.apple/);
     assert.match(fitur, /id="peta-teaser"/);
     assert.match(fitur, /href: "\/peta"/);
-    assert.match(fitur, /href: "\/destana"/);
+    assert.match(fitur, /href: "\/analisis-data"/);
+    assert.match(fitur, /BarChart3/);
+    assert.doesNotMatch(fitur, /destanaTitle|destanaIsi|href: "\/destana"/);
     assert.doesNotMatch(fitur, /\b\d{3,}\b/);
     assert.match(read("src/components/beranda/LaporCta.tsx"), /href="\/lapor\/kejadian"/);
     assert.match(read("src/components/beranda/LaporCta.tsx"), /id="partisipasi"/);
@@ -76,6 +78,18 @@ describe("FE-62 beranda mengikuti urutan SIAGA", () => {
       assert.equal(typeof id.beranda.statistik[key], "string", key);
       assert.equal(typeof en.beranda.statistik[key], "string", key);
     }
+    const idFitur = JSON.parse(read("messages/id.json")) as {
+      beranda: { fitur: Record<string, string> };
+    };
+    const enFitur = JSON.parse(read("messages/en.json")) as {
+      beranda: { fitur: Record<string, string> };
+    };
+    assert.equal(idFitur.beranda.fitur.analisisTitle, "Analisis data bencana");
+    assert.equal(enFitur.beranda.fitur.analisisTitle, "Disaster data analysis");
+    assert.equal(idFitur.beranda.fitur.destanaTitle, undefined);
+    assert.equal(enFitur.beranda.fitur.destanaTitle, undefined);
+    assert.doesNotMatch(idFitur.beranda.fitur.analisisIsi, /\d/);
+    assert.doesNotMatch(enFitur.beranda.fitur.analisisIsi, /\d/);
     assert.match(id.beranda.statistik.sumber, /DIBI BNPB/);
     assert.match(en.beranda.statistik.sumber, /DIBI BNPB/);
     assert.match(id.beranda.statistik.sumberCadangan, /data cadangan per \{date\}/);
