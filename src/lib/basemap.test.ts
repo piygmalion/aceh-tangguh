@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, it } from "node:test";
 import { COLOR_TOKENS } from "./layer-colors";
 import {
@@ -10,6 +12,9 @@ import {
   getBasemapStyle,
   isBasemapId,
   isBrandBasemapId,
+  normalizeBasemapId,
+  rewriteHiddenDarkBasemap,
+  visibleBasemapOptions,
 } from "./basemap";
 import {
   BRAND_BASEMAP_IDS,
@@ -105,6 +110,46 @@ describe("getBasemapStyle default remains Carto", () => {
       BASEMAP_IDS.slice(0, 5),
       ["positron", "dark", "streets", "satellite", "sentinel"]
     );
+  });
+
+  it("hides Gelap and rewrites ?basemap=dark when the Carto key is absent", () => {
+    const prev = process.env.NEXT_PUBLIC_CARTO_API_KEY;
+    const settings = readFileSync(
+      path.join(process.cwd(), "src/components/map/MapSettings.tsx"),
+      "utf8",
+    );
+    const id = JSON.parse(
+      readFileSync(path.join(process.cwd(), "messages/id.json"), "utf8"),
+    ) as { map: { basemapDark: string; basemapBrandDark: string } };
+    assert.equal(id.map.basemapDark, "Gelap");
+    assert.match(settings, /visibleBasemapOptions\(\)/);
+    assert.equal(settings.includes("BASEMAP_OPTIONS.map"), false);
+    try {
+      delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
+      assert.equal(isBasemapId("dark"), false);
+      assert.equal(normalizeBasemapId("dark"), "positron");
+      assert.equal(isBasemapId("positron"), true);
+      const ids = visibleBasemapOptions().map((option) => option.id);
+      assert.equal(ids.includes("dark"), false);
+      assert.ok(ids.includes("positron"));
+      assert.ok(ids.includes("sentinel"));
+      assert.ok(ids.includes("brand-dark"));
+      const rewritten = rewriteHiddenDarkBasemap("basemap=dark&z=11");
+      assert.ok(rewritten);
+      const params = new URLSearchParams(rewritten ?? "");
+      assert.equal(params.get("basemap"), "positron");
+      assert.equal(params.get("z"), "11");
+
+      process.env.NEXT_PUBLIC_CARTO_API_KEY = "present";
+      assert.equal(isBasemapId("dark"), true);
+      assert.equal(normalizeBasemapId("dark"), "dark");
+      assert.equal(rewriteHiddenDarkBasemap("basemap=dark&z=11"), null);
+      assert.ok(visibleBasemapOptions().some((option) => option.id === "dark"));
+      assert.equal(id.map.basemapBrandDark, "Gelap merek");
+    } finally {
+      if (prev === undefined) delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
+      else process.env.NEXT_PUBLIC_CARTO_API_KEY = prev;
+    }
   });
 });
 

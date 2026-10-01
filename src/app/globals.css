@@ -470,6 +470,13 @@ a:focus-visible {
   outline-offset: 2px;
 }
 
+/* Header sits on #C8102E. The light-theme ring token is #111 (3.2:1).
+   Keep the 2px ring and 2px offset, painted white. */
+[data-sitenav] :focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
 .maplibregl-map {
   font: inherit;
 }

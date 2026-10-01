@@ -7,8 +7,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import type { BasemapId } from "@/lib/types";
 import {
-  BASEMAP_OPTIONS,
   BASEMAP_VECTOR_URLS,
+  visibleBasemapOptions,
   type BasemapKind,
 } from "@/lib/basemap";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -134,7 +134,7 @@ export function MapSettings({
             {t("basemap")}
           </div>
           <div className="grid grid-cols-2 gap-1.5">
-            {BASEMAP_OPTIONS.map((b) => (
+            {visibleBasemapOptions().map((b) => (
               <button
                 key={b.id}
                 type="button"

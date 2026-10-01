@@ -1,7 +1,7 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
-import { ArrowUpRight, BookOpen, Map, Shield, TriangleAlert } from "lucide-react";
+import { ArrowUpRight, BarChart3, BookOpen, Map, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
@@ -23,10 +23,10 @@ const KARTU = [
     id: "peta-teaser",
   },
   {
-    href: "/destana" as const,
-    titleKey: "fitur.destanaTitle" as const,
-    isiKey: "fitur.destanaIsi" as const,
-    Icon: Shield,
+    href: "/analisis-data" as const,
+    titleKey: "fitur.analisisTitle" as const,
+    isiKey: "fitur.analisisIsi" as const,
+    Icon: BarChart3,
     id: undefined,
   },
   {

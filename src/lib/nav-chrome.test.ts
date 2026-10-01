@@ -54,9 +54,16 @@ describe("nav chrome interaction tokens", () => {
     assert.match(lapor, /mousedown/);
 
     assert.match(theme, /NAV_UTILITY_HOVER|--accent/);
+    assert.match(theme, /text-\[var\(--primary-fg\)\]/);
+    assert.equal(/text-\[var\(--text\)\]/.test(theme), false);
     assert.equal(/hover:text-\[var\(--primary\)\]/.test(theme), false);
 
     assert.match(auth, /NAV_UTILITY_HOVER|--accent/);
+    assert.match(auth, /href="\/admin\/login"[\s\S]{0,280}text-\[var\(--primary-fg\)\]/);
+    assert.equal(
+      /href="\/admin\/login"[\s\S]{0,280}text-\[var\(--text\)\]/.test(auth),
+      false,
+    );
     assert.equal(
       /hover:border-\[var\(--primary\)\]/.test(auth),
       false,
@@ -65,6 +72,17 @@ describe("nav chrome interaction tokens", () => {
 
     assert.match(locale, /TYPE_FLOOR_CLASS|text-\[0\.8125rem\]/);
     assert.match(locale, /hover:text-\[var\(--accent\)\]/);
+    assert.match(locale, /text-\[var\(--primary-fg\)\]/);
+    assert.equal(locale.includes("text-white/70"), false);
     assert.match(locale, /bg-\[var\(--primary\)\]/);
+    const css = read("src/app/globals.css");
+    assert.match(
+      css,
+      /\[data-sitenav\] :focus-visible\s*\{[\s\S]*?outline:\s*2px solid #ffffff/,
+    );
+    assert.match(
+      css,
+      /\[data-sitenav\] :focus-visible\s*\{[\s\S]*?outline-offset:\s*2px/,
+    );
   });
 });

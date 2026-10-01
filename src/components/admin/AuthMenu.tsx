@@ -86,7 +86,7 @@ export function AuthMenu() {
       <Link
         href="/admin/login"
         className={cn(
-          "inline-flex h-9 items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-2.5 text-sm font-medium text-[var(--text)] transition",
+          "inline-flex h-9 items-center gap-1.5 rounded-full border border-white/40 px-2.5 text-sm font-medium text-[var(--primary-fg)] transition",
           NAV_UTILITY_HOVER
         )}
         aria-label={t("login")}
@@ -112,8 +112,10 @@ export function AuthMenu() {
         aria-expanded={open}
         aria-haspopup="menu"
         className={cn(
-          "inline-flex h-9 max-w-[11rem] items-center gap-1.5 rounded-full border border-[var(--glass-border)] bg-[var(--bg-raised)]/60 px-2.5 text-sm font-medium transition",
-          open ? cn(NAV_ACCENT_MARKED, "border-[var(--accent)]") : NAV_UTILITY_HOVER
+          "inline-flex h-9 max-w-[11rem] items-center gap-1.5 rounded-full border border-white/40 px-2.5 text-sm font-medium transition",
+          open
+            ? cn(NAV_ACCENT_MARKED, "border-[var(--accent)]")
+            : cn("text-[var(--primary-fg)]", NAV_UTILITY_HOVER)
         )}
       >
         <UserRound size={16} strokeWidth={2.2} />
