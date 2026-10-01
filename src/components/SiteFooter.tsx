@@ -7,9 +7,6 @@ import { SITE_MEDIA, UI_CREDITS } from "@/lib/media";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
-const DETAILS_SUMMARY =
-  "cursor-pointer list-none text-[var(--text-dim)] transition hover:text-[var(--primary)] [&::-webkit-details-marker]:hidden";
-
 export function SiteFooter() {
   const t = useTranslations("footer");
   const tn = useTranslations("nav");
@@ -20,15 +17,9 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-[1080px] gap-10 md:grid-cols-3">
         <div>
           <div className="text-base font-semibold tracking-tight">Aceh Tangguh</div>
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-[var(--text-dim)]">
-            {t("credit")}
-          </p>
         </div>
-        <details>
-          <summary className={cn(DETAILS_SUMMARY, TYPE_KICKER_CLASS)}>
-            {t("jelajah")}
-          </summary>
-          <ul className="mt-3 space-y-2 text-sm text-[var(--text-dim)]">
+        <nav aria-label={t("jelajah")}>
+          <ul className="space-y-2 text-sm text-[var(--text-dim)]">
             <li>
               <Link className="transition hover:text-[var(--primary)]" href="/peta">
                 {tn("peta")}
@@ -90,11 +81,14 @@ export function SiteFooter() {
               </Link>
             </li>
           </ul>
-        </details>
-        <details data-footer-sumber>
-          <summary className={cn(DETAILS_SUMMARY, TYPE_KICKER_CLASS)}>
+        </nav>
+        <nav aria-label={t("sumberData")} data-footer-sumber>
+          <Link
+            href="/sumber-data"
+            className={cn(TYPE_KICKER_CLASS, "transition hover:text-[var(--primary)]")}
+          >
             {t("sumberData")}
-          </summary>
+          </Link>
           <ul className={cn("mt-3 space-y-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
             {FOOTER_SUMBER.map((row) => (
               <li key={row.id}>
@@ -107,7 +101,7 @@ export function SiteFooter() {
               </li>
             ))}
           </ul>
-        </details>
+        </nav>
       </div>
       <div
         className={cn(

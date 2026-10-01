@@ -1,13 +1,16 @@
 import { setRequestLocale } from "next-intl/server";
-import { AksiPanel } from "@/components/beranda/AksiPanel";
+import { BeritaSection } from "@/components/beranda/BeritaSection";
 import { CuacaStrip } from "@/components/beranda/CuacaStrip";
-import { DibiPanel } from "@/components/beranda/DibiPanel";
-import { HeroBoard } from "@/components/beranda/HeroBoard";
-import { MetricRail } from "@/components/beranda/MetricRail";
+import { DataHero } from "@/components/beranda/DataHero";
+import { DestanaBeranda } from "@/components/beranda/DestanaBeranda";
+import { FiturSection } from "@/components/beranda/FiturSection";
+import { LaporCta } from "@/components/beranda/LaporCta";
+import { MasukCta } from "@/components/beranda/MasukCta";
 import { PeringatanBento } from "@/components/beranda/PeringatanBento";
-import { PetaPanel } from "@/components/beranda/PetaPanel";
 import { RisikoLadder } from "@/components/beranda/RisikoLadder";
 import { SumberPanel } from "@/components/beranda/SumberPanel";
+import { TentangSection } from "@/components/beranda/TentangSection";
+import { SHOW_BERANDA_DESTANA } from "@/components/beranda/flags";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteNav } from "@/components/SiteNav";
 
@@ -22,15 +25,17 @@ export default async function HomePage({
     <>
       <SiteNav />
       <main className="overflow-x-hidden">
-        <HeroBoard />
-        <MetricRail />
+        <DataHero />
+        <TentangSection />
+        <LaporCta />
+        <FiturSection />
+        {SHOW_BERANDA_DESTANA ? <DestanaBeranda /> : null}
+        <RisikoLadder />
+        <BeritaSection />
         <CuacaStrip />
         <PeringatanBento />
-        <RisikoLadder />
-        <DibiPanel />
-        <PetaPanel />
-        <AksiPanel />
         <SumberPanel />
+        <MasukCta />
       </main>
       <SiteFooter />
     </>

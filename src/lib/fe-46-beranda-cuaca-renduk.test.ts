@@ -89,19 +89,16 @@ describe("FE-46 cuaca slideshow, copy, footer, renduk", () => {
     assert.deepEqual(enKeys, idKeys);
   });
 
-  it("collapses footer Jelajah and Sumber data like Kredit visual", () => {
+  it("shows footer links instead of an unlinked heading or brand placeholder", () => {
     const footer = read("src/components/SiteFooter.tsx");
-    const jelajahIdx = footer.indexOf('t("jelajah")');
-    const sumberIdx = footer.indexOf('t("sumberData")');
+    assert.doesNotMatch(footer, /Placeholder|brand final|TBD|t\("credit"\)/);
+    assert.match(footer, /aria-label=\{t\("jelajah"\)\}/);
+    assert.match(footer, /href="\/peta"/);
+    assert.match(footer, /href="\/sumber-data"/);
+    assert.match(footer, /t\("sumberData"\)/);
     const kreditIdx = footer.indexOf('t("kreditVisual")');
-    assert.ok(jelajahIdx > 0 && sumberIdx > 0 && kreditIdx > 0);
-    const beforeJelajah = footer.slice(Math.max(0, jelajahIdx - 280), jelajahIdx);
-    const beforeSumber = footer.slice(Math.max(0, sumberIdx - 280), sumberIdx);
-    const beforeKredit = footer.slice(Math.max(0, kreditIdx - 280), kreditIdx);
-    assert.match(beforeJelajah, /<details/);
-    assert.match(beforeSumber, /<details/);
-    assert.match(beforeKredit, /<details/);
-    assert.match(footer, /<summary/);
+    assert.ok(kreditIdx > 0);
+    assert.match(footer.slice(Math.max(0, kreditIdx - 280), kreditIdx), /<details/);
     assert.match(footer, /md:grid-cols-3/);
   });
 

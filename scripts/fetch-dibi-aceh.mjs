@@ -2,9 +2,11 @@
  * Refresh public/fixtures/dibi-aceh.json from the public BNPB DIBI dashboard.
  * Usage: node scripts/fetch-dibi-aceh.mjs
  */
+import { readFileSync } from "fs";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { assessDibiLive } from "./dibi-guard.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
@@ -271,6 +273,24 @@ async function main() {
   };
 
   const out = path.join(root, "public/fixtures/dibi-aceh.json");
+  let baselineKejadian = null;
+  try {
+    const previous = JSON.parse(readFileSync(out, "utf8"));
+    const previousTotal = previous?.totals?.kejadian;
+    baselineKejadian =
+      typeof previousTotal === "number" && Number.isFinite(previousTotal)
+        ? previousTotal
+        : null;
+  } catch {
+    baselineKejadian = null;
+  }
+  const verdict = assessDibiLive(payload, baselineKejadian);
+  if (!verdict.ok) {
+    console.error(
+      `DIBI refresh rejected (${verdict.reason}); fixture left unchanged`,
+    );
+    process.exit(1);
+  }
   await writeFile(out, `${JSON.stringify(payload, null, 2)}\n`);
   console.log(
     `Wrote ${out} (${by_kabupaten.length} kab, ${by_tahun.length} years, ${totals.kejadian} events)`,

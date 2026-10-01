@@ -15,7 +15,6 @@ const LOCKED_FOOTER_IDS = [
   "compiled-r3p",
   "publikasi-kegiatan",
   "publikasi-btt",
-  "analisis-anggaran-2026",
 ] as const;
 
 const EXCLUDED_FOOTER_IDS = [
@@ -26,8 +25,8 @@ const EXCLUDED_FOOTER_IDS = [
 ] as const;
 
 describe("footer sumber column", () => {
-  it("lists the five locked catalog sources only and does not invent ids", () => {
-    assert.equal(FOOTER_SUMBER.length, 5);
+  it("lists the locked catalog sources only and does not invent ids", () => {
+    assert.equal(FOOTER_SUMBER.length, 4);
     assert.equal(FOOTER_SUMBER.length, FOOTER_SUMBER_IDS.length);
     const catalogIds = new Set(DATA_SOURCES.map((row) => row.id));
     for (const row of FOOTER_SUMBER) {
@@ -37,6 +36,11 @@ describe("footer sumber column", () => {
     const ids = FOOTER_SUMBER.map((row) => row.id);
     const idSet = new Set<string>(ids);
     assert.deepEqual(ids, [...LOCKED_FOOTER_IDS]);
+    assert.equal(idSet.has("analisis-anggaran-2026"), false);
+    for (const row of FOOTER_SUMBER) {
+      const label = `${row.labelId} ${row.labelEn}`;
+      assert.doesNotMatch(label, /APBA|PRRPKA|anggaran|PERGUB/i);
+    }
     assert.equal(idSet.has("dibi-aceh"), false);
     assert.equal(idSet.has("magma-gempa"), false);
     assert.equal(idSet.has("sipongi-hotspot"), false);

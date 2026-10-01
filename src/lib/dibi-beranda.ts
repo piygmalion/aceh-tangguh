@@ -1,0 +1,167 @@
+import {
+  EMPTY_DIBI_METRICS,
+  type DibiAcehPayload,
+  type DibiMetrics,
+  type DibiTahunRow,
+} from "./dibi-types";
+
+const METRIC_KEYS = [
+  "kejadian",
+  "meninggal",
+  "hilang",
+  "luka_sakit",
+  "menderita_mengungsi",
+  "rumah_rusak_berat",
+  "rumah_rusak_sedang",
+  "rumah_rusak_ringan",
+  "rumah_terendam",
+  "estimasi_kerugian_rumah",
+] as const satisfies readonly (keyof DibiMetrics)[];
+
+export type DibiBerandaFilter = {
+  yearFrom?: number | null;
+  yearTo?: number | null;
+  kabupaten?: string | null;
+  jenis?: string | null;
+};
+
+export type DibiCounterScope = "year-range" | "kabupaten" | "jenis" | "unavailable";
+
+export type DibiBerandaView = {
+  years: number[];
+  yearFrom: number | null;
+  yearTo: number | null;
+  kabupatenOptions: string[];
+  jenisOptions: string[];
+  trend: DibiTahunRow[];
+  /** Year series is province-wide. A kabupaten pick does not slice it. */
+  trendIgnoresKabupaten: boolean;
+  /** Year series is all hazard types. A jenis pick does not slice it. */
+  trendIgnoresJenis: boolean;
+  counters: {
+    scope: DibiCounterScope;
+    metrics: DibiMetrics | null;
+    respectsYearFilter: boolean;
+  };
+  kabChart: {
+    rows: { kabupaten: string; kejadian: number }[];
+    stackedByJenis: false;
+    respectsYearFilter: false;
+    respectsJenisFilter: false;
+  };
+  kejadianTerbaru: [];
+  incidentLevelAvailable: false;
+  /** Kabupaten × jenis matrix is not in the DIBI Aceh extract. */
+  crossTabAvailable: false;
+};
+
+function cleanName(value: string | null | undefined): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function copyMetrics(row: DibiMetrics): DibiMetrics {
+  const out: DibiMetrics = { ...EMPTY_DIBI_METRICS };
+  for (const key of METRIC_KEYS) {
+    const n = row[key];
+    out[key] = typeof n === "number" && Number.isFinite(n) ? n : 0;
+  }
+  return out;
+}
+
+function sumMetrics(rows: readonly DibiMetrics[]): DibiMetrics {
+  const out: DibiMetrics = { ...EMPTY_DIBI_METRICS };
+  for (const row of rows) {
+    const metrics = copyMetrics(row);
+    for (const key of METRIC_KEYS) out[key] += metrics[key];
+  }
+  return out;
+}
+
+/**
+ * Slice the existing DIBI Aceh extract for the homepage filters.
+ * Year rows can be summed. Kabupaten and jenis rows cannot be crossed
+ * with each other or with a year window: those slices are published separately.
+ */
+export function aggregateDibiBeranda(
+  payload: DibiAcehPayload,
+  filter: DibiBerandaFilter = {},
+): DibiBerandaView {
+  const years = payload.by_tahun
+    .map((row) => row.tahun)
+    .filter((year) => Number.isFinite(year))
+    .sort((a, b) => a - b);
+  const minYear = years[0] ?? null;
+  const maxYear = years[years.length - 1] ?? null;
+
+  let yearFrom = filter.yearFrom ?? minYear;
+  let yearTo = filter.yearTo ?? maxYear;
+  if (yearFrom != null && yearTo != null && yearFrom > yearTo) {
+    const swap = yearFrom;
+    yearFrom = yearTo;
+    yearTo = swap;
+  }
+
+  const trend = payload.by_tahun
+    .filter((row) => {
+      if (!Number.isFinite(row.tahun)) return false;
+      if (yearFrom != null && row.tahun < yearFrom) return false;
+      if (yearTo != null && row.tahun > yearTo) return false;
+      return true;
+    })
+    .map((row) => ({ ...row, ...copyMetrics(row) }))
+    .sort((a, b) => a.tahun - b.tahun);
+
+  const kabupaten = cleanName(filter.kabupaten);
+  const jenis = cleanName(filter.jenis);
+  const kabRow = kabupaten
+    ? payload.by_kabupaten.find((row) => row.kabupaten === kabupaten)
+    : undefined;
+  const jenisRow = jenis
+    ? payload.by_kategori.find((row) => row.kategori_bencana === jenis)
+    : undefined;
+
+  let counters: DibiBerandaView["counters"];
+  if (kabupaten && jenis) {
+    counters = { scope: "unavailable", metrics: null, respectsYearFilter: false };
+  } else if (kabupaten) {
+    counters = kabRow
+      ? { scope: "kabupaten", metrics: copyMetrics(kabRow), respectsYearFilter: false }
+      : { scope: "unavailable", metrics: null, respectsYearFilter: false };
+  } else if (jenis) {
+    counters = jenisRow
+      ? { scope: "jenis", metrics: copyMetrics(jenisRow), respectsYearFilter: false }
+      : { scope: "unavailable", metrics: null, respectsYearFilter: false };
+  } else {
+    counters = {
+      scope: "year-range",
+      metrics: sumMetrics(trend),
+      respectsYearFilter: true,
+    };
+  }
+
+  return {
+    years,
+    yearFrom,
+    yearTo,
+    kabupatenOptions: payload.by_kabupaten.map((row) => row.kabupaten),
+    jenisOptions: payload.by_kategori.map((row) => row.kategori_bencana),
+    trend,
+    trendIgnoresKabupaten: Boolean(kabupaten),
+    trendIgnoresJenis: Boolean(jenis),
+    counters,
+    kabChart: {
+      rows: payload.by_kabupaten.map((row) => ({
+        kabupaten: row.kabupaten,
+        kejadian: copyMetrics(row).kejadian,
+      })),
+      stackedByJenis: false,
+      respectsYearFilter: false,
+      respectsJenisFilter: false,
+    },
+    kejadianTerbaru: [],
+    incidentLevelAvailable: false,
+    crossTabAvailable: false,
+  };
+}

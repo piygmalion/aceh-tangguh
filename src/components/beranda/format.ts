@@ -106,6 +106,19 @@ export function dariSlug(slug: string, locale = "id"): string {
   return kapitalAwal(slug.replace(/_/g, " "), locale);
 }
 
+/** Date only, from a payload timestamp. Never the clock at render time. */
+export function tanggalCadangan(iso: string | null | undefined, locale = "id"): string | null {
+  if (!iso) return null;
+  const ms = Date.parse(iso);
+  if (Number.isNaN(ms)) return null;
+  return new Intl.DateTimeFormat(dateTag(locale), {
+    timeZone: "Asia/Jakarta",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(ms));
+}
+
 export function tanggalPendek(iso: string | null | undefined, locale = "id"): string | null {
   if (!iso) return null;
   const ms = Date.parse(iso);

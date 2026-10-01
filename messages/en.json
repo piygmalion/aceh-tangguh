@@ -157,7 +157,6 @@
     }
   },
   "footer": {
-    "credit": "Placeholder BPBD / Kominsa Aceh — final brand TBD",
     "jelajah": "Explore",
     "legal": "Legal",
     "sumberData": "Data sources",
@@ -1819,6 +1818,76 @@
       "j3Title": "Methods can be audited",
       "j3Isi": "How the data is processed, and its limits, is written in the open.",
       "j3Cta": "Read the methodology"
+    },
+    "statistik": {
+      "kicker": "Disaster statistics",
+      "title": "Aceh disaster statistics",
+      "lead": "Yearly aggregates for Aceh Province from DIBI BNPB. This is not today's emergency status.",
+      "filtersAria": "Filter DIBI statistics",
+      "yearFrom": "Start year",
+      "yearTo": "End year",
+      "kabupaten": "District or city",
+      "jenis": "Hazard type",
+      "allKab": "All districts and cities",
+      "allJenis": "All types",
+      "trendTitle": "Events per year",
+      "trendCaption": "All districts and all hazard types in the selected year range.",
+      "kabTitle": "Events by district or city",
+      "kabNote": "These bars cover every year and every hazard type. The DIBI extract has no district-by-type breakdown, so the chart is not stacked.",
+      "trendScopeNote": "The yearly chart covers every district and every hazard type. Choosing a district or a type does not change the line.",
+      "kejadian": "Events",
+      "meninggal": "Deaths",
+      "hilang": "Missing",
+      "luka": "Injured or ill",
+      "menderita": "Affected and displaced",
+      "menderitaNote": "One DIBI column. It is not split into displaced and affected.",
+      "scopeYear": "All districts and hazard types in this year range.",
+      "scopeKab": "This district figure covers every year and every hazard type. A yearly breakdown for one district is not in the DIBI extract.",
+      "scopeJenis": "This hazard figure covers every year and every district. A yearly breakdown for one type is not in the DIBI extract.",
+      "scopeUnavailable": "District and hazard type cannot be filtered together. The DIBI extract has no cross table, so the counters stay hidden.",
+      "emptyRange": "No DIBI year rows fall in this range.",
+      "noIncidents": "This Aceh DIBI extract is an aggregate, not an incident list. Latest-incident chips are not shown.",
+      "sumber": "DIBI BNPB. Updated {updated}.",
+      "sumberCadangan": "BNPB DIBI · standby data as of {date}",
+      "sumberUndated": "DIBI BNPB.",
+      "chartTrendAria": "Table of events per year",
+      "chartKabAria": "Table of events by district and city",
+      "yearHeader": "Year",
+      "countHeader": "Events"
+    },
+    "tentang": {
+      "kicker": "About Aceh Tangguh",
+      "b1": "Incident reports with a location and a photo enter the BPBA moderation queue.",
+      "b2": "Early warnings for weather, MAGMA earthquakes, hotspots, water level, and sea waves.",
+      "b3": "An operations map and BPBA publications on one site."
+    },
+    "lapor": {
+      "title": "Report a disaster near you so the response can start sooner",
+      "button": "Report now"
+    },
+    "fitur": {
+      "kicker": "Main services",
+      "title": "What you can use now",
+      "laporTitle": "Report a disaster",
+      "laporIsi": "Send an incident or a response. Staff verify it before it appears on the map.",
+      "petaTitle": "Map and monitoring",
+      "petaIsi": "Hazards, facilities, and field reports on the same map.",
+      "destanaTitle": "Disaster-resilient villages",
+      "destanaIsi": "Village list and mentoring programmes. Assessment levels are empty, so level counts are not shown.",
+      "infoTitle": "Information and publications",
+      "infoIsi": "BPBA activity news and material already published."
+    },
+    "berita": {
+      "kicker": "BPBA publications",
+      "title": "Latest news and activities",
+      "lead": "Activities already published by BPBA.",
+      "all": "All news"
+    },
+    "masuk": {
+      "kicker": "Stay ready",
+      "title": "Open disaster information whenever you need it",
+      "lead": "BPBA staff sign in to the console for moderation and internal data.",
+      "button": "Enter the system"
     }
   }
 }
