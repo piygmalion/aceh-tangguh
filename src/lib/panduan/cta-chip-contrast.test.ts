@@ -41,10 +41,15 @@ describe("panduan CTA chip contrast", () => {
     }
   });
 
-  it("leaves status Chip tones on their own colors", () => {
+  it("keeps approved and ok chips on ink, not brand red", () => {
     const chip = read("src/components/ui/Chip.tsx");
-    assert.match(chip, /warn:\s*"bg-\[var\(--warn-dim\)\] text-\[var\(--warn\)\]/);
-    assert.match(chip, /ok:\s*"bg-\[var\(--primary-dim\)\] text-\[var\(--primary\)\]/);
-    assert.match(chip, /danger:\s*"bg-\[var\(--danger-dim\)\] text-\[var\(--danger\)\]/);
+    assert.match(chip, /forest:\s*"border border-\[var\(--ink\)\] bg-\[var\(--ink\)\] text-\[var\(--paper\)\]/);
+    assert.match(
+      chip,
+      /ok:\s*"border border-\[var\(--ink\)\] bg-\[var\(--bg-muted\)\] text-\[var\(--text\)\]/,
+    );
+    assert.equal(/ok:[^\n]*--primary/.test(chip), false);
+    assert.match(chip, /warn:\s*"border border-\[var\(--map-keyline\)\]/);
+    assert.match(chip, /danger:\s*"border border-\[var\(--map-keyline\)\]/);
   });
 });

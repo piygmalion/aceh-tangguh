@@ -1,6 +1,5 @@
 import type { Feature, Point } from "geojson";
 import type { BasemapId, MarkerLayerKey } from "@/lib/types";
-import { STATUS_HEX } from "@/lib/chart-colors";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import { isTruncatedAcehLongitude, isTruncatedCoordQuality } from "@/lib/coord-quality";
 import { TYPE_FLOOR_PX } from "@/lib/type-floor";
@@ -71,16 +70,19 @@ export function clusterCircleRadiusExpr(): unknown[] {
   ];
 }
 
-/** Ring uses forest/sage/status tokens from existing point_count. No victim ranks. */
+/**
+ * Density ring stays on the data palette (forest / gold / orange).
+ * Not the hybrid status scale.
+ */
 export function clusterRingColorExpr(): unknown[] {
   return [
     "step",
     ["get", "point_count"],
-    STATUS_HEX.RENDAH,
+    COLOR_TOKENS.forest,
     MAP_CLUSTER_COUNT_STEPS.mid,
-    STATUS_HEX.SEDANG,
+    COLOR_TOKENS.gold,
     MAP_CLUSTER_COUNT_STEPS.high,
-    STATUS_HEX.TINGGI,
+    COLOR_TOKENS.orange,
   ];
 }
 

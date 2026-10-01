@@ -105,7 +105,7 @@ describe("FE-34 staf kab SoT-3 FINAL UX", () => {
     assert.match(chip, /--accent-fg/);
     assert.equal(/text-white/.test(chip), false);
     assert.match(chip, /forest:/);
-    assert.match(chip, /--forest-200/);
+    assert.match(chip, /bg-\[var\(--ink\)\] text-\[var\(--paper\)\]/);
     assert.equal(/lime|bg-lime|text-lime/.test(chip), false);
 
     assert.equal(helper.includes("inviteStatusFromAuthUser"), false);

@@ -71,13 +71,43 @@ function Counter({
   children: ReactNode;
 }) {
   return (
-    <div className="bg-[var(--bg-raised)] px-4 py-4">
-      <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{label}</p>
+    <div className="bg-[var(--band-bg)] px-4 py-4 text-[var(--band-fg)]">
+      <p className={cn("text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{label}</p>
       <div className="mt-1">{children}</div>
       {note ? (
-        <p className={cn("mt-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{note}</p>
+        <p className={cn("mt-1 text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{note}</p>
       ) : null}
     </div>
+  );
+}
+
+function BandValue({
+  value,
+  locale,
+  decimals = 0,
+  unit,
+  prefix,
+  missing,
+}: {
+  value: number | null;
+  locale: string;
+  decimals?: 0 | 1 | 2;
+  unit?: string;
+  prefix?: string;
+  missing: string;
+}) {
+  if (value == null) {
+    return <p className="text-[1.5rem] font-semibold leading-none text-[var(--band-fg)] sm:text-[1.75rem]">{missing}</p>;
+  }
+  return (
+    <Figure
+      value={value}
+      decimals={decimals}
+      unit={unit}
+      prefix={prefix}
+      size="sm"
+      tone="band"
+    />
   );
 }
 
@@ -85,54 +115,54 @@ function Counters({
   metrics,
   locale,
 }: {
-  metrics: DibiMetrics;
+  metrics: DibiMetrics | null;
   locale: string;
 }) {
   const t = useTranslations("beranda");
-  const menderita = angkaRingkas(metrics.menderita_mengungsi, locale);
-  const kerugian = rupiahDariJuta(metrics.estimasi_kerugian_rumah, locale);
+  const missing = t("statistik.belumAda");
+  const menderita = metrics ? angkaRingkas(metrics.menderita_mengungsi, locale) : null;
+  const kerugian = metrics ? rupiahDariJuta(metrics.estimasi_kerugian_rumah, locale) : null;
 
   return (
-    <>
-        <div
-        id="dibi"
-        className="mt-8 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--border)] sm:grid-cols-3 lg:grid-cols-5"
-      >
+    <div
+      id="dibi"
+      data-number-band
+      className="mt-8 overflow-hidden rounded-2xl border border-[var(--band-bg)] border-t-[3px] border-t-[var(--band-rule)] bg-[var(--band-bg)]"
+    >
+      <div className="grid grid-cols-2 gap-px bg-white/15 sm:grid-cols-3 lg:grid-cols-6">
         <Counter label={t("statistik.kejadian")}>
-          <Figure value={metrics.kejadian} size="sm" />
+          <BandValue value={metrics ? metrics.kejadian : null} locale={locale} missing={missing} />
         </Counter>
         <Counter label={t("statistik.meninggal")}>
-          <Figure value={metrics.meninggal} size="sm" tone="danger" />
+          <BandValue value={metrics ? metrics.meninggal : null} locale={locale} missing={missing} />
         </Counter>
         <Counter label={t("statistik.hilang")}>
-          <Figure value={metrics.hilang} size="sm" />
+          <BandValue value={metrics ? metrics.hilang : null} locale={locale} missing={missing} />
         </Counter>
         <Counter label={t("statistik.luka")}>
-          <Figure value={metrics.luka_sakit} size="sm" />
+          <BandValue value={metrics ? metrics.luka_sakit : null} locale={locale} missing={missing} />
         </Counter>
         <Counter label={t("statistik.menderita")} note={t("statistik.menderitaNote")}>
-          <Figure
-            value={menderita.n}
-            decimals={menderita.decimals}
-            unit={menderita.unit}
-            size="sm"
+          <BandValue
+            value={menderita ? menderita.n : null}
+            decimals={menderita?.decimals ?? 0}
+            unit={menderita?.unit}
+            locale={locale}
+            missing={missing}
+          />
+        </Counter>
+        <Counter label={t("dibi.kerugian")} note={t("dibi.kerugianNote")}>
+          <BandValue
+            value={kerugian ? kerugian.n : null}
+            decimals={kerugian?.decimals ?? 0}
+            unit={kerugian?.unit}
+            prefix="Rp"
+            locale={locale}
+            missing={missing}
           />
         </Counter>
       </div>
-      <div className="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] px-4 py-4">
-        <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("dibi.kerugian")}</p>
-        <Figure
-          value={kerugian.n}
-          decimals={kerugian.decimals}
-          unit={kerugian.unit}
-          prefix="Rp"
-          size="sm"
-        />
-        <p className={cn("mt-1 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-          {t("dibi.kerugianNote")}
-        </p>
-      </div>
-    </>
+    </div>
   );
 }
 
@@ -191,7 +221,7 @@ export function DataHero() {
   return (
     <section id="hero" className="scroll-mt-24 px-4 pb-16 pt-28 md:pb-20 md:pt-32">
       <div className="mx-auto max-w-6xl">
-        <p className={cn("text-[var(--accent)]", TYPE_KICKER_CLASS)}>{t("statistik.kicker")}</p>
+        <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("statistik.kicker")}</p>
         <div className="mt-3 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
             <h1 className="text-[1.75rem] font-semibold leading-[1.15] tracking-[-0.03em] sm:text-[2.25rem]">
@@ -204,7 +234,7 @@ export function DataHero() {
           <Link
             href="/data-bencana"
             className={cn(
-              "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-[var(--border)] px-4 font-semibold transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]",
+              "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-[var(--border)] px-4 font-semibold transition-colors hover:border-[var(--ink)] hover:bg-[var(--bg-muted)]",
               TYPE_FLOOR_CLASS,
             )}
           >
@@ -308,7 +338,7 @@ export function DataHero() {
             </div>
 
             <div className="mt-8 grid gap-8 lg:grid-cols-2">
-              <figure className="min-w-0">
+              <figure className="min-w-0 rounded-xl bg-[var(--chart-surface)] p-3">
                 <figcaption className="mb-1 font-semibold">{t("statistik.trendTitle")}</figcaption>
                 <p className={cn("mb-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                   {t("statistik.trendCaption")}
@@ -321,16 +351,16 @@ export function DataHero() {
                   <div className="h-64 w-full" aria-hidden>
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={view.trend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                        <CartesianGrid stroke="var(--border)" vertical={false} />
+                        <CartesianGrid stroke="var(--chart-grid)" vertical={false} />
                         <XAxis
                           dataKey="tahun"
-                          tick={{ fill: "var(--text-dim)", fontSize: 12 }}
+                          tick={{ fill: "var(--text-dim)", fontSize: 13 }}
                           tickLine={false}
                           axisLine={false}
                           minTickGap={24}
                         />
                         <YAxis
-                          tick={{ fill: "var(--text-dim)", fontSize: 12 }}
+                          tick={{ fill: "var(--text-dim)", fontSize: 13 }}
                           tickLine={false}
                           axisLine={false}
                           width={48}
@@ -349,8 +379,8 @@ export function DataHero() {
                         <Area
                           type="monotone"
                           dataKey="kejadian"
-                          stroke="var(--accent)"
-                          fill="var(--accent)"
+                          stroke="var(--chart-1)"
+                          fill="var(--chart-1)"
                           fillOpacity={0.18}
                           strokeWidth={2}
                           isAnimationActive={!reduced}
@@ -378,7 +408,7 @@ export function DataHero() {
                 </table>
               </figure>
 
-              <figure className="min-w-0">
+              <figure className="min-w-0 rounded-xl bg-[var(--chart-surface)] p-3">
                 <figcaption className="mb-1 font-semibold">{t("statistik.kabTitle")}</figcaption>
                 <p className={cn("mb-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                   {t("statistik.kabNote")}
@@ -392,7 +422,7 @@ export function DataHero() {
                           <span
                             className={cn(
                               "truncate text-[0.9375rem]",
-                              selected ? "font-semibold text-[var(--accent)]" : "font-medium",
+                              selected ? "font-semibold" : "font-medium",
                             )}
                           >
                             {row.kabupaten}
@@ -404,7 +434,7 @@ export function DataHero() {
                         <div className="mt-1.5">
                           <Bar
                             ratio={kabRows.max > 0 ? row.kejadian / kabRows.max : 0}
-                            className={selected ? "bg-[var(--accent)]" : "bg-[var(--primary)]"}
+                            className={selected ? "bg-[var(--chart-2)]" : "bg-[var(--chart-1)]"}
                           />
                         </div>
                       </li>
@@ -431,7 +461,7 @@ export function DataHero() {
               </figure>
             </div>
 
-            {metrics ? <Counters metrics={metrics} locale={locale} /> : null}
+            <Counters metrics={metrics} locale={locale} />
 
             <p className={cn("mt-4 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
               {t("statistik.noIncidents")}

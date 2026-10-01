@@ -37,7 +37,7 @@ import {
   overlayColor,
 } from "@/lib/overlay-layers";
 import { KRB_JENIS_KODE } from "@/lib/krb-by-kab";
-import { STATUS_HEX } from "@/lib/chart-colors";
+import { StatusLegend } from "@/components/map/StatusLegend";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { NASA_NRT_LAYER_KEYS, type FirmsResponse, type NasaNrtLayerKey } from "@/lib/nasa-nrt/types";
 import { cn } from "@/lib/utils";
@@ -183,7 +183,7 @@ export function MapToolbar({
         aria-expanded={expanded}
         aria-label={expanded ? t("toolbarClose") : t("toolbarOpen")}
       >
-        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--primary-dim)] text-[var(--primary)]">
+        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--bg-muted)] text-[var(--text)]">
           <Layers size={15} />
         </span>
         <span className="min-w-0 flex-1">
@@ -202,7 +202,7 @@ export function MapToolbar({
 
       {/* Desktop header */}
       <div className="hidden items-center gap-2 border-b border-[var(--border)] px-3 py-2.5 md:flex">
-        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--primary-dim)] text-[var(--primary)]">
+        <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--bg-muted)] text-[var(--text)]">
           <Layers size={15} />
         </span>
         <div className="min-w-0 flex-1">
@@ -276,7 +276,7 @@ export function MapToolbar({
                   />
                   <MapLayerIcon
                     iconSrc={getAreaLayerIconPath(opt.key)}
-                    fallbackColor="#1F4C15"
+                    fallbackColor={COLOR_TOKENS.forest}
                   />
                   <span>{t(opt.labelKey)}</span>
                 </label>
@@ -598,6 +598,7 @@ export function MapToolbar({
 
           {tab === "legenda" && (
             <div className="space-y-4">
+              <StatusLegend className="shadow-none" />
               {markerLayers.length > 0 && (
                 <div className="map-chrome-inset rounded-xl p-3">
                   <div className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
@@ -688,9 +689,9 @@ export function MapToolbar({
                   </div>
                   <ul className="space-y-2">
                     {[
-                      { color: STATUS_HEX.RENDAH, label: t("krbRendah") },
-                      { color: STATUS_HEX.SEDANG, label: t("krbSedang") },
-                      { color: STATUS_HEX.TINGGI, label: t("krbTinggi") },
+                      { color: COLOR_TOKENS.forest, label: t("krbRendah") },
+                      { color: COLOR_TOKENS.gold, label: t("krbSedang") },
+                      { color: COLOR_TOKENS.orange, label: t("krbTinggi") },
                     ].map((item) => (
                       <li key={item.label} className="flex items-center gap-2.5">
                         <span
@@ -711,7 +712,7 @@ export function MapToolbar({
                   <div className={cn("mb-2 flex items-center gap-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
                     <MapLayerIcon
                       iconSrc={getAreaLayerIconPath(areaLayer)}
-                      fallbackColor="#1F4C15"
+                      fallbackColor={COLOR_TOKENS.forest}
                       size="sm"
                     />
                     <span>{areaLegend.title}</span>

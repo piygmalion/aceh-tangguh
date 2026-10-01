@@ -13,7 +13,7 @@ export function MasukCta() {
     <section className="scroll-mt-24 px-4 pb-4">
       <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 rounded-3xl bg-[var(--ink)] px-6 py-10 text-[var(--paper)] md:flex-row md:items-center md:justify-between md:px-10 md:py-12">
         <div className="max-w-xl">
-          <p className={cn("text-[var(--accent)]", TYPE_KICKER_CLASS)}>{t("masuk.kicker")}</p>
+          <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("masuk.kicker")}</p>
           <h2 className="mt-3 text-[1.6rem] font-semibold leading-[1.18] tracking-[-0.028em] sm:text-[2rem]">
             {t("masuk.title")}
           </h2>

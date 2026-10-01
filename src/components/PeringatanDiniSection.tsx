@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
-import { Chip } from "@/components/ui/Chip";
+import { StatusScaleChip, type StatusLevel } from "@/components/ui/StatusScaleChip";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
 const AUTOPLAY_MS = 7000;
 
 const controlBtnClass =
-  "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--primary)]";
+  "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--ink)]";
 
 function scrollToPdCard(scroller: HTMLElement, index: number, smooth: boolean) {
   const cards = scroller.querySelectorAll<HTMLElement>("[data-pd-card]");
@@ -78,10 +78,10 @@ function CardShell({
 }) {
   const ring =
     tone === "danger"
-      ? "hover:ring-[var(--danger)]/50"
+      ? "hover:ring-[var(--status-awas)]/50"
       : tone === "warn"
-        ? "hover:ring-[var(--warn)]/50"
-        : "hover:ring-[var(--primary)]/40";
+        ? "hover:ring-[var(--status-waspada)]/50"
+        : "hover:ring-[var(--status-aman)]/40";
   const className = cn(
     "glass flex h-[20rem] flex-col gap-2 overflow-hidden rounded-2xl p-4 transition hover:ring-1",
     ring,
@@ -139,12 +139,7 @@ function CardHeader({
         </span>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
-        <Chip
-          tone={tone === "danger" ? "danger" : tone === "warn" ? "warn" : "neutral"}
-          className={cn("gap-1 px-1.5 py-0.5 leading-none", TYPE_FLOOR_CLASS)}
-        >
-          {t(`tone.${tone}`)}
-        </Chip>
+        <StatusScaleChip level={pdToneLevel(tone)} label={t(`tone.${tone}`)} />
         {stamp ? (
           <span className={cn("text-[var(--text-dim)]", TYPE_STAMP_CLASS)}>{stamp}</span>
         ) : null}
@@ -154,6 +149,12 @@ function CardHeader({
       </div>
     </div>
   );
+}
+
+function pdToneLevel(tone: PeringatanTone): StatusLevel {
+  if (tone === "danger") return "awas";
+  if (tone === "warn") return "waspada";
+  return "aman";
 }
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -522,7 +523,7 @@ export function PeringatanDiniSection() {
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className={cn("mb-2 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+            <p className={cn("mb-2 text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>
               {t("kicker")}
             </p>
             <h2 className="section-h2">{t("title")}</h2>
@@ -533,7 +534,7 @@ export function PeringatanDiniSection() {
           <a
             href="#cuaca"
             className={cn(
-              "inline-flex shrink-0 items-center gap-2 font-semibold text-[var(--text)] transition-colors hover:text-[var(--primary)]",
+              "inline-flex shrink-0 items-center gap-2 font-semibold text-[var(--text)] underline-offset-2 transition-colors hover:underline",
               TYPE_FLOOR_CLASS,
             )}
           >
@@ -622,7 +623,7 @@ export function PeringatanDiniSection() {
                         className={cn(
                           "h-2 rounded-full transition-all",
                           i === index
-                            ? "w-6 bg-[var(--primary)]"
+                            ? "w-6 bg-[var(--ink)]"
                             : "w-2 bg-[var(--text-dim)]/40 hover:bg-[var(--text-dim)]",
                         )}
                       />

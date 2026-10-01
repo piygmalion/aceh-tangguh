@@ -33,7 +33,7 @@ export function ReportFAB() {
         type="button"
         aria-label={t("reportFab")}
         onClick={() => setOpen((v) => !v)}
-        className="group inline-flex h-14 w-14 items-center justify-center rounded-full bg-[var(--primary)] text-white shadow-[var(--shadow-elevated)] transition duration-200 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]"
+        className="group inline-flex h-14 w-14 items-center justify-center rounded-full border border-[var(--ink)] bg-[var(--accent)] text-[var(--accent-fg)] shadow-[var(--shadow-elevated)] transition duration-200 hover:bg-[var(--accent-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]"
       >
         {open ? <ChevronDown size={22} /> : <Plus size={22} strokeWidth={2.5} />}
       </button>

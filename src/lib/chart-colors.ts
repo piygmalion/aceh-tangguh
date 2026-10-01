@@ -15,7 +15,7 @@ export function chartSeries(index: number): string {
   return CHART_SERIES[((index % CHART_SERIES.length) + CHART_SERIES.length) % CHART_SERIES.length];
 }
 
-/** Forest scale 200 / 400 / 700 — light / mid / deep. Not lime. */
+/** Forest scale 200 / 400 / 700 — light / mid / deep. Data palette. Not aliased to Peudeung. */
 export const FOREST_SCALE = {
   200: "#C5D2B8",
   400: "#4F7336",
@@ -29,12 +29,18 @@ export const STATUS_FILL = {
   awas: "var(--status-awas)",
 } as const;
 
-/** Resolved HEX for MapLibre / legends (CSS vars do not interpolate in expressions). */
+/**
+ * Resolved HEX for the hybrid status scale (same as --map-status-*).
+ * Green / yellow / orange are a PVMBG colour approach, not official hex
+ * (pendekatan warna PVMBG, bukan hex resmi).
+ * Permen ESDM 15/2011 names the colours only.
+ * MapLibre cannot interpolate CSS variables, so the hex is repeated here.
+ */
 export const STATUS_HEX = {
-  RENDAH: "#1F4C15",
-  SEDANG: "#C4A35A",
-  TINGGI: "#FF7722",
-  AWAS: "#B42318",
+  RENDAH: "#10B981",
+  SEDANG: "#FBBF24",
+  TINGGI: "#F97316",
+  AWAS: "#C8102E",
 } as const;
 
 export const KELAS_FILL: Record<string, string> = {

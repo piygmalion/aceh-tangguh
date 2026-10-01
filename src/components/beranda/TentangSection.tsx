@@ -26,7 +26,7 @@ export function TentangSection() {
           />
         </div>
         <div className="lg:col-span-7">
-          <p className={cn("text-[var(--accent)]", TYPE_KICKER_CLASS)}>{t("tentang.kicker")}</p>
+          <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("tentang.kicker")}</p>
           <h2 className="mt-3 max-w-[22ch] text-[1.6rem] font-semibold leading-[1.18] tracking-[-0.028em] sm:text-[2rem]">
             {t("hero.title")}
           </h2>
@@ -37,7 +37,7 @@ export function TentangSection() {
             {BUTIR.map((key) => (
               <li key={key} className="flex items-start gap-3">
                 <span
-                  className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--primary-dim)] text-[var(--primary)]"
+                  className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--bg-muted)] text-[var(--text)]"
                   aria-hidden
                 >
                   <Check size={14} />

@@ -2,78 +2,139 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Aceh Tangguh — color tokens
-   Source: Sistem Warna UI/UX (green-dominant / orange-support)
-   HEX is the source of truth. Optimizations marked OPT. */
+/* Aceh Tangguh — Peudeung v2 chrome.
+   HEX for the shell lives here. Hybrid status aliases --map-status-*.
+   Green / yellow / orange on that scale are a PVMBG colour approach, not
+   official hex (pendekatan warna PVMBG, bukan hex resmi; Permen ESDM 15/2011
+   names the colours only).
+   Legacy aliases below last one release, then delete. They point at the
+   new tokens. TypeScript data constants are not aliased. */
 
 :root,
 html[data-theme="light"] {
   color-scheme: light;
 
-  --forest: #1F4C15;
-  --sage: #8A9A5B;
-  --orange: #FF7722;
-  --tangerine: #FF8F42;
-  --burnt: #C7460C;
-  --gold: #C4A35A;
-  --teal: #2F6B66;
-  --awas: #B42318;
+  --putih: #ffffff;
+  --putih-bidang: #f7f7f7;
+  --putih-garis: #e8e8e8;
+  --hitam: #111111;
+  --hitam-bidang: #0a0a0a;
+  --hitam-angkat: #1a1a1a;
+  --hitam-lembut: #5c5c5c;
+  --hitam-sedang: #8a8a8a;
+  --merah-peudeung: #c8102e;
+  --merah-tautan: #8e1224;
+  --merah-dalam: #5c0c18;
+  --merah-basah: #f4d6db;
 
-  --paper: #F7F7F4;
-  --paper-warm: #F4F5F0;
-  --ink: #1A1A17;
-  --bg: #F4F5F0;
-  --bg-raised: #FFFFFF;
-  --bg-muted: #F6F7F0;
-  --text: #1A1A17;
-  --text-dim: #52524B;
-  --border: #E0E0D9;
-  --glass-bg: rgba(255, 255, 255, 0.72);
-  --glass-border: rgba(26, 26, 23, 0.10);
+  --bg: #f7f7f7;
+  --background: var(--bg);
+  --paper: #f7f7f7;
+  --bg-raised: #ffffff;
+  --card: var(--bg-raised);
+  --popover: #ffffff;
+  --sidebar: #ffffff;
+  --map-chrome: #ffffff;
+  --bg-muted: #e8e8e8;
+  --muted: #e8e8e8;
+  --secondary: #e8e8e8;
+  --accent-soft: #e8e8e8;
+  --accent-dim: #e8e8e8;
+  --info-dim: #e8e8e8;
+  --text: #111111;
+  --foreground: var(--text);
+  --ink: #111111;
+  --card-foreground: #111111;
+  --popover-foreground: #111111;
+  --secondary-foreground: #111111;
+  --sidebar-foreground: #111111;
+  --text-dim: #5c5c5c;
+  --muted-foreground: var(--text-dim);
+  --border: #e8e8e8;
+  --sidebar-border: #e8e8e8;
+  --glass-border: #e8e8e8;
+  --input: #5c5c5c;
+  --primary: #c8102e;
+  --sidebar-primary: #c8102e;
+  --primary-fg: #ffffff;
+  --primary-foreground: var(--primary-fg);
+  --sidebar-primary-foreground: #ffffff;
+  --primary-hover: #8e1224;
+  --primary-pressed: #5c0c18;
+  --primary-dim: #f4d6db;
+  --sidebar-accent: #f4d6db;
+  --sidebar-accent-foreground: #111111;
+  --accent: #111111;
+  --accent-fg: #ffffff;
+  --accent-foreground: #ffffff;
+  --accent-hover: #5c5c5c;
+  --accent-pressed: #0a0a0a;
+  --ring: #111111;
+  --sidebar-ring: #111111;
+  --destructive: #8e1224;
+  --destructive-foreground: #ffffff;
+  --danger: #c8102e;
+  --danger-dim: #f4d6db;
+  --warn: #8e1224;
+  --warn-dim: #f4d6db;
+  --info: #111111;
+  --link: #8e1224;
 
-  --primary: #1F4C15;
-  --primary-fg: #FFFFFF;
-  --primary-hover: #2C611C;
-  --accent: #FF7722;
-  --accent-fg: #1A1A17;
-  --accent-hover: #FF8F42;
-  --accent-pressed: #C7460C;
-  --accent-dim: rgba(255, 119, 34, 0.14);
-  --accent-soft: #8A9A5B;
-  --ring: #FF7722;
+  /* Hybrid status. Same hex in light and dark. Not the retired red ladder. */
+  --map-status-aman: #10b981;
+  --map-status-waspada: #fbbf24;
+  --map-status-siaga: #f97316;
+  --map-status-awas: #c8102e;
+  --map-status-aman-fg: #111111;
+  --map-status-waspada-fg: #111111;
+  --map-status-siaga-fg: #111111;
+  --map-status-awas-fg: #ffffff;
+  --status-aman: var(--map-status-aman);
+  --status-waspada: var(--map-status-waspada);
+  --status-siaga: var(--map-status-siaga);
+  --status-awas: var(--map-status-awas);
+  --awas: var(--map-status-awas);
+  --status-awas-bar: #111111;
+  --status-waspada-bg: #ffffff;
+  --map-keyline: #111111;
 
-  --status-aman: #1F4C15;
-  --status-waspada: #C4A35A;
-  --status-siaga: #FF7722;
-  --status-awas: #B42318;
+  --chart-1: #111111;
+  --chart-2: #c8102e;
+  --chart-3: #111111;
+  --chart-4: #5c5c5c;
+  --chart-5: #e8e8e8;
+  --chart-surface: #ffffff;
+  --chart-grid: #e8e8e8;
 
-  --danger: #C7460C;
-  --danger-dim: rgba(199, 70, 12, 0.14);
-  --warn: #C4A35A;
-  --warn-dim: rgba(196, 163, 90, 0.16);
-  --info: #2F6B66;
-  --info-dim: rgba(47, 107, 102, 0.14);
+  --hero-fg: #ffffff;
+  --hero-muted: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.94);
+  --eyebrow: #c8102e;
+  --topbar-bg: #0a0a0a;
+  --topbar-fg: #ffffff;
+  --topbar-dim: #c6c6c6;
+  --band-bg: #111111;
+  --band-fg: #ffffff;
+  --band-dim: #c6c6c6;
+  --band-rule: #c8102e;
 
-  --shadow: 0 8px 24px rgb(31 76 21 / 12%);
-  --shadow-elevated: 0 12px 40px rgb(31 76 21 / 16%);
-  --map-chrome: #FFFFFF;
-  --hero-fg: #F7F7F4;
-  --hero-muted: rgba(247, 247, 244, 0.72);
+  --shadow: 0 8px 24px rgb(0 0 0 / 8%);
+  --shadow-elevated: 0 12px 40px rgb(0 0 0 / 12%);
 
-  --chart-1: #1F4C15;
-  --chart-2: #8A9A5B;
-  --chart-3: #C4A35A;
-  --chart-4: #FF7722;
-  --chart-5: #2F6B66;
-  --forest-200: #C5D2B8;
-  --forest-400: #4F7336;
-  --forest-700: #1F4C15;
+  /* One release, then remove. Chrome aliases only — not data constants. */
+  --forest: var(--primary);
+  --forest-700: var(--primary-hover);
+  --forest-400: var(--text-dim);
+  --forest-200: var(--primary-dim);
+  --sage: var(--text-dim);
+  --orange: var(--primary);
+  --tangerine: var(--primary);
+  --bnpb-orange: var(--primary);
+  --burnt: var(--destructive);
+  --gold: var(--text-dim);
+  --teal: var(--text);
+  --paper-warm: var(--bg);
 
-  /* OPT aliases */
-  --bnpb-orange: var(--orange);
-  --primary-dim: color-mix(in srgb, var(--primary) 14%, transparent);
-
-  /* Signed type floor — 13px / 0.8125rem for product chrome */
   --type-floor: 0.8125rem;
   --type-kicker-tracking: 0.06em;
   --type-hero-display-max: 3.5rem;
@@ -84,55 +145,67 @@ html[data-theme="dark"],
 .dark {
   color-scheme: dark;
 
-  --paper: #F7F7F4;
-  --paper-warm: #F4F5F0;
-  --ink: #1A1A17;
-  --bg: #1A1A17;
-  --bg-raised: #242420;
-  --bg-muted: #242420;
-  --text: #F7F7F4;
-  --text-dim: #9A9A8E;
-  --border: rgba(244, 245, 240, 0.10);
-  --glass-bg: rgba(26, 26, 23, 0.72);
-  --glass-border: rgba(247, 247, 244, 0.10);
+  --bg: #0a0a0a;
+  --background: #0a0a0a;
+  --paper: #0a0a0a;
+  --bg-raised: #1a1a1a;
+  --card: #1a1a1a;
+  --popover: #1a1a1a;
+  --sidebar: #1a1a1a;
+  --map-chrome: #1a1a1a;
+  --bg-muted: #2a2a2a;
+  --muted: #2a2a2a;
+  --secondary: #2a2a2a;
+  --accent-soft: #2a2a2a;
+  --accent-dim: #2a2a2a;
+  --info-dim: #2a2a2a;
+  --text: #ffffff;
+  --foreground: #ffffff;
+  --ink: #ffffff;
+  --card-foreground: #ffffff;
+  --popover-foreground: #ffffff;
+  --secondary-foreground: #ffffff;
+  --sidebar-foreground: #ffffff;
+  --text-dim: #c6c6c6;
+  --muted-foreground: #c6c6c6;
+  --border: #2a2a2a;
+  --sidebar-border: #2a2a2a;
+  --glass-border: #2a2a2a;
+  --input: #8a8a8a;
+  --primary-dim: #3a0610;
+  --sidebar-accent: #3a0610;
+  --sidebar-accent-foreground: #ffffff;
+  --accent: #ffffff;
+  --accent-fg: #0a0a0a;
+  --accent-foreground: #0a0a0a;
+  --accent-hover: #c6c6c6;
+  --accent-pressed: #e8e8e8;
+  --ring: #ffffff;
+  --sidebar-ring: #ffffff;
+  --destructive: #f4d6db;
+  --destructive-foreground: #0a0a0a;
+  --danger-dim: #3a0610;
+  --status-awas-bar: #ffffff;
+  --status-waspada-bg: #3a0610;
+  --warn: #f4d6db;
+  --warn-dim: #3a0610;
+  --info: #ffffff;
+  --link: #ffffff;
 
-  --primary: #8A9A5B;
-  --primary-fg: #0D0D0B;
-  --primary-hover: #B4BE8A;
-  --accent: #FF7722;
-  --accent-fg: #1A1A17;
-  --accent-hover: #FF8F42;
-  --accent-pressed: #C7460C;
-  --accent-dim: rgba(255, 119, 34, 0.18);
-  --accent-soft: #8A9A5B;
-  --ring: #FF8F42;
+  --chart-1: #ffffff;
+  --chart-3: #ffffff;
+  --chart-4: #c6c6c6;
+  --chart-5: #2a2a2a;
+  --chart-surface: #0a0a0a;
+  --chart-grid: #2a2a2a;
 
-  --danger: #C7460C;
-  --danger-dim: rgba(199, 70, 12, 0.16);
-  --warn: #C4A35A;
-  --warn-dim: rgba(196, 163, 90, 0.16);
-  --info: #4D938C;
-  --info-dim: rgba(77, 147, 140, 0.16);
+  --glass-bg: rgba(26, 26, 26, 0.94);
+  --eyebrow: #f4d6db;
+  --topbar-bg: #000000;
+  --band-bg: #1a1a1a;
 
-  --shadow: 0 8px 30px rgb(13 13 11 / 45%);
-  --shadow-elevated: 0 16px 48px rgb(13 13 11 / 55%);
-  --map-chrome: #242420;
-  --hero-fg: #F7F7F4;
-  --hero-muted: rgba(247, 247, 244, 0.72);
-
-  /* Chart series — same hex as light (designer reviews tooltip chrome, not series) */
-  --chart-1: #1F4C15;
-  --chart-2: #8A9A5B;
-  --chart-3: #C4A35A;
-  --chart-4: #FF7722;
-  --chart-5: #2F6B66;
-  --forest-200: #C5D2B8;
-  --forest-400: #4F7336;
-  --forest-700: #1F4C15;
-
-  /* OPT aliases */
-  --bnpb-orange: var(--orange);
-  --primary-dim: color-mix(in srgb, var(--primary) 18%, transparent);
+  --shadow: 0 8px 30px rgb(0 0 0 / 45%);
+  --shadow-elevated: 0 16px 48px rgb(0 0 0 / 55%);
 
   --type-floor: 0.8125rem;
   --type-kicker-tracking: 0.06em;
@@ -218,11 +291,15 @@ body {
 }
 
 .field-input::placeholder {
-  color: color-mix(in srgb, var(--text) 35%, transparent);
+  color: var(--text-dim);
+}
+
+.field-input {
+  border-color: var(--input);
 }
 
 .field-input:focus {
-  border-color: color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  border-color: var(--ring);
 }
 
 select.field-input {
@@ -248,8 +325,12 @@ select.field-input {
   color: color-mix(in srgb, var(--text) 35%, transparent);
 }
 
+.field-textarea {
+  border-color: var(--input);
+}
+
 .field-textarea:focus {
-  border-color: color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  border-color: var(--ring);
 }
 
 .field-label {
@@ -279,9 +360,9 @@ select.field-input {
 }
 
 .jenis-chip[aria-pressed="true"] {
-  background: color-mix(in srgb, var(--accent-soft) 18%, transparent);
-  border-color: color-mix(in srgb, var(--accent-soft) 55%, transparent);
-  color: var(--accent-soft);
+  background: var(--bg-muted);
+  border-color: var(--ink);
+  color: var(--text);
 }
 
 .step-pill {
@@ -298,9 +379,9 @@ select.field-input {
 }
 
 .step-pill.is-active {
-  background: color-mix(in srgb, var(--accent-soft) 18%, transparent);
-  border-color: color-mix(in srgb, var(--accent-soft) 45%, transparent);
-  color: var(--accent-soft);
+  background: var(--bg-muted);
+  border-color: var(--ink);
+  color: var(--text);
 }
 
 .step-num {
@@ -318,7 +399,8 @@ select.field-input {
 }
 
 .step-pill.is-active .step-num {
-  background: color-mix(in srgb, var(--accent-soft) 28%, transparent);
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .hero-gradient {
@@ -386,16 +468,12 @@ a:focus-visible {
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(20px) saturate(1.7);
-  -webkit-backdrop-filter: blur(20px) saturate(1.7);
   box-shadow: var(--shadow);
 }
 
 .glass-pill {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(12px) saturate(1.4);
-  -webkit-backdrop-filter: blur(12px) saturate(1.4);
 }
 
 .section-shell {
@@ -504,10 +582,8 @@ a:focus-visible {
 }
 
 .map-chrome-elevated {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: blur(20px) saturate(1.7);
-  -webkit-backdrop-filter: blur(20px) saturate(1.7);
+  background: var(--map-chrome);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-elevated);
   color: var(--text);
 }
@@ -530,12 +606,12 @@ a:focus-visible {
 
 .map-tab:hover {
   color: var(--text);
-  background: var(--primary-dim);
+  background: var(--bg-muted);
 }
 
 .map-tab[aria-selected="true"] {
-  color: var(--primary);
-  background: var(--primary-dim);
+  color: var(--text);
+  background: var(--bg-muted);
 }
 
 .map-tab[aria-selected="true"]::after {
@@ -546,7 +622,7 @@ a:focus-visible {
   bottom: 0;
   height: 2px;
   border-radius: 9999px;
-  background: var(--primary);
+  background: var(--ink);
 }
 
 .map-tablist-4 .map-tab {
@@ -568,12 +644,12 @@ a:focus-visible {
 }
 
 .map-option:hover {
-  background: var(--primary-dim);
+  background: var(--bg-muted);
 }
 
 .map-option[data-active="true"] {
-  background: var(--primary-dim);
-  border-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  background: var(--bg-muted);
+  border-color: var(--ink);
 }
 
 
@@ -597,13 +673,13 @@ a:focus-visible {
   display: grid;
   place-items: center;
   border-radius: 9999px;
-  background: var(--ink, #1A1A17);
-  box-shadow: 0 0 0 1.5px var(--paper, #F7F7F4);
+  background: #111111;
+  box-shadow: 0 0 0 1.5px var(--map-keyline, #111111);
 }
 
 html[data-theme="dark"] .map-layer-icon-disc {
-  background: var(--paper, #F7F7F4);
-  box-shadow: 0 0 0 1.5px var(--ink, #1A1A17);
+  background: #ffffff;
+  box-shadow: 0 0 0 1.5px #111111;
 }
 
 .map-layer-icon-disc-sm {
@@ -676,9 +752,9 @@ html[data-theme="dark"] .map-layer-icon-disc {
 
 .map-radio:checked,
 .map-check:checked {
-  border-color: var(--primary);
-  background: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-dim);
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
 .map-radio:checked::after {
@@ -686,14 +762,14 @@ html[data-theme="dark"] .map-layer-icon-disc {
   width: 0.35rem;
   height: 0.35rem;
   border-radius: 9999px;
-  background: var(--primary-fg);
+  background: var(--accent-fg);
 }
 
 .map-check:checked::after {
   content: "";
   width: 0.28rem;
   height: 0.5rem;
-  border: solid var(--primary-fg);
+  border: solid var(--accent-fg);
   border-width: 0 1.5px 1.5px 0;
   transform: rotate(45deg) translate(-0.5px, -0.5px);
 }
@@ -756,30 +832,50 @@ html[data-theme="dark"] .map-layer-icon-disc {
 html[data-theme="light"],
 html[data-theme="dark"],
 .dark {
-  --background: var(--bg);
-  --foreground: var(--text);
-  --card: var(--bg-raised);
-  --card-foreground: var(--text);
-  --popover: var(--bg-raised);
-  --popover-foreground: var(--text);
-  --primary-foreground: var(--primary-fg);
-  --secondary: var(--bg-muted);
-  --secondary-foreground: var(--text);
-  --muted: var(--bg-muted);
-  --muted-foreground: var(--text-dim);
-  --accent-foreground: var(--accent-fg);
-  --destructive: var(--awas);
-  --destructive-foreground: var(--paper);
-  --input: var(--border);
   --radius: 0.75rem;
-  --sidebar: var(--bg-raised);
-  --sidebar-foreground: var(--text);
-  --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: var(--primary-fg);
-  --sidebar-accent: var(--bg-muted);
-  --sidebar-accent-foreground: var(--text);
-  --sidebar-border: var(--border);
-  --sidebar-ring: var(--ring);
+}
+
+/* Charts sit on --chart-surface so series red clears 3:1 in the dark theme.
+   Series 3 matches series 1 ink, split by a 7/6 dash (lines) or a 45° hatch (bars). */
+.recharts-responsive-container {
+  background: var(--chart-surface);
+  border-radius: 0.75rem;
+}
+
+.chart-series-3-line {
+  stroke-dasharray: 7 6;
+}
+
+.chart-series-3-bar {
+  background-color: var(--chart-3);
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--chart-3) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+/* Dark theme: links are white and underlined. No red text on #1A1A1A. */
+html[data-theme="dark"] a,
+html[data-theme="dark"] .text-primary,
+html[data-theme="dark"] .text-\[var\(--primary\)\] {
+  text-underline-offset: 0.18em;
+}
+
+html[data-theme="dark"] a.text-primary,
+html[data-theme="dark"] a.text-\[var\(--primary\)\],
+html[data-theme="dark"] a.hover\:text-primary:hover,
+html[data-theme="dark"] a.hover\:text-\[var\(--primary\)\]:hover,
+html[data-theme="dark"] .text-primary,
+html[data-theme="dark"] .text-\[var\(--primary\)\] {
+  color: var(--link);
+}
+
+html[data-theme="dark"] a.text-primary,
+html[data-theme="dark"] a.text-\[var\(--primary\)\],
+html[data-theme="dark"] a.hover\:text-primary:hover,
+html[data-theme="dark"] a.hover\:text-\[var\(--primary\)\]:hover {
+  text-decoration-line: underline;
 }
 
 @layer base {

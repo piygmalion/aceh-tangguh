@@ -145,39 +145,44 @@ export function jamPendek(iso: string | null | undefined, locale = "id"): string
 }
 
 /**
- * Status colours come from the Aceh status tokens only:
- * neutral reads teal (--info), warn reads gold (--warn), danger reads burnt (--danger).
+ * Live warning tones use the one hybrid status scale (PVMBG colour approach, not official hex).
+ * neutral → Aman, warn → Waspada, danger → Awas.
  * Labels live in peringatanDini.tone.{neutral,warn,danger}.
  */
 export const TONE_DOT: Record<PeringatanTone, string> = {
-  neutral: "bg-[var(--info)]",
-  warn: "bg-[var(--warn)]",
-  danger: "bg-[var(--danger)]",
+  neutral: "bg-[var(--status-aman)]",
+  warn: "bg-[var(--status-waspada)]",
+  danger: "bg-[var(--status-awas)]",
 };
 
 export const TONE_CHIP: Record<PeringatanTone, string> = {
-  neutral: "bg-[var(--info-dim)] text-[var(--info)]",
-  warn: "bg-[var(--warn-dim)] text-[var(--warn)]",
-  danger: "bg-[var(--danger-dim)] text-[var(--danger)]",
+  neutral: "border border-[var(--map-keyline)] bg-[var(--status-aman)] text-[var(--map-status-aman-fg)]",
+  warn: "border border-[var(--map-keyline)] bg-[var(--status-waspada)] text-[var(--map-status-waspada-fg)]",
+  danger:
+    "border border-[var(--map-keyline)] bg-[var(--status-awas)] text-[var(--map-status-awas-fg)] shadow-[inset_4px_0_0_var(--status-awas-bar)]",
 };
 
 export const TONE_EDGE: Record<PeringatanTone, string> = {
-  neutral: "before:bg-[var(--info)]",
-  warn: "before:bg-[var(--warn)]",
-  danger: "before:bg-[var(--danger)]",
+  neutral: "before:bg-[var(--status-aman)]",
+  warn: "before:bg-[var(--status-waspada)]",
+  danger: "before:bg-[var(--status-awas)]",
 };
 
-/** IRBI risk classes carry their own scale, separate from live warning tones. */
+/**
+ * IRBI kabupaten classes stay on the source palette (COLOR_TOKENS forest / gold / orange).
+ * Not the Peudeung brand red, and not the hybrid status scale.
+ */
 export function kelasRisikoChip(kelas: string): string {
   const k = kelas.toUpperCase();
-  if (k === "TINGGI") return "bg-[var(--danger-dim)] text-[var(--danger)]";
-  if (k === "SEDANG") return "bg-[var(--warn-dim)] text-[var(--warn)]";
-  return "bg-[var(--primary-dim)] text-[var(--primary)]";
+  const edge = "border border-[var(--map-keyline)]";
+  if (k === "TINGGI") return `${edge} bg-[#FF7722] text-[#111111]`;
+  if (k === "SEDANG") return `${edge} bg-[#C4A35A] text-[#111111]`;
+  return `${edge} bg-[#1F4C15] text-[#FFFFFF]`;
 }
 
 export function kelasRisikoBar(kelas: string): string {
   const k = kelas.toUpperCase();
-  if (k === "TINGGI") return "bg-[var(--danger)]";
-  if (k === "SEDANG") return "bg-[var(--warn)]";
-  return "bg-[var(--primary)]";
+  if (k === "TINGGI") return "bg-[#FF7722]";
+  if (k === "SEDANG") return "bg-[#C4A35A]";
+  return "bg-[#1F4C15]";
 }

@@ -105,7 +105,7 @@ export function RisikoLadder() {
             <Link
               href={{ pathname: "/peta", query: { area: "irbi2025", basemap: "positron" } }}
               className={cn(
-                "inline-flex h-10 items-center gap-1.5 rounded-full bg-[var(--primary)] px-4 font-semibold text-[var(--primary-fg)] transition hover:bg-[var(--primary-hover)]",
+                "inline-flex h-10 items-center gap-1.5 rounded-full border border-[var(--ink)] bg-[var(--accent)] px-4 font-semibold text-[var(--accent-fg)] transition hover:bg-[var(--accent-hover)]",
                 TYPE_FLOOR_CLASS,
               )}
             >

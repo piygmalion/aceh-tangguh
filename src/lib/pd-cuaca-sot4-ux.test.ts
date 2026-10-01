@@ -42,7 +42,10 @@ describe("FE-35 PD/cuaca SoT-4 UX", () => {
       false,
       "kicker still uses low-contrast --accent-soft",
     );
-    assert.match(kickerWindow, /text-\[var\(--text-dim\)\]|text-\[var\(--text\)\]/);
+    assert.match(
+      kickerWindow,
+      /text-\[var\(--text-dim\)\]|text-\[var\(--text\)\]|text-\[var\(--eyebrow\)\]/,
+    );
 
     const archiveIdx = src.indexOf('t("archiveLink")');
     assert.ok(archiveIdx >= 0, "archiveLink missing");

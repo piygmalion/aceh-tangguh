@@ -96,9 +96,10 @@ describe("overview cluster rings", () => {
     const ring = clusterRingColorExpr();
     const ringRaw = JSON.stringify(ring);
     assert.equal(ringRaw.includes("point_count"), true);
-    assert.equal(ringRaw.includes(STATUS_HEX.RENDAH), true);
-    assert.equal(ringRaw.includes(STATUS_HEX.SEDANG), true);
-    assert.equal(ringRaw.includes(STATUS_HEX.TINGGI) || ringRaw.includes(COLOR_TOKENS.awas), true);
+    assert.equal(ringRaw.includes(COLOR_TOKENS.forest), true);
+    assert.equal(ringRaw.includes(COLOR_TOKENS.gold), true);
+    assert.equal(ringRaw.includes(COLOR_TOKENS.orange), true);
+    assert.equal(ringRaw.includes(STATUS_HEX.RENDAH), false);
     assert.equal(clusterCountTextColor(), COLOR_TOKENS.ink);
   });
 

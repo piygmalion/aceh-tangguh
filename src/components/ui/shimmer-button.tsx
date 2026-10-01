@@ -32,7 +32,7 @@ export const ShimmerButton = React.forwardRef<
     const accentBg =
       background === "var(--accent)" ||
       background === "var(--orange)" ||
-      background === "#FF7722";
+      background === "var(--primary)";
 
     return (
       <button
