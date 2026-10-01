@@ -13,6 +13,8 @@ export {
   isNonEmptyArray,
   type DomainSource,
   type Loaded,
+  type LoadedWithFallback,
+  type FallbackReason,
 } from "./fallback";
 export type {
   Database,

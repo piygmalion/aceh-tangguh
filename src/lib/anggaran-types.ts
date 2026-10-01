@@ -78,6 +78,8 @@ export type AnggaranApiResponse = {
   analisis: AnalisisAnggaran;
   kegiatan: KegiatanAnggaran[];
   source: "supabase" | "fixture";
+  /** Why the staff fixture was served instead of Supabase rows (fixture only). */
+  fallbackReason?: "no-client" | "error" | "empty";
 };
 
 export type BreakdownView = "fase" | "skpd" | "kategori";

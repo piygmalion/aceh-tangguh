@@ -45,11 +45,17 @@ export async function loadR3PSummaryFixture(): Promise<R3PSummaryResponse> {
   return cache;
 }
 
-export async function loadR3PSummary(): Promise<R3PSummaryResponse> {
+/**
+ * Staff-only legacy loader for `r3p_summary`. Pass the session-bound client
+ * from the staff guard; `null` serves the `data/staff` fixture (logged).
+ */
+export async function loadR3PSummary(
+  client: TypedSupabaseClient | null
+): Promise<R3PSummaryResponse> {
   const loaded = await trySupabaseThenFixture(
     loadR3PFromSupabase,
     loadR3PSummaryFixture,
-    { label: "r3p-summary" }
+    { label: "r3p-summary", client }
   );
   return { ...loaded.data, source: loaded.source };
 }

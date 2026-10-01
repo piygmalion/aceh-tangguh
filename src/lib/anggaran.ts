@@ -10,6 +10,7 @@ import {
   asRecord,
   fetchAllRows,
   trySupabaseThenFixture,
+  type FallbackReason,
 } from "./supabase/fallback";
 import type { TypedSupabaseClient } from "./supabase/server";
 import type { AnggaranAnalisisRow, AnggaranKegiatanRow } from "./supabase/types";
@@ -106,15 +107,33 @@ export async function loadAnggaranFixtures(): Promise<AnggaranApiResponse> {
   return cache;
 }
 
-export async function loadAnggaran(): Promise<AnggaranApiResponse> {
+/**
+ * Staff-only budget loader. `client` must be the session-bound client from
+ * `requireStaffApi()` / `requireStaffPage()` so reads run as the signed-in
+ * staff user under RLS. It never creates an anon or service-role client; with
+ * `null` (or on error / empty rows) it serves the `data/staff` fixture and
+ * reports why via `fallbackReason` and a `console.warn`.
+ */
+export async function loadAnggaran(
+  client: TypedSupabaseClient | null,
+  options?: {
+    onFallback?: (info: { label: string; reason: FallbackReason; error?: unknown }) => void;
+  }
+): Promise<AnggaranApiResponse> {
   const loaded = await trySupabaseThenFixture(
     loadAnggaranFromSupabase,
     loadAnggaranFixtures,
     {
       label: "anggaran",
+      client,
+      onFallback: options?.onFallback,
       isEmpty: (value) =>
         !value.analisis || !Array.isArray(value.kegiatan) || value.kegiatan.length === 0,
     }
   );
-  return { ...loaded.data, source: loaded.source };
+  return {
+    ...loaded.data,
+    source: loaded.source,
+    ...(loaded.fallbackReason ? { fallbackReason: loaded.fallbackReason } : {}),
+  };
 }
