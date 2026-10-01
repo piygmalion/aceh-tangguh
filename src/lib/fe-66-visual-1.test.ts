@@ -72,7 +72,10 @@ describe("FE-66 visual-1", () => {
     const dialogClass = dialogMatch[1];
     assert.match(dialogClass, /overflow-hidden/);
     assert.doesNotMatch(dialogClass, /overflow-y-auto/);
-    assert.match(settings, /md:max-h-\[min\(calc\(100svh-10rem\),calc\(100svh-18rem\)\)\]/);
+    assert.match(settings, /md:max-h-\[calc\(100svh-18rem\)\]/);
+    assert.doesNotMatch(settings, /min\(calc\(100svh-10rem\),calc\(100svh-18rem\)\)/);
+    assert.match(settings, /18rem keeps the panel head clear of the zoom control at 1280x720/);
+    assert.doesNotMatch(settings, /setTimeout/);
     assert.doesNotMatch(settings, /32rem/);
     const workspace = read("src/components/map/MapWorkspace.tsx");
     assert.match(workspace, /md:bottom-4/);

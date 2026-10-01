@@ -52,16 +52,18 @@ export function MapSettings({
   const locale = useLocale();
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const openRef = useRef(false);
   const onOpenChangeRef = useRef(onOpenChange);
   onOpenChangeRef.current = onOpenChange;
 
   const updateOpen = useCallback((next: boolean) => {
-    if (openRef.current && !next) buttonRef.current?.focus();
-    openRef.current = next;
     setOpen(next);
     onOpenChangeRef.current?.(next);
   }, []);
+
+  const closeToButton = useCallback(() => {
+    updateOpen(false);
+    buttonRef.current?.focus();
+  }, [updateOpen]);
 
   const { data: sentinel } = useQuery({
     queryKey: ["sentinel-status"],
@@ -73,12 +75,11 @@ export function MapSettings({
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") updateOpen(false);
+      if (e.key === "Escape") closeToButton();
     };
     const onClick = (e: MouseEvent) => {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
         updateOpen(false);
-        window.setTimeout(() => buttonRef.current?.focus(), 0);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -87,7 +88,7 @@ export function MapSettings({
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("mousedown", onClick);
     };
-  }, [open, updateOpen]);
+  }, [open, updateOpen, closeToButton]);
 
   return (
     <div
@@ -113,15 +114,16 @@ export function MapSettings({
         <div
           role="dialog"
           aria-label={t("settings")}
-          className="map-chrome-elevated max-h-[calc(100svh-10rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl text-sm md:max-h-[min(calc(100svh-10rem),calc(100svh-18rem))]"
+          className="map-chrome-elevated max-h-[calc(100svh-10rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl text-sm md:max-h-[calc(100svh-18rem)]"
         >
+          {/* 18rem keeps the panel head clear of the zoom control at 1280x720. */}
           {/* Scroll lives inside. overflow-y-auto on this dialog punches a #d4dce4 hole in the MapLibre canvas. */}
-          <div className="max-h-[calc(100svh-10rem)] overflow-y-auto p-3 pb-6 md:max-h-[min(calc(100svh-10rem),calc(100svh-18rem))]">
+          <div className="max-h-[calc(100svh-10rem)] overflow-y-auto p-3 pb-6 md:max-h-[calc(100svh-18rem)]">
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="font-semibold">{t("settings")}</div>
             <button
               type="button"
-              onClick={() => updateOpen(false)}
+              onClick={() => closeToButton()}
               className="grid h-8 w-8 place-items-center rounded-lg text-[var(--text-dim)] transition hover:bg-[var(--bg-muted)] hover:text-[var(--text)]"
               aria-label={t("closeSettings")}
             >
