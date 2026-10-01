@@ -33,7 +33,7 @@ export function LocaleSwitch() {
               "rounded-full px-2.5 py-1.5 uppercase tracking-wide transition duration-200",
               active
                 ? "bg-[var(--primary)] font-semibold text-[var(--primary-fg)] underline decoration-2 underline-offset-4"
-                : "text-white/70 hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+                : "text-[var(--primary-fg)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
             )}
           >
             {l}
