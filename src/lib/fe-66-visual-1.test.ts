@@ -67,6 +67,9 @@ describe("FE-66 visual-1", () => {
   it("keeps the settings panel clear of the status legend and drops the 32rem cap", () => {
     const settings = read("src/components/map/MapSettings.tsx");
     assert.match(settings, /max-h-\[calc\(100svh-10rem\)\]/);
+    const dialogClass = settings.slice(settings.indexOf('role="dialog"')).match(/className="([^"]+)"/)[1];
+    assert.match(dialogClass, /overflow-hidden/);
+    assert.doesNotMatch(dialogClass, /overflow-y-auto/);
     assert.match(settings, /md:max-h-\[min\(calc\(100svh-10rem\),calc\(100svh-18rem\)\)\]/);
     assert.doesNotMatch(settings, /32rem/);
     const workspace = read("src/components/map/MapWorkspace.tsx");

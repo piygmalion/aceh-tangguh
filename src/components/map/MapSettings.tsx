@@ -113,8 +113,10 @@ export function MapSettings({
         <div
           role="dialog"
           aria-label={t("settings")}
-          className="map-chrome-elevated max-h-[calc(100svh-10rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl p-3 pb-6 text-sm md:max-h-[min(calc(100svh-10rem),calc(100svh-18rem))]"
+          className="map-chrome-elevated max-h-[calc(100svh-10rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl text-sm md:max-h-[min(calc(100svh-10rem),calc(100svh-18rem))]"
         >
+          {/* Scroll lives inside. overflow-y-auto on this dialog punches a #d4dce4 hole in the MapLibre canvas. */}
+          <div className="max-h-[calc(100svh-10rem)] overflow-y-auto p-3 pb-6 md:max-h-[min(calc(100svh-10rem),calc(100svh-18rem))]">
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="font-semibold">{t("settings")}</div>
             <button
@@ -200,6 +202,7 @@ export function MapSettings({
               })}
             </p>
           )}
+          </div>
         </div>
       )}
     </div>
