@@ -46,11 +46,21 @@ describe("accent on a light surface", () => {
     assert.ok(eyebrowOnWhite < 4.5, "dark eyebrow on white should stay the failing pair");
   });
 
-  it("paints the Siap siaga kicker with the light-surface token", () => {
+  it("follows the ink card: red on white, #F4D6DB on #111", () => {
+    const css = read("src/app/globals.css");
+    const darkAt = css.indexOf('html[data-theme="dark"]');
+    const light = css.slice(0, darkAt);
+    const dark = css.slice(darkAt);
+    assert.match(light, /--accent-on-ink:\s*#f4d6db/i);
+    assert.match(dark, /--accent-on-ink:\s*var\(--accent-on-light\)/);
+    const onInk = contrastRatio("#f4d6db", "#111111");
+    assert.ok(onInk >= 4.5, `#F4D6DB on #111 expected >= 4.5, got ${onInk.toFixed(2)}`);
+    const redOnInk = contrastRatio("#c8102e", "#111111");
+    assert.ok(redOnInk < 4.5, "red on the light-theme ink card stays below AA");
     const src = read("src/components/beranda/MasukCta.tsx");
-    assert.match(src, /text-\[var\(--accent-on-light\)\]/);
+    assert.match(src, /text-\[var\(--accent-on-ink\)\]/);
+    assert.equal(/text-\[var\(--accent-on-light\)\]/.test(src), false);
     assert.equal(/text-\[var\(--eyebrow\)\]/.test(src), false);
-    assert.equal(/text-\[var\(--accent\)\]/.test(src), false);
   });
 
   it("does not put white text on the accent fill in the report hub", () => {

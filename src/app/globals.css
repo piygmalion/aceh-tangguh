@@ -72,6 +72,9 @@ html[data-theme="light"] {
   /* Red for text, icons, and borders on a white or light surface.
      Not overridden in dark: --ink flips to white, so this red must stay. */
   --accent-on-light: #c8102e;
+  /* Kicker on an --ink card. Light theme ink is #111, so this is the
+     dark-theme eyebrow (#F4D6DB), not the red that fails 4.5:1 there. */
+  --accent-on-ink: #f4d6db;
   --ring: #111111;
   --sidebar-ring: #111111;
   --destructive: #8e1224;
@@ -183,7 +186,9 @@ html[data-theme="dark"],
   --accent-foreground: #0a0a0a;
   --accent-hover: #c6c6c6;
   --accent-pressed: #e8e8e8;
-  /* --accent-on-light stays #c8102e from :root. Do not flip it here. */
+  /* --accent-on-light stays #c8102e from :root. Do not flip it here.
+     Ink is white in this theme, so the kicker on that card uses the red. */
+  --accent-on-ink: var(--accent-on-light);
   --ring: #ffffff;
   --sidebar-ring: #ffffff;
   --destructive: #f4d6db;
