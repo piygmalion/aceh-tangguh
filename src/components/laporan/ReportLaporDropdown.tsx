@@ -10,9 +10,11 @@ import { cn } from "@/lib/utils";
 export function ReportLaporDropdown({
   className = "",
   active = false,
+  surface = "default",
 }: {
   className?: string;
   active?: boolean;
+  surface?: "default" | "brand";
 }) {
   const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
@@ -40,7 +42,7 @@ export function ReportLaporDropdown({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className={cn("inline-flex items-center gap-1 text-sm", navInteractiveClass({ active, open, shape: "pill" }))}
+        className={cn("inline-flex items-center gap-1 text-sm", navInteractiveClass({ active, open, shape: "pill", surface }))}
       >
         {t("lapor")}
         <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />

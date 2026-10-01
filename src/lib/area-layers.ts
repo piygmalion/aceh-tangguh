@@ -1,5 +1,6 @@
 import type { AreaLayerKey, LegendModel } from "@/lib/types";
-import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
+import { FOREST_SCALE } from "@/lib/chart-colors";
+import { COLOR_TOKENS } from "@/lib/layer-colors";
 
 export const AREA_LAYER_KEYS: AreaLayerKey[] = [
   "villageDistribution",
@@ -66,9 +67,9 @@ export const AREA_LAYER_LEGENDS: Record<AreaLayerKey, LegendModel> = {
   irbi2025: {
     title: "IRBI 2025 — kelas risiko kab/kota",
     items: [
-      { color: STATUS_HEX.RENDAH, label: "Rendah" },
-      { color: STATUS_HEX.SEDANG, label: "Sedang" },
-      { color: STATUS_HEX.TINGGI, label: "Tinggi" },
+      { color: COLOR_TOKENS.forest, label: "Rendah" },
+      { color: COLOR_TOKENS.gold, label: "Sedang" },
+      { color: COLOR_TOKENS.orange, label: "Tinggi" },
     ],
   },
 };

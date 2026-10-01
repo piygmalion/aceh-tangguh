@@ -58,7 +58,7 @@ function Kartu({
       className="group flex scroll-mt-24 items-center gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] p-4 transition hover:border-[var(--primary)] md:p-5"
     >
       <span
-        className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--primary-dim)] text-[var(--primary)]"
+        className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--bg-muted)] text-[var(--text)]"
         aria-hidden
       >
         <Icon size={18} />
@@ -84,7 +84,7 @@ export function FiturSection() {
   return (
     <section id="layanan" className="scroll-mt-24 px-4 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
-        <p className={cn("text-[var(--accent)]", TYPE_KICKER_CLASS)}>{t("fitur.kicker")}</p>
+        <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("fitur.kicker")}</p>
         <h2 className="mt-3 text-[1.6rem] font-semibold leading-[1.18] tracking-[-0.028em] sm:text-[2rem]">
           {t("fitur.title")}
         </h2>

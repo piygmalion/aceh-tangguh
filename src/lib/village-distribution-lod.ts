@@ -3,7 +3,7 @@ import type { Geometry, Position } from "geojson";
 import { COLOR_TOKENS } from "@/lib/layer-colors";
 import type { VillageClickSelection } from "@/lib/profil-desa";
 import { overlayPmtilesUrl } from "@/lib/tiles-url";
-import type { AreaLayerKey } from "@/lib/types";
+import type { AreaLayerKey, BasemapId } from "@/lib/types";
 
 /** Kab overview uses the existing dissolve fixture, not retired r3p-kab.pmtiles. */
 export const KAB_OVERVIEW_AREA_KEY = "r3pDistribution" as const;
@@ -340,7 +340,17 @@ export function villageLayerFilter(
   return ["all", ...parts] as FilterSpecification;
 }
 
-export const AREA_OUTLINE_COLOR = COLOR_TOKENS.forest;
+/** Light basemap: #111111 at 35%. Width stays on the paint below. */
+export const AREA_OUTLINE_COLOR = "rgba(17, 17, 17, 0.35)";
+/** Dark basemap: #FFFFFF at 30%. */
+export const AREA_OUTLINE_COLOR_DARK = "rgba(255, 255, 255, 0.30)";
+
+const DARK_OUTLINE_BASEMAPS = new Set<BasemapId>(["dark", "brand-dark", "satellite", "sentinel"]);
+
+export function areaOutlineColor(basemap?: BasemapId | null): string {
+  if (basemap && DARK_OUTLINE_BASEMAPS.has(basemap)) return AREA_OUTLINE_COLOR_DARK;
+  return AREA_OUTLINE_COLOR;
+}
 export const AREA_HIGHLIGHT_FILL = COLOR_TOKENS.awas;
 export const AREA_HIGHLIGHT_LINE = COLOR_TOKENS.awas;
 export const AREA_HIGHLIGHT_FILL_OPACITY = 0.28;
@@ -355,7 +365,7 @@ export function areaFillUsesMeshWash(kind: "kab" | "kecamatan" | "village"): boo
 export const KAB_OUTLINE_PAINT = {
   "line-color": AREA_OUTLINE_COLOR,
   "line-width": 0.7,
-  "line-opacity": 0.65,
+  "line-opacity": 1,
 } as const;
 
 export const KECAMATAN_OUTLINE_PAINT = {
@@ -386,10 +396,16 @@ export const VILLAGE_OUTLINE_PAINT = {
   ],
 } as const;
 
-export function areaOutlinePaint(kind: "kab" | "kecamatan" | "village") {
+export function areaOutlinePaint(
+  kind: "kab" | "kecamatan" | "village",
+  basemap?: BasemapId | null,
+) {
   if (kind === "village") return VILLAGE_OUTLINE_PAINT;
   if (kind === "kecamatan") return KECAMATAN_OUTLINE_PAINT;
-  return KAB_OUTLINE_PAINT;
+  return {
+    ...KAB_OUTLINE_PAINT,
+    "line-color": areaOutlineColor(basemap),
+  };
 }
 
 export function villageLodShowsKecamatanLayer(band: VillageLodBand): boolean {

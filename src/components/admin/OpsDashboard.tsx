@@ -143,7 +143,7 @@ function ProgressBar({ value }: { value: number }) {
   const width = Math.round(Math.min(1, Math.max(0, value)) * 100);
   return (
     <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--glass-border)]" aria-hidden>
-      <div className="h-full rounded-full bg-[var(--primary)]" style={{ width: `${width}%` }} />
+      <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${width}%` }} />
     </div>
   );
 }
@@ -233,7 +233,7 @@ export function OpsDashboard({
   return (
     <div className="flex flex-col gap-4" data-testid="ops-dashboard">
       <GlassPanel className="p-5 sm:p-6">
-        <p className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{t("navOpsDash")}</p>
+        <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("navOpsDash")}</p>
         <h1 className="mt-1 text-xl font-semibold">{t("opsDashTitle")}</h1>
         <p className="mt-1 text-sm text-[var(--text-dim)]">{t("opsDashHello", { name, role })}</p>
         <p className="mt-2 max-w-3xl text-sm text-[var(--text-dim)]">{t("opsDashLead")}</p>
@@ -247,8 +247,8 @@ export function OpsDashboard({
                 TYPE_FLOOR_CLASS,
                 "rounded-full border px-3 py-1 transition",
                 filter === id
-                  ? "border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)]"
-                  : "border-[var(--glass-border)] text-[var(--text-dim)] hover:border-[var(--primary)]",
+                  ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-fg)]"
+                  : "border-[var(--border)] text-[var(--text-dim)] hover:border-[var(--ink)]",
               )}
             >
               {id === "all" ? t("opsDashFilterAll") : t(FEED_NAV[id])}
@@ -270,7 +270,7 @@ export function OpsDashboard({
         <GlassPanel className="p-5">
           <div data-testid="ops-lifecycle">
             <div className="flex items-center gap-2">
-              <LayoutDashboard size={16} className="text-[var(--primary)]" />
+              <LayoutDashboard size={16} className="text-[var(--text)]" />
               <h2 className="text-sm font-semibold">{t("opsDashLifecycle")}</h2>
             </div>
             <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-stretch">
@@ -332,7 +332,7 @@ export function OpsDashboard({
                           {t(VOLUME_HINT[feed.id])}
                         </p>
                       </div>
-                      <Icon size={16} className="shrink-0 text-[var(--primary)]" />
+                      <Icon size={16} className="shrink-0 text-[var(--text)]" />
                     </div>
                     {idle ? (
                       <p className={cn("mt-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
@@ -341,7 +341,7 @@ export function OpsDashboard({
                     ) : (
                       <>
                         {feed.volume > 0 ? (
-                          <p className={cn("mt-2 text-[var(--primary)]", TYPE_FLOOR_CLASS)}>
+                          <p className={cn("mt-2 font-semibold text-[var(--text)]", TYPE_FLOOR_CLASS)}>
                             {t("opsDashNeedsWork")}
                           </p>
                         ) : null}

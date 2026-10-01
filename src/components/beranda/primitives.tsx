@@ -54,7 +54,7 @@ export function Figure({
   unit?: string;
   decimals?: 0 | 1 | 2;
   prefix?: string;
-  tone?: "text" | "primary" | "accent" | "danger" | "warn";
+  tone?: "text" | "primary" | "accent" | "danger" | "warn" | "band";
   size?: "sm" | "md" | "lg";
 }) {
   const toneClass = {
@@ -63,6 +63,7 @@ export function Figure({
     accent: "text-[var(--accent)]",
     danger: "text-[var(--danger)]",
     warn: "text-[var(--warn)]",
+    band: "text-[var(--band-fg)]",
   }[tone];
 
   const sizeClass = {
@@ -109,7 +110,7 @@ export function SectionHeading({
     <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
       <div className="max-w-2xl">
         {kicker ? (
-          <p className={cn("type-kicker mb-2.5 text-[var(--accent-soft)]")}>{kicker}</p>
+          <p className={cn("type-kicker mb-2.5 text-[var(--eyebrow)]")}>{kicker}</p>
         ) : null}
         <h2
           id={id}

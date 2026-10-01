@@ -36,7 +36,15 @@
     "login": "Login",
     "logout": "Logout",
     "dashboard": "Dashboard",
-    "account": "Account"
+    "account": "Account",
+    "emergencyAria": "Emergency numbers",
+    "emergency112": "112",
+    "emergency112Label": "National emergency",
+    "emergency117": "117",
+    "emergency117Label": "BNPB call centre",
+    "emergencyPusdalops": "Pusdalops",
+    "emergencyMissing": "not available",
+    "emergencyClock": "WIB"
   },
   "hero": {
     "title": "Stay ready for <brand>Aceh Tangguh</brand>,<br></br>respond for better handling.",
@@ -195,6 +203,12 @@
     "ngoDistribution": "NGO distribution",
     "regencyFundAllocation": "Regency fund allocation",
     "legendEmpty": "Enable location or distribution layers to see the legend.",
+    "statusLegend": "Status",
+    "statusAman": "Safe",
+    "statusWaspada": "Advisory",
+    "statusSiaga": "Alert",
+    "statusAwas": "Warning",
+    "statusNote": "Green, yellow, and orange follow the PVMBG colour approach, not official hex.",
     "areaOff": "Off",
     "themeLight": "Light",
     "themeDark": "Dark",
@@ -566,7 +580,7 @@
     "tone": {
       "neutral": "Normal",
       "warn": "Watch",
-      "danger": "Danger"
+      "danger": "Alert"
     },
     "cuaca": {
       "source": "Weather warning · BMKG",
@@ -1844,7 +1858,8 @@
       "scopeYear": "All districts and hazard types in this year range.",
       "scopeKab": "This district figure covers every year and every hazard type. A yearly breakdown for one district is not in the DIBI extract.",
       "scopeJenis": "This hazard figure covers every year and every district. A yearly breakdown for one type is not in the DIBI extract.",
-      "scopeUnavailable": "District and hazard type cannot be filtered together. The DIBI extract has no cross table, so the counters stay hidden.",
+      "scopeUnavailable": "District and hazard type cannot be filtered together. The DIBI extract has no cross table, so the counters show not available.",
+      "belumAda": "not available",
       "emptyRange": "No DIBI year rows fall in this range.",
       "noIncidents": "This Aceh DIBI extract is an aggregate, not an incident list. Latest-incident chips are not shown.",
       "sumber": "DIBI BNPB. Updated {updated}.",

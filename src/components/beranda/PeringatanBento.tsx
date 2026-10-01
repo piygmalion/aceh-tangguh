@@ -9,7 +9,8 @@ import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-di
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { usePeringatan } from "./data";
-import { jamPendek, rapikanTanda, TONE_CHIP, TONE_DOT } from "./format";
+import { StatusScaleChip } from "@/components/ui/StatusScaleChip";
+import { jamPendek, rapikanTanda, toneLevel, TONE_CHIP, TONE_DOT, TONE_EDGE } from "./format";
 import { PanelError, PanelSkeleton, SectionHeading } from "./primitives";
 
 type Kartu = {
@@ -169,15 +170,10 @@ function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{kartu.lembaga}</p>
         </div>
       </div>
-      <span
-        className={cn(
-          "shrink-0 rounded-full px-2.5 py-1 font-semibold",
-          TYPE_FLOOR_CLASS,
-          TONE_CHIP[kartu.tone],
-        )}
-      >
-        {tp(`tone.${kartu.tone}`)}
-      </span>
+      <StatusScaleChip
+        level={toneLevel(kartu.tone)}
+        label={tp(`tone.${kartu.tone}`)}
+      />
     </div>
   );
 }
@@ -194,7 +190,7 @@ function Kaki({ kartu }: { kartu: Kartu }) {
       <span className="truncate tabular-nums">
         {kartu.basi ? t("peringatan.snapshot") : (kartu.stempel ?? t("peringatan.waktuKosong"))}
       </span>
-      <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-[var(--primary)]">
+      <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-[var(--text)] underline decoration-[var(--text-dim)] underline-offset-2">
         {t("peringatan.sumber")}
         <ArrowUpRight size={13} aria-hidden />
       </span>
@@ -248,26 +244,22 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
 
   const kelas = cn(
     "flex h-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] p-4 transition",
-    "hover:border-[var(--primary)] hover:shadow-[var(--shadow)]",
-    "focus-visible:border-[var(--primary)]",
+    "hover:border-[var(--ink)] hover:shadow-[var(--shadow)]",
+    "focus-visible:border-[var(--ink)]",
     // The lead cell is the most severe feed, so it carries a tint of its own status.
     besar
       ? cn(
           "sm:p-5",
-          kartu.tone === "danger"
-            ? "bg-[var(--danger-dim)]"
-            : kartu.tone === "warn"
-              ? "bg-[var(--warn-dim)]"
-              : "bg-[var(--bg-muted)]",
+          toneLevel(kartu.tone) === "siaga"
+            ? "bg-[color-mix(in_srgb,var(--status-siaga)_14%,var(--bg-raised))]"
+            : toneLevel(kartu.tone) === "waspada"
+              ? "bg-[color-mix(in_srgb,var(--status-waspada)_28%,var(--bg-raised))]"
+              : "bg-[color-mix(in_srgb,var(--status-aman)_18%,var(--bg-raised))]",
         )
       : "",
     // Tone-tinted left edge: colour here carries status, not decoration.
     "relative overflow-hidden before:absolute before:inset-y-0 before:left-0 before:w-[3px]",
-    kartu.tone === "danger"
-      ? "before:bg-[var(--danger)]"
-      : kartu.tone === "warn"
-        ? "before:bg-[var(--warn)]"
-        : "before:bg-[var(--info)]",
+    TONE_EDGE[kartu.tone],
   );
 
   return (
@@ -304,7 +296,7 @@ export function PeringatanBento() {
             <a
               href="#risiko"
               className={cn(
-                "inline-flex h-10 items-center gap-1.5 rounded-full border border-[var(--border)] px-4 font-semibold transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]",
+                "inline-flex h-10 items-center gap-1.5 rounded-full border border-[var(--border)] px-4 font-semibold transition-colors hover:border-[var(--ink)] hover:bg-[var(--bg-muted)]",
                 TYPE_FLOOR_CLASS,
               )}
             >

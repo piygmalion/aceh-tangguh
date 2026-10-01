@@ -8,6 +8,7 @@ import { MapSettings } from "@/components/map/MapSettings";
 import { MapViewport } from "@/components/map/MapViewport";
 import { AreaProfilPanel } from "@/components/map/AreaProfilPanel";
 import { ReportFAB } from "@/components/map/ReportFAB";
+import { StatusLegend } from "@/components/map/StatusLegend";
 import type { VillageClickSelection } from "@/lib/profil-desa";
 import { isAdminLodArea } from "@/lib/village-distribution-lod";
 
@@ -70,6 +71,7 @@ function MapWorkspaceInner() {
         />
       ) : null}
       <SiteNav />
+      <StatusLegend className="absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:bottom-4 md:left-4 md:top-auto md:w-auto" />
       <MapToolbar
         areaLayer={state.areaLayer}
         krbJenis={state.krbJenis ?? null}

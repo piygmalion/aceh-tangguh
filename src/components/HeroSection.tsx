@@ -242,7 +242,7 @@ export function HeroSection() {
                 <h1 className={cn("mb-5 max-w-none text-left", TYPE_HERO_DISPLAY_CLASS)}>
                   {t.rich("title", {
                     brand: (chunks) => (
-                      <span className="whitespace-nowrap rounded-md bg-accent px-1.5 text-accent-foreground">
+                      <span className="whitespace-nowrap rounded-md bg-[var(--primary)] px-1.5 text-[var(--primary-fg)]">
                         {chunks}
                       </span>
                     ),
@@ -252,7 +252,7 @@ export function HeroSection() {
               </BlurFade>
 
               <BlurFade delay={0.2} inView>
-                <p className="mb-8 max-w-xl text-lg leading-relaxed text-[var(--hero-muted)]">
+                <p className="mb-8 max-w-xl text-lg font-normal leading-relaxed text-[var(--hero-muted)]">
                   {t("subtitle")}
                 </p>
               </BlurFade>

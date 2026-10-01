@@ -8,7 +8,7 @@ import { LocaleSwitch } from "@/components/LocaleSwitch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthMenu } from "@/components/admin/AuthMenu";
 import { ReportLaporDropdown } from "@/components/laporan/ReportLaporDropdown";
-import { GlassPanel } from "@/components/ui/GlassPanel";
+import { EmergencyStrip } from "@/components/EmergencyStrip";
 import { NAV_ACCENT_HOVER, NAV_UTILITY_HOVER, navInteractiveClass } from "@/lib/nav-chrome";
 import { TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
@@ -54,7 +54,7 @@ function NavGroup({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className={cn("inline-flex items-center gap-1 text-sm", navInteractiveClass({ active: groupActive, open, shape: "pill" }))}
+        className={cn("inline-flex items-center gap-1 text-sm", navInteractiveClass({ active: groupActive, open, shape: "pill", surface: "brand" }))}
       >
         {label}
         <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
@@ -122,20 +122,19 @@ export function SiteNav() {
   };
 
   return (
-    <div
-      data-sitenav
-      className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center p-3 md:p-4"
-    >
-      <GlassPanel
-        className={`pointer-events-auto flex w-full max-w-6xl flex-col gap-0 px-3 py-2.5 transition duration-300 sm:px-4 ${
+    <div data-sitenav className="fixed inset-x-0 top-0 z-50">
+      <EmergencyStrip />
+      <header
+        className={`bg-[var(--primary)] text-[var(--primary-fg)] ${
           scrolled ? "shadow-[var(--shadow-elevated)]" : ""
-        } ${open ? "rounded-3xl" : ""}`}
+        }`}
       >
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-0 px-3 py-2 sm:px-4">
         <div className="flex items-center justify-between gap-3">
           <Link
             href="/"
             className={cn(
-              "shrink-0 rounded-lg px-1.5 py-1 text-sm font-semibold tracking-wide text-[var(--text)] md:text-base",
+              "shrink-0 rounded-lg px-1.5 py-1 text-sm font-semibold tracking-wide text-[var(--primary-fg)] md:text-base",
               NAV_ACCENT_HOVER
             )}
           >
@@ -143,12 +142,12 @@ export function SiteNav() {
           </Link>
 
           <nav className="hidden items-center gap-1 text-sm lg:flex" aria-label="Primary" data-nav-ia="desktop">
-            <Link href={peta.href} className={navInteractiveClass({ active: isActive(peta.href), shape: "pill" })}>
+            <Link href={peta.href} className={navInteractiveClass({ active: isActive(peta.href), shape: "pill", surface: "brand" })}>
               {peta.label}
             </Link>
             <NavGroup label={t("data")} items={dataItems} isActive={isActive} />
             <NavGroup label={t("siaga")} items={siagaItems} isActive={isActive} />
-            <ReportLaporDropdown active={laporActive} />
+            <ReportLaporDropdown active={laporActive} surface="brand" />
           </nav>
 
           <div className="flex items-center gap-2">
@@ -160,7 +159,7 @@ export function SiteNav() {
             <button
               type="button"
               className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--glass-border)] lg:hidden",
+                "inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 text-[var(--primary-fg)] lg:hidden",
                 NAV_UTILITY_HOVER
               )}
               aria-expanded={open}
@@ -176,17 +175,17 @@ export function SiteNav() {
         {open ? (
           <div
             id="mobile-nav"
-            className="mt-3 border-t border-[var(--glass-border)] pt-3 lg:hidden"
+            className="mt-3 border-t border-white/30 pt-3 lg:hidden"
           >
             <nav className="flex flex-col gap-1" aria-label="Mobile" data-nav-ia="mobile">
               <Link
                 href={peta.href}
                 onClick={() => setOpen(false)}
-                className={navInteractiveClass({ active: isActive(peta.href), shape: "row" })}
+                className={navInteractiveClass({ active: isActive(peta.href), shape: "row", surface: "brand" })}
               >
                 {peta.label}
               </Link>
-              <div className={cn("mt-2 px-3 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+              <div className={cn("mt-2 px-3 text-[var(--primary-fg)]", TYPE_KICKER_CLASS)}>
                 {t("data")}
               </div>
               {dataItems.map((item) => (
@@ -194,12 +193,12 @@ export function SiteNav() {
                   key={item.key}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={navInteractiveClass({ active: isActive(item.href), shape: "row" })}
+                  className={navInteractiveClass({ active: isActive(item.href), shape: "row", surface: "brand" })}
                 >
                   {item.label}
                 </Link>
               ))}
-              <div className={cn("mt-2 px-3 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>
+              <div className={cn("mt-2 px-3 text-[var(--primary-fg)]", TYPE_KICKER_CLASS)}>
                 {t("siaga")}
               </div>
               {siagaItems.map((item) => (
@@ -207,22 +206,23 @@ export function SiteNav() {
                   key={item.key}
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className={navInteractiveClass({ active: isActive(item.href), shape: "row" })}
+                  className={navInteractiveClass({ active: isActive(item.href), shape: "row", surface: "brand" })}
                 >
                   {item.label}
                 </Link>
               ))}
               <div className="px-1 py-2">
-                <ReportLaporDropdown active={laporActive} />
+                <ReportLaporDropdown active={laporActive} surface="brand" />
               </div>
             </nav>
-            <div className="mt-3 flex items-center justify-between gap-3 border-t border-[var(--glass-border)] pt-3 sm:hidden">
+            <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/30 pt-3 sm:hidden">
               <LocaleSwitch />
               <ThemeToggle />
             </div>
           </div>
         ) : null}
-      </GlassPanel>
+      </div>
+      </header>
     </div>
   );
 }

@@ -35,7 +35,7 @@ import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import type { VillageClickSelection } from "@/lib/profil-desa";
 import type { FilterSpecification, GeoJSONSource, MapLayerMouseEvent } from "maplibre-gl";
-import { FOREST_SCALE, STATUS_HEX } from "@/lib/chart-colors";
+import { FOREST_SCALE } from "@/lib/chart-colors";
 import { CLUSTER_COLORS, COLOR_TOKENS, LAYER_COLORS } from "@/lib/layer-colors";
 import { markerIconImageId } from "@/lib/layer-icons";
 import {
@@ -125,11 +125,11 @@ const QUANTITY_FILL: Record<string, string> = {
   tahap2: "#FF8F42",
 };
 
-/** IRBI kelas risiko — status tokens, not the quantity forest scale. */
+/** IRBI kelas risiko stays on the source palette, not the hybrid status scale. */
 const IRBI_FILL: Record<string, string> = {
-  rendah: STATUS_HEX.RENDAH,
-  sedang: STATUS_HEX.SEDANG,
-  tinggi: STATUS_HEX.TINGGI,
+  rendah: COLOR_TOKENS.forest,
+  sedang: COLOR_TOKENS.gold,
+  tinggi: COLOR_TOKENS.orange,
 };
 
 function bucketFillFor(layer: AreaLayerKey | null | undefined): Record<string, string> {
@@ -434,6 +434,7 @@ function AreaOverlayLayers({
   maxzoom,
   villageSelection,
   villageClickEnabled,
+  basemap,
 }: {
   idPrefix?: string;
   /** Injected by react-map-gl <Source> via cloneElement. */
@@ -441,6 +442,7 @@ function AreaOverlayLayers({
   sourceLayer?: string;
   areaLayer: AreaLayerKey | null;
   outlineKind: "kab" | "kecamatan" | "village";
+  basemap?: BasemapId;
   filter?: FilterSpecification;
   beforeId?: string;
   minzoom?: number;
@@ -507,7 +509,7 @@ function AreaOverlayLayers({
         {...filterProp}
         minzoom={minzoom ?? 0}
         {...(maxzoom != null ? { maxzoom } : {})}
-        paint={areaOutlinePaint(outlineKind) as never}
+        paint={areaOutlinePaint(outlineKind, basemap) as never}
       />
       {villageClickEnabled && (
         <AreaHighlightLayers
@@ -1123,7 +1125,7 @@ export function MapViewport({
               {...(overlaySlot ? { beforeId: overlaySlot } : {})}
               paint={{
                 "circle-radius": 7,
-                "circle-color": STATUS_HEX.TINGGI,
+                "circle-color": COLOR_TOKENS.orange,
                 "circle-stroke-width": 2,
                 "circle-stroke-color": haloStroke,
                 "circle-opacity": 0.92,
@@ -1140,6 +1142,7 @@ export function MapViewport({
               beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
+              basemap={basemap}
             />
           </Source>
         )}
@@ -1155,6 +1158,7 @@ export function MapViewport({
               maxzoom={KECAMATAN_OVERVIEW_MAX_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
+              basemap={basemap}
             />
           </Source>
         )}
@@ -1169,6 +1173,7 @@ export function MapViewport({
               maxzoom={KECAMATAN_OVERVIEW_MAX_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
+              basemap={basemap}
             />
           </Source>
         )}
@@ -1184,6 +1189,7 @@ export function MapViewport({
               minzoom={VILLAGE_MESH_MIN_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
+              basemap={basemap}
             />
           </Source>
         )}
@@ -1198,6 +1204,7 @@ export function MapViewport({
               minzoom={VILLAGE_MESH_MIN_ZOOM}
               villageSelection={villageSelection}
               villageClickEnabled={villageClickEnabled}
+              basemap={basemap}
             />
           </Source>
         )}
@@ -1210,6 +1217,7 @@ export function MapViewport({
               beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={false}
+              basemap={basemap}
             />
           </Source>
         )}
@@ -1221,6 +1229,7 @@ export function MapViewport({
               beforeId={areaBeforeId}
               villageSelection={villageSelection}
               villageClickEnabled={false}
+              basemap={basemap}
             />
           </Source>
         )}

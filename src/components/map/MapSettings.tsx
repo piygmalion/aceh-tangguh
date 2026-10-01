@@ -83,7 +83,7 @@ export function MapSettings({
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-haspopup="dialog"
-        className="map-chrome-elevated inline-flex h-11 items-center gap-2 rounded-xl px-3.5 text-sm font-medium transition hover:border-[var(--primary)] hover:text-[var(--primary)]"
+        className="map-chrome-elevated inline-flex h-11 items-center gap-2 rounded-xl px-3.5 text-sm font-medium transition hover:border-[var(--ink)] hover:text-[var(--text)]"
       >
         <Settings2 size={16} />
         <span className="hidden sm:inline">{t("settings")}</span>
@@ -121,8 +121,8 @@ export function MapSettings({
                 onClick={() => setTheme(th)}
                 className={`rounded-xl border px-2.5 py-2 text-sm font-medium transition ${
                   theme === th
-                    ? "border-[var(--primary)] bg-[var(--primary)] text-[var(--primary-fg)] shadow-sm"
-                    : "border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--primary)]"
+                    ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-fg)] shadow-sm"
+                    : "border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--ink)]"
                 }`}
               >
                 {label}
@@ -141,8 +141,8 @@ export function MapSettings({
                 onClick={() => onBasemapChange(b.id)}
                 className={`rounded-xl border px-2.5 py-2 text-left text-sm font-medium transition ${
                   basemap === b.id
-                    ? "border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)]"
-                    : "border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--primary)]"
+                    ? "border-[var(--accent)] bg-[var(--accent)] text-[var(--accent-fg)]"
+                    : "border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text)] hover:border-[var(--ink)]"
                 }`}
               >
                 <span className="block">{t(b.labelKey)}</span>

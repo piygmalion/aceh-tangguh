@@ -104,16 +104,16 @@ function badgeTone(badge: ImpactBadge): "danger" | "ok" | "neutral" {
 
 const CARD_TONE: Record<"info" | "danger" | "warn" | "ok", string> = {
   info: "border-[color-mix(in_srgb,var(--info)_35%,transparent)] bg-[var(--info-dim)]",
-  danger: "border-[color-mix(in_srgb,var(--danger)_35%,transparent)] bg-[var(--danger-dim)]",
-  warn: "border-[color-mix(in_srgb,var(--warn)_35%,transparent)] bg-[var(--warn-dim)]",
-  ok: "border-[color-mix(in_srgb,var(--primary)_35%,transparent)] bg-[var(--primary-dim)]",
+  danger: "border border-[var(--map-keyline)] bg-[color-mix(in_srgb,var(--status-awas)_16%,var(--bg-raised))]",
+  warn: "border border-[var(--map-keyline)] bg-[color-mix(in_srgb,var(--status-waspada)_28%,var(--bg-raised))]",
+  ok: "border border-[var(--map-keyline)] bg-[color-mix(in_srgb,var(--status-aman)_22%,var(--bg-raised))]",
 };
 
 const CARD_VALUE: Record<"info" | "danger" | "warn" | "ok", string> = {
-  info: "text-[var(--info)]",
-  danger: "text-[var(--danger)]",
-  warn: "text-[var(--warn)]",
-  ok: "text-[var(--primary)]",
+  info: "text-[var(--text)]",
+  danger: "text-[var(--text)]",
+  warn: "text-[var(--text)]",
+  ok: "text-[var(--text)]",
 };
 
 function MetricCard({
@@ -285,10 +285,10 @@ function MetricSections({
 
 function badgeClass(tone: ReturnType<typeof badgeTone>) {
   if (tone === "danger") {
-    return "border-transparent bg-destructive/15 text-destructive";
+    return "border border-[var(--map-keyline)] bg-[var(--status-awas)] text-[var(--map-status-awas-fg)]";
   }
   if (tone === "ok") {
-    return "border-transparent bg-primary/15 text-primary";
+    return "border border-[var(--map-keyline)] bg-[var(--status-aman)] text-[var(--map-status-aman-fg)]";
   }
   return "border-border bg-muted text-foreground";
 }

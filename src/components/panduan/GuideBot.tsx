@@ -508,7 +508,7 @@ export function GuideBot() {
           aria-expanded={open}
           aria-controls={open ? dialogId : undefined}
           onClick={() => (open ? setOpen(false) : handleOpen())}
-          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-[var(--primary)] text-[var(--primary-fg)] shadow-[var(--shadow-elevated)] transition duration-200 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]"
+          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--accent)] text-[var(--accent-fg)] shadow-[var(--shadow-elevated)] transition duration-200 hover:bg-[var(--accent-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]"
         >
           {open ? <X size={22} /> : <TanggapiAvatar size="fab" />}
         </button>

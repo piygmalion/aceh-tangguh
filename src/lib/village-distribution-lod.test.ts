@@ -8,6 +8,8 @@ import {
   AREA_HIGHLIGHT_LAYER_IDS,
   AREA_HIGHLIGHT_LINE,
   AREA_OUTLINE_COLOR,
+  AREA_OUTLINE_COLOR_DARK,
+  areaOutlineColor,
   BASEMAP_LABEL_PLACE_LAYER,
   KAB_OVERVIEW_AREA_KEY,
   KAB_OUTLINE_PAINT,
@@ -131,13 +133,20 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(isAdminLodArea(null), false);
   });
 
-  it("starts desa outlines at z11 and uses paper/forest tokens, not #14532d", () => {
+  it("starts desa outlines at z11 and uses the locked outline, not #14532d", () => {
     assert.equal(VILLAGE_OUTLINE_MIN_ZOOM, 11);
     assert.equal(VILLAGE_MESH_MIN_ZOOM, 11);
     assert.equal(KECAMATAN_OVERVIEW_MAX_ZOOM, 11);
-    assert.equal(AREA_OUTLINE_COLOR, COLOR_TOKENS.forest);
+    assert.equal(AREA_OUTLINE_COLOR, "rgba(17, 17, 17, 0.35)");
     assert.notEqual(AREA_OUTLINE_COLOR, "#14532d");
-    assert.equal(KAB_OUTLINE_PAINT["line-color"], COLOR_TOKENS.forest);
+    assert.notEqual(AREA_OUTLINE_COLOR, COLOR_TOKENS.forest);
+    assert.equal(KAB_OUTLINE_PAINT["line-color"], AREA_OUTLINE_COLOR);
+    assert.equal(KAB_OUTLINE_PAINT["line-width"], 0.7);
+    assert.equal(AREA_OUTLINE_COLOR_DARK, "rgba(255, 255, 255, 0.30)");
+    assert.equal(areaOutlineColor("brand-light"), AREA_OUTLINE_COLOR);
+    assert.equal(areaOutlineColor("brand-grey"), AREA_OUTLINE_COLOR);
+    assert.equal(areaOutlineColor("brand-dark"), AREA_OUTLINE_COLOR_DARK);
+    assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
     assert.equal(KECAMATAN_OUTLINE_PAINT["line-color"], COLOR_TOKENS.paper);
     assert.equal(VILLAGE_OUTLINE_PAINT["line-color"], COLOR_TOKENS.paper);
     const opacity = VILLAGE_OUTLINE_PAINT["line-opacity"];

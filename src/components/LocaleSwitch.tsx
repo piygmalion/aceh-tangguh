@@ -13,30 +13,33 @@ export function LocaleSwitch() {
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full border border-[var(--glass-border)] bg-[var(--bg-raised)]/50 p-0.5 font-semibold",
+        "inline-flex items-center gap-0.5 rounded-full border border-white/40 p-0.5",
         TYPE_FLOOR_CLASS
       )}
       role="group"
       aria-label="Language"
     >
-      {(["id", "en"] as const).map((l) => (
-        <button
-          key={l}
-          type="button"
-          onClick={() =>
-            router.replace(pathname as Parameters<typeof router.replace>[0], { locale: l })
-          }
-          aria-pressed={locale === l}
-          className={cn(
-            "rounded-full px-2.5 py-1.5 uppercase tracking-wide transition duration-200",
-            locale === l
-              ? "bg-[var(--primary)] text-[var(--primary-fg)] shadow-sm"
-              : "text-[var(--text-dim)] hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
-          )}
-        >
-          {l}
-        </button>
-      ))}
+      {(["id", "en"] as const).map((l) => {
+        const active = locale === l;
+        return (
+          <button
+            key={l}
+            type="button"
+            onClick={() =>
+              router.replace(pathname as Parameters<typeof router.replace>[0], { locale: l })
+            }
+            aria-pressed={active}
+            className={cn(
+              "rounded-full px-2.5 py-1.5 uppercase tracking-wide transition duration-200",
+              active
+                ? "bg-[var(--primary)] font-semibold text-[var(--primary-fg)] underline decoration-2 underline-offset-4"
+                : "text-white/70 hover:bg-[var(--accent-dim)] hover:text-[var(--accent)]"
+            )}
+          >
+            {l}
+          </button>
+        );
+      })}
     </div>
   );
 }

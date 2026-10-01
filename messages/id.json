@@ -36,7 +36,15 @@
     "login": "Masuk",
     "logout": "Keluar",
     "dashboard": "Dasbor",
-    "account": "Akun"
+    "account": "Akun",
+    "emergencyAria": "Nomor darurat",
+    "emergency112": "112",
+    "emergency112Label": "Darurat nasional",
+    "emergency117": "117",
+    "emergency117Label": "Call Center BNPB",
+    "emergencyPusdalops": "Pusdalops",
+    "emergencyMissing": "belum ada",
+    "emergencyClock": "WIB"
   },
   "hero": {
     "title": "Siaga untuk <brand>Aceh Tangguh</brand>,<br></br>tanggapi untuk penanganan lebih baik",
@@ -195,6 +203,12 @@
     "ngoDistribution": "Distribusi NGO",
     "regencyFundAllocation": "Alokasi dana kab/kota",
     "legendEmpty": "Aktifkan layer lokasi atau distribusi untuk melihat legenda.",
+    "statusLegend": "Status",
+    "statusAman": "Aman",
+    "statusWaspada": "Waspada",
+    "statusSiaga": "Siaga",
+    "statusAwas": "Awas",
+    "statusNote": "Pendekatan warna hijau, kuning, dan oranye PVMBG, bukan hex resmi.",
     "areaOff": "Tidak aktif",
     "themeLight": "Terang",
     "themeDark": "Gelap",
@@ -566,7 +580,7 @@
     "tone": {
       "neutral": "Normal",
       "warn": "Waspada",
-      "danger": "Bahaya"
+      "danger": "Siaga"
     },
     "cuaca": {
       "source": "Peringatan cuaca · BMKG",
@@ -1844,7 +1858,8 @@
       "scopeYear": "Jumlah seluruh kabupaten dan jenis pada rentang tahun ini.",
       "scopeKab": "Angka kabupaten ini mencakup seluruh tahun dan seluruh jenis. Rincian per tahun untuk satu kabupaten tidak ada di ekstrak DIBI.",
       "scopeJenis": "Angka jenis ini mencakup seluruh tahun dan seluruh kabupaten. Rincian per tahun untuk satu jenis tidak ada di ekstrak DIBI.",
-      "scopeUnavailable": "Kabupaten dan jenis tidak bisa disaring bersamaan. Ekstrak DIBI tidak memuat tabel silang itu, jadi penghitung tidak ditampilkan.",
+      "scopeUnavailable": "Kabupaten dan jenis tidak bisa disaring bersamaan. Ekstrak DIBI tidak memuat tabel silang itu, jadi penghitung menampilkan belum ada.",
+      "belumAda": "belum ada",
       "emptyRange": "Tidak ada baris tahun DIBI pada rentang ini.",
       "noIncidents": "Ekstrak DIBI Aceh ini berupa agregat, bukan daftar kejadian. Chip kejadian terbaru tidak ditampilkan.",
       "sumber": "DIBI BNPB. Diperbarui {updated}.",

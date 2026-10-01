@@ -61,9 +61,9 @@ function cardFallbackColor(layer: string): string {
 }
 
 function detailToneClass(tone?: FeatureCardTone): string {
-  if (tone === "danger") return "border-[var(--danger)]/35 bg-[var(--danger-dim)] text-[var(--danger)]";
-  if (tone === "warn") return "border-[var(--warn)]/35 bg-[var(--warn-dim)] text-[var(--warn)]";
-  if (tone === "ok") return "border-[var(--primary)]/25 bg-[var(--primary-dim)] text-[var(--primary)]";
+  if (tone === "danger") return "border border-[var(--map-keyline)] bg-[var(--status-awas)] text-[var(--map-status-awas-fg)]";
+  if (tone === "warn") return "border border-[var(--map-keyline)] bg-[var(--status-waspada)] text-[var(--map-status-waspada-fg)]";
+  if (tone === "ok") return "border border-[var(--map-keyline)] bg-[var(--status-aman)] text-[var(--map-status-aman-fg)]";
   return "border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text)]";
 }
 

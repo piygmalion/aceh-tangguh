@@ -20,7 +20,7 @@ export function ReportChoiceHub() {
       <div className="mt-10 grid gap-5 sm:grid-cols-2 md:gap-6">
         <Link
           href="/lapor/kejadian"
-          className="glass flex min-h-[280px] flex-col rounded-2xl border border-[var(--glass-border)] p-6 transition hover:border-[var(--accent)]/50 md:p-7"
+          className="glass flex min-h-[280px] flex-col rounded-2xl border border-[var(--glass-border)] p-6 transition hover:!border-[color-mix(in_srgb,var(--accent)_50%,transparent)] md:p-7"
         >
           <div className="mb-5 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--accent)]/30 bg-[var(--accent-dim)] text-[var(--accent)]">
             <AlertTriangle size={20} />
@@ -29,7 +29,7 @@ export function ReportChoiceHub() {
           <p className="mt-2 flex-1 text-[15px] leading-relaxed text-[var(--text-dim)]">
             {t("kejadianBody")}
           </p>
-          <span className="mt-8 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 text-sm font-semibold text-white sm:w-auto">
+          <span className="mt-8 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 text-sm font-semibold text-[var(--accent-fg)] sm:w-auto">
             {t("kejadianCta")}
             <ArrowRight size={18} />
           </span>

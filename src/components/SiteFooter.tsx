@@ -13,70 +13,70 @@ export function SiteFooter() {
   const locale = useLocale();
 
   return (
-    <footer className="reveal mb-6 mt-16 border-t border-[var(--glass-border)] px-4 pb-10 pt-14 md:mt-20 md:pt-16">
+    <footer className="reveal mt-16 bg-[var(--primary)] px-4 pb-10 pt-14 text-[var(--primary-fg)] md:pt-16">
       <div className="mx-auto grid max-w-[1080px] gap-10 md:grid-cols-3">
         <div>
           <div className="text-base font-semibold tracking-tight">Aceh Tangguh</div>
         </div>
         <nav aria-label={t("jelajah")}>
-          <ul className="space-y-2 text-sm text-[var(--text-dim)]">
+          <ul className="space-y-2 text-sm text-[var(--primary-fg)]">
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/peta">
+              <Link className="transition hover:underline" href="/peta">
                 {tn("peta")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/data-bencana">
+              <Link className="transition hover:underline" href="/data-bencana">
                 {tn("dataBencana")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/analisis-data">
+              <Link className="transition hover:underline" href="/analisis-data">
                 {tn("analisisData")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/publikasi">
+              <Link className="transition hover:underline" href="/publikasi">
                 {tn("publikasi")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/lapor/kejadian">
+              <Link className="transition hover:underline" href="/lapor/kejadian">
                 {tn("laporKejadian")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--accent)]" href="/lapor/penanganan">
+              <Link className="transition hover:underline" href="/lapor/penanganan">
                 {tn("laporPenanganan")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/destana">
+              <Link className="transition hover:underline" href="/destana">
                 {tn("destana")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/nomor-penting">
+              <Link className="transition hover:underline" href="/nomor-penting">
                 {tn("nomorPenting")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/pelatihan">
+              <Link className="transition hover:underline" href="/pelatihan">
                 {tn("pelatihan")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/mitra">
+              <Link className="transition hover:underline" href="/mitra">
                 {tn("mitra")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/sumber-data">
+              <Link className="transition hover:underline" href="/sumber-data">
                 {tn("sumberData")}
               </Link>
             </li>
             <li>
-              <Link className="transition hover:text-[var(--primary)]" href="/metodologi">
+              <Link className="transition hover:underline" href="/metodologi">
                 {tn("metodologi")}
               </Link>
             </li>
@@ -85,15 +85,15 @@ export function SiteFooter() {
         <nav aria-label={t("sumberData")} data-footer-sumber>
           <Link
             href="/sumber-data"
-            className={cn(TYPE_KICKER_CLASS, "transition hover:text-[var(--primary)]")}
+            className={cn(TYPE_KICKER_CLASS, "transition hover:underline")}
           >
             {t("sumberData")}
           </Link>
-          <ul className={cn("mt-3 space-y-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+          <ul className={cn("mt-3 space-y-2 text-[var(--primary-fg)]", TYPE_FLOOR_CLASS)}>
             {FOOTER_SUMBER.map((row) => (
               <li key={row.id}>
                 <Link
-                  className="transition hover:text-[var(--primary)]"
+                  className="transition hover:underline"
                   href={{ pathname: "/sumber-data", hash: row.hash }}
                 >
                   {locale === "en" ? row.labelEn : row.labelId}
@@ -105,20 +105,20 @@ export function SiteFooter() {
       </div>
       <div
         className={cn(
-          "mx-auto mt-10 max-w-[1080px] border-t border-[var(--glass-border)] pt-6 text-[var(--text-dim)]",
+          "mx-auto mt-10 max-w-[1080px] border-t border-white/30 pt-6 text-[var(--primary-fg)]",
           TYPE_FLOOR_CLASS
         )}
       >
         <div>© {new Date().getFullYear()} Aceh Tangguh</div>
         <details className="mt-3">
-          <summary className="cursor-pointer text-[var(--text-dim)] transition hover:text-[var(--primary)]">
+          <summary className="cursor-pointer text-[var(--primary-fg)] transition hover:underline">
             {t("kreditVisual")}
           </summary>
           <ul className="mt-2 space-y-1 leading-relaxed">
             <li>{SITE_MEDIA.heroPoster.credit}</li>
             {UI_CREDITS.map((c) => (
               <li key={c.name}>
-                <a className="hover:text-[var(--primary)]" href={c.href} target="_blank" rel="noreferrer">
+                <a className="hover:underline" href={c.href} target="_blank" rel="noreferrer">
                   {c.name} — {c.source}
                 </a>
               </li>
