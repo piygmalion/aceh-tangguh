@@ -94,7 +94,7 @@ describe("FE-36 Destana SoT-1 UX", () => {
     assert.match(pub, /data-testid="destana-public-empty"/);
     assert.match(pub, /data-testid="destana-public-skeleton"/);
     assert.match(pub, /isPending/);
-    assert.match(pub, /t\("lead"\)/);
+    assert.match(pub, /t\("unavailable"\)/);
 
     assert.match(admin, /from ["']@\/components\/ui\/empty["']/);
     assert.match(admin, /from ["']@\/components\/ui\/skeleton["']/);
