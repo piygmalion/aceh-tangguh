@@ -29,7 +29,7 @@ export function ReportChoiceHub() {
           <p className="mt-2 flex-1 text-[15px] leading-relaxed text-[var(--text-dim)]">
             {t("kejadianBody")}
           </p>
-          <span className="mt-8 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 text-sm font-semibold text-white sm:w-auto">
+          <span className="mt-8 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-6 text-sm font-semibold text-[var(--accent-fg)] sm:w-auto">
             {t("kejadianCta")}
             <ArrowRight size={18} />
           </span>

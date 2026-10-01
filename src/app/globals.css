@@ -69,6 +69,9 @@ html[data-theme="light"] {
   --accent-foreground: #ffffff;
   --accent-hover: #5c5c5c;
   --accent-pressed: #0a0a0a;
+  /* Red for text, icons, and borders on a white or light surface.
+     Not overridden in dark: --ink flips to white, so this red must stay. */
+  --accent-on-light: #c8102e;
   --ring: #111111;
   --sidebar-ring: #111111;
   --destructive: #8e1224;
@@ -180,6 +183,7 @@ html[data-theme="dark"],
   --accent-foreground: #0a0a0a;
   --accent-hover: #c6c6c6;
   --accent-pressed: #e8e8e8;
+  /* --accent-on-light stays #c8102e from :root. Do not flip it here. */
   --ring: #ffffff;
   --sidebar-ring: #ffffff;
   --destructive: #f4d6db;
