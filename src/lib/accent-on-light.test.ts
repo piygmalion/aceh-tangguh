@@ -46,21 +46,23 @@ describe("accent on a light surface", () => {
     assert.ok(eyebrowOnWhite < 4.5, "dark eyebrow on white should stay the failing pair");
   });
 
-  it("follows the ink card: red on white, #F4D6DB on #111", () => {
+  it("follows the ink card: #C8102E on white, #F25563 on #111", () => {
     const css = read("src/app/globals.css");
     const darkAt = css.indexOf('html[data-theme="dark"]');
     const light = css.slice(0, darkAt);
     const dark = css.slice(darkAt);
-    assert.match(light, /--accent-on-ink:\s*#f4d6db/i);
+    assert.match(light, /--accent-on-ink:\s*#f25563/i);
+    assert.equal(/#ff7722/i.test(light.slice(light.indexOf("--accent-on-ink"))), false);
     assert.match(dark, /--accent-on-ink:\s*var\(--accent-on-light\)/);
-    const onInk = contrastRatio("#f4d6db", "#111111");
-    assert.ok(onInk >= 4.5, `#F4D6DB on #111 expected >= 4.5, got ${onInk.toFixed(2)}`);
+    const onInk = contrastRatio("#f25563", "#111111");
+    assert.ok(onInk >= 4.5, `#F25563 on #111 expected >= 4.5, got ${onInk.toFixed(2)}`);
     const redOnInk = contrastRatio("#c8102e", "#111111");
-    assert.ok(redOnInk < 4.5, "red on the light-theme ink card stays below AA");
+    assert.ok(redOnInk < 4.5, "peudeung red on the light-theme ink card stays below AA");
     const src = read("src/components/beranda/MasukCta.tsx");
     assert.match(src, /text-\[var\(--accent-on-ink\)\]/);
     assert.equal(/text-\[var\(--accent-on-light\)\]/.test(src), false);
     assert.equal(/text-\[var\(--eyebrow\)\]/.test(src), false);
+    assert.equal(/#ff7722/i.test(src), false);
   });
 
   it("does not put white text on the accent fill in the report hub", () => {
@@ -70,5 +72,9 @@ describe("accent on a light surface", () => {
       false,
     );
     assert.match(src, /bg-\[var\(--accent\)\][^\n]*text-\[var\(--accent-fg\)\]/);
+    assert.match(
+      src,
+      /hover:!border-\[color-mix\(in_srgb,var\(--accent\)_50%,transparent\)\]/,
+    );
   });
 });

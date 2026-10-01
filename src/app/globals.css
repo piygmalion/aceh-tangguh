@@ -73,8 +73,8 @@ html[data-theme="light"] {
      Not overridden in dark: --ink flips to white, so this red must stay. */
   --accent-on-light: #c8102e;
   /* Kicker on an --ink card. Light theme ink is #111, so this is the
-     dark-theme eyebrow (#F4D6DB), not the red that fails 4.5:1 there. */
-  --accent-on-ink: #f4d6db;
+     light red #F25563 (about 5.6:1). Not siaga orange. */
+  --accent-on-ink: #f25563;
   --ring: #111111;
   --sidebar-ring: #111111;
   --destructive: #8e1224;

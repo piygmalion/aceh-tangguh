@@ -20,7 +20,7 @@ export function ReportChoiceHub() {
       <div className="mt-10 grid gap-5 sm:grid-cols-2 md:gap-6">
         <Link
           href="/lapor/kejadian"
-          className="glass flex min-h-[280px] flex-col rounded-2xl border border-[var(--glass-border)] p-6 transition hover:border-[var(--accent)]/50 md:p-7"
+          className="glass flex min-h-[280px] flex-col rounded-2xl border border-[var(--glass-border)] p-6 transition hover:!border-[color-mix(in_srgb,var(--accent)_50%,transparent)] md:p-7"
         >
           <div className="mb-5 flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[var(--accent)]/30 bg-[var(--accent-dim)] text-[var(--accent)]">
             <AlertTriangle size={20} />
