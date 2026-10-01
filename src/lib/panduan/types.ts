@@ -158,6 +158,7 @@ export type GuideContext = {
   nomor?: GuideNomorItem[] | null;
   destana?: {
     counts: Record<string, number>;
+    assessed?: boolean;
   } | null;
   destanaDesa?: {
     nama: string;

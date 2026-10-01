@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/supabase/server";
 import { loadPublishedFaqCms } from "@/lib/panduan/faq-cms";
+import {
+  emptyDestanaPublicPayload,
+  loadDestanaPublic,
+  parseDestanaPublicQuery,
+} from "@/lib/sik/destana-public";
 import { loadKejadianOperasiPublik } from "@/lib/sik/public";
 import { permintaanPelatihanSchema } from "@/lib/sik/schemas";
 import { guardPublicPost } from "@/lib/security/public-post";
@@ -33,22 +38,13 @@ export async function GET(req: NextRequest) {
   }
 
   if (kind === "destana") {
-    if (!client) return NextResponse.json({ items: [], counts: {} });
-    const kab = req.nextUrl.searchParams.get("kabupaten")?.trim() ?? "";
-    let q = client
-      .from("profil_desa")
-      .select("id, nama, kabupaten, kecamatan, kode_desa_kelurahan, destana_level, destana_indeks, destana_tahun")
-      .order("nama")
-      .limit(2000);
-    if (kab) q = q.eq("kabupaten", kab);
-    const { data } = await q;
-    const items = data ?? [];
-    const counts: Record<string, number> = { belum: 0, pratama: 0, madya: 0, utama: 0 };
-    for (const row of items) {
-      const level = (row.destana_level as string | null) ?? "belum";
-      counts[level] = (counts[level] ?? 0) + 1;
+    if (!client) return NextResponse.json(emptyDestanaPublicPayload());
+    try {
+      const payload = await loadDestanaPublic(client, parseDestanaPublicQuery(req.nextUrl.searchParams));
+      return NextResponse.json(payload);
+    } catch {
+      return NextResponse.json({ error: "destana_unavailable" }, { status: 502 });
     }
-    return NextResponse.json({ items, counts });
   }
 
   if (kind === "disabilitas") {

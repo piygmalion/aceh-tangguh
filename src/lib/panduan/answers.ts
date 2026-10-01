@@ -1,4 +1,9 @@
 import { DATA_SOURCES } from "@/lib/data-sources";
+import {
+  DESTANA_UNAVAILABLE_EN,
+  DESTANA_UNAVAILABLE_ID,
+  isDestanaAssessed,
+} from "@/lib/sik/destana-public";
 import { compileAlertBrief } from "./alert-brief";
 import { HOME_TOUR_STEPS } from "./tour-steps";
 import type {
@@ -337,6 +342,18 @@ function composeDestana(match: GuideMatch, ctx: GuideContext, locale: GuideLocal
       intent: "destana",
       body: failedNote(locale, "Destana"),
       links: [link("/destana", "linkDestana")],
+    };
+  }
+  if (!isDestanaAssessed(ctx.destana)) {
+    return {
+      intent: "destana",
+      body: t(
+        locale,
+        `${DESTANA_UNAVAILABLE_ID}. Ini status ketangguhan desa, bukan perintah evakuasi.`,
+        `${DESTANA_UNAVAILABLE_EN}. This is village resilience status, not an evacuation order.`,
+      ),
+      links: [link("/destana", "linkDestana")],
+      source: t(locale, "SIK publik — Destana", "Public SIK — Destana"),
     };
   }
   const c = ctx.destana.counts;

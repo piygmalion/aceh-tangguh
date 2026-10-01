@@ -27,6 +27,7 @@ import type { WeatherApiResponse } from "@/lib/weather-types";
 import { isStaticExport, withBasePath } from "./env";
 import { LIVE_STATS_FALLBACK } from "./fallbacks";
 import { filterKrb, type KrbPayload } from "@/lib/krb-filter";
+import { destanaPublicFixture } from "@/lib/sik/destana-public";
 
 const STATIC_UNAVAILABLE = {
   error: "not_available_on_static_preview",
@@ -439,6 +440,10 @@ async function resolveStaticGet(input: string): Promise<Response> {
       stale: true,
       source: "fixture",
     });
+  }
+
+  if (path === "/api/sik/public" && searchParams.get("kind") === "destana") {
+    return jsonResponse(destanaPublicFixture());
   }
 
   return jsonResponse(STATIC_UNAVAILABLE, 503);

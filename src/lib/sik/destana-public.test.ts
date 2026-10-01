@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { createElement } from "react";
+import React, { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+
+(globalThis as { React?: typeof React }).React = React;
 import { composeGuideAnswer } from "../panduan/answers";
 import { contextToChunks } from "../panduan/retrieve";
 import type { GuideContext, GuideMatch } from "../panduan/types";

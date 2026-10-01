@@ -6,6 +6,7 @@ import type { LiveStats } from "@/lib/types";
 import type { DibiAcehResponse } from "@/lib/dibi-types";
 import type { IrbiSummaryPayload } from "@/lib/irbi-by-kab";
 import type { KrbPayload } from "@/lib/krb-filter";
+import { destanaPublicApiPath, type DestanaPublicPayload } from "@/lib/sik/destana-public";
 import { CONTEXT_FOR_INTENT } from "./intents";
 import type {
   GuideContext,
@@ -206,24 +207,16 @@ export async function loadGuideContext(
   }
 
   if (need.has("destana")) {
-    const sp = new URLSearchParams({ kind: "destana" });
-    if (match.kabupaten) sp.set("kabupaten", match.kabupaten);
     tasks.push(
-      getJson<{
-        counts: Record<string, number>;
-        items?: Array<{
-          nama?: string;
-          kabupaten?: string;
-          kecamatan?: string;
-          destana_level?: string | null;
-        }>;
-      }>(`/api/sik/public?${sp}`).then((data) => {
+      getJson<DestanaPublicPayload>(
+        destanaPublicApiPath({ kabupaten: match.kabupaten, q: match.desa }),
+      ).then((data) => {
         if (!data?.counts) {
           mark("destana", false);
           ctx.destana = null;
           return;
         }
-        ctx.destana = { counts: data.counts };
+        ctx.destana = { counts: data.counts, assessed: data.assessed };
         if (!match.desa) return;
         const needle = match.desa.toLowerCase();
         const row = (data.items ?? []).find((item) =>

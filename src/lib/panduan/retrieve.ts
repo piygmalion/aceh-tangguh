@@ -1,3 +1,8 @@
+import {
+  DESTANA_UNAVAILABLE_EN,
+  DESTANA_UNAVAILABLE_ID,
+  isDestanaAssessed,
+} from "@/lib/sik/destana-public";
 import { CONTEXT_FOR_INTENT } from "./intents";
 import { getKnowledgeCards, knowledgeBody } from "./knowledge";
 import { loadGuideContext } from "./context";
@@ -290,10 +295,16 @@ export function contextToChunks(ctx: GuideContext, locale: GuideLocale): Retriev
     const counts = Object.entries(ctx.destana.counts)
       .map(([k, v]) => `${k} ${v}`)
       .join(", ");
+    const text = isDestanaAssessed(ctx.destana)
+      ? counts ||
+        (locale === "en" ? "Destana counts from the public catalogue." : "Rekap Destana dari katalog publik.")
+      : locale === "en"
+        ? DESTANA_UNAVAILABLE_EN
+        : DESTANA_UNAVAILABLE_ID;
     chunks.push({
       sourceId: "live:destana",
       title: "Destana",
-      text: counts || (locale === "en" ? "Destana counts from the public catalogue." : "Rekap Destana dari katalog publik."),
+      text,
       href: "/destana",
       labelKey: "linkDestana",
     });
