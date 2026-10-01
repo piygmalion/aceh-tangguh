@@ -245,7 +245,13 @@ async function main() {
     .sort((a, b) => a.tahun - b.tahun);
 
   if (!by_kabupaten.length || !by_tahun.length) {
-    throw new Error("DIBI Aceh payload empty");
+    const reason = by_kabupaten.length === 0 ? "empty-kabupaten" : "empty-tahun";
+    writeFileSync(
+      path.join(root, ".github/dibi-refresh-verdict.json"),
+      `${JSON.stringify({ ok: false, reason })}\n`,
+    );
+    console.error(`DIBI refresh rejected (${reason}); fixture left unchanged`);
+    process.exit(1);
   }
 
   const years = by_tahun.map((r) => r.tahun);

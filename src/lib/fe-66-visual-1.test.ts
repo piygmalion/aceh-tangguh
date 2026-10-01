@@ -56,7 +56,9 @@ describe("FE-66 visual-1", () => {
       "src/components/beranda/SumberPanel.tsx",
     ]);
     const lapor = read("src/components/beranda/LaporCta.tsx");
-    assert.match(lapor, /flex-row/);
+    assert.match(lapor, /flex-col items-start gap-4/);
+    assert.match(lapor, /sm:flex-row/);
+    assert.match(lapor, /type-h3 w-full/);
     assert.match(lapor, /section-y-compact/);
     assert.doesNotMatch(lapor, /sticky|fixed/);
     assert.match(read("src/components/beranda/CuacaStrip.tsx"), /data-ink-field=""/);
@@ -65,10 +67,18 @@ describe("FE-66 visual-1", () => {
   it("keeps the settings panel clear of the status legend and drops the 32rem cap", () => {
     const settings = read("src/components/map/MapSettings.tsx");
     assert.match(settings, /max-h-\[calc\(100svh-10rem\)\]/);
+    assert.match(settings, /md:max-h-\[min\(calc\(100svh-10rem\),calc\(100svh-18rem\)\)\]/);
     assert.doesNotMatch(settings, /32rem/);
     const workspace = read("src/components/map/MapWorkspace.tsx");
-    assert.match(workspace, /flex-col items-start gap-3/);
-    assert.match(workspace, /StatusLegend className="pointer-events-auto hidden md:block"/);
+    assert.match(workspace, /md:bottom-4/);
+    assert.match(workspace, /onOpenChange=\{setSettingsOpen\}/);
+    assert.match(workspace, /settingsOpen \? "hidden" : "hidden md:block"/);
+    const stack = workspace.slice(workspace.indexOf("pointer-events-none absolute"));
+    const legendAt = stack.indexOf("<StatusLegend");
+    const settingsAt = stack.indexOf("<MapSettings");
+    assert.ok(legendAt >= 0 && settingsAt > legendAt, "desktop legend sits above the settings button");
+    assert.match(settings, /onOpenChange\?: \(open: boolean\) => void/);
+    assert.match(settings, /buttonRef\.current\?\.focus\(\)/);
   });
 
   it("removes the retired r3p-kab tile script and alerts after three scheduled failures", () => {
@@ -83,8 +93,17 @@ describe("FE-66 visual-1", () => {
     assert.match(yml, /should_alert/);
     assert.match(yml, /should_close/);
     assert.doesNotMatch(yml, /permissions:\s*\n\s*contents: write\s*\n\s*issues: write/);
-    const alertJob = yml.slice(yml.indexOf("alert:"));
+    const alertJob = yml.slice(yml.indexOf("\n  alert:"));
     assert.match(alertJob, /issues: write/);
     assert.doesNotMatch(alertJob, /contents: write/);
+    assert.match(alertJob, /GH_REPO: \$\{\{ github\.repository \}\}/);
+    assert.match(alertJob, /GH_TOKEN: \$\{\{ github\.token \}\}/);
+    assert.match(yml, /REASON: \$\{\{ steps\.streak\.outputs\.reason \}\}/);
+    assert.match(yml, /FETCHED_AT: \$\{\{ steps\.streak\.outputs\.fetched_at \}\}/);
+    const reportRun = yml.slice(yml.indexOf("name: Report failure"));
+    assert.doesNotMatch(reportRun.slice(reportRun.indexOf("run:")), /\$\{\{ steps\.streak/);
+    const alertRun = alertJob.slice(alertJob.indexOf("run: |"));
+    assert.doesNotMatch(alertRun, /\$\{\{ /);
+    assert.match(yml, /\[skip ci\] \[vercel skip\]/);
   });
 });

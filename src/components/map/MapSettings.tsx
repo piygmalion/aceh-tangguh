@@ -2,7 +2,7 @@
 
 import { Settings2, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import type { BasemapId } from "@/lib/types";
@@ -36,12 +36,14 @@ export function MapSettings({
   onBasemapChange,
   preferVector = false,
   onPreferVectorChange,
+  onOpenChange,
   className,
 }: {
   basemap: BasemapId;
   onBasemapChange: (b: BasemapId) => void;
   preferVector?: boolean;
   onPreferVectorChange?: (on: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -49,6 +51,17 @@ export function MapSettings({
   const t = useTranslations("map");
   const locale = useLocale();
   const panelRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const openRef = useRef(false);
+  const onOpenChangeRef = useRef(onOpenChange);
+  onOpenChangeRef.current = onOpenChange;
+
+  const updateOpen = useCallback((next: boolean) => {
+    if (openRef.current && !next) buttonRef.current?.focus();
+    openRef.current = next;
+    setOpen(next);
+    onOpenChangeRef.current?.(next);
+  }, []);
 
   const { data: sentinel } = useQuery({
     queryKey: ["sentinel-status"],
@@ -60,11 +73,12 @@ export function MapSettings({
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") updateOpen(false);
     };
     const onClick = (e: MouseEvent) => {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setOpen(false);
+        updateOpen(false);
+        window.setTimeout(() => buttonRef.current?.focus(), 0);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -73,7 +87,7 @@ export function MapSettings({
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("mousedown", onClick);
     };
-  }, [open]);
+  }, [open, updateOpen]);
 
   return (
     <div
@@ -84,8 +98,9 @@ export function MapSettings({
       )}
     >
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => updateOpen(!open)}
         aria-expanded={open}
         aria-haspopup="dialog"
         className="map-chrome-elevated inline-flex h-11 items-center gap-2 rounded-xl px-3.5 text-sm font-medium transition hover:border-[var(--ink)] hover:text-[var(--text)]"
@@ -98,13 +113,13 @@ export function MapSettings({
         <div
           role="dialog"
           aria-label={t("settings")}
-          className="map-chrome-elevated max-h-[calc(100svh-10rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl p-3 pb-6 text-sm"
+          className="map-chrome-elevated max-h-[calc(100svh-10rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl p-3 pb-6 text-sm md:max-h-[min(calc(100svh-10rem),calc(100svh-18rem))]"
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="font-semibold">{t("settings")}</div>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => updateOpen(false)}
               className="grid h-8 w-8 place-items-center rounded-lg text-[var(--text-dim)] transition hover:bg-[var(--bg-muted)] hover:text-[var(--text)]"
               aria-label={t("closeSettings")}
             >

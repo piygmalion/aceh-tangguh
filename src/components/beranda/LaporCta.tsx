@@ -13,8 +13,8 @@ export function LaporCta() {
       data-section-density="compact"
       className="section-y-compact scroll-mt-24 bg-[var(--primary)] text-[var(--primary-fg)]"
     >
-      <div className="mx-auto flex max-w-6xl flex-row items-center justify-between gap-3 px-4 sm:gap-6">
-        <h2 className="type-h3 min-w-0">
+      <div className="mx-auto flex max-w-6xl flex-col items-start gap-4 px-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <h2 className="type-h3 w-full sm:w-auto sm:min-w-0">
           {t("lapor.title")}
         </h2>
         <Link

@@ -96,19 +96,23 @@ jobs:
           if git diff --staged --quiet; then
             echo "Failure streak unchanged"
           else
-            git commit -m "chore(dibi): record scheduled refresh failure [automated]"
+            git commit -m "chore(dibi): record scheduled refresh failure [automated] [skip ci] [vercel skip]"
             git push
           fi
 
       - name: Report failure
         if: steps.build.outcome != 'success'
+        env:
+          REASON: ${{ steps.streak.outputs.reason }}
+          FETCHED_AT: ${{ steps.streak.outputs.fetched_at }}
+          STREAK: ${{ steps.streak.outputs.streak }}
         run: |
           {
             echo "### DIBI refresh failed"
             echo "The Aceh fixture was not updated."
-            echo "Reason: ${{ steps.streak.outputs.reason }}"
-            echo "Last accepted fetched_at: ${{ steps.streak.outputs.fetched_at }}"
-            echo "Scheduled failure streak: ${{ steps.streak.outputs.streak }}"
+            echo "Reason: ${REASON}"
+            echo "Last accepted fetched_at: ${FETCHED_AT}"
+            echo "Scheduled failure streak: ${STREAK}"
             echo "A manual run can set force to bypass the Superset chart cache. Force runs are not counted. The kejadian guard still rejects a payload whose year rows do not add up, whose event count drops by more than 2 percent, or whose kabupaten list is empty."
           } >> "$GITHUB_STEP_SUMMARY"
           exit 1
@@ -123,6 +127,7 @@ jobs:
       - name: Open, update, or close the single DIBI alert
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           SHOULD_ALERT: ${{ needs.refresh-fixture.outputs.should_alert }}
           SHOULD_CLOSE: ${{ needs.refresh-fixture.outputs.should_close }}
           REASON: ${{ needs.refresh-fixture.outputs.reason }}
