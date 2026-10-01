@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, it } from "node:test";
 import { EMPTY_DIBI_METRICS, type DibiAcehPayload, type DibiMetrics } from "./dibi-types";
-import { aggregateDibiBeranda } from "./dibi-beranda";
+import { aggregateDibiBeranda, displayedBandMetrics, yearPick } from "./dibi-beranda";
 
 function metrics(partial: Partial<DibiMetrics> & Pick<DibiMetrics, "kejadian">): DibiMetrics {
   return { ...EMPTY_DIBI_METRICS, ...partial };
@@ -97,6 +99,24 @@ describe("agregasi filter DIBI beranda", () => {
     assert.equal(view.counters.scope, "year-range");
     assert.equal(view.counters.metrics?.kejadian, 0);
     assert.equal(view.counters.metrics?.meninggal, 0);
+    assert.equal(displayedBandMetrics(view), null);
+  });
+
+  it("ignores a blank or unknown year pick so the default span stays intact", () => {
+    assert.equal(yearPick("", [2008, 2026]), null);
+    assert.equal(yearPick("0", [2008, 2026]), null);
+    assert.equal(yearPick("1990", [2008, 2026]), null);
+    assert.equal(yearPick("2008", [2008, 2026]), 2008);
+  });
+
+  it("sums the shipped Aceh fixture across the default year span", () => {
+    const file = path.join(process.cwd(), "public/fixtures/dibi-aceh.json");
+    const fixture = JSON.parse(readFileSync(file, "utf8")) as DibiAcehPayload;
+    const view = aggregateDibiBeranda(fixture, { yearFrom: null, yearTo: null });
+    assert.equal(view.trend.length, fixture.by_tahun.length);
+    assert.equal(view.counters.metrics?.kejadian, fixture.totals.kejadian);
+    assert.equal(view.counters.metrics?.kejadian, 2568);
+    assert.equal(displayedBandMetrics(view)?.kejadian, 2568);
   });
 
   it("uses one kabupaten row for all years and does not scale it by the year filter", () => {

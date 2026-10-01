@@ -5,7 +5,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight, CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
-import { StatusScaleChip, type StatusLevel } from "@/components/ui/StatusScaleChip";
+import { StatusScaleChip } from "@/components/ui/StatusScaleChip";
+import { toneLevel } from "@/components/beranda/format";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -76,10 +77,11 @@ function CardShell({
   children: ReactNode;
   ariaLabel: string;
 }) {
+  const level = toneLevel(tone);
   const ring =
-    tone === "danger"
-      ? "hover:ring-[var(--status-awas)]/50"
-      : tone === "warn"
+    level === "siaga"
+      ? "hover:ring-[var(--status-siaga)]/50"
+      : level === "waspada"
         ? "hover:ring-[var(--status-waspada)]/50"
         : "hover:ring-[var(--status-aman)]/40";
   const className = cn(
@@ -139,7 +141,7 @@ function CardHeader({
         </span>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
-        <StatusScaleChip level={pdToneLevel(tone)} label={t(`tone.${tone}`)} />
+        <StatusScaleChip level={toneLevel(tone)} label={t(`tone.${tone}`)} />
         {stamp ? (
           <span className={cn("text-[var(--text-dim)]", TYPE_STAMP_CLASS)}>{stamp}</span>
         ) : null}
@@ -149,12 +151,6 @@ function CardHeader({
       </div>
     </div>
   );
-}
-
-function pdToneLevel(tone: PeringatanTone): StatusLevel {
-  if (tone === "danger") return "awas";
-  if (tone === "warn") return "waspada";
-  return "aman";
 }
 
 function Field({ label, value }: { label: string; value: string }) {

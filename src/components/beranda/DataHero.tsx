@@ -14,7 +14,12 @@ import {
   YAxis,
 } from "recharts";
 import { Link } from "@/i18n/routing";
-import { aggregateDibiBeranda, type DibiBerandaView } from "@/lib/dibi-beranda";
+import {
+  aggregateDibiBeranda,
+  displayedBandMetrics,
+  yearPick,
+  type DibiBerandaView,
+} from "@/lib/dibi-beranda";
 import type { DibiMetrics } from "@/lib/dibi-types";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
@@ -189,7 +194,7 @@ export function DataHero() {
   const updated = data ? formatUpdated(data.metadata.fetched_at, locale) : null;
   const standbyDate =
     data?.source === "fixture" ? tanggalCadangan(data.metadata.fetched_at, locale) : null;
-  const metrics = view?.counters.metrics ?? null;
+  const metrics = view ? displayedBandMetrics(view) : null;
   const scopeNote =
     view?.counters.scope === "kabupaten"
       ? t("statistik.scopeKab")
@@ -200,8 +205,8 @@ export function DataHero() {
           : t("statistik.scopeYear");
 
   function pickYear(which: "from" | "to", raw: string) {
-    const next = Number(raw);
-    if (!Number.isFinite(next)) return;
+    const next = yearPick(raw, view?.years ?? []);
+    if (next == null) return;
     if (which === "from") {
       setYearFrom(next);
       setYearTo((current) => (current != null && next > current ? next : current));

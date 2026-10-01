@@ -2,6 +2,7 @@
  * Locale-aware formatting for the production beranda.
  * Indonesian: thousands ".", decimals ",". English: thousands ",", decimals ".".
  */
+import type { StatusLevel } from "@/components/ui/StatusScaleChip";
 import type { PeringatanTone } from "@/lib/peringatan-dini-types";
 
 function numberTag(locale?: string): string {
@@ -146,26 +147,33 @@ export function jamPendek(iso: string | null | undefined, locale = "id"): string
 
 /**
  * Live warning tones use the one hybrid status scale (PVMBG colour approach, not official hex).
- * neutral → Aman, warn → Waspada, danger → Awas.
+ * neutral → Aman, warn → Waspada, danger → Siaga.
  * Labels live in peringatanDini.tone.{neutral,warn,danger}.
+ * Official volcano and logger levels are not remapped here.
  */
+export function toneLevel(tone: PeringatanTone): StatusLevel {
+  if (tone === "danger") return "siaga";
+  if (tone === "warn") return "waspada";
+  return "aman";
+}
+
 export const TONE_DOT: Record<PeringatanTone, string> = {
   neutral: "bg-[var(--status-aman)]",
   warn: "bg-[var(--status-waspada)]",
-  danger: "bg-[var(--status-awas)]",
+  danger: "bg-[var(--status-siaga)]",
 };
 
 export const TONE_CHIP: Record<PeringatanTone, string> = {
   neutral: "border border-[var(--map-keyline)] bg-[var(--status-aman)] text-[var(--map-status-aman-fg)]",
   warn: "border border-[var(--map-keyline)] bg-[var(--status-waspada)] text-[var(--map-status-waspada-fg)]",
   danger:
-    "border border-[var(--map-keyline)] bg-[var(--status-awas)] text-[var(--map-status-awas-fg)] shadow-[inset_4px_0_0_var(--status-awas-bar)]",
+    "border border-[var(--map-keyline)] bg-[var(--status-siaga)] text-[var(--map-status-siaga-fg)]",
 };
 
 export const TONE_EDGE: Record<PeringatanTone, string> = {
   neutral: "before:bg-[var(--status-aman)]",
   warn: "before:bg-[var(--status-waspada)]",
-  danger: "before:bg-[var(--status-awas)]",
+  danger: "before:bg-[var(--status-siaga)]",
 };
 
 /**

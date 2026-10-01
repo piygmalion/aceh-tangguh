@@ -165,3 +165,24 @@ export function aggregateDibiBeranda(
     crossTabAvailable: false,
   };
 }
+
+/**
+ * A year string from the homepage selects. Empty or unknown years are ignored
+ * so a blank change cannot collapse the default span onto year 0.
+ */
+export function yearPick(raw: string, years: readonly number[]): number | null {
+  const next = Number(raw);
+  if (!Number.isFinite(next) || !years.includes(next)) return null;
+  return next;
+}
+
+/**
+ * Counters for the number band. An empty year window has no rows to sum, so
+ * the band shows the missing state instead of a sourced zero.
+ */
+export function displayedBandMetrics(view: DibiBerandaView): DibiMetrics | null {
+  const metrics = view.counters.metrics;
+  if (!metrics) return null;
+  if (view.counters.scope === "year-range" && view.trend.length === 0) return null;
+  return metrics;
+}

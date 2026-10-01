@@ -9,8 +9,8 @@ import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-di
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { usePeringatan } from "./data";
-import { StatusScaleChip, type StatusLevel } from "@/components/ui/StatusScaleChip";
-import { jamPendek, rapikanTanda, TONE_CHIP, TONE_DOT, TONE_EDGE } from "./format";
+import { StatusScaleChip } from "@/components/ui/StatusScaleChip";
+import { jamPendek, rapikanTanda, toneLevel, TONE_CHIP, TONE_DOT, TONE_EDGE } from "./format";
 import { PanelError, PanelSkeleton, SectionHeading } from "./primitives";
 
 type Kartu = {
@@ -30,12 +30,6 @@ type Kartu = {
 type BerandaT = (key: string, values?: Record<string, string | number>) => string;
 
 const URUTAN_TONE: Record<PeringatanTone, number> = { danger: 0, warn: 1, neutral: 2 };
-
-function toneLevel(tone: PeringatanTone): StatusLevel {
-  if (tone === "danger") return "awas";
-  if (tone === "warn") return "waspada";
-  return "aman";
-}
 
 function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): Kartu[] {
   const kartu: Kartu[] = [];
@@ -256,9 +250,9 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
     besar
       ? cn(
           "sm:p-5",
-          kartu.tone === "danger"
-            ? "bg-[color-mix(in_srgb,var(--status-awas)_14%,var(--bg-raised))]"
-            : kartu.tone === "warn"
+          toneLevel(kartu.tone) === "siaga"
+            ? "bg-[color-mix(in_srgb,var(--status-siaga)_14%,var(--bg-raised))]"
+            : toneLevel(kartu.tone) === "waspada"
               ? "bg-[color-mix(in_srgb,var(--status-waspada)_28%,var(--bg-raised))]"
               : "bg-[color-mix(in_srgb,var(--status-aman)_18%,var(--bg-raised))]",
         )
