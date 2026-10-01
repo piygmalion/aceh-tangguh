@@ -62,25 +62,67 @@ export async function readDocumentPayload(
   return data[0]?.payload ?? null;
 }
 
+/** Why a loader served the fixture instead of Supabase rows. */
+export type FallbackReason = "no-client" | "error" | "empty";
+
+export type LoadedWithFallback<T> = Loaded<T> & {
+  /** Set only when `source` is `"fixture"`. */
+  fallbackReason?: FallbackReason;
+};
+
+type FallbackOptions<T> = {
+  label?: string;
+  isEmpty?: (value: T) => boolean;
+  /**
+   * Supabase client to read with. When the key is present (even `null`) it is
+   * used as-is and the anon `createServerClient()` is never created, so staff
+   * loaders read as the signed-in user and RLS decides what comes back.
+   */
+  client?: TypedSupabaseClient | null;
+  /**
+   * Called whenever the fixture is served. Default: `console.warn` for errors,
+   * and for every fallback when `client` was passed explicitly (staff loaders).
+   */
+  onFallback?: (info: { label: string; reason: FallbackReason; error?: unknown }) => void;
+};
+
+function defaultOnFallback(info: { label: string; reason: FallbackReason; error?: unknown }) {
+  if (info.error !== undefined) {
+    console.warn(`[trySupabaseThenFixture:${info.label}] fixture fallback (${info.reason})`, info.error);
+  } else {
+    console.warn(`[trySupabaseThenFixture:${info.label}] fixture fallback (${info.reason})`);
+  }
+}
+
 /**
  * Try a Supabase loader; on missing client, error, null, or empty, use the fixture.
+ * Every fixture fallback is reported through `onFallback` and `fallbackReason`.
  */
 export async function trySupabaseThenFixture<T>(
   loadSupabase: (client: TypedSupabaseClient) => Promise<T | null | undefined>,
   loadFixture: () => Promise<T>,
-  options?: { label?: string; isEmpty?: (value: T) => boolean }
-): Promise<Loaded<T>> {
-  const client = createServerClient();
+  options?: FallbackOptions<T>
+): Promise<LoadedWithFallback<T>> {
+  const label = options?.label ?? "domain";
+  const explicitClient = options !== undefined && "client" in options;
+  const client = explicitClient ? options.client ?? null : createServerClient();
+
+  let reason: FallbackReason = "no-client";
+  let error: unknown;
   if (client) {
     try {
       const value = await loadSupabase(client);
       if (value != null && !options?.isEmpty?.(value)) {
         return { data: value, source: "supabase" };
       }
+      reason = "empty";
     } catch (err) {
-      const label = options?.label ?? "domain";
-      console.warn(`[trySupabaseThenFixture:${label}]`, err);
+      reason = "error";
+      error = err;
     }
   }
-  return { data: await loadFixture(), source: "fixture" };
+  const info = error === undefined ? { label, reason } : { label, reason, error };
+  if (options?.onFallback) options.onFallback(info);
+  else if (explicitClient || error !== undefined) defaultOnFallback(info);
+  return { data: await loadFixture(), source: "fixture", fallbackReason: reason };
 }
