@@ -102,8 +102,8 @@ export function composeTourStep(index: number, locale: GuideLocale): GuideAnswer
   const last = safe === HOME_TOUR_STEPS.length - 1;
   const bodies: Record<(typeof HOME_TOUR_STEPS)[number]["copyKey"], { id: string; en: string }> = {
     tourHero: {
-      id: "Beranda: status Aceh, peta, dan pintu lapor. Ini titik awal observatorium.",
-      en: "Home: Aceh’s status, the map, and the report door. This is the observatory start.",
+      id: "Beranda dibuka dengan statistik DIBI BNPB per tahun. Filter kabupaten dan jenis hanya memakai potongan yang benar-benar ada.",
+      en: "The homepage opens with yearly BNPB DIBI statistics. District and hazard filters use only the slices that actually exist.",
     },
     tourStatus: {
       id: "Peringatan dini: empat kartu mandiri — cuaca, MAGMA, Sipongi, dan Tatonas (muka air). Kartu yang gagal tidak mengisi angka palsu.",
@@ -118,8 +118,8 @@ export function composeTourStep(index: number, locale: GuideLocale): GuideAnswer
       en: "Public SIK figures: operational events marked active or closed — not staff drafts.",
     },
     tourDibi: {
-      id: "Dasbor DIBI BNPB untuk Aceh: rekap historis, bukan status darurat hari ini.",
-      en: "BNPB DIBI dashboard for Aceh: historical totals, not today’s emergency status.",
+      id: "Penghitung DIBI adalah rekap historis, bukan status darurat hari ini. Kabupaten dan jenis tidak bisa disilangkan.",
+      en: "DIBI counters are historical totals, not today’s emergency status. District and hazard type cannot be crossed.",
     },
     tourPeta: {
       id: "Teaser peta. Peta penuh adalah ruang kerja, bukan halaman pemasaran.",

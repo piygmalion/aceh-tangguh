@@ -23,19 +23,26 @@ function flattenKeys(value: unknown, prefix = ""): string[] {
 }
 
 const MOUNTED = [
-  "HeroBoard",
-  "MetricRail",
+  "DataHero",
+  "TentangSection",
+  "LaporCta",
+  "FiturSection",
+  "RisikoLadder",
+  "BeritaSection",
   "CuacaStrip",
   "PeringatanBento",
-  "RisikoLadder",
-  "DibiPanel",
-  "PetaPanel",
-  "AksiPanel",
   "SumberPanel",
+  "MasukCta",
 ] as const;
 
 const UNMOUNTED = [
   "HeroSection",
+  "HeroBoard",
+  "MetricRail",
+  "DibiPanel",
+  "PetaPanel",
+  "AksiPanel",
+  "PemulihanPanel",
   "PeringatanDiniSection",
   "WeatherStrip",
   "ClusterGrid",
@@ -58,7 +65,7 @@ const TOUR_IDS = [
 ] as const;
 
 describe("FE-45 beranda produksi", () => {
-  it("homepage mounts the photographic beranda tree, not the previous stack", () => {
+  it("homepage mounts the SIAGA-ordered beranda, not the previous stack", () => {
     const page = read("src/app/[locale]/page.tsx");
     for (const name of MOUNTED) {
       assert.match(page, new RegExp(`<${name} \\/>`));
@@ -83,12 +90,11 @@ describe("FE-45 beranda produksi", () => {
 
   it("preserves panduan tour hashes on the new sections", () => {
     const files = [
-      "src/components/beranda/HeroBoard.tsx",
+      "src/components/beranda/DataHero.tsx",
       "src/components/beranda/PeringatanBento.tsx",
       "src/components/beranda/CuacaStrip.tsx",
-      "src/components/beranda/DibiPanel.tsx",
-      "src/components/beranda/PetaPanel.tsx",
-      "src/components/beranda/AksiPanel.tsx",
+      "src/components/beranda/FiturSection.tsx",
+      "src/components/beranda/LaporCta.tsx",
       "src/components/beranda/SumberPanel.tsx",
     ].map(read).join("\n");
     for (const id of TOUR_IDS) {

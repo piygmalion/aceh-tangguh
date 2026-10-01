@@ -44,7 +44,8 @@ describe("FE-61 anggaran dan pemulihan hanya untuk staf", () => {
   it("homepage does not render the recovery panel or the budget tile", () => {
     const page = read("src/app/[locale]/page.tsx");
     assert.doesNotMatch(page, /PemulihanPanel/);
-    assert.match(page, /<MetricRail/);
+    assert.doesNotMatch(page, /MetricRail/);
+    assert.doesNotMatch(page, /useAnggaran|anggaran-bencana|prrpka/);
     const rail = read("src/components/beranda/MetricRail.tsx");
     assert.doesNotMatch(rail, /key: "anggaran"/);
     assert.doesNotMatch(rail, /useAnggaran/);
