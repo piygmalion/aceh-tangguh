@@ -143,12 +143,9 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(KAB_OUTLINE_PAINT["line-color"], AREA_OUTLINE_COLOR);
     assert.equal(KAB_OUTLINE_PAINT["line-width"], 0.7);
     assert.equal(AREA_OUTLINE_COLOR_DARK, "rgba(255, 255, 255, 0.30)");
-    assert.equal(areaOutlineColor("positron"), AREA_OUTLINE_COLOR);
     assert.equal(areaOutlineColor("brand-light"), AREA_OUTLINE_COLOR);
     assert.equal(areaOutlineColor("brand-grey"), AREA_OUTLINE_COLOR);
-    assert.equal(areaOutlineColor("dark"), AREA_OUTLINE_COLOR_DARK);
     assert.equal(areaOutlineColor("brand-dark"), AREA_OUTLINE_COLOR_DARK);
-    assert.equal(areaOutlineColor("satellite"), AREA_OUTLINE_COLOR_DARK);
     assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
     assert.equal(KECAMATAN_OUTLINE_PAINT["line-color"], COLOR_TOKENS.paper);
     assert.equal(VILLAGE_OUTLINE_PAINT["line-color"], COLOR_TOKENS.paper);

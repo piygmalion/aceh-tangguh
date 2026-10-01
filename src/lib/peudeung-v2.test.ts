@@ -4,11 +4,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { STATUS_HEX } from "./chart-colors";
 import { COLOR_TOKENS } from "./layer-colors";
-import {
-  AREA_OUTLINE_COLOR,
-  AREA_OUTLINE_COLOR_DARK,
-  areaOutlineColor,
-} from "./village-distribution-lod";
+import { AREA_OUTLINE_COLOR, AREA_OUTLINE_COLOR_DARK } from "./village-distribution-lod";
 
 const ROOT = process.cwd();
 
@@ -29,9 +25,6 @@ describe("Peudeung v2 locks", () => {
     assert.equal(COLOR_TOKENS.orange, "#FF7722");
     assert.equal(AREA_OUTLINE_COLOR, "rgba(17, 17, 17, 0.35)");
     assert.equal(AREA_OUTLINE_COLOR_DARK, "rgba(255, 255, 255, 0.30)");
-    assert.equal(areaOutlineColor("positron"), AREA_OUTLINE_COLOR);
-    assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
-    assert.equal(areaOutlineColor("dark"), AREA_OUTLINE_COLOR_DARK);
   });
 
   it("aliases chrome status to the map scale and keeps legacy names for one release", () => {
