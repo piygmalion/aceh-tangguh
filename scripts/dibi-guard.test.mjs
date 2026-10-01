@@ -55,5 +55,10 @@ describe("penjaga skrip refresh DIBI", () => {
     assert.ok(assessAt > 0, "refresh script must call assessDibiLive");
     assert.ok(writeAt > assessAt, "guard must run before writeFile");
     assert.match(src, /process\.exit\(1\)/);
+    const emptyKab = src.indexOf('"empty-kabupaten"');
+    const emptyYear = src.indexOf('"empty-tahun"');
+    const fetchFailed = src.indexOf('"fetch-failed"');
+    assert.ok(emptyKab > 0 && emptyYear > emptyKab, "empty slices name a specific reject reason");
+    assert.ok(fetchFailed > emptyYear, "specific reasons are written before the fetch-failed catch");
   });
 });

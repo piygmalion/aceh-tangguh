@@ -2,7 +2,7 @@
 
 import { Settings2, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import type { BasemapId } from "@/lib/types";
@@ -36,17 +36,34 @@ export function MapSettings({
   onBasemapChange,
   preferVector = false,
   onPreferVectorChange,
+  onOpenChange,
+  className,
 }: {
   basemap: BasemapId;
   onBasemapChange: (b: BasemapId) => void;
   preferVector?: boolean;
   onPreferVectorChange?: (on: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
+  className?: string;
 }) {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const t = useTranslations("map");
   const locale = useLocale();
   const panelRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const onOpenChangeRef = useRef(onOpenChange);
+  onOpenChangeRef.current = onOpenChange;
+
+  const updateOpen = useCallback((next: boolean) => {
+    setOpen(next);
+    onOpenChangeRef.current?.(next);
+  }, []);
+
+  const closeToButton = useCallback(() => {
+    updateOpen(false);
+    buttonRef.current?.focus();
+  }, [updateOpen]);
 
   const { data: sentinel } = useQuery({
     queryKey: ["sentinel-status"],
@@ -58,11 +75,11 @@ export function MapSettings({
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") closeToButton();
     };
     const onClick = (e: MouseEvent) => {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setOpen(false);
+        updateOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -71,16 +88,20 @@ export function MapSettings({
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("mousedown", onClick);
     };
-  }, [open]);
+  }, [open, updateOpen, closeToButton]);
 
   return (
     <div
       ref={panelRef}
-      className="absolute bottom-[5.75rem] left-3 z-30 flex flex-col-reverse items-start gap-2 sm:bottom-6 md:left-3"
+      className={cn(
+        "absolute bottom-[5.75rem] left-3 z-30 flex flex-col-reverse items-start gap-2 sm:bottom-6",
+        className,
+      )}
     >
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => updateOpen(!open)}
         aria-expanded={open}
         aria-haspopup="dialog"
         className="map-chrome-elevated inline-flex h-11 items-center gap-2 rounded-xl px-3.5 text-sm font-medium transition hover:border-[var(--ink)] hover:text-[var(--text)]"
@@ -93,13 +114,16 @@ export function MapSettings({
         <div
           role="dialog"
           aria-label={t("settings")}
-          className="map-chrome-elevated max-h-[min(32rem,calc(100svh-8rem))] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-2xl p-3 pb-6 text-sm"
+          className="map-chrome-elevated max-h-[calc(100svh-10rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl text-sm md:max-h-[calc(100svh-18rem)]"
         >
+          {/* 18rem keeps the panel head clear of the zoom control at 1280x720. */}
+          {/* Scroll lives inside. overflow-y-auto on this dialog punches a #d4dce4 hole in the MapLibre canvas. */}
+          <div className="max-h-[calc(100svh-10rem)] overflow-y-auto p-3 pb-6 md:max-h-[calc(100svh-18rem)]">
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="font-semibold">{t("settings")}</div>
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={() => closeToButton()}
               className="grid h-8 w-8 place-items-center rounded-lg text-[var(--text-dim)] transition hover:bg-[var(--bg-muted)] hover:text-[var(--text)]"
               aria-label={t("closeSettings")}
             >
@@ -180,6 +204,7 @@ export function MapSettings({
               })}
             </p>
           )}
+          </div>
         </div>
       )}
     </div>

@@ -9,6 +9,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        display: "var(--type-display)",
+        "page-h1": "var(--type-h1)",
+        "section-h2": "var(--type-h2)",
+        "card-h3": "var(--type-h3)",
+        "figure-xl": "var(--type-figure-xl)",
+        lead: "var(--type-lead)",
+        floor: "var(--type-floor)",
+      },
       colors: {
         // Aceh tokens (HEX via CSS vars) — do not delete
         danger: "var(--danger)",

@@ -8,6 +8,7 @@ import { MAGMA_HOME, SIPONGI_PETA } from "@/lib/peringatan-dini-types";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { SectionHeading } from "./primitives";
+import { SectionShell } from "./SectionShell";
 
 type SumberRow = {
   lembagaKey: "sumber.dibi" | "sumber.irbi" | "sumber.bmkg" | "sumber.maritim" | "sumber.magma" | "sumber.sipongi" | "sumber.tatonas";
@@ -78,7 +79,7 @@ export function SumberPanel() {
   const t = useTranslations("beranda");
 
   return (
-    <section id="transparansi" className="scroll-mt-24 px-4 py-16 md:py-20">
+    <SectionShell id="transparansi" density="default" raised>
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           kicker={t("sumber.kicker")}
@@ -164,6 +165,6 @@ export function SumberPanel() {
           </div>
         </div>
       </div>
-    </section>
+    </SectionShell>
   );
 }

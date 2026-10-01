@@ -104,7 +104,7 @@ function BandValue({
   missing: string;
 }) {
   if (value == null) {
-    return <p className="text-[1.5rem] font-semibold leading-none text-[var(--band-fg)] sm:text-[1.75rem]">{missing}</p>;
+    return <p className="type-figure-xl text-[var(--band-fg)]">{missing}</p>;
   }
   return (
     <Figure
@@ -112,7 +112,7 @@ function BandValue({
       decimals={decimals}
       unit={unit}
       prefix={prefix}
-      size="sm"
+      size="xl"
       tone="band"
     />
   );
@@ -134,6 +134,7 @@ function Counters({
     <div
       id="dibi"
       data-number-band
+      data-ink-field=""
       className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-bg)] border-t-[3px] border-t-[var(--band-rule)] bg-[var(--band-bg)]"
     >
       <div className="grid grid-cols-2 gap-px bg-white/15 sm:grid-cols-3 lg:grid-cols-6">
@@ -226,15 +227,17 @@ export function DataHero() {
   }, [view, locale]);
 
   return (
-    <section id="hero" className="scroll-mt-24 px-4 pb-16 pt-28 md:pb-20 md:pt-32">
+    <section
+      id="hero"
+      data-section-density="spacious"
+      className="section-y-spacious scroll-mt-24 px-4 !pt-28 md:!pt-32"
+    >
       <div className="mx-auto max-w-6xl">
         <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("statistik.kicker")}</p>
         <div className="mt-3 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <h1 className="text-[1.75rem] font-semibold leading-[1.15] tracking-[-0.03em] sm:text-[2.25rem]">
-              {t("statistik.title")}
-            </h1>
-            <p className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--text-dim)]">
+            <h1 className="type-display">{t("statistik.title")}</h1>
+            <p className="type-lead mt-3 text-[var(--text-dim)]">
               {t("statistik.lead")}
             </p>
           </div>

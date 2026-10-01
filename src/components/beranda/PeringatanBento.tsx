@@ -12,6 +12,7 @@ import { usePeringatan } from "./data";
 import { StatusScaleChip } from "@/components/ui/StatusScaleChip";
 import { jamPendek, rapikanTanda, toneLevel, TONE_CHIP, TONE_DOT, TONE_EDGE } from "./format";
 import { PanelError, PanelSkeleton, SectionHeading } from "./primitives";
+import { SectionShell } from "./SectionShell";
 
 type Kartu = {
   key: string;
@@ -288,7 +289,7 @@ export function PeringatanBento() {
   const [utama, ...sisanya] = kartu;
 
   return (
-    <section id="status" className="relative z-40 scroll-mt-24 px-4 py-16 md:py-20">
+    <SectionShell id="status" density="spacious" className="relative z-40">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           title={t("peringatan.title")}
@@ -332,6 +333,6 @@ export function PeringatanBento() {
           </div>
         ) : null}
       </div>
-    </section>
+    </SectionShell>
   );
 }

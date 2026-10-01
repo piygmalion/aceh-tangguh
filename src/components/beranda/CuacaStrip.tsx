@@ -190,11 +190,13 @@ export function CuacaStrip() {
     <section
       id="cuaca"
       aria-label={t("cuaca.aria")}
-      className="scroll-mt-24 border-b border-[var(--border)] px-4 py-6"
+      data-section-density="compact"
+      data-ink-field=""
+      className="section-y-compact scroll-mt-24 px-4"
     >
       <div className="mx-auto max-w-6xl">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-[0.9375rem] font-semibold">{t("cuaca.title")}</h2>
+          <h2 className="type-h3">{t("cuaca.title")}</h2>
           <div className="flex shrink-0 items-center gap-3">
             {data ? (
               <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>

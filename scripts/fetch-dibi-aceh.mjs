@@ -2,7 +2,7 @@
  * Refresh public/fixtures/dibi-aceh.json from the public BNPB DIBI dashboard.
  * Usage: node scripts/fetch-dibi-aceh.mjs
  */
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { writeFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -245,7 +245,13 @@ async function main() {
     .sort((a, b) => a.tahun - b.tahun);
 
   if (!by_kabupaten.length || !by_tahun.length) {
-    throw new Error("DIBI Aceh payload empty");
+    const reason = by_kabupaten.length === 0 ? "empty-kabupaten" : "empty-tahun";
+    writeFileSync(
+      path.join(root, ".github/dibi-refresh-verdict.json"),
+      `${JSON.stringify({ ok: false, reason })}\n`,
+    );
+    console.error(`DIBI refresh rejected (${reason}); fixture left unchanged`);
+    process.exit(1);
   }
 
   const years = by_tahun.map((r) => r.tahun);
@@ -286,6 +292,10 @@ async function main() {
   }
   const verdict = assessDibiLive(payload, baselineKejadian);
   if (!verdict.ok) {
+    writeFileSync(
+      path.join(root, ".github/dibi-refresh-verdict.json"),
+      `${JSON.stringify({ ok: false, reason: verdict.reason })}\n`,
+    );
     console.error(
       `DIBI refresh rejected (${verdict.reason}); fixture left unchanged`,
     );
@@ -298,6 +308,14 @@ async function main() {
 }
 
 main().catch((err) => {
+  try {
+    writeFileSync(
+      path.join(root, ".github/dibi-refresh-verdict.json"),
+      `${JSON.stringify({ ok: false, reason: "fetch-failed" })}\n`,
+    );
+  } catch {
+    /* the workflow still counts a missing verdict as a fetch failure */
+  }
   console.error(err);
   process.exit(1);
 });

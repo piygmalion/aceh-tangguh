@@ -4,8 +4,9 @@ import Image from "next/image";
 import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SITE_MEDIA } from "@/lib/media";
-import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
+import { SectionShell } from "./SectionShell";
 
 const BUTIR = ["tentang.b1", "tentang.b2", "tentang.b3"] as const;
 
@@ -14,7 +15,7 @@ export function TentangSection() {
   const foto = SITE_MEDIA.heroSlides[2];
 
   return (
-    <section id="tentang" className="scroll-mt-24 border-y border-[var(--border)] bg-[var(--bg-raised)] px-4 py-16 md:py-20">
+    <SectionShell id="tentang" density="default" raised>
       <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-12 lg:gap-12">
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-[var(--border)] lg:col-span-5">
           <Image
@@ -26,11 +27,10 @@ export function TentangSection() {
           />
         </div>
         <div className="lg:col-span-7">
-          <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("tentang.kicker")}</p>
-          <h2 className="mt-3 max-w-[22ch] text-[1.6rem] font-semibold leading-[1.18] tracking-[-0.028em] sm:text-[2rem]">
+          <h2 className="type-h2 max-w-[22ch]">
             {t("hero.title")}
           </h2>
-          <p className="mt-4 max-w-xl text-[0.9375rem] leading-relaxed text-[var(--text-dim)]">
+          <p className="type-lead mt-4 max-w-xl text-[var(--text-dim)]">
             {t("hero.lead")}
           </p>
           <ul className="mt-6 space-y-3">
@@ -50,6 +50,6 @@ export function TentangSection() {
           </ul>
         </div>
       </div>
-    </section>
+    </SectionShell>
   );
 }

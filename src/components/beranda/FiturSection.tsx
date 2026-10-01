@@ -4,8 +4,9 @@ import type { LucideIcon } from "lucide-react";
 import { ArrowUpRight, BarChart3, BookOpen, Map, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
+import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
+import { SectionShell } from "./SectionShell";
 
 const KARTU = [
   {
@@ -82,12 +83,9 @@ export function FiturSection() {
   const t = useTranslations("beranda");
 
   return (
-    <section id="layanan" className="scroll-mt-24 px-4 py-16 md:py-20">
+    <SectionShell id="layanan" density="spacious" raised>
       <div className="mx-auto max-w-6xl">
-        <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("fitur.kicker")}</p>
-        <h2 className="mt-3 text-[1.6rem] font-semibold leading-[1.18] tracking-[-0.028em] sm:text-[2rem]">
-          {t("fitur.title")}
-        </h2>
+        <h2 className="type-h2">{t("fitur.title")}</h2>
         <ul className="mt-8 grid gap-3">
           {KARTU.map((kartu) => (
             <li key={kartu.href}>
@@ -111,6 +109,6 @@ export function FiturSection() {
           ))}
         </ul>
       </div>
-    </section>
+    </SectionShell>
   );
 }

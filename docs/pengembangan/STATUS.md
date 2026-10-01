@@ -634,6 +634,7 @@ Tindak lanjut data: `public.anggaran_analisis`, `public.anggaran_kegiatan`, dan 
 | FE-63 | frontend | Palet Peudeung v2 | jurnal/FE-63.md | selesai |
 | FE-64 | frontend | Hotfix header terang dan basemap gelap | jurnal/FE-64.md | selesai |
 | FE-65 | frontend | Pembersihan sisa tinjauan | jurnal/FE-65.md | selesai |
+| FE-66 | frontend | Visual-1 fondasi dan pembersihan | jurnal/FE-66.md | selesai |
 
 DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
 

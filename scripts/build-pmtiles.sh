@@ -3,8 +3,7 @@
 # Requires: tippecanoe (apt install tippecanoe)
 # Overlay archives only — Carto raster stays the default basemap.
 # tippecanoe --layer must stay kecamatan / village / irbi (MapViewport source-layer).
-# r3p-kab.pmtiles is retired (LOD0 is kecamatan). Offline rebuild:
-#   npm run build:r3p-kab-tiles  (deprecated; not required).
+# r3p-kab.pmtiles is retired (LOD0 is kecamatan). The kab tile script was removed.
 # After build, check:tiles enforces 500 KB per MVT tile + village archive < 4 MB
 # and kecamatan archive < 2 MB.
 set -euo pipefail

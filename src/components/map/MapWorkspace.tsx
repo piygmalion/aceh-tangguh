@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 import { useMapUrlState } from "@/hooks/useMapUrlState";
 import { SiteNav } from "@/components/SiteNav";
 import { MapToolbar } from "@/components/map/MapToolbar";
@@ -31,6 +32,7 @@ function MapWorkspaceInner() {
     useState<VillageClickSelection | null>(null);
   const [lodSelection, setLodSelection] =
     useState<VillageClickSelection | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     setVillageSelection(null);
@@ -71,7 +73,7 @@ function MapWorkspaceInner() {
         />
       ) : null}
       <SiteNav />
-      <StatusLegend className="absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:bottom-4 md:left-4 md:top-auto md:w-auto" />
+      <StatusLegend className="absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:hidden" />
       <MapToolbar
         areaLayer={state.areaLayer}
         krbJenis={state.krbJenis ?? null}
@@ -89,12 +91,22 @@ function MapWorkspaceInner() {
         onToggleNasaLayer={toggleNasaLayer}
         onNasaDateChange={setNasaDate}
       />
-      <MapSettings
-        basemap={state.basemap}
-        onBasemapChange={setBasemap}
-        preferVector={state.preferVector}
-        onPreferVectorChange={setPreferVector}
-      />
+      <div className="pointer-events-none absolute bottom-[5.75rem] left-3 z-30 flex flex-col items-start gap-3 sm:bottom-6 md:bottom-4 md:left-4">
+        <StatusLegend
+          className={cn(
+            "pointer-events-auto",
+            settingsOpen ? "hidden" : "hidden md:block",
+          )}
+        />
+        <MapSettings
+          basemap={state.basemap}
+          onBasemapChange={setBasemap}
+          preferVector={state.preferVector}
+          onPreferVectorChange={setPreferVector}
+          onOpenChange={setSettingsOpen}
+          className="pointer-events-auto static bottom-auto left-auto sm:bottom-auto"
+        />
+      </div>
       <ReportFAB />
     </div>
   );

@@ -17,6 +17,12 @@ permissions:
 jobs:
   refresh-fixture:
     runs-on: ubuntu-latest
+    outputs:
+      should_alert: ${{ steps.streak.outputs.should_alert }}
+      should_close: ${{ steps.streak.outputs.should_close }}
+      streak: ${{ steps.streak.outputs.streak }}
+      reason: ${{ steps.streak.outputs.reason }}
+      fetched_at: ${{ steps.streak.outputs.fetched_at }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,11 +31,23 @@ jobs:
           node-version: "20"
 
       - name: Build DIBI Aceh fixture
+        id: build
+        continue-on-error: true
         env:
           DIBI_REFRESH_FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force == true && 'true' || 'false' }}
         run: npm run build:dibi
 
+      - name: Update scheduled-failure streak
+        id: streak
+        if: always()
+        env:
+          DIBI_EVENT_NAME: ${{ github.event_name }}
+          DIBI_FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force == true && 'true' || 'false' }}
+          DIBI_OK: ${{ steps.build.outcome == 'success' && 'true' || 'false' }}
+        run: node scripts/dibi-refresh-streak.mjs
+
       - name: Validate and commit fixture if changed
+        if: steps.build.outcome == 'success'
         run: |
           FILE=public/fixtures/dibi-aceh.json
           node --input-type=module -e '
@@ -59,7 +77,7 @@ jobs:
           '
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -- "$FILE"
+          git add -- "$FILE" .github/dibi-refresh-state.json
           if git diff --staged --quiet; then
             echo "No DIBI changes to commit"
           else
@@ -69,11 +87,78 @@ jobs:
         env:
           FILE: public/fixtures/dibi-aceh.json
 
+      - name: Commit failure streak
+        if: steps.build.outcome != 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- .github/dibi-refresh-state.json
+          if git diff --staged --quiet; then
+            echo "Failure streak unchanged"
+          else
+            git commit -m "chore(dibi): record scheduled refresh failure [automated] [skip ci] [vercel skip]"
+            git push
+          fi
+
       - name: Report failure
-        if: failure()
+        if: steps.build.outcome != 'success'
+        env:
+          REASON: ${{ steps.streak.outputs.reason }}
+          FETCHED_AT: ${{ steps.streak.outputs.fetched_at }}
+          STREAK: ${{ steps.streak.outputs.streak }}
         run: |
           {
             echo "### DIBI refresh failed"
             echo "The Aceh fixture was not updated."
-            echo "A manual run can set force to bypass the Superset chart cache. The kejadian guard still rejects a payload whose year rows do not add up, whose event count drops by more than 2 percent, or whose kabupaten list is empty."
+            echo "Reason: ${REASON}"
+            echo "Last accepted fetched_at: ${FETCHED_AT}"
+            echo "Scheduled failure streak: ${STREAK}"
+            echo "A manual run can set force to bypass the Superset chart cache. Force runs are not counted. The kejadian guard still rejects a payload whose year rows do not add up, whose event count drops by more than 2 percent, or whose kabupaten list is empty."
           } >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+
+  alert:
+    needs: refresh-fixture
+    if: always() && (needs.refresh-fixture.outputs.should_alert == 'true' || needs.refresh-fixture.outputs.should_close == 'true')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Open, update, or close the single DIBI alert
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SHOULD_ALERT: ${{ needs.refresh-fixture.outputs.should_alert }}
+          SHOULD_CLOSE: ${{ needs.refresh-fixture.outputs.should_close }}
+          REASON: ${{ needs.refresh-fixture.outputs.reason }}
+          FETCHED_AT: ${{ needs.refresh-fixture.outputs.fetched_at }}
+          STREAK: ${{ needs.refresh-fixture.outputs.streak }}
+        run: |
+          set -euo pipefail
+          existing="$(gh issue list --label dibi-refresh-alert --state open --limit 1 --json number --jq '.[0].number // empty')"
+          if [ "$SHOULD_CLOSE" = "true" ]; then
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body "Resolved: a later DIBI refresh passed. The scheduled failure counter is reset."
+              gh issue close "$existing" --reason completed
+            fi
+            exit 0
+          fi
+          if [ "$SHOULD_ALERT" != "true" ]; then
+            exit 0
+          fi
+          body=$(printf '%s\n' \
+            "Scheduled DIBI refresh failed ${STREAK} times in a row." \
+            "" \
+            "Reject reason: ${REASON}" \
+            "Last accepted fetched_at: ${FETCHED_AT}" \
+            "" \
+            "Counted: fetch failures and payloads rejected by assessDibiLive." \
+            "Manual force runs are excluded.")
+          if ! gh label list --search dibi-refresh-alert --limit 1 --json name --jq '.[0].name' | grep -qx dibi-refresh-alert; then
+            gh label create dibi-refresh-alert --color B60205 --description "DIBI scheduled refresh failed three times"
+          fi
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body "$body"
+          else
+            gh issue create --title "DIBI refresh: scheduled failures" --label dibi-refresh-alert --body "$body"
+          fi

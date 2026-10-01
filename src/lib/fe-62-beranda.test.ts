@@ -94,6 +94,14 @@ describe("FE-62 beranda mengikuti urutan SIAGA", () => {
       enFitur.beranda.fitur.analisisIsi,
       "Slice Aceh events by type, area, and time from the Aceh Tangguh catalog. DIBI aggregates can be shown separately.",
     );
+    const idAnalisis = JSON.parse(read("messages/id.json")) as {
+      analisisData: { lead: string };
+    };
+    const enAnalisis = JSON.parse(read("messages/en.json")) as {
+      analisisData: { lead: string };
+    };
+    assert.equal(idAnalisis.analisisData.lead, idFitur.beranda.fitur.analisisIsi);
+    assert.equal(enAnalisis.analisisData.lead, enFitur.beranda.fitur.analisisIsi);
     assert.equal(idFitur.beranda.fitur.destanaTitle, undefined);
     assert.equal(enFitur.beranda.fitur.destanaTitle, undefined);
     assert.doesNotMatch(idFitur.beranda.fitur.analisisIsi, /katalog yang sama/);

@@ -103,4 +103,7 @@ scripts/split_seed_sql.js
 # Superdesign local workspace (never commit)
 .superdesign/
 
+# Ephemeral DIBI refresh verdict. The committed counter is .github/dibi-refresh-state.json.
+.github/dibi-refresh-verdict.json
+
 .env*
