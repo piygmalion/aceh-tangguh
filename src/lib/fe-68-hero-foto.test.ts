@@ -45,27 +45,31 @@ const BUTTON_INK: [number, number, number] = [17, 17, 17];
 
 describe("FE-68 hero photo", () => {
   it("renders the DJI photo with the Indonesian alt and no invented caption", () => {
-    assert.equal(HERO_PHOTO_ENABLED, false);
+    assert.equal(HERO_PHOTO_ENABLED, true);
     assert.equal(HERO_PHOTO.alt, HERO_PHOTO_ALT);
     assert.equal(
       HERO_PHOTO.alt,
-      "Foto aerial DJI — permukiman di tepi sungai di Aceh dengan bangunan rusak dan genangan lumpur",
+      "Foto udara kawasan permukiman di Aceh pascabanjir 2025, di tepi sungai, dengan bangunan rusak dan genangan lumpur",
     );
-    assert.equal(HERO_PHOTO.lokasi, "");
-    assert.equal(HERO_PHOTO.waktu, "");
-    assert.equal(HERO_PHOTO.keadaan, "");
+    assert.equal(HERO_PHOTO.lokasi, "Aceh");
+    assert.equal(HERO_PHOTO.waktu, "2025");
+    assert.equal(HERO_PHOTO.keadaan, "Pascabanjir");
+    assert.equal(
+      heroPhotoCaption(HERO_PHOTO),
+      "Pascabanjir Aceh, 2025 · Foto aerial DJI — dokumentasi Aceh Tangguh",
+    );
     assert.equal(heroPhotoCaption(null), null);
     assert.equal(heroPhotoCaption({ lokasi: "Aceh Besar" }), null);
     assert.equal(heroPhotoCaption({ waktu: "2024" }), null);
-    assert.equal(heroPhotoCaption(HERO_PHOTO), null);
     assert.equal(
       heroPhotoCaption({ lokasi: "Aceh Besar", waktu: "2024" }),
-      `Aceh Besar, 2024 — ${HERO_PHOTO_CREDIT}`,
+      `Aceh Besar, 2024 · ${HERO_PHOTO_CREDIT}`,
     );
     assert.equal(
-      heroPhotoCaption({ keadaan: "Pascabanjir", lokasi: "Aceh Besar", waktu: "2024" }),
-      `Pascabanjir, Aceh Besar, 2024 — ${HERO_PHOTO_CREDIT}`,
+      heroPhotoCaption({ keadaan: "Pascabanjir", lokasi: "Aceh", waktu: "2025" }),
+      "Pascabanjir Aceh, 2025 · Foto aerial DJI — dokumentasi Aceh Tangguh",
     );
+    assert.doesNotMatch(heroPhotoCaption(HERO_PHOTO) ?? "", /CONTOH|kabupaten|Januari|Februari|Maret/);
     const on = renderToStaticMarkup(
       createElement(HeroPhotoBackdrop, { failed: false, enabled: true, onError() {} }),
     );
@@ -83,21 +87,29 @@ describe("FE-68 hero photo", () => {
       }),
     );
     assert.match(captioned, /data-hero-caption/);
-    assert.match(captioned, /Pascabanjir, Aceh Besar, 2024 — Foto aerial DJI, dokumentasi Aceh Tangguh/);
+    assert.match(captioned, /Pascabanjir Aceh Besar, 2024 · Foto aerial DJI — dokumentasi Aceh Tangguh/);
     assert.match(captioned, /text-\[0\.8125rem\]/);
     assert.match(captioned, /bg-\[#111111\]\/90/);
     assert.match(captioned, /ml-auto mt-3 w-fit/);
     assert.match(captioned, /md:mt-4/);
     assert.doesNotMatch(captioned, /absolute/);
-    assert.equal(renderToStaticMarkup(createElement(HeroPhotoCaption, { meta: HERO_PHOTO })), "");
+    const liveCaption = renderToStaticMarkup(createElement(HeroPhotoCaption, { meta: HERO_PHOTO }));
+    assert.match(liveCaption, /Pascabanjir Aceh, 2025 · Foto aerial DJI — dokumentasi Aceh Tangguh/);
+    assert.doesNotMatch(liveCaption, /CONTOH/);
+    assert.equal(
+      renderToStaticMarkup(createElement(HeroPhotoCaption, { meta: { lokasi: "", waktu: "", keadaan: "" } })),
+      "",
+    );
     const hero = read("src/components/beranda/DataHero.tsx");
     const backdrop = read("src/components/beranda/HeroPhotoBackdrop.tsx");
     assert.match(hero, /HeroPhotoBackdrop/);
     assert.match(hero, /\{onPhoto \? <HeroPhotoCaption \/> : null\}/);
     assert.match(hero, /onPhoto && "pb-6 md:pb-8"/);
     assert.match(hero, /section-y-spacious relative scroll-mt-24 overflow-hidden px-4 !pt-28 md:!pt-32/);
-    assert.match(read("src/lib/media.ts"), /lokasi\/waktu: konfirmasi pemilik, 2 Okt 2026; kabupaten dan bulan tidak diketahui\. Jangan dilengkapi dari kenampakan foto\./);
-    assert.match(read("public/media/CREDITS.md"), /lokasi\/waktu: konfirmasi pemilik, 2 Okt 2026; kabupaten dan bulan tidak diketahui\. Jangan dilengkapi dari kenampakan foto\./);
+    assert.match(read("src/lib/media.ts"), /foto dokumentasi banjir Aceh 2025/);
+    assert.match(read("src/lib/media.ts"), /Kabupaten dan bulan tidak diketahui/);
+    assert.match(read("public/media/CREDITS.md"), /foto dokumentasi banjir Aceh 2025/);
+    assert.match(read("public/media/CREDITS.md"), /Kabupaten dan bulan tidak diketahui/);
     assert.match(backdrop, /placeholder="blur"/);
     assert.match(backdrop, /blurDataURL/);
     assert.match(backdrop, /fill/);
@@ -110,7 +122,7 @@ describe("FE-68 hero photo", () => {
   it("falls back to the plain contour background when the photo fails or is missing", () => {
     assert.equal(heroBackgroundMode(HERO_PHOTO, false, true), "photo");
     assert.equal(heroBackgroundMode(HERO_PHOTO, false, false), "plain");
-    assert.equal(heroBackgroundMode(HERO_PHOTO, false), "plain");
+    assert.equal(heroBackgroundMode(HERO_PHOTO, false), "photo");
     assert.equal(heroBackgroundMode(HERO_PHOTO, true, true), "plain");
     assert.equal(heroBackgroundMode({ src: "" }, false, true), "plain");
     assert.equal(heroBackgroundMode(null, false, true), "plain");

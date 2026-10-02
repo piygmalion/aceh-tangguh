@@ -674,7 +674,7 @@ UI `/admin/operasi` alur modul lebih jelas (volume hints, empty states). Tidak m
 
 ## FE-68 — foto hero beranda
 
-Latar bagian statistik memakai turunan `public/media/hero-slides/03.jpg` (DJI, dokumentasi Aceh Tangguh). Bucket Storage publik kosong. Foto sampul BPBA tidak dipakai karena menampilkan wajah. Tanpa caption. Filter dan bagian di bawah hero tidak diubah.
+Latar bagian statistik memakai turunan `public/media/hero-slides/03.jpg` (foto dokumentasi banjir Aceh 2025). Caption: Pascabanjir Aceh, 2025. Kabupaten dan bulan tidak diketahui. Filter dan bagian di bawah hero tidak diubah.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |

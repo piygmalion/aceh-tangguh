@@ -3,10 +3,16 @@ const HERO_SLIDE_CREDIT = "Foto aerial DJI — dokumentasi Aceh Tangguh";
 
 /**
  * Statistics-hero aerial. A source constant, not an env var.
- * False keeps the contour hero so this can merge before the photo is approved.
- * lokasi/waktu: konfirmasi pemilik, 2 Okt 2026; kabupaten dan bulan tidak diketahui. Jangan dilengkapi dari kenampakan foto.
+ * Owner confirmation, 2 Okt 2026: foto dokumentasi banjir Aceh 2025.
+ * Kabupaten dan bulan tidak diketahui. Jangan dilengkapi dari kenampakan foto.
  */
-export const HERO_PHOTO_ENABLED = false;
+export const HERO_PHOTO_ENABLED = true;
+
+export const HERO_PHOTO_FIELDS = {
+  keadaan: "Pascabanjir",
+  lokasi: "Aceh",
+  waktu: "2025",
+} as const;
 
 export const SITE_MEDIA = {
   heroPoster: {

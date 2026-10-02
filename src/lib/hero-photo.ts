@@ -1,16 +1,16 @@
-import { HERO_PHOTO_ENABLED } from "@/lib/media";
+import { HERO_PHOTO_ENABLED, HERO_PHOTO_FIELDS } from "@/lib/media";
 
 /**
  * Homepage hero background.
  * Derivative: public/media/hero-beranda/dji-03-1440.webp (1440px wide).
  * Source file: public/media/hero-slides/03.jpg.
- * Provenance: public/media/CREDITS.md — foto aerial DJI, dokumentasi Aceh Tangguh.
- * lokasi/waktu: konfirmasi pemilik, 2 Okt 2026; kabupaten dan bulan tidak diketahui. Jangan dilengkapi dari kenampakan foto.
+ * Provenance: public/media/CREDITS.md — foto dokumentasi banjir Aceh 2025.
+ * Kabupaten dan bulan tidak diketahui. Jangan dilengkapi dari kenampakan foto.
  */
 export const HERO_PHOTO_ALT =
-  "Foto aerial DJI — permukiman di tepi sungai di Aceh dengan bangunan rusak dan genangan lumpur";
+  "Foto udara kawasan permukiman di Aceh pascabanjir 2025, di tepi sungai, dengan bangunan rusak dan genangan lumpur";
 
-export const HERO_PHOTO_CREDIT = "Foto aerial DJI, dokumentasi Aceh Tangguh";
+export const HERO_PHOTO_CREDIT = "Foto aerial DJI — dokumentasi Aceh Tangguh";
 
 export const HERO_PHOTO = {
   src: "/media/hero-beranda/dji-03-1440.webp",
@@ -19,9 +19,7 @@ export const HERO_PHOTO = {
   height: 1079,
   blurDataURL:
     "data:image/jpeg;base64,/9j/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAMABADASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAECBf/EABwQAAICAgMAAAAAAAAAAAAAAAABAkEDERMhMf/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAwDAQACEQMRAD8AxXnmqSDnku2TSvY1px8QpH//2Q==",
-  lokasi: "",
-  waktu: "",
-  keadaan: "",
+  ...HERO_PHOTO_FIELDS,
 } as const;
 
 /**
@@ -58,8 +56,8 @@ export function heroPhotoCaption(meta: HeroPhotoMeta | null | undefined): string
   const waktu = meta.waktu?.trim() ?? "";
   const keadaan = meta.keadaan?.trim() ?? "";
   if (!lokasi || !waktu) return null;
-  const lead = keadaan ? `${keadaan}, ${lokasi}, ${waktu}` : `${lokasi}, ${waktu}`;
-  return `${lead} — ${HERO_PHOTO_CREDIT}`;
+  const place = keadaan ? `${keadaan} ${lokasi}` : lokasi;
+  return `${place}, ${waktu} · ${HERO_PHOTO_CREDIT}`;
 }
 
 export function heroBackgroundMode(
