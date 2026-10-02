@@ -156,6 +156,22 @@ describe("FE-67 visual-2", () => {
     assert.doesNotMatch(bars, /--chart-bar/);
   });
 
+  it("gives every IRBI bar the full row, with the hazard label underneath", () => {
+    const ladder = read("src/components/beranda/RisikoLadder.tsx");
+    const row = ladder.slice(
+      ladder.indexOf("function BarisKab"),
+      ladder.indexOf("export function RisikoLadder"),
+    );
+    assert.match(row, /kab\.irb_2025 \/ maks/);
+    assert.match(row, /col-start-2 col-end-4 min-w-0/);
+    assert.match(row, /mt-1 text-right text-\[var\(--text-dim\)\]/);
+    assert.match(row, /grid-cols-\[1\.75rem_1fr_auto\]/);
+    assert.doesNotMatch(row, /flex items-center gap-3/);
+    assert.doesNotMatch(row, /whitespace-nowrap|shrink-0/);
+    const between = row.slice(row.indexOf("<Bar"), row.indexOf("dariSlug"));
+    assert.doesNotMatch(between, /flex/);
+  });
+
   it("lays the red number band on one shared baseline", () => {
     const css = read("src/app/globals.css");
     const darkAt = css.indexOf('html[data-theme="dark"]');
