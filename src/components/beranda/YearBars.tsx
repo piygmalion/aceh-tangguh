@@ -114,7 +114,8 @@ export function YearBars({
           <g>
             <line
               x1={berjalanX}
-              y1={axis - berjalanH - 16}
+              // Seven user units clears the font box, leaving about 4px under the word.
+              y1={labelBaseline + 7}
               x2={berjalanX}
               y2={axis - berjalanH - 3}
               stroke="currentColor"

@@ -166,16 +166,20 @@ function Counters({
   const missing = t("statistik.belumAda");
   const menderita = metrics ? angkaRingkas(metrics.menderita_mengungsi, locale) : null;
   const kerugian = metrics ? rupiahDariJuta(metrics.estimasi_kerugian_rumah, locale) : null;
-  const spark = (key: SparklineKey) =>
+  const spark = (key: SparklineKey | null) =>
     showSparks ? (
-      <SparkSlot
-        trend={trend}
-        metric={key}
-        locale={locale}
-        yearHeader={t("statistik.yearHeader")}
-        countHeader={t("statistik.countHeader")}
-        runningYear={openYear}
-      />
+      key == null ? (
+        <div className="mt-2 h-12" data-hilang-slot="" aria-hidden />
+      ) : (
+        <SparkSlot
+          trend={trend}
+          metric={key}
+          locale={locale}
+          yearHeader={t("statistik.yearHeader")}
+          countHeader={t("statistik.countHeader")}
+          runningYear={openYear}
+        />
+      )
     ) : null;
 
   return (
@@ -196,7 +200,7 @@ function Counters({
         </Counter>
         <Counter label={t("statistik.hilang")}>
           <BandValue value={metrics ? metrics.hilang : null} locale={locale} missing={missing} />
-          {spark("hilang")}
+          {spark(null)}
         </Counter>
         <Counter label={t("statistik.luka")}>
           <BandValue value={metrics ? metrics.luka_sakit : null} locale={locale} missing={missing} />

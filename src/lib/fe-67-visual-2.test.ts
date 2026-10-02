@@ -18,6 +18,7 @@ describe("FE-67 visual-2", () => {
     assert.match(bars, /url\(#\$\{hatchId\}\)/);
     assert.match(bars, /x=\{berjalanX - 4\}/);
     assert.match(bars, /textAnchor="end"/);
+    assert.match(bars, /y1=\{labelBaseline \+ 7\}/);
     assert.doesNotMatch(bars, /BERJALAN_YEAR/);
     assert.match(bars, /fontSize="13"/);
     assert.match(bars, /index % 2 === 0/);
@@ -27,11 +28,13 @@ describe("FE-67 visual-2", () => {
     assert.doesNotMatch(bars, /#C8102E|#c8102e/);
   });
 
-  it("dashes the open-year segment on every sparkline, including Kejadian and Hilang", () => {
+  it("dashes five sparklines and leaves the Hilang tile as an empty slot", () => {
     const hero = read("src/components/beranda/DataHero.tsx");
     const spark = read("src/components/beranda/MetricSpark.tsx");
     assert.match(hero, /bandShowsSparklines/);
-    assert.match(hero, /spark\("hilang"\)/);
+    assert.match(hero, /statistik\.hilang[\s\S]{0,240}spark\(null\)/);
+    assert.match(hero, /data-hilang-slot/);
+    assert.doesNotMatch(hero, /spark\("hilang"\)/);
     assert.match(hero, /spark\("kejadian"\)/);
     assert.match(hero, /statistik\.scaleNote/);
     assert.match(hero, /data-testid="number-band-block"/);

@@ -258,10 +258,7 @@ describe("seri visual-2 dari payload DIBI", () => {
     }
     const kejadian = seriesPerMetric(view.trend, "kejadian");
     assert.equal(peakPoint(kejadian)?.tahun, HERO_BAR_HIGHLIGHT_YEAR);
-    assert.deepEqual(
-      [...SPARKLINE_KEYS],
-      ["kejadian", "meninggal", "hilang", "luka_sakit", "menderita_mengungsi", "estimasi_kerugian_rumah"],
-    );
+    assert.equal((SPARKLINE_KEYS as readonly string[]).includes("hilang"), false);
   });
 });
 

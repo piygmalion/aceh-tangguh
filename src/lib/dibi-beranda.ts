@@ -219,7 +219,6 @@ export const IMPACT_PEAK_YEAR = 2025;
 export const SPARKLINE_KEYS = [
   "kejadian",
   "meninggal",
-  "hilang",
   "luka_sakit",
   "menderita_mengungsi",
   "estimasi_kerugian_rumah",
