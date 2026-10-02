@@ -25,6 +25,9 @@ const nextConfig = {
       "/[locale]/**/*": ["./public/fixtures/**/*"],
     },
   },
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
   webpack: (config) => {
     config.resolve.alias = { ...config.resolve.alias, "mapbox-gl": "maplibre-gl" };
     return config;

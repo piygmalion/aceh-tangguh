@@ -3,6 +3,7 @@
 ## Hero slides (DJI documentation)
 - hero-slides/01.jpg … 04.jpg — Foto aerial DJI — dokumentasi Aceh Tangguh
 - Used as the homepage hero slideshow (no Unsplash credit)
+- hero-beranda/dji-03-1440.webp (from hero-slides/03.jpg) — Foto aerial DJI — dokumentasi Aceh Tangguh. Pemilik mengonfirmasi 2 Okt 2026: foto dokumentasi banjir Aceh 2025. Kabupaten dan bulan tidak diketahui. Jangan dilengkapi dari kenampakan foto.
 
 ## Photos (Unsplash License)
 - hero-coast.jpg — Andreas Felske — https://unsplash.com/photos/ibHOwD3I9-s (legacy still; no longer the hero poster)

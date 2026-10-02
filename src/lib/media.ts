@@ -1,6 +1,19 @@
 /** Local free media (Unsplash License / Coverr-style stock) plus DJI hero slides. */
 const HERO_SLIDE_CREDIT = "Foto aerial DJI — dokumentasi Aceh Tangguh";
 
+/**
+ * Statistics-hero aerial. A source constant, not an env var.
+ * Owner confirmation, 2 Okt 2026: foto dokumentasi banjir Aceh 2025.
+ * Kabupaten dan bulan tidak diketahui. Jangan dilengkapi dari kenampakan foto.
+ */
+export const HERO_PHOTO_ENABLED = true;
+
+export const HERO_PHOTO_FIELDS = {
+  keadaan: "Pascabanjir",
+  lokasi: "Aceh",
+  waktu: "2025",
+} as const;
+
 export const SITE_MEDIA = {
   heroPoster: {
     src: "/media/hero-slides/01.jpg",

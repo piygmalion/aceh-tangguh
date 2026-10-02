@@ -672,3 +672,11 @@ UI `/admin/operasi` alur modul lebih jelas (volume hints, empty states). Tidak m
 | --- | --- | --- | --- | --- |
 | FE-59 | frontend | Dasbor staf alur lebih jelas | jurnal/FE-59.md | selesai |
 
+## FE-68 — foto hero beranda
+
+Latar bagian statistik memakai turunan `public/media/hero-slides/03.jpg` (foto dokumentasi banjir Aceh 2025). Caption: Pascabanjir Aceh, 2025. Kabupaten dan bulan tidak diketahui. Filter dan bagian di bawah hero tidak diubah.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-68 | frontend | Foto latar hero statistik | jurnal/FE-68.md | diverifikasi |
+
