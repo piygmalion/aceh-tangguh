@@ -4,6 +4,7 @@ const HERO_SLIDE_CREDIT = "Foto aerial DJI — dokumentasi Aceh Tangguh";
 /**
  * Statistics-hero aerial. A source constant, not an env var.
  * False keeps the contour hero so this can merge before the photo is approved.
+ * lokasi/waktu: konfirmasi pemilik, 2 Okt 2026; kabupaten dan bulan tidak diketahui. Jangan dilengkapi dari kenampakan foto.
  */
 export const HERO_PHOTO_ENABLED = false;
 

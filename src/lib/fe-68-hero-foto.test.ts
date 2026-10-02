@@ -5,7 +5,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import sharp from "sharp";
-import { HeroPhotoBackdrop } from "@/components/beranda/HeroPhotoBackdrop";
+import { HeroPhotoBackdrop, HeroPhotoCaption } from "@/components/beranda/HeroPhotoBackdrop";
 import { HERO_PHOTO_ENABLED } from "@/lib/media";
 import {
   HERO_PANEL_ALPHA,
@@ -76,20 +76,28 @@ describe("FE-68 hero photo", () => {
       createElement(HeroPhotoBackdrop, { failed: false, enabled: false, onError() {} }),
     );
     assert.equal(off, "");
+    assert.doesNotMatch(on, /data-hero-caption/);
     const captioned = renderToStaticMarkup(
-      createElement(HeroPhotoBackdrop, {
-        failed: false,
-        enabled: true,
-        onError() {},
+      createElement(HeroPhotoCaption, {
         meta: { keadaan: "Pascabanjir", lokasi: "Aceh Besar", waktu: "2024" },
       }),
     );
+    assert.match(captioned, /data-hero-caption/);
     assert.match(captioned, /Pascabanjir, Aceh Besar, 2024 — Foto aerial DJI, dokumentasi Aceh Tangguh/);
     assert.match(captioned, /text-\[0\.8125rem\]/);
     assert.match(captioned, /bg-\[#111111\]\/90/);
+    assert.match(captioned, /ml-auto mt-3 w-fit/);
+    assert.match(captioned, /md:mt-4/);
+    assert.doesNotMatch(captioned, /absolute/);
+    assert.equal(renderToStaticMarkup(createElement(HeroPhotoCaption, { meta: HERO_PHOTO })), "");
     const hero = read("src/components/beranda/DataHero.tsx");
     const backdrop = read("src/components/beranda/HeroPhotoBackdrop.tsx");
     assert.match(hero, /HeroPhotoBackdrop/);
+    assert.match(hero, /\{onPhoto \? <HeroPhotoCaption \/> : null\}/);
+    assert.match(hero, /onPhoto && "pb-6 md:pb-8"/);
+    assert.match(hero, /section-y-spacious relative scroll-mt-24 overflow-hidden px-4 !pt-28 md:!pt-32/);
+    assert.match(read("src/lib/media.ts"), /lokasi\/waktu: konfirmasi pemilik, 2 Okt 2026; kabupaten dan bulan tidak diketahui\. Jangan dilengkapi dari kenampakan foto\./);
+    assert.match(read("public/media/CREDITS.md"), /lokasi\/waktu: konfirmasi pemilik, 2 Okt 2026; kabupaten dan bulan tidak diketahui\. Jangan dilengkapi dari kenampakan foto\./);
     assert.match(backdrop, /placeholder="blur"/);
     assert.match(backdrop, /blurDataURL/);
     assert.match(backdrop, /fill/);

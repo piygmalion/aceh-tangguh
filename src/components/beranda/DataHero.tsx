@@ -4,7 +4,7 @@ import { useMemo, useState, type ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { heroBackgroundMode, HERO_PHOTO } from "@/lib/hero-photo";
-import { HeroPhotoBackdrop } from "./HeroPhotoBackdrop";
+import { HeroPhotoBackdrop, HeroPhotoCaption } from "./HeroPhotoBackdrop";
 import { Link } from "@/i18n/routing";
 import {
   aggregateDibiBeranda,
@@ -311,7 +311,7 @@ export function DataHero() {
         </div>
       )}
       <div className="relative mx-auto max-w-6xl">
-        <div className="relative">
+        <div className={cn("relative", onPhoto && "pb-6 md:pb-8")}>
           <HeroPhotoBackdrop failed={photoFailed} onError={() => setPhotoFailed(true)} />
           <div className={cn("relative z-10", onPhoto && "text-white")}>
             <p
@@ -354,6 +354,7 @@ export function DataHero() {
                 />
               ) : null}
             </div>
+            {onPhoto ? <HeroPhotoCaption /> : null}
           </div>
         </div>
 

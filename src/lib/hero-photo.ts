@@ -5,7 +5,7 @@ import { HERO_PHOTO_ENABLED } from "@/lib/media";
  * Derivative: public/media/hero-beranda/dji-03-1440.webp (1440px wide).
  * Source file: public/media/hero-slides/03.jpg.
  * Provenance: public/media/CREDITS.md — foto aerial DJI, dokumentasi Aceh Tangguh.
- * lokasi, waktu, and keadaan stay empty until someone fills them in by hand.
+ * lokasi/waktu: konfirmasi pemilik, 2 Okt 2026; kabupaten dan bulan tidak diketahui. Jangan dilengkapi dari kenampakan foto.
  */
 export const HERO_PHOTO_ALT =
   "Foto aerial DJI — permukiman di tepi sungai di Aceh dengan bangunan rusak dan genangan lumpur";
