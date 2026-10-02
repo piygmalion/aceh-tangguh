@@ -73,16 +73,23 @@ export function Figure({
     xl: "type-figure-xl",
   }[size];
 
+  const adjunct = tone === "band" ? "text-[var(--band-fg)]" : null;
+
   return (
     <p className={cn("flex items-baseline gap-1.5 font-semibold", toneClass)}>
       {prefix ? (
-        <span className="text-[0.8125rem] font-medium opacity-70">{prefix}</span>
+        <span className={cn("text-[0.8125rem] font-medium", adjunct ?? "opacity-70")}>{prefix}</span>
       ) : null}
       <span className={cn(sizeClass, size !== "xl" && "leading-[1.12] tracking-[-0.04em]")}>
         <StatNumber value={value} decimals={decimals} />
       </span>
       {unit ? (
-        <span className="text-[0.8125rem] font-medium uppercase tracking-[0.08em] opacity-65">
+        <span
+          className={cn(
+            "text-[0.8125rem] font-medium uppercase tracking-[0.08em]",
+            adjunct ?? "opacity-65",
+          )}
+        >
           {unit}
         </span>
       ) : null}

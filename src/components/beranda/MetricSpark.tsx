@@ -2,7 +2,7 @@
 
 import type { MetricPoint } from "@/lib/dibi-beranda";
 
-/** One metric, scaled to its own peak. The mark is ink, never red. */
+/** One metric, scaled to its own peak. The mark follows the band foreground, never a second red. */
 export function MetricSpark({
   points,
   peakYear,

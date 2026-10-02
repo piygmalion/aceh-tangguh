@@ -57,12 +57,14 @@ function Counter({
   className?: string;
 }) {
   return (
-    <div className={cn("bg-[var(--band-bg)] px-4 py-4 text-[var(--band-fg)]", className)}>
-      <p className={cn("text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{label}</p>
+    <div className={cn("flex h-full flex-col bg-[var(--band-bg)] p-4 text-[var(--band-fg)]", className)}>
+      <p className={cn("min-h-[2.5rem] leading-tight text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>
+        {label}
+      </p>
       <div className="mt-1">{children}</div>
-      {note ? (
-        <p className={cn("mt-1 text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{note}</p>
-      ) : null}
+      <p className={cn("mt-auto min-h-[3.25rem] pt-2 leading-tight text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>
+        {note ?? "\u00a0"}
+      </p>
     </div>
   );
 }
@@ -186,10 +188,9 @@ function Counters({
     <div
       id="dibi"
       data-number-band
-      data-ink-field=""
-      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-bg)] border-t-[3px] border-t-[var(--band-rule)] bg-[var(--band-bg)]"
+      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)]"
     >
-      <div className="grid grid-cols-2 gap-px bg-white/15 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid h-full grid-cols-2 gap-px bg-white/20 sm:grid-cols-3 lg:grid-cols-6">
         <Counter label={t("statistik.kejadian")}>
           <BandValue value={metrics ? metrics.kejadian : null} locale={locale} missing={missing} />
           {spark("kejadian")}
@@ -483,7 +484,7 @@ export function DataHero() {
                         <div className="mt-1.5">
                           <Bar
                             ratio={kabRows.max > 0 ? row.kejadian / kabRows.max : 0}
-                            className={selected ? "bg-[var(--chart-2)]" : "bg-[var(--chart-1)]"}
+                            className="bg-[var(--chart-bar)]"
                           />
                         </div>
                       </li>

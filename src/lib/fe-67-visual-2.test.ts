@@ -7,6 +7,32 @@ function read(rel: string): string {
   return readFileSync(join(process.cwd(), rel), "utf8");
 }
 
+function channel(hex: string, index: number) {
+  const n = parseInt(hex.slice(1 + index * 2, 3 + index * 2), 16) / 255;
+  return n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4;
+}
+
+function luminance(hex: string) {
+  const [r, g, b] = [0, 1, 2].map((i) => channel(hex, i));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrastRatio(fg: string, bg: string) {
+  const a = luminance(fg);
+  const b = luminance(bg);
+  const [hi, lo] = a >= b ? [a, b] : [b, a];
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function compositeWhite(bg: string, alpha: number) {
+  const n = parseInt(bg.slice(1), 16);
+  const mix = (shift: number) =>
+    Math.round(255 * alpha + ((n >> shift) & 255) * (1 - alpha))
+      .toString(16)
+      .padStart(2, "0");
+  return `#${mix(16)}${mix(8)}${mix(0)}`;
+}
+
 describe("FE-67 visual-2", () => {
   it("draws the hero bars on the chart surface and hatches only the open year", () => {
     const bars = read("src/components/beranda/YearBars.tsx");
@@ -81,6 +107,61 @@ describe("FE-67 visual-2", () => {
     assert.match(settings, /max-sm:max-h-\[calc\(100svh-19\.75rem\)\]/);
     assert.match(settings, /terlihat di tangkapan headless/);
     assert.match(workspace, /settingsOpen && "hidden"/);
+  });
+
+  it("paints the kabupaten and IRBI bars with one brand red", () => {
+    const css = read("src/app/globals.css");
+    const darkAt = css.indexOf('html[data-theme="dark"]');
+    const light = css.slice(0, darkAt);
+    const dark = css.slice(darkAt);
+    assert.match(light, /--chart-bar:\s*#c8102e/);
+    assert.match(dark, /--chart-bar:\s*#f25563/);
+    assert.ok(contrastRatio("#c8102e", "#ffffff") >= 3);
+    assert.ok(contrastRatio("#c8102e", "#1a1a1a") < 3);
+    assert.ok(contrastRatio("#f25563", "#1a1a1a") >= 3);
+    assert.ok(contrastRatio("#f25563", "#0a0a0a") >= 3);
+    const hero = read("src/components/beranda/DataHero.tsx");
+    assert.match(hero, /className="bg-\[var\(--chart-bar\)\]"/);
+    assert.doesNotMatch(hero, /bg-\[var\(--chart-1\)\]|bg-\[var\(--chart-2\)\]/);
+    const format = read("src/components/beranda/format.ts");
+    assert.match(format, /return "bg-\[var\(--chart-bar\)\]"/);
+    assert.match(format, /bg-\[#FF7722\]/);
+    assert.match(format, /bg-\[#C4A35A\]/);
+    assert.match(format, /bg-\[#1F4C15\]/);
+    const ladder = read("src/components/beranda/RisikoLadder.tsx");
+    assert.match(ladder, /kelasRisikoChip\(kab\.kelas_risiko\)/);
+    assert.match(ladder, /kelasRisikoBar\(kab\.kelas_risiko\)/);
+    assert.match(ladder, /text-\[var\(--text-dim\)\]/);
+    const bars = read("src/components/beranda/YearBars.tsx");
+    assert.match(bars, /var\(--chart-2\)/);
+    assert.doesNotMatch(bars, /--chart-bar/);
+  });
+
+  it("lays the red number band on one shared baseline", () => {
+    const css = read("src/app/globals.css");
+    const darkAt = css.indexOf('html[data-theme="dark"]');
+    const light = css.slice(0, darkAt);
+    const dark = css.slice(darkAt);
+    assert.match(light, /--band-bg:\s*#c8102e/);
+    assert.match(dark, /--band-bg:\s*#c8102e/);
+    assert.match(light, /--band-fg:\s*#ffffff/);
+    assert.match(light, /--band-dim:\s*rgba\(255,\s*255,\s*255,\s*0\.85\)/);
+    assert.match(light, /--band-rule:\s*#8e1224/);
+    assert.ok(contrastRatio("#ffffff", "#c8102e") >= 4.5);
+    assert.ok(contrastRatio(compositeWhite("#c8102e", 0.85), "#c8102e") >= 4.5);
+    const hero = read("src/components/beranda/DataHero.tsx");
+    assert.match(hero, /min-h-\[2\.5rem\]/);
+    assert.match(hero, /min-h-\[3\.25rem\]/);
+    assert.match(hero, /bg-white\/20/);
+    assert.match(hero, /border-\[var\(--band-rule\)\]/);
+    assert.doesNotMatch(hero, /data-ink-field/);
+    const spark = read("src/components/beranda/MetricSpark.tsx");
+    assert.match(spark, /text-\[var\(--band-fg\)\]/);
+    assert.match(spark, /opacity="0\.55"/);
+    assert.match(spark, /fill="none"/);
+    const figure = read("src/components/beranda/primitives.tsx");
+    assert.match(figure, /flex items-baseline/);
+    assert.match(figure, /tone === "band" \? "text-\[var\(--band-fg\)\]"/);
   });
 
   it("shows the invitation card once on desktop and keeps a 56px FAB", () => {

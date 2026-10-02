@@ -188,9 +188,8 @@ export function kelasRisikoChip(kelas: string): string {
   return `${edge} bg-[#1F4C15] text-[#FFFFFF]`;
 }
 
+/** Length carries the count. Every bar is the brand red; the class stays on the chip. */
 export function kelasRisikoBar(kelas: string): string {
-  const k = kelas.toUpperCase();
-  if (k === "TINGGI") return "bg-[#FF7722]";
-  if (k === "SEDANG") return "bg-[#C4A35A]";
-  return "bg-[#1F4C15]";
+  void kelas;
+  return "bg-[var(--chart-bar)]";
 }
