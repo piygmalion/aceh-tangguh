@@ -13,7 +13,7 @@ export function SiteFooter() {
   const locale = useLocale();
 
   return (
-    <footer className="reveal mt-16 bg-[var(--primary)] px-4 pb-10 pt-14 text-[var(--primary-fg)] md:pt-16">
+    <footer className="reveal mt-16 bg-[var(--primary)] px-4 pb-20 pt-14 text-[var(--primary-fg)] sm:pb-10 md:pt-16">
       <div className="mx-auto grid max-w-[1080px] gap-10 md:grid-cols-3">
         <div>
           <div className="text-base font-semibold tracking-tight">Aceh Tangguh</div>

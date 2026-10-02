@@ -1,31 +1,28 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
-import { useReducedMotion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { Link } from "@/i18n/routing";
 import {
   aggregateDibiBeranda,
+  bandShowsSparklines,
   displayedBandMetrics,
+  IMPACT_PEAK_YEAR,
+  peakPoint,
+  seriesPerMetric,
   yearPick,
   type DibiBerandaView,
+  type SparklineKey,
 } from "@/lib/dibi-beranda";
-import type { DibiMetrics } from "@/lib/dibi-types";
+import type { DibiMetrics, DibiTahunRow } from "@/lib/dibi-types";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { useDibi } from "./data";
 import { angka, angkaRingkas, rupiahDariJuta, tanggalCadangan } from "./format";
+import { MetricSpark } from "./MetricSpark";
 import { Bar, Figure, PanelError, PanelSkeleton, Sumber } from "./primitives";
+import { YearBars } from "./YearBars";
 
 const selectClass =
   "h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--bg-raised)] px-3 text-[0.9375rem] text-[var(--text)] [color-scheme:inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]";
@@ -45,25 +42,6 @@ function formatUpdated(iso: string, locale: string): string | null {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(ms));
-}
-
-function TrendTip({
-  active,
-  payload,
-  locale,
-}: {
-  active?: boolean;
-  payload?: Array<{ payload?: { tahun: number; kejadian: number } }>;
-  locale: string;
-}) {
-  const row = payload?.[0]?.payload;
-  if (!active || !row) return null;
-  return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-raised)] px-3 py-2 text-[0.8125rem] text-[var(--text)] shadow-[var(--shadow)]">
-      <p className="font-semibold tabular-nums">{row.tahun}</p>
-      <p className="text-[var(--text-dim)]">{angka(row.kejadian, locale)}</p>
-    </div>
-  );
 }
 
 function Counter({
@@ -118,17 +96,77 @@ function BandValue({
   );
 }
 
+function impactPeakYear(trend: readonly DibiTahunRow[], key: SparklineKey): number | null {
+  if (key === "kejadian") return null;
+  const peak = peakPoint(seriesPerMetric(trend, key));
+  return peak?.tahun === IMPACT_PEAK_YEAR ? IMPACT_PEAK_YEAR : null;
+}
+
+function SparkSlot({
+  trend,
+  metric,
+  locale,
+  yearHeader,
+  countHeader,
+}: {
+  trend: readonly DibiTahunRow[];
+  metric: SparklineKey | null;
+  locale: string;
+  yearHeader: string;
+  countHeader: string;
+}) {
+  if (!metric) return <div className="mt-2 h-12" aria-hidden />;
+  const points = seriesPerMetric(trend, metric);
+  const peak = impactPeakYear(trend, metric);
+  return (
+    <>
+      <MetricSpark points={points} peakYear={peak} peakLabel={peak == null ? "" : String(peak)} />
+      <table className="sr-only">
+        <caption>{metric}</caption>
+        <thead>
+          <tr>
+            <th>{yearHeader}</th>
+            <th>{countHeader}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {points.map((point) => (
+            <tr key={point.tahun}>
+              <td>{point.tahun}</td>
+              <td>{angka(point.value, locale)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+}
+
 function Counters({
   metrics,
   locale,
+  trend,
+  showSparks,
 }: {
   metrics: DibiMetrics | null;
   locale: string;
+  trend: readonly DibiTahunRow[];
+  showSparks: boolean;
 }) {
   const t = useTranslations("beranda");
   const missing = t("statistik.belumAda");
   const menderita = metrics ? angkaRingkas(metrics.menderita_mengungsi, locale) : null;
   const kerugian = metrics ? rupiahDariJuta(metrics.estimasi_kerugian_rumah, locale) : null;
+  const spark = (key: SparklineKey | null) =>
+    showSparks ? (
+      <SparkSlot
+        trend={trend}
+        metric={key}
+        locale={locale}
+        yearHeader={t("statistik.yearHeader")}
+        countHeader={t("statistik.countHeader")}
+      />
+    ) : null;
 
   return (
     <div
@@ -140,15 +178,19 @@ function Counters({
       <div className="grid grid-cols-2 gap-px bg-white/15 sm:grid-cols-3 lg:grid-cols-6">
         <Counter label={t("statistik.kejadian")}>
           <BandValue value={metrics ? metrics.kejadian : null} locale={locale} missing={missing} />
+          {spark("kejadian")}
         </Counter>
         <Counter label={t("statistik.meninggal")}>
           <BandValue value={metrics ? metrics.meninggal : null} locale={locale} missing={missing} />
+          {spark("meninggal")}
         </Counter>
         <Counter label={t("statistik.hilang")}>
           <BandValue value={metrics ? metrics.hilang : null} locale={locale} missing={missing} />
+          {spark(null)}
         </Counter>
         <Counter label={t("statistik.luka")}>
           <BandValue value={metrics ? metrics.luka_sakit : null} locale={locale} missing={missing} />
+          {spark("luka_sakit")}
         </Counter>
         <Counter className="col-span-2 sm:col-span-1" label={t("statistik.menderita")} note={t("statistik.menderitaNote")}>
           <BandValue
@@ -158,6 +200,7 @@ function Counters({
             locale={locale}
             missing={missing}
           />
+          {spark("menderita_mengungsi")}
         </Counter>
         <Counter className="col-span-2 sm:col-span-1" label={t("dibi.kerugian")} note={t("dibi.kerugianNote")}>
           <BandValue
@@ -168,6 +211,7 @@ function Counters({
             locale={locale}
             missing={missing}
           />
+          {spark("estimasi_kerugian_rumah")}
         </Counter>
       </div>
     </div>
@@ -177,8 +221,8 @@ function Counters({
 export function DataHero() {
   const t = useTranslations("beranda");
   const locale = useLocale();
-  const reduced = useReducedMotion();
   const { data, isLoading, isError } = useDibi();
+  const [compactTicks, setCompactTicks] = useState(false);
   const [yearFrom, setYearFrom] = useState<number | null>(null);
   const [yearTo, setYearTo] = useState<number | null>(null);
   const [kabupaten, setKabupaten] = useState("");
@@ -193,6 +237,14 @@ export function DataHero() {
       jenis: jenis || null,
     });
   }, [data, yearFrom, yearTo, kabupaten, jenis]);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 639px)");
+    const sync = () => setCompactTicks(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   const updated = data ? formatUpdated(data.metadata.fetched_at, locale) : null;
   const standbyDate =
@@ -226,31 +278,56 @@ export function DataHero() {
     return { rows, max };
   }, [view, locale]);
 
+  const showSparks = view ? bandShowsSparklines(view) : false;
+
   return (
     <section
       id="hero"
       data-section-density="spacious"
-      className="section-y-spacious scroll-mt-24 px-4 !pt-28 md:!pt-32"
+      className="section-y-spacious relative scroll-mt-24 overflow-hidden px-4 !pt-28 md:!pt-32"
     >
-      <div className="mx-auto max-w-6xl">
+      <div aria-hidden className="pointer-events-none absolute inset-0 text-[var(--ink)] opacity-[0.07]">
+        <svg className="h-full w-full" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice">
+          {[70, 130, 190, 250, 310, 370].map((y, index) => (
+            <path
+              key={y}
+              d={`M-40 ${y} C 160 ${y - 28 - index * 3}, 380 ${y + 22}, 620 ${y - 6} S 960 ${y + 16}, 1260 ${y - 10}`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.25"
+            />
+          ))}
+        </svg>
+      </div>
+      <div className="relative mx-auto max-w-6xl">
         <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("statistik.kicker")}</p>
-        <div className="mt-3 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="mt-3 grid items-end gap-6 lg:grid-cols-2">
           <div className="max-w-2xl">
             <h1 className="type-display">{t("statistik.title")}</h1>
             <p className="type-lead mt-3 text-[var(--text-dim)]">
               {t("statistik.lead")}
             </p>
+            <Link
+              href="/data-bencana"
+              className={cn(
+                "mt-5 inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--bg-raised)] px-4 font-semibold transition-colors hover:border-[var(--ink)] hover:bg-[var(--bg-muted)]",
+                TYPE_FLOOR_CLASS,
+              )}
+            >
+              {t("dibi.cta")}
+              <ArrowUpRight size={14} aria-hidden />
+            </Link>
           </div>
-          <Link
-            href="/data-bencana"
-            className={cn(
-              "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-[var(--border)] px-4 font-semibold transition-colors hover:border-[var(--ink)] hover:bg-[var(--bg-muted)]",
-              TYPE_FLOOR_CLASS,
-            )}
-          >
-            {t("dibi.cta")}
-            <ArrowUpRight size={14} aria-hidden />
-          </Link>
+          {view && view.trend.length > 0 ? (
+            <YearBars
+              rows={view.trend}
+              title={t("statistik.trendTitle")}
+              caption={t("statistik.trendCaption")}
+              compactTicks={compactTicks}
+              berjalanLabel={t("statistik.berjalan")}
+              formatCount={(count) => angka(count, locale)}
+            />
+          ) : null}
         </div>
 
         {isLoading ? <PanelSkeleton className="mt-8 h-80" /> : null}
@@ -347,77 +424,31 @@ export function DataHero() {
               ) : null}
             </div>
 
-            <div className="mt-8 grid gap-8 lg:grid-cols-2">
-              <figure className="min-w-0 rounded-xl bg-[var(--chart-surface)] p-3">
-                <figcaption className="mb-1 font-semibold">{t("statistik.trendTitle")}</figcaption>
-                <p className={cn("mb-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                  {t("statistik.trendCaption")}
-                </p>
-                {view.trend.length === 0 ? (
-                  <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                    {t("statistik.emptyRange")}
-                  </p>
-                ) : (
-                  <div className="h-64 w-full" aria-hidden>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={view.trend} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                        <CartesianGrid stroke="var(--chart-grid)" vertical={false} />
-                        <XAxis
-                          dataKey="tahun"
-                          tick={{ fill: "var(--text-dim)", fontSize: 13 }}
-                          tickLine={false}
-                          axisLine={false}
-                          minTickGap={24}
-                        />
-                        <YAxis
-                          tick={{ fill: "var(--text-dim)", fontSize: 13 }}
-                          tickLine={false}
-                          axisLine={false}
-                          width={48}
-                          allowDecimals={false}
-                        />
-                        <Tooltip
-                          content={(props) => {
-                            const payload = props.payload as unknown as
-                              | Array<{ payload?: { tahun: number; kejadian: number } }>
-                              | undefined;
-                            return (
-                              <TrendTip active={props.active} payload={payload} locale={locale} />
-                            );
-                          }}
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="kejadian"
-                          stroke="var(--chart-1)"
-                          fill="var(--chart-1)"
-                          fillOpacity={0.18}
-                          strokeWidth={2}
-                          isAnimationActive={!reduced}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-                <table className="sr-only">
-                  <caption>{t("statistik.chartTrendAria")}</caption>
-                  <thead>
-                    <tr>
-                      <th>{t("statistik.yearHeader")}</th>
-                      <th>{t("statistik.countHeader")}</th>
+            {view.trend.length === 0 ? (
+              <p className={cn("mt-6 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                {t("statistik.emptyRange")}
+              </p>
+            ) : (
+              <table className="sr-only">
+                <caption>{t("statistik.chartTrendAria")}</caption>
+                <thead>
+                  <tr>
+                    <th>{t("statistik.yearHeader")}</th>
+                    <th>{t("statistik.countHeader")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {view.trend.map((row) => (
+                    <tr key={row.tahun}>
+                      <td>{row.tahun}</td>
+                      <td>{angka(row.kejadian, locale)}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {view.trend.map((row) => (
-                      <tr key={row.tahun}>
-                        <td>{row.tahun}</td>
-                        <td>{angka(row.kejadian, locale)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </figure>
+                  ))}
+                </tbody>
+              </table>
+            )}
 
+            <div className="mt-8">
               <figure className="min-w-0 rounded-xl bg-[var(--chart-surface)] p-3">
                 <figcaption className="mb-1 font-semibold">{t("statistik.kabTitle")}</figcaption>
                 <p className={cn("mb-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
@@ -471,7 +502,17 @@ export function DataHero() {
               </figure>
             </div>
 
-            <Counters metrics={metrics} locale={locale} />
+            <Counters
+              metrics={metrics}
+              locale={locale}
+              trend={view.trend}
+              showSparks={showSparks}
+            />
+            {showSparks ? (
+              <p className={cn("mt-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+                {t("statistik.scaleNote")}
+              </p>
+            ) : null}
 
             <p className={cn("mt-4 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
               {t("statistik.noIncidents")}

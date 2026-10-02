@@ -263,3 +263,13 @@ export function shouldShowGuideBot(pathname: string): boolean {
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return false;
   return true;
 }
+
+/** Invitation card only. The FAB stays. Hidden where a form or chart fills the fold. */
+const TANGGAPI_INVITE_HIDDEN = ["/analisis-data", "/data-bencana", "/lapor"] as const;
+
+export function shouldShowTanggapiInvite(pathname: string): boolean {
+  if (!shouldShowGuideBot(pathname)) return false;
+  return !TANGGAPI_INVITE_HIDDEN.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
+}
