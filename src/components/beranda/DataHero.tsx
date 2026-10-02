@@ -406,7 +406,9 @@ export function DataHero() {
             </fieldset>
 
             <div id="dibi-catatan" className="mt-4 space-y-1" aria-live="polite">
-              <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{scopeNote}</p>
+              {showSparks ? (
+                <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{scopeNote}</p>
+              ) : null}
               {view.trendIgnoresKabupaten || view.trendIgnoresJenis ? (
                 <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                   {t("statistik.trendScopeNote")}
@@ -492,17 +494,17 @@ export function DataHero() {
               </figure>
             </div>
 
-            <Counters
-              metrics={metrics}
-              locale={locale}
-              trend={view.trend}
-              showSparks={showSparks}
-            />
-            {showSparks ? (
+            <div data-testid="number-band-block">
+              <Counters
+                metrics={metrics}
+                locale={locale}
+                trend={view.trend}
+                showSparks={showSparks}
+              />
               <p className={cn("mt-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                {t("statistik.scaleNote")}
+                {showSparks ? t("statistik.scaleNote") : scopeNote}
               </p>
-            ) : null}
+            </div>
 
             <p className={cn("mt-4 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
               {t("statistik.noIncidents")}

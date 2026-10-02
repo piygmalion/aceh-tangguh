@@ -29,6 +29,7 @@ describe("FE-67 visual-2", () => {
     assert.match(hero, /bandShowsSparklines/);
     assert.match(hero, /spark\(null\)/);
     assert.match(hero, /statistik\.scaleNote/);
+    assert.match(hero, /data-testid="number-band-block"/);
     assert.match(spark, /text-\[var\(--band-fg\)\]/);
     assert.doesNotMatch(spark, /chart-2|#C8102E|#c8102e/);
     const id = JSON.parse(read("messages/id.json")) as {
