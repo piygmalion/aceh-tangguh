@@ -280,6 +280,19 @@ body {
   font-size: var(--type-floor);
 }
 
+/* twMerge treats text-[0.8125rem] as the same group as leading-*, so the
+   band sets its own line box. Two lines for labels, three for notes. */
+.band-label {
+  line-height: 1.25;
+  min-height: calc(2 * 1.25 * var(--type-floor));
+}
+
+.band-note {
+  margin-top: 0.5rem;
+  line-height: 1.25;
+  min-height: calc(3 * 1.25 * var(--type-floor));
+}
+
 .type-kicker {
   font-size: var(--type-floor);
   font-weight: 600;

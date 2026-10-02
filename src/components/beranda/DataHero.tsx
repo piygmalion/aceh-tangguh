@@ -58,13 +58,9 @@ function Counter({
 }) {
   return (
     <div className={cn("flex h-full flex-col bg-[var(--band-bg)] p-4 text-[var(--band-fg)]", className)}>
-      <p className={cn("min-h-[2.5rem] leading-tight text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>
-        {label}
-      </p>
+      <p className={cn("band-label text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{label}</p>
       <div className="mt-1">{children}</div>
-      <p className={cn("mt-auto min-h-[3.25rem] pt-2 leading-tight text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>
-        {note ?? "\u00a0"}
-      </p>
+      <p className={cn("band-note text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{note ?? "\u00a0"}</p>
     </div>
   );
 }
@@ -188,7 +184,7 @@ function Counters({
     <div
       id="dibi"
       data-number-band
-      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)]"
+      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)] text-[var(--band-fg)]"
     >
       <div className="grid h-full grid-cols-2 gap-px bg-white/20 sm:grid-cols-3 lg:grid-cols-6">
         <Counter label={t("statistik.kejadian")}>

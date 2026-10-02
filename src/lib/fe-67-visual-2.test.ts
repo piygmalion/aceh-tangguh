@@ -150,8 +150,10 @@ describe("FE-67 visual-2", () => {
     assert.ok(contrastRatio("#ffffff", "#c8102e") >= 4.5);
     assert.ok(contrastRatio(compositeWhite("#c8102e", 0.85), "#c8102e") >= 4.5);
     const hero = read("src/components/beranda/DataHero.tsx");
-    assert.match(hero, /min-h-\[2\.5rem\]/);
-    assert.match(hero, /min-h-\[3\.25rem\]/);
+    assert.match(css, /\.band-label[\s\S]*min-height:\s*calc\(2 \* 1\.25 \* var\(--type-floor\)\)/);
+    assert.match(css, /\.band-note[\s\S]*min-height:\s*calc\(3 \* 1\.25 \* var\(--type-floor\)\)/);
+    assert.match(hero, /band-label/);
+    assert.match(hero, /band-note/);
     assert.match(hero, /bg-white\/20/);
     assert.match(hero, /border-\[var\(--band-rule\)\]/);
     assert.doesNotMatch(hero, /data-ink-field/);
