@@ -10,37 +10,44 @@ type Row = { tahun: number; kejadian: number };
 /**
  * Nineteen DIBI year bars. Only the highlight year is red, and only on
  * --chart-surface. The open year is hatched, not striped.
+ * Ticks are every second year so 13px labels never touch.
+ * The open-year label sits in a lane above the plot.
  */
 export function YearBars({
   rows,
   title,
   caption,
-  compactTicks,
   berjalanLabel,
   formatCount,
 }: {
   rows: Row[];
   title: string;
   caption: string;
-  compactTicks: boolean;
   berjalanLabel: string;
   formatCount: (n: number) => string;
 }) {
   const hatchId = `berjalan-${useId().replace(/:/g, "")}`;
   const max = rows.reduce((m, row) => Math.max(m, row.kejadian), 0);
   const width = 360;
-  const height = 200;
-  const axis = 168;
-  const top = 28;
-  const plotH = axis - top;
+  const height = 220;
+  const labelBaseline = 16;
+  const plotTop = 42;
+  const axis = 184;
+  const plotH = axis - plotTop;
   const slot = rows.length > 0 ? (width - 8) / rows.length : 0;
   const barW = Math.max(2, slot - 3);
+  const berjalanIndex = rows.findIndex((row) => row.tahun === BERJALAN_YEAR);
+  const berjalanRow = berjalanIndex >= 0 ? rows[berjalanIndex] : null;
+  const berjalanX =
+    berjalanIndex >= 0 ? 4 + berjalanIndex * slot + (slot - barW) / 2 + barW / 2 : 0;
+  const berjalanH =
+    berjalanRow && max > 0 ? (berjalanRow.kejadian / max) * plotH : 0;
 
   return (
-    <figure className="min-w-0 rounded-xl bg-[var(--chart-surface)] p-3 text-[var(--text)]">
+    <figure className="min-w-0 rounded-xl bg-[var(--chart-surface)] p-3 text-[var(--text)] max-sm:pr-16">
       <figcaption className="mb-1 font-semibold">{title}</figcaption>
       <p className={cn("mb-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{caption}</p>
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-52 w-full" aria-hidden>
+      <svg viewBox={`0 0 ${width} ${height}`} className="h-56 w-full" aria-hidden>
         <defs>
           <pattern
             id={hatchId}
@@ -58,14 +65,14 @@ export function YearBars({
           const y = axis - h;
           const highlight = row.tahun === HERO_BAR_HIGHLIGHT_YEAR;
           const berjalan = row.tahun === BERJALAN_YEAR;
-          const showTick = !compactTicks || index % 2 === 0;
+          const showTick = index % 2 === 0;
           const barH = Math.max(h, row.kejadian > 0 ? 1 : 0);
           return (
             <g key={row.tahun}>
               {highlight ? (
                 <text
                   x={x + barW / 2}
-                  y={Math.max(14, y - 6)}
+                  y={y - 8}
                   textAnchor="middle"
                   fontSize="13"
                   fontWeight="800"
@@ -84,26 +91,7 @@ export function YearBars({
                 opacity={highlight ? 1 : berjalan ? 0.35 : 0.9}
               />
               {berjalan ? (
-                <rect
-                  x={x}
-                  y={y}
-                  width={barW}
-                  height={barH}
-                  rx="1"
-                  fill={`url(#${hatchId})`}
-                />
-              ) : null}
-              {berjalan ? (
-                <text
-                  x={width - 2}
-                  y={Math.max(14, y - 4)}
-                  textAnchor="end"
-                  fontSize="13"
-                  fontWeight="600"
-                  fill="currentColor"
-                >
-                  {berjalanLabel}
-                </text>
+                <rect x={x} y={y} width={barW} height={barH} rx="1" fill={`url(#${hatchId})`} />
               ) : null}
               {showTick ? (
                 <text
@@ -119,6 +107,28 @@ export function YearBars({
             </g>
           );
         })}
+        {berjalanRow ? (
+          <g>
+            <line
+              x1={berjalanX}
+              y1={axis - berjalanH - 16}
+              x2={berjalanX}
+              y2={axis - berjalanH - 3}
+              stroke="currentColor"
+              strokeWidth="1"
+            />
+            <text
+              x={berjalanX - 6}
+              y={labelBaseline}
+              textAnchor="end"
+              fontSize="13"
+              fontWeight="600"
+              fill="currentColor"
+            >
+              {berjalanLabel}
+            </text>
+          </g>
+        ) : null}
       </svg>
     </figure>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
@@ -222,7 +222,6 @@ export function DataHero() {
   const t = useTranslations("beranda");
   const locale = useLocale();
   const { data, isLoading, isError } = useDibi();
-  const [compactTicks, setCompactTicks] = useState(false);
   const [yearFrom, setYearFrom] = useState<number | null>(null);
   const [yearTo, setYearTo] = useState<number | null>(null);
   const [kabupaten, setKabupaten] = useState("");
@@ -237,14 +236,6 @@ export function DataHero() {
       jenis: jenis || null,
     });
   }, [data, yearFrom, yearTo, kabupaten, jenis]);
-
-  useEffect(() => {
-    const query = window.matchMedia("(max-width: 639px)");
-    const sync = () => setCompactTicks(query.matches);
-    sync();
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
-  }, []);
 
   const updated = data ? formatUpdated(data.metadata.fetched_at, locale) : null;
   const standbyDate =
@@ -323,7 +314,6 @@ export function DataHero() {
               rows={view.trend}
               title={t("statistik.trendTitle")}
               caption={t("statistik.trendCaption")}
-              compactTicks={compactTicks}
               berjalanLabel={t("statistik.berjalan")}
               formatCount={(count) => angka(count, locale)}
             />

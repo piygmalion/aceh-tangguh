@@ -16,9 +16,9 @@ describe("FE-67 visual-2", () => {
     assert.match(bars, /HERO_BAR_HIGHLIGHT_YEAR/);
     assert.match(bars, /BERJALAN_YEAR/);
     assert.match(bars, /fontSize="13"/);
+    assert.match(bars, /index % 2 === 0/);
+    assert.match(bars, /max-sm:pr-16/);
     assert.match(hero, /opacity-\[0\.07\]/);
-    assert.match(hero, /compactTicks/);
-    assert.match(hero, /max-width: 639px/);
     assert.doesNotMatch(hero, /AreaChart/);
     assert.doesNotMatch(bars, /#C8102E|#c8102e/);
   });
@@ -46,6 +46,9 @@ describe("FE-67 visual-2", () => {
     assert.equal(en.laporHub.kicker, "Public participation");
     assert.match(id.laporHub.helper, /moderasi/);
     assert.match(en.laporHub.helper, /moderation/);
+    const hub = read("src/components/laporan/ReportChoiceHub.tsx");
+    assert.match(hub, /text-\[var\(--eyebrow\)\][\s\S]{0,40}t\("kicker"\)/);
+    assert.doesNotMatch(hub, /text-\[var\(--accent-soft\)\][\s\S]{0,40}t\("kicker"\)/);
   });
 
   it("adds the settings scroll hint, hides the mobile status card, and notes the canvas hole", () => {
