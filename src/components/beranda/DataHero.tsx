@@ -3,6 +3,8 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { heroBackgroundMode, HERO_PHOTO } from "@/lib/hero-photo";
+import { HeroPhotoBackdrop } from "./HeroPhotoBackdrop";
 import { Link } from "@/i18n/routing";
 import {
   aggregateDibiBeranda,
@@ -282,55 +284,72 @@ export function DataHero() {
 
   const showSparks = view ? bandShowsSparklines(view) : false;
   const openYear = data ? runningYear(data.metadata) : null;
+  const [photoFailed, setPhotoFailed] = useState(false);
+  const heroBg = heroBackgroundMode(HERO_PHOTO, photoFailed);
+  const onPhoto = heroBg === "photo";
 
   return (
     <section
       id="hero"
+      data-hero-bg={heroBg}
       data-section-density="spacious"
       className="section-y-spacious relative scroll-mt-24 overflow-hidden px-4 !pt-28 md:!pt-32"
     >
-      <div aria-hidden className="pointer-events-none absolute inset-0 text-[var(--ink)] opacity-[0.07]">
-        <svg className="h-full w-full" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice">
-          {[70, 130, 190, 250, 310, 370].map((y, index) => (
-            <path
-              key={y}
-              d={`M-40 ${y} C 160 ${y - 28 - index * 3}, 380 ${y + 22}, 620 ${y - 6} S 960 ${y + 16}, 1260 ${y - 10}`}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.25"
-            />
-          ))}
-        </svg>
-      </div>
+      {onPhoto ? null : (
+        <div aria-hidden className="pointer-events-none absolute inset-0 text-[var(--ink)] opacity-[0.07]">
+          <svg className="h-full w-full" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice">
+            {[70, 130, 190, 250, 310, 370].map((y, index) => (
+              <path
+                key={y}
+                d={`M-40 ${y} C 160 ${y - 28 - index * 3}, 380 ${y + 22}, 620 ${y - 6} S 960 ${y + 16}, 1260 ${y - 10}`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.25"
+              />
+            ))}
+          </svg>
+        </div>
+      )}
       <div className="relative mx-auto max-w-6xl">
-        <p className={cn("text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("statistik.kicker")}</p>
-        <div className="mt-3 grid items-end gap-6 lg:grid-cols-2">
-          <div className="max-w-2xl">
-            <h1 className="type-display">{t("statistik.title")}</h1>
-            <p className="type-lead mt-3 text-[var(--text-dim)]">
-              {t("statistik.lead")}
+        <div className="relative">
+          <HeroPhotoBackdrop failed={photoFailed} onError={() => setPhotoFailed(true)} />
+          <div className={cn("relative z-10", onPhoto && "text-white")}>
+            <p className={cn(onPhoto ? "text-white" : "text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>
+              {t("statistik.kicker")}
             </p>
-            <Link
-              href="/data-bencana"
-              className={cn(
-                "mt-5 inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--bg-raised)] px-4 font-semibold transition-colors hover:border-[var(--ink)] hover:bg-[var(--bg-muted)]",
-                TYPE_FLOOR_CLASS,
-              )}
-            >
-              {t("dibi.cta")}
-              <ArrowUpRight size={14} aria-hidden />
-            </Link>
+            <div className="mt-3 grid items-end gap-6 lg:grid-cols-2">
+              <div className="max-w-2xl">
+                <h1 className="type-display">{t("statistik.title")}</h1>
+                <p className={cn("type-lead mt-3", onPhoto ? "text-white" : "text-[var(--text-dim)]")}>
+                  {t("statistik.lead")}
+                </p>
+                <Link
+                  href="/data-bencana"
+                  className={cn(
+                    "mt-5 inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-4 font-semibold transition-colors",
+                    onPhoto
+                      ? "border-white/40 bg-white text-[#111111] hover:bg-white"
+                      : "border-[var(--border)] bg-[var(--bg-raised)] hover:border-[var(--ink)] hover:bg-[var(--bg-muted)]",
+                    TYPE_FLOOR_CLASS,
+                  )}
+                >
+                  {t("dibi.cta")}
+                  <ArrowUpRight size={14} aria-hidden />
+                </Link>
+              </div>
+              {view && view.trend.length > 0 ? (
+                <YearBars
+                  rows={view.trend}
+                  title={t("statistik.trendTitle")}
+                  caption={t("statistik.trendCaption")}
+                  berjalanLabel={t("statistik.berjalan")}
+                  formatCount={(count) => angka(count, locale)}
+                  runningYear={openYear}
+                  onPhoto={onPhoto}
+                />
+              ) : null}
+            </div>
           </div>
-          {view && view.trend.length > 0 ? (
-            <YearBars
-              rows={view.trend}
-              title={t("statistik.trendTitle")}
-              caption={t("statistik.trendCaption")}
-              berjalanLabel={t("statistik.berjalan")}
-              formatCount={(count) => angka(count, locale)}
-              runningYear={openYear}
-            />
-          ) : null}
         </div>
 
         {isLoading ? <PanelSkeleton className="mt-8 h-80" /> : null}

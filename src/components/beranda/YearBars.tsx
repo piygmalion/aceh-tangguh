@@ -20,6 +20,7 @@ export function YearBars({
   berjalanLabel,
   formatCount,
   runningYear,
+  onPhoto = false,
 }: {
   rows: Row[];
   title: string;
@@ -27,6 +28,8 @@ export function YearBars({
   berjalanLabel: string;
   formatCount: (n: number) => string;
   runningYear: number | null;
+  /** White marks on the dark photo scrim. The chart card stays on --chart-surface otherwise. */
+  onPhoto?: boolean;
 }) {
   const hatchId = `berjalan-${useId().replace(/:/g, "")}`;
   const max = rows.reduce((m, row) => Math.max(m, row.kejadian), 0);
@@ -47,9 +50,16 @@ export function YearBars({
     berjalanRow && max > 0 ? (berjalanRow.kejadian / max) * plotH : 0;
 
   return (
-    <figure className="min-w-0 rounded-xl bg-[var(--chart-surface)] p-3 text-[var(--text)] max-sm:pr-16">
+    <figure
+      className={cn(
+        "min-w-0 rounded-xl p-3 max-sm:pr-16",
+        onPhoto ? "bg-transparent text-white" : "bg-[var(--chart-surface)] text-[var(--text)]",
+      )}
+    >
       <figcaption className="mb-1 font-semibold">{title}</figcaption>
-      <p className={cn("mb-2 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{caption}</p>
+      <p className={cn("mb-2", onPhoto ? "text-white" : "text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+        {caption}
+      </p>
       <svg viewBox={`0 0 ${width} ${height}`} className="h-56 w-full" aria-hidden>
         <defs>
           <pattern
@@ -102,7 +112,7 @@ export function YearBars({
                   y={axis + 18}
                   textAnchor="middle"
                   fontSize="13"
-                  fill="var(--text-dim)"
+                  fill={onPhoto ? "currentColor" : "var(--text-dim)"}
                 >
                   {String(row.tahun).slice(2)}
                 </text>
