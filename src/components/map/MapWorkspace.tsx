@@ -73,7 +73,12 @@ function MapWorkspaceInner() {
         />
       ) : null}
       <SiteNav />
-      <StatusLegend className="absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:hidden" />
+      <StatusLegend
+        className={cn(
+          "absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:hidden",
+          settingsOpen && "hidden",
+        )}
+      />
       <MapToolbar
         areaLayer={state.areaLayer}
         krbJenis={state.krbJenis ?? null}

@@ -111,6 +111,8 @@ html[data-theme="light"] {
   --chart-5: #e8e8e8;
   --chart-surface: #ffffff;
   --chart-grid: #e8e8e8;
+  --chart-bar: #c8102e;
+  --chart-bar-neutral: #111111;
 
   --hero-fg: #ffffff;
   --hero-muted: #ffffff;
@@ -119,10 +121,11 @@ html[data-theme="light"] {
   --topbar-bg: #0a0a0a;
   --topbar-fg: #ffffff;
   --topbar-dim: #c6c6c6;
-  --band-bg: #111111;
+  --band-bg: #c8102e;
   --band-fg: #ffffff;
-  --band-dim: #c6c6c6;
-  --band-rule: #c8102e;
+  /* 85% white on #c8102e composites to about 4.53:1. */
+  --band-dim: rgba(255, 255, 255, 0.85);
+  --band-rule: #8e1224;
 
   --shadow: 0 8px 24px rgb(0 0 0 / 8%);
   --shadow-elevated: 0 12px 40px rgb(0 0 0 / 12%);
@@ -224,11 +227,15 @@ html[data-theme="dark"],
   --chart-5: #2a2a2a;
   --chart-surface: #0a0a0a;
   --chart-grid: #2a2a2a;
+  /* #c8102e is 2.96:1 on --bg-raised (#1a1a1a). #f25563 clears 5.18:1. */
+  --chart-bar: #f25563;
+  /* #d4d4d4 on #1a1a1a is 11.74:1. */
+  --chart-bar-neutral: #d4d4d4;
 
   --glass-bg: rgba(26, 26, 26, 0.94);
   --eyebrow: #f4d6db;
   --topbar-bg: #000000;
-  --band-bg: #1a1a1a;
+  --band-bg: #c8102e;
 
   --shadow: 0 8px 30px rgb(0 0 0 / 45%);
   --shadow-elevated: 0 16px 48px rgb(0 0 0 / 55%);
@@ -274,6 +281,19 @@ body {
 /* Product chrome type — 13px floor, display clamp to 4rem, PJS 800 */
 .type-floor {
   font-size: var(--type-floor);
+}
+
+/* twMerge treats text-[0.8125rem] as the same group as leading-*, so the
+   band sets its own line box. Two lines for labels, three for notes. */
+.band-label {
+  line-height: 1.25;
+  min-height: calc(2 * 1.25 * var(--type-floor));
+}
+
+.band-note {
+  margin-top: 0.5rem;
+  line-height: 1.25;
+  min-height: calc(3 * 1.25 * var(--type-floor));
 }
 
 .type-kicker {

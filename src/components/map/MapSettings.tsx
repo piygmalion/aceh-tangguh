@@ -52,6 +52,8 @@ export function MapSettings({
   const locale = useLocale();
   const panelRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [showScrollFade, setShowScrollFade] = useState(false);
   const onOpenChangeRef = useRef(onOpenChange);
   onOpenChangeRef.current = onOpenChange;
 
@@ -64,6 +66,12 @@ export function MapSettings({
     updateOpen(false);
     buttonRef.current?.focus();
   }, [updateOpen]);
+
+  const syncScrollFade = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    setShowScrollFade(el.scrollHeight - el.scrollTop - el.clientHeight > 12);
+  }, []);
 
   const { data: sentinel } = useQuery({
     queryKey: ["sentinel-status"],
@@ -90,6 +98,22 @@ export function MapSettings({
     };
   }, [open, updateOpen, closeToButton]);
 
+  useEffect(() => {
+    if (!open) return;
+    syncScrollFade();
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", syncScrollFade, { passive: true });
+    const observer =
+      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(syncScrollFade);
+    observer?.observe(el);
+    if (el.firstElementChild) observer?.observe(el.firstElementChild);
+    return () => {
+      el.removeEventListener("scroll", syncScrollFade);
+      observer?.disconnect();
+    };
+  }, [open, syncScrollFade]);
+
   return (
     <div
       ref={panelRef}
@@ -114,11 +138,14 @@ export function MapSettings({
         <div
           role="dialog"
           aria-label={t("settings")}
-          className="map-chrome-elevated max-h-[calc(100svh-10rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl text-sm md:max-h-[calc(100svh-18rem)]"
+          className="map-chrome-elevated relative max-h-[calc(100svh-10rem)] max-sm:max-h-[calc(100svh-19.75rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl text-sm md:max-h-[calc(100svh-18rem)]"
         >
           {/* 18rem keeps the panel head clear of the zoom control at 1280x720. */}
-          {/* Scroll lives inside. overflow-y-auto on this dialog punches a #d4dce4 hole in the MapLibre canvas. */}
-          <div className="max-h-[calc(100svh-10rem)] overflow-y-auto p-3 pb-6 md:max-h-[calc(100svh-18rem)]">
+          {/* Scroll lives inside. overflow-y-auto on this dialog punches a #d4dce4 hole in the MapLibre canvas (terlihat di tangkapan headless). */}
+          <div
+            ref={scrollerRef}
+            className="max-h-[calc(100svh-10rem)] max-sm:max-h-[calc(100svh-19.75rem)] overflow-y-auto p-3 pb-6 md:max-h-[calc(100svh-18rem)]"
+          >
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="font-semibold">{t("settings")}</div>
             <button
@@ -205,6 +232,13 @@ export function MapSettings({
             </p>
           )}
           </div>
+          {showScrollFade ? (
+            <div
+              aria-hidden
+              data-settings-scroll-fade
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-[var(--map-chrome)] to-transparent"
+            />
+          ) : null}
         </div>
       )}
     </div>

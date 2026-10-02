@@ -20,3 +20,8 @@ Arah: GABUNGAN — struktur A Kontur Pesisir; foto drone + motif B hanya di perm
 ## visual-5/8
 - Chip IRBI dibedakan dari status; foto kartu PD diganti pita level.
 - Destana: fix counts Backend (src/app/api/sik/public/route.ts; count head/RPC group by; tes total = baris profil_desa 6.503); empty state "Penilaian Destana belum tersedia", bukan "6.503 belum dinilai".
+
+## Antrean setelah #118 (non-blocker, dari gate 2 Okt 00:59)
+- /peta Pengaturan 1280x720: fade bawah sebagai petunjuk scroll (isi terpotong di "Abu-abu minimal", checkbox OpenFreeMap tersembunyi).
+- /peta 390: kartu Status mobile disembunyikan saat panel Pengaturan terbuka (seperti desktop).
+- Komentar MapSettings soal overflow-y-auto "hole" ditambah "(terlihat di tangkapan headless)".

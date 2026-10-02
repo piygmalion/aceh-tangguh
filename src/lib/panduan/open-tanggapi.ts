@@ -51,11 +51,11 @@ export function consumeOpenTanggapi(): boolean {
   }
 }
 
-/** True when the first-visit FAB bubble should stay hidden this session. */
+/** True when the invitation card has already been dismissed. Persists across visits. */
 export function hasSeenTanggapiBubble(): boolean {
   if (typeof window === "undefined") return true;
   try {
-    return sessionStorage.getItem(TANGGAPI_BUBBLE_STORAGE) === "1";
+    return window.localStorage.getItem(TANGGAPI_BUBBLE_STORAGE) === "1";
   } catch {
     return true;
   }
@@ -64,8 +64,8 @@ export function hasSeenTanggapiBubble(): boolean {
 export function markTanggapiBubbleSeen(): void {
   if (typeof window === "undefined") return;
   try {
-    sessionStorage.setItem(TANGGAPI_BUBBLE_STORAGE, "1");
+    window.localStorage.setItem(TANGGAPI_BUBBLE_STORAGE, "1");
   } catch {
-    // Private mode — skip the bubble rather than repeat it.
+    // Private mode — skip the card rather than repeat it.
   }
 }

@@ -186,3 +186,68 @@ export function displayedBandMetrics(view: DibiBerandaView): DibiMetrics | null 
   if (view.counters.scope === "year-range" && view.trend.length === 0) return null;
   return metrics;
 }
+
+/** Hero bar that is red. The count is read from the row, never a constant. */
+export const HERO_BAR_HIGHLIGHT_YEAR = 2020;
+
+const JAKARTA_TZ = "Asia/Jakarta";
+
+/** Calendar year of an ISO timestamp in Asia/Jakarta. */
+export function jakartaCalendarYear(iso: string): number | null {
+  const ms = Date.parse(iso);
+  if (Number.isNaN(ms)) return null;
+  const year = Number(
+    new Intl.DateTimeFormat("en-US", { timeZone: JAKARTA_TZ, year: "numeric" }).format(ms),
+  );
+  return Number.isInteger(year) ? year : null;
+}
+
+/**
+ * The open year is metadata.year_to only when that year is also the calendar
+ * year of metadata.fetched_at in Asia/Jakarta. Otherwise the series is closed:
+ * no hatch, no dashed spark segment, and no "berjalan" label.
+ */
+export function runningYear(metadata: { year_to: number; fetched_at: string }): number | null {
+  const fetched = jakartaCalendarYear(metadata.fetched_at);
+  if (fetched == null || metadata.year_to !== fetched) return null;
+  return metadata.year_to;
+}
+
+/** Impact series whose peak, when it falls on this year, is marked. Not red. */
+export const IMPACT_PEAK_YEAR = 2025;
+
+export const SPARKLINE_KEYS = [
+  "kejadian",
+  "meninggal",
+  "luka_sakit",
+  "menderita_mengungsi",
+  "estimasi_kerugian_rumah",
+] as const;
+
+export type SparklineKey = (typeof SPARKLINE_KEYS)[number];
+
+export type MetricPoint = { tahun: number; value: number };
+
+export function seriesPerMetric(
+  trend: readonly DibiTahunRow[],
+  key: keyof DibiMetrics,
+): MetricPoint[] {
+  return trend.map((row) => ({
+    tahun: row.tahun,
+    value: typeof row[key] === "number" && Number.isFinite(row[key]) ? row[key] : 0,
+  }));
+}
+
+/** Highest value in one metric. Ties keep the earlier year. */
+export function peakPoint(series: readonly MetricPoint[]): MetricPoint | null {
+  if (series.length === 0) return null;
+  return series.reduce((best, point) => (point.value > best.value ? point : best));
+}
+
+/**
+ * Sparklines share the year-range totals. A kabupaten or jenis total has no
+ * year series in this extract, so the band must not draw a province spark next to it.
+ */
+export function bandShowsSparklines(view: DibiBerandaView): boolean {
+  return view.counters.scope === "year-range" && view.trend.length > 0;
+}

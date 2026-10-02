@@ -11,7 +11,7 @@ export function ReportChoiceHub() {
 
   return (
     <div>
-      <p className={cn("mb-2 text-[var(--accent-soft)]", TYPE_KICKER_CLASS)}>{t("kicker")}</p>
+      <p className={cn("mb-2 text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>{t("kicker")}</p>
       <h1 className="page-h1">{t("title")}</h1>
       <p className="mt-4 max-w-xl text-base leading-relaxed text-[var(--text-dim)] md:text-lg">
         {t("subtitle")}

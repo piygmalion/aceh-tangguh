@@ -52,17 +52,15 @@ function BarisKab({
         </span>
       </span>
 
-      <span className="col-start-2 col-end-4 flex items-center gap-3">
+      <div className="col-start-2 col-end-4 min-w-0">
         <Bar
           ratio={maks > 0 ? kab.irb_2025 / maks : 0}
           className={kelasRisikoBar(kab.kelas_risiko)}
         />
-        <span
-          className={cn("shrink-0 whitespace-nowrap text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}
-        >
+        <p className={cn("mt-1 text-right text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
           {dariSlug(kab.ancaman_tertinggi, locale)}
-        </span>
-      </span>
+        </p>
+      </div>
     </li>
   );
 }

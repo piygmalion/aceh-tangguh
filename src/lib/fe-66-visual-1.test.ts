@@ -31,7 +31,8 @@ describe("FE-66 visual-1", () => {
   it("applies display and h2 on the beranda and rations kickers to hero and sumber", () => {
     const hero = read("src/components/beranda/DataHero.tsx");
     assert.match(hero, /className="type-display"/);
-    assert.match(hero, /data-ink-field=""/);
+    assert.match(hero, /data-number-band/);
+    assert.doesNotMatch(hero, /data-ink-field=""/);
     assert.match(hero, /data-section-density="spacious"/);
     const heading = read("src/components/beranda/primitives.tsx");
     assert.match(heading, /className="type-h2"/);

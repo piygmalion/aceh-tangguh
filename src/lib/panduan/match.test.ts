@@ -8,6 +8,7 @@ import {
   extractJenis,
   matchGuideIntent,
   shouldShowGuideBot,
+  shouldShowTanggapiInvite,
 } from "./match";
 import { mergeFaqCatalog, parseFaqCatalogItems } from "./faq";
 import { chipsForPathname, welcomeQueryForPath } from "./page-context";
@@ -83,6 +84,17 @@ describe("panduan matcher", () => {
     assert.equal(shouldShowGuideBot("/peta"), false);
     assert.equal(shouldShowGuideBot("/admin/login"), false);
     assert.equal(shouldShowGuideBot("/admin/sik/kejadian"), false);
+  });
+
+  it("hides the invitation card on fold forms and charts, and keeps the bot", () => {
+    assert.equal(shouldShowTanggapiInvite("/"), true);
+    assert.equal(shouldShowTanggapiInvite("/analisis-data"), false);
+    assert.equal(shouldShowTanggapiInvite("/data-bencana"), false);
+    assert.equal(shouldShowTanggapiInvite("/lapor"), false);
+    assert.equal(shouldShowTanggapiInvite("/lapor/kejadian"), false);
+    assert.equal(shouldShowGuideBot("/lapor"), true);
+    assert.equal(shouldShowGuideBot("/analisis-data"), true);
+    assert.equal(shouldShowTanggapiInvite("/peta"), false);
   });
 
   it("matches Tatonas and water-level questions as early warning", () => {

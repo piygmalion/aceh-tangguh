@@ -13,6 +13,7 @@ import {
 
 function mockSession() {
   const data = new Map<string, string>();
+  const local = new Map<string, string>();
   const store = {
     getItem(key: string) {
       return data.has(key) ? data.get(key)! : null;
@@ -22,6 +23,17 @@ function mockSession() {
     },
     removeItem(key: string) {
       data.delete(key);
+    },
+  };
+  const localStore = {
+    getItem(key: string) {
+      return local.has(key) ? local.get(key)! : null;
+    },
+    setItem(key: string, value: string) {
+      local.set(key, String(value));
+    },
+    removeItem(key: string) {
+      local.delete(key);
     },
   };
   Object.defineProperty(globalThis, "sessionStorage", {
@@ -34,6 +46,7 @@ function mockSession() {
       dispatchEvent() {
         return true;
       },
+      localStorage: localStore,
     },
   });
   return data;

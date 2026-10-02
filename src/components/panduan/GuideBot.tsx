@@ -27,7 +27,7 @@ import { cn } from "@/lib/utils";
 import { chipsForPathname, type GuideChipKey, welcomeQueryForPath } from "@/lib/panduan/page-context";
 import { HOME_TOUR_STEPS } from "@/lib/panduan/tour-steps";
 import type { GuideAnswer, GuideHref, GuideLocale, GuideSlots } from "@/lib/panduan/types";
-import { shouldShowGuideBot } from "@/lib/panduan/match";
+import { shouldShowGuideBot, shouldShowTanggapiInvite } from "@/lib/panduan/match";
 import { logUnknownIntent } from "@/lib/panduan/unknown";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { GuidePanel, type GuideChatItem } from "./GuidePanel";
@@ -132,6 +132,7 @@ export function GuideBot() {
   const [session, setSession] = useState<GuideSlots>({});
   const [faq, setFaq] = useState<GuideFaqEntry[]>(STATIC_GUIDE_FAQ);
   const [showBubble, setShowBubble] = useState(false);
+  const [inviteDesktop, setInviteDesktop] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [threadReady, setThreadReady] = useState(false);
   const sessionRef = useRef(session);
@@ -327,12 +328,33 @@ export function GuideBot() {
   }, []);
 
   useEffect(() => {
-    if (!visible || open) {
+    const query = window.matchMedia("(min-width: 640px)");
+    const sync = () => setInviteDesktop(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    const allowCard =
+      visible && !open && inviteDesktop && shouldShowTanggapiInvite(pathname) && !hasSeenTanggapiBubble();
+    if (!allowCard) {
       setShowBubble(false);
       return;
     }
-    setShowBubble(!hasSeenTanggapiBubble());
-  }, [open, visible]);
+    setShowBubble(true);
+    const dismiss = () => {
+      markTanggapiBubbleSeen();
+      setShowBubble(false);
+    };
+    const timer = window.setTimeout(dismiss, 6000);
+    const onScroll = () => dismiss();
+    window.addEventListener("scroll", onScroll, { passive: true, once: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [inviteDesktop, open, pathname, visible]);
 
   useEffect(() => {
     if (consumeOpenTanggapi()) handleOpen();
@@ -489,7 +511,7 @@ export function GuideBot() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: motionMs ?? 0.16 }}
-            className="pointer-events-auto relative mb-1 max-w-[16rem]"
+            className="pointer-events-auto relative mb-1 hidden max-w-[16rem] sm:block"
           >
             <div className="rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 shadow-[var(--shadow)]">
               <div className="flex items-start gap-2">
