@@ -112,6 +112,7 @@ html[data-theme="light"] {
   --chart-surface: #ffffff;
   --chart-grid: #e8e8e8;
   --chart-bar: #c8102e;
+  --chart-bar-neutral: #111111;
 
   --hero-fg: #ffffff;
   --hero-muted: #ffffff;
@@ -228,6 +229,8 @@ html[data-theme="dark"],
   --chart-grid: #2a2a2a;
   /* #c8102e is 2.96:1 on --bg-raised (#1a1a1a). #f25563 clears 5.18:1. */
   --chart-bar: #f25563;
+  /* #d4d4d4 on #1a1a1a is 11.74:1. */
+  --chart-bar-neutral: #d4d4d4;
 
   --glass-bg: rgba(26, 26, 26, 0.94);
   --eyebrow: #f4d6db;

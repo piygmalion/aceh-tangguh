@@ -188,8 +188,8 @@ export function kelasRisikoChip(kelas: string): string {
   return `${edge} bg-[#1F4C15] text-[#FFFFFF]`;
 }
 
-/** Length carries the count. Every bar is the brand red; the class stays on the chip. */
+/** Length carries the score. The bar is neutral ink; the class stays on the chip. */
 export function kelasRisikoBar(kelas: string): string {
   void kelas;
-  return "bg-[var(--chart-bar)]";
+  return "bg-[var(--chart-bar-neutral)]";
 }
