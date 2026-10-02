@@ -6,10 +6,12 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 import sharp from "sharp";
 import { HeroPhotoBackdrop } from "@/components/beranda/HeroPhotoBackdrop";
-import { SITE_MEDIA } from "@/lib/media";
+import { HERO_PHOTO_ENABLED } from "@/lib/media";
 import {
   HERO_PANEL_ALPHA,
   HERO_PHOTO,
+  HERO_PHOTO_ALT,
+  HERO_PHOTO_CREDIT,
   heroBackgroundMode,
   heroPhotoCaption,
   heroScrimAlpha,
@@ -43,21 +45,48 @@ const BUTTON_INK: [number, number, number] = [17, 17, 17];
 
 describe("FE-68 hero photo", () => {
   it("renders the DJI photo with the Indonesian alt and no invented caption", () => {
-    assert.equal(HERO_PHOTO.alt, "Foto aerial DJI — permukiman, sungai, dan perbukitan Aceh");
-    assert.equal(HERO_PHOTO.alt, SITE_MEDIA.heroSlides[2].alt);
-    assert.equal(heroPhotoCaption(null), null);
-    assert.equal(heroPhotoCaption({ lokasi: "Aceh", tahun: 2024 }), null);
+    assert.equal(HERO_PHOTO_ENABLED, false);
+    assert.equal(HERO_PHOTO.alt, HERO_PHOTO_ALT);
     assert.equal(
-      heroPhotoCaption({ lokasi: "Aceh Besar", tahun: 2024, sumber: "BPBA" }),
-      "Foto: Aceh Besar, 2024 · BPBA",
+      HERO_PHOTO.alt,
+      "Foto aerial DJI — permukiman di tepi sungai di Aceh dengan bangunan rusak dan genangan lumpur",
     );
-    const html = renderToStaticMarkup(
-      createElement(HeroPhotoBackdrop, { failed: false, onError() {} }),
+    assert.equal(HERO_PHOTO.lokasi, "");
+    assert.equal(HERO_PHOTO.waktu, "");
+    assert.equal(HERO_PHOTO.keadaan, "");
+    assert.equal(heroPhotoCaption(null), null);
+    assert.equal(heroPhotoCaption({ lokasi: "Aceh Besar" }), null);
+    assert.equal(heroPhotoCaption({ waktu: "2024" }), null);
+    assert.equal(heroPhotoCaption(HERO_PHOTO), null);
+    assert.equal(
+      heroPhotoCaption({ lokasi: "Aceh Besar", waktu: "2024" }),
+      `Aceh Besar, 2024 — ${HERO_PHOTO_CREDIT}`,
     );
-    assert.match(html, /data-hero-bg="photo"/);
-    assert.match(html, new RegExp(`alt="${HERO_PHOTO.alt}"`));
-    assert.match(html, /Foto aerial DJI — permukiman, sungai, dan perbukitan Aceh/);
-    assert.doesNotMatch(html, /Foto: /);
+    assert.equal(
+      heroPhotoCaption({ keadaan: "Pascabanjir", lokasi: "Aceh Besar", waktu: "2024" }),
+      `Pascabanjir, Aceh Besar, 2024 — ${HERO_PHOTO_CREDIT}`,
+    );
+    const on = renderToStaticMarkup(
+      createElement(HeroPhotoBackdrop, { failed: false, enabled: true, onError() {} }),
+    );
+    assert.match(on, /data-hero-bg="photo"/);
+    assert.match(on, new RegExp(`alt="${HERO_PHOTO.alt}"`));
+    assert.doesNotMatch(on, /Foto aerial DJI, dokumentasi/);
+    const off = renderToStaticMarkup(
+      createElement(HeroPhotoBackdrop, { failed: false, enabled: false, onError() {} }),
+    );
+    assert.equal(off, "");
+    const captioned = renderToStaticMarkup(
+      createElement(HeroPhotoBackdrop, {
+        failed: false,
+        enabled: true,
+        onError() {},
+        meta: { keadaan: "Pascabanjir", lokasi: "Aceh Besar", waktu: "2024" },
+      }),
+    );
+    assert.match(captioned, /Pascabanjir, Aceh Besar, 2024 — Foto aerial DJI, dokumentasi Aceh Tangguh/);
+    assert.match(captioned, /text-\[0\.8125rem\]/);
+    assert.match(captioned, /bg-\[#111111\]\/90/);
     const hero = read("src/components/beranda/DataHero.tsx");
     const backdrop = read("src/components/beranda/HeroPhotoBackdrop.tsx");
     assert.match(hero, /HeroPhotoBackdrop/);
@@ -71,12 +100,14 @@ describe("FE-68 hero photo", () => {
   });
 
   it("falls back to the plain contour background when the photo fails or is missing", () => {
-    assert.equal(heroBackgroundMode(HERO_PHOTO, false), "photo");
-    assert.equal(heroBackgroundMode(HERO_PHOTO, true), "plain");
-    assert.equal(heroBackgroundMode({ src: "" }, false), "plain");
-    assert.equal(heroBackgroundMode(null, false), "plain");
+    assert.equal(heroBackgroundMode(HERO_PHOTO, false, true), "photo");
+    assert.equal(heroBackgroundMode(HERO_PHOTO, false, false), "plain");
+    assert.equal(heroBackgroundMode(HERO_PHOTO, false), "plain");
+    assert.equal(heroBackgroundMode(HERO_PHOTO, true, true), "plain");
+    assert.equal(heroBackgroundMode({ src: "" }, false, true), "plain");
+    assert.equal(heroBackgroundMode(null, false, true), "plain");
     const html = renderToStaticMarkup(
-      createElement(HeroPhotoBackdrop, { failed: true, onError() {} }),
+      createElement(HeroPhotoBackdrop, { failed: true, enabled: true, onError() {} }),
     );
     assert.equal(html, "");
     const hero = read("src/components/beranda/DataHero.tsx");
@@ -98,11 +129,12 @@ describe("FE-68 hero photo", () => {
     assert.ok(bytes < 250 * 1024, `hero derivative is ${bytes} bytes`);
     assert.ok(bytes > 20 * 1024, "derivative should still be a real photograph");
     const backdrop = read("src/components/beranda/HeroPhotoBackdrop.tsx");
-    assert.match(backdrop, /rgba\(17,17,17,0\.80\)/);
+    assert.match(backdrop, /rgba\(17,17,17,0\.72\)/);
     assert.match(backdrop, /rgba\(17,17,17,0\.50\)_55%/);
     assert.match(backdrop, /rgba\(17,17,17,0\.46\)/);
     assert.match(backdrop, /object-\[center_58%\]/);
-    assert.match(backdrop, /mask-image:linear-gradient/);
+    assert.match(backdrop, /border-\[var\(--border\)\]/);
+    assert.doesNotMatch(backdrop, /mask-image/);
 
     const measured = await measureHero(join(process.cwd(), rel));
     assert.ok(measured.headline >= 4.5, `headline ${measured.headline}`);

@@ -1,6 +1,12 @@
 /** Local free media (Unsplash License / Coverr-style stock) plus DJI hero slides. */
 const HERO_SLIDE_CREDIT = "Foto aerial DJI — dokumentasi Aceh Tangguh";
 
+/**
+ * Statistics-hero aerial. A source constant, not an env var.
+ * False keeps the contour hero so this can merge before the photo is approved.
+ */
+export const HERO_PHOTO_ENABLED = false;
+
 export const SITE_MEDIA = {
   heroPoster: {
     src: "/media/hero-slides/01.jpg",
