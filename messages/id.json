@@ -439,7 +439,7 @@
     "penangananBody": "Laporkan bantuan yang diterima, belum diterima, atau aktivitas penanganan di lapangan.",
     "penangananCta": "Buka formulir penanganan",
     "kicker": "Partisipasi warga",
-    "helper": "Laporan masuk antrean moderasi BPBA sebelum tampil di peta. Jangan sertakan data pribadi orang lain."
+    "helper": "Laporan dimoderasi petugas BPBA sebelum dapat tampil di peta. Jangan sertakan data pribadi orang lain."
   },
   "laporKejadian": {
     "title": "Laporkan Kejadian",
@@ -1847,7 +1847,8 @@
       "trendTitle": "Kejadian per tahun",
       "trendCaption": "Seluruh kabupaten dan seluruh jenis pada rentang tahun yang dipilih.",
       "berjalan": "berjalan",
-      "scaleNote": "skala per metrik · 2026 berjalan",
+      "scaleNote": "skala per metrik · {year} berjalan",
+      "scaleNotePlain": "skala per metrik",
       "kabTitle": "Kejadian per kab/kota",
       "kabNote": "Batang ini mencakup seluruh tahun dan seluruh jenis. Ekstrak DIBI tidak memuat rincian kabupaten kali jenis, jadi grafik tidak ditumpuk.",
       "trendScopeNote": "Grafik tahun mencakup seluruh kabupaten dan seluruh jenis. Memilih kabupaten atau jenis tidak mengubah batang ini.",

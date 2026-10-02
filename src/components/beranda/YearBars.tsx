@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { BERJALAN_YEAR, HERO_BAR_HIGHLIGHT_YEAR } from "@/lib/dibi-beranda";
+import { HERO_BAR_HIGHLIGHT_YEAR } from "@/lib/dibi-beranda";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 
@@ -19,12 +19,14 @@ export function YearBars({
   caption,
   berjalanLabel,
   formatCount,
+  runningYear,
 }: {
   rows: Row[];
   title: string;
   caption: string;
   berjalanLabel: string;
   formatCount: (n: number) => string;
+  runningYear: number | null;
 }) {
   const hatchId = `berjalan-${useId().replace(/:/g, "")}`;
   const max = rows.reduce((m, row) => Math.max(m, row.kejadian), 0);
@@ -36,7 +38,8 @@ export function YearBars({
   const plotH = axis - plotTop;
   const slot = rows.length > 0 ? (width - 8) / rows.length : 0;
   const barW = Math.max(2, slot - 3);
-  const berjalanIndex = rows.findIndex((row) => row.tahun === BERJALAN_YEAR);
+  const berjalanIndex =
+    runningYear == null ? -1 : rows.findIndex((row) => row.tahun === runningYear);
   const berjalanRow = berjalanIndex >= 0 ? rows[berjalanIndex] : null;
   const berjalanX =
     berjalanIndex >= 0 ? 4 + berjalanIndex * slot + (slot - barW) / 2 + barW / 2 : 0;
@@ -64,7 +67,7 @@ export function YearBars({
           const x = 4 + index * slot + (slot - barW) / 2;
           const y = axis - h;
           const highlight = row.tahun === HERO_BAR_HIGHLIGHT_YEAR;
-          const berjalan = row.tahun === BERJALAN_YEAR;
+          const berjalan = runningYear != null && row.tahun === runningYear;
           const showTick = index % 2 === 0;
           const barH = Math.max(h, row.kejadian > 0 ? 1 : 0);
           return (
@@ -118,7 +121,8 @@ export function YearBars({
               strokeWidth="1"
             />
             <text
-              x={berjalanX - 6}
+              data-berjalan-label=""
+              x={berjalanX - 4}
               y={labelBaseline}
               textAnchor="end"
               fontSize="13"

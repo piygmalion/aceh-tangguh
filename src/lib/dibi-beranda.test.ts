@@ -6,11 +6,11 @@ import { EMPTY_DIBI_METRICS, type DibiAcehPayload, type DibiMetrics } from "./di
 import {
   aggregateDibiBeranda,
   bandShowsSparklines,
-  BERJALAN_YEAR,
   displayedBandMetrics,
   HERO_BAR_HIGHLIGHT_YEAR,
   IMPACT_PEAK_YEAR,
   peakPoint,
+  runningYear,
   seriesPerMetric,
   SPARKLINE_KEYS,
   yearPick,
@@ -247,7 +247,8 @@ describe("seri visual-2 dari payload DIBI", () => {
     const view = aggregateDibiBeranda(fixture, {});
     assert.equal(view.trend.length, 19);
     assert.equal(view.trend[0]?.tahun, 2008);
-    assert.equal(view.trend.at(-1)?.tahun, BERJALAN_YEAR);
+    assert.equal(view.trend.at(-1)?.tahun, fixture.metadata.year_to);
+    assert.equal(runningYear(fixture.metadata), fixture.metadata.year_to);
     const highlight = view.trend.find((row) => row.tahun === HERO_BAR_HIGHLIGHT_YEAR);
     assert.equal(highlight?.kejadian, 364);
     for (const key of ["meninggal", "luka_sakit", "menderita_mengungsi", "estimasi_kerugian_rumah"] as const) {
@@ -257,6 +258,23 @@ describe("seri visual-2 dari payload DIBI", () => {
     }
     const kejadian = seriesPerMetric(view.trend, "kejadian");
     assert.equal(peakPoint(kejadian)?.tahun, HERO_BAR_HIGHLIGHT_YEAR);
-    assert.equal((SPARKLINE_KEYS as readonly string[]).includes("hilang"), false);
+    assert.deepEqual(
+      [...SPARKLINE_KEYS],
+      ["kejadian", "meninggal", "hilang", "luka_sakit", "menderita_mengungsi", "estimasi_kerugian_rumah"],
+    );
+  });
+});
+
+describe("running year from DIBI metadata", () => {
+  it("is year_to when that year is the Jakarta year of fetched_at", () => {
+    assert.equal(runningYear({ year_to: 2026, fetched_at: "2026-10-01T08:05:46.042Z" }), 2026);
+    assert.equal(runningYear({ year_to: 2026, fetched_at: "2025-12-31T17:30:00.000Z" }), 2026);
+  });
+
+  it("is absent when year_to is not the Jakarta year of fetched_at", () => {
+    assert.equal(runningYear({ year_to: 2026, fetched_at: "2025-06-15T00:00:00.000Z" }), null);
+    assert.equal(runningYear({ year_to: 2026, fetched_at: "2025-12-31T16:30:00.000Z" }), null);
+    assert.equal(runningYear({ year_to: 2025, fetched_at: "2026-10-01T08:05:46.042Z" }), null);
+    assert.equal(runningYear({ year_to: 2026, fetched_at: "not-a-date" }), null);
   });
 });

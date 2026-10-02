@@ -439,7 +439,7 @@
     "penangananBody": "Report aid received, not yet received, or field response activities.",
     "penangananCta": "Open response form",
     "kicker": "Public participation",
-    "helper": "Reports enter the BPBA moderation queue before they appear on the map. Do not include someone else's personal data."
+    "helper": "Reports are moderated by BPBA staff before they can appear on the map. Do not include other people's personal data."
   },
   "laporKejadian": {
     "title": "Report incident",
@@ -1847,7 +1847,8 @@
       "trendTitle": "Events per year",
       "trendCaption": "All districts and all hazard types in the selected year range.",
       "berjalan": "ongoing",
-      "scaleNote": "per-metric scale · 2026 ongoing",
+      "scaleNote": "per-metric scale · {year} ongoing",
+      "scaleNotePlain": "per-metric scale",
       "kabTitle": "Events by district or city",
       "kabNote": "These bars cover every year and every hazard type. The DIBI extract has no district-by-type breakdown, so the chart is not stacked.",
       "trendScopeNote": "The yearly chart covers every district and every hazard type. Choosing a district or a type does not change these bars.",

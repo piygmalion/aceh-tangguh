@@ -10,6 +10,7 @@ import {
   displayedBandMetrics,
   IMPACT_PEAK_YEAR,
   peakPoint,
+  runningYear,
   seriesPerMetric,
   yearPick,
   type DibiBerandaView,
@@ -108,19 +109,25 @@ function SparkSlot({
   locale,
   yearHeader,
   countHeader,
+  runningYear: openYear,
 }: {
   trend: readonly DibiTahunRow[];
-  metric: SparklineKey | null;
+  metric: SparklineKey;
   locale: string;
   yearHeader: string;
   countHeader: string;
+  runningYear: number | null;
 }) {
-  if (!metric) return <div className="mt-2 h-12" aria-hidden />;
   const points = seriesPerMetric(trend, metric);
   const peak = impactPeakYear(trend, metric);
   return (
     <>
-      <MetricSpark points={points} peakYear={peak} peakLabel={peak == null ? "" : String(peak)} />
+      <MetricSpark
+        points={points}
+        peakYear={peak}
+        peakLabel={peak == null ? "" : String(peak)}
+        runningYear={openYear}
+      />
       <table className="sr-only">
         <caption>{metric}</caption>
         <thead>
@@ -147,17 +154,19 @@ function Counters({
   locale,
   trend,
   showSparks,
+  runningYear: openYear,
 }: {
   metrics: DibiMetrics | null;
   locale: string;
   trend: readonly DibiTahunRow[];
   showSparks: boolean;
+  runningYear: number | null;
 }) {
   const t = useTranslations("beranda");
   const missing = t("statistik.belumAda");
   const menderita = metrics ? angkaRingkas(metrics.menderita_mengungsi, locale) : null;
   const kerugian = metrics ? rupiahDariJuta(metrics.estimasi_kerugian_rumah, locale) : null;
-  const spark = (key: SparklineKey | null) =>
+  const spark = (key: SparklineKey) =>
     showSparks ? (
       <SparkSlot
         trend={trend}
@@ -165,6 +174,7 @@ function Counters({
         locale={locale}
         yearHeader={t("statistik.yearHeader")}
         countHeader={t("statistik.countHeader")}
+        runningYear={openYear}
       />
     ) : null;
 
@@ -186,7 +196,7 @@ function Counters({
         </Counter>
         <Counter label={t("statistik.hilang")}>
           <BandValue value={metrics ? metrics.hilang : null} locale={locale} missing={missing} />
-          {spark(null)}
+          {spark("hilang")}
         </Counter>
         <Counter label={t("statistik.luka")}>
           <BandValue value={metrics ? metrics.luka_sakit : null} locale={locale} missing={missing} />
@@ -270,6 +280,7 @@ export function DataHero() {
   }, [view, locale]);
 
   const showSparks = view ? bandShowsSparklines(view) : false;
+  const openYear = data ? runningYear(data.metadata) : null;
 
   return (
     <section
@@ -316,6 +327,7 @@ export function DataHero() {
               caption={t("statistik.trendCaption")}
               berjalanLabel={t("statistik.berjalan")}
               formatCount={(count) => angka(count, locale)}
+              runningYear={openYear}
             />
           ) : null}
         </div>
@@ -499,10 +511,15 @@ export function DataHero() {
                 metrics={metrics}
                 locale={locale}
                 trend={view.trend}
-                showSparks={showSparks}
-              />
+              showSparks={showSparks}
+              runningYear={openYear}
+            />
               <p className={cn("mt-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-                {showSparks ? t("statistik.scaleNote") : scopeNote}
+                {showSparks
+                  ? openYear != null
+                    ? t("statistik.scaleNote", { year: String(openYear) })
+                    : t("statistik.scaleNotePlain")
+                  : scopeNote}
               </p>
             </div>
 

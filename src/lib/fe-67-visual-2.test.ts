@@ -14,7 +14,11 @@ describe("FE-67 visual-2", () => {
     assert.match(bars, /bg-\[var\(--chart-surface\)\]/);
     assert.match(bars, /var\(--chart-2\)/);
     assert.match(bars, /HERO_BAR_HIGHLIGHT_YEAR/);
-    assert.match(bars, /BERJALAN_YEAR/);
+    assert.match(bars, /runningYear/);
+    assert.match(bars, /url\(#\$\{hatchId\}\)/);
+    assert.match(bars, /x=\{berjalanX - 4\}/);
+    assert.match(bars, /textAnchor="end"/);
+    assert.doesNotMatch(bars, /BERJALAN_YEAR/);
     assert.match(bars, /fontSize="13"/);
     assert.match(bars, /index % 2 === 0/);
     assert.match(bars, /max-sm:pr-16/);
@@ -23,15 +27,20 @@ describe("FE-67 visual-2", () => {
     assert.doesNotMatch(bars, /#C8102E|#c8102e/);
   });
 
-  it("keeps sparklines on the year-range payload and leaves Hilang as a number", () => {
+  it("dashes the open-year segment on every sparkline, including Kejadian and Hilang", () => {
     const hero = read("src/components/beranda/DataHero.tsx");
     const spark = read("src/components/beranda/MetricSpark.tsx");
     assert.match(hero, /bandShowsSparklines/);
-    assert.match(hero, /spark\(null\)/);
+    assert.match(hero, /spark\("hilang"\)/);
+    assert.match(hero, /spark\("kejadian"\)/);
     assert.match(hero, /statistik\.scaleNote/);
     assert.match(hero, /data-testid="number-band-block"/);
     assert.match(spark, /text-\[var\(--band-fg\)\]/);
-    assert.doesNotMatch(spark, /chart-2|#C8102E|#c8102e/);
+    assert.match(spark, /strokeDasharray="2 2"/);
+    assert.match(spark, /opacity="0\.55"/);
+    assert.match(spark, /r="2"/);
+    assert.match(spark, /fill="none"/);
+    assert.doesNotMatch(spark, /patternTransform|chart-2|#C8102E|#c8102e/);
     const id = JSON.parse(read("messages/id.json")) as {
       beranda: { statistik: Record<string, string> };
       laporHub: Record<string, string>;
@@ -40,13 +49,22 @@ describe("FE-67 visual-2", () => {
       beranda: { statistik: Record<string, string> };
       laporHub: Record<string, string>;
     };
-    assert.equal(id.beranda.statistik.scaleNote, "skala per metrik · 2026 berjalan");
-    assert.equal(en.beranda.statistik.scaleNote, "per-metric scale · 2026 ongoing");
+    assert.equal(id.beranda.statistik.scaleNote, "skala per metrik · {year} berjalan");
+    assert.equal(en.beranda.statistik.scaleNote, "per-metric scale · {year} ongoing");
+    assert.equal(id.beranda.statistik.scaleNotePlain, "skala per metrik");
+    assert.equal(en.beranda.statistik.scaleNotePlain, "per-metric scale");
+    assert.doesNotMatch(id.beranda.statistik.scaleNote, /2026/);
     assert.equal(id.beranda.statistik.berjalan, "berjalan");
     assert.equal(id.laporHub.kicker, "Partisipasi warga");
     assert.equal(en.laporHub.kicker, "Public participation");
-    assert.match(id.laporHub.helper, /moderasi/);
-    assert.match(en.laporHub.helper, /moderation/);
+    assert.equal(
+      id.laporHub.helper,
+      "Laporan dimoderasi petugas BPBA sebelum dapat tampil di peta. Jangan sertakan data pribadi orang lain.",
+    );
+    assert.equal(
+      en.laporHub.helper,
+      "Reports are moderated by BPBA staff before they can appear on the map. Do not include other people's personal data.",
+    );
     const hub = read("src/components/laporan/ReportChoiceHub.tsx");
     assert.match(hub, /text-\[var\(--eyebrow\)\][\s\S]{0,40}t\("kicker"\)/);
     assert.doesNotMatch(hub, /text-\[var\(--accent-soft\)\][\s\S]{0,40}t\("kicker"\)/);
@@ -56,6 +74,8 @@ describe("FE-67 visual-2", () => {
     const settings = read("src/components/map/MapSettings.tsx");
     const workspace = read("src/components/map/MapWorkspace.tsx");
     assert.match(settings, /data-settings-scroll-fade/);
+    assert.match(settings, /observer\?\.observe\(el\.firstElementChild\)/);
+    assert.match(settings, /max-sm:max-h-\[calc\(100svh-19\.75rem\)\]/);
     assert.match(settings, /terlihat di tangkapan headless/);
     assert.match(workspace, /settingsOpen && "hidden"/);
   });
