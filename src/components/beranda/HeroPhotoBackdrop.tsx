@@ -17,7 +17,7 @@ export function HeroPhotoBackdrop({
   return (
     <div
       data-hero-bg="photo"
-      className="pointer-events-none absolute -top-28 bottom-0 left-1/2 z-0 w-screen -translate-x-1/2 md:-top-32"
+      className="pointer-events-none absolute -top-28 -bottom-8 left-1/2 z-0 w-screen -translate-x-1/2 overflow-hidden [mask-image:linear-gradient(to_bottom,#000_calc(100%-2rem),transparent_100%)] md:-top-32"
     >
       <Image
         src={HERO_PHOTO.src}
@@ -28,12 +28,12 @@ export function HeroPhotoBackdrop({
         quality={75}
         placeholder="blur"
         blurDataURL={HERO_PHOTO.blurDataURL}
-        className="object-cover object-[center_42%]"
+        className="object-cover object-[center_58%]"
         onError={onError}
       />
       <div
         aria-hidden
-        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(17,17,17,0.94)_0%,rgba(17,17,17,0.92)_100%)]"
+        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(17,17,17,0.80)_0%,rgba(17,17,17,0.50)_55%,rgba(17,17,17,0.46)_100%)]"
       />
       {caption ? (
         <p className="absolute bottom-3 right-4 z-[1] text-[0.8125rem] text-white">{caption}</p>

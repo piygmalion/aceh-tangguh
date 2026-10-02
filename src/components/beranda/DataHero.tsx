@@ -314,11 +314,16 @@ export function DataHero() {
         <div className="relative">
           <HeroPhotoBackdrop failed={photoFailed} onError={() => setPhotoFailed(true)} />
           <div className={cn("relative z-10", onPhoto && "text-white")}>
-            <p className={cn(onPhoto ? "text-white" : "text-[var(--eyebrow)]", TYPE_KICKER_CLASS)}>
+            <p
+              className={cn(
+                onPhoto ? "text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.45)]" : "text-[var(--eyebrow)]",
+                TYPE_KICKER_CLASS,
+              )}
+            >
               {t("statistik.kicker")}
             </p>
             <div className="mt-3 grid items-end gap-6 lg:grid-cols-2">
-              <div className="max-w-2xl">
+              <div className={cn("max-w-2xl", onPhoto && "[text-shadow:0_1px_8px_rgba(0,0,0,0.45)]")}>
                 <h1 className="type-display">{t("statistik.title")}</h1>
                 <p className={cn("type-lead mt-3", onPhoto ? "text-white" : "text-[var(--text-dim)]")}>
                   {t("statistik.lead")}

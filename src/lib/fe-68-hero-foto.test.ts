@@ -8,11 +8,11 @@ import sharp from "sharp";
 import { HeroPhotoBackdrop } from "@/components/beranda/HeroPhotoBackdrop";
 import { SITE_MEDIA } from "@/lib/media";
 import {
+  HERO_PANEL_ALPHA,
   HERO_PHOTO,
-  HERO_SCRIM_LEFT,
-  HERO_SCRIM_RIGHT,
   heroBackgroundMode,
   heroPhotoCaption,
+  heroScrimAlpha,
 } from "@/lib/hero-photo";
 
 function read(rel: string): string {
@@ -86,7 +86,9 @@ describe("FE-68 hero photo", () => {
     assert.match(hero, /onPhoto \? null :/);
     const bars = read("src/components/beranda/YearBars.tsx");
     assert.match(bars, /bg-\[var\(--chart-surface\)\]/);
-    assert.match(bars, /onPhoto \? "bg-transparent text-white"/);
+    assert.match(bars, /rounded-2xl bg-\[rgba\(17,17,17,0\.66\)\]/);
+    assert.match(bars, /backdrop-blur-\[8px\]/);
+    assert.match(bars, /fill="#ffffff"/);
   });
 
   it("keeps the 1440 derivative under 250KB and the scrim at AA on the photo pixels", async () => {
@@ -95,36 +97,132 @@ describe("FE-68 hero photo", () => {
     const bytes = statSync(rel).size;
     assert.ok(bytes < 250 * 1024, `hero derivative is ${bytes} bytes`);
     assert.ok(bytes > 20 * 1024, "derivative should still be a real photograph");
+    const backdrop = read("src/components/beranda/HeroPhotoBackdrop.tsx");
+    assert.match(backdrop, /rgba\(17,17,17,0\.80\)/);
+    assert.match(backdrop, /rgba\(17,17,17,0\.50\)_55%/);
+    assert.match(backdrop, /rgba\(17,17,17,0\.46\)/);
+    assert.match(backdrop, /object-\[center_58%\]/);
+    assert.match(backdrop, /mask-image:linear-gradient/);
 
-    const { data, info } = await sharp(join(process.cwd(), rel))
-      .resize(360, 155, { fit: "cover", position: "centre" })
-      .raw()
-      .toBuffer({ resolveWithObject: true });
-    assert.equal(info.channels, 3);
-    let worstWhite = Infinity;
-    let worstRed = Infinity;
-    let worstBar = Infinity;
-    const width = info.width;
-    for (let i = 0; i < data.length; i += 3) {
-      const x = (i / 3) % width;
-      const alpha = HERO_SCRIM_LEFT + (HERO_SCRIM_RIGHT - HERO_SCRIM_LEFT) * (x / (width - 1));
-      const bg: [number, number, number] = [
-        Math.round(INK[0] * alpha + data[i] * (1 - alpha)),
-        Math.round(INK[1] * alpha + data[i + 1] * (1 - alpha)),
-        Math.round(INK[2] * alpha + data[i + 2] * (1 - alpha)),
-      ];
-      worstWhite = Math.min(worstWhite, contrast(WHITE, bg));
-      worstRed = Math.min(worstRed, contrast(RED, bg));
-      const bar: [number, number, number] = [
-        Math.round(255 * 0.9 + bg[0] * 0.1),
-        Math.round(255 * 0.9 + bg[1] * 0.1),
-        Math.round(255 * 0.9 + bg[2] * 0.1),
-      ];
-      worstBar = Math.min(worstBar, contrast(bar, bg));
-    }
-    assert.ok(worstWhite >= 4.5, `white text ${worstWhite}`);
-    assert.ok(worstRed >= 3, `2020 red bar ${worstRed}`);
-    assert.ok(worstBar >= 3, `white bar ${worstBar}`);
+    const measured = await measureHero(join(process.cwd(), rel));
+    assert.ok(measured.headline >= 4.5, `headline ${measured.headline}`);
+    assert.ok(measured.kicker >= 4.5, `kicker ${measured.kicker}`);
+    assert.ok(measured.body >= 4.5, `body ${measured.body}`);
+    assert.ok(measured.chartTitle >= 4.5, `chart title ${measured.chartTitle}`);
+    assert.ok(measured.ticks >= 4.5, `ticks ${measured.ticks}`);
+    assert.ok(measured.whiteBar >= 3, `white bar ${measured.whiteBar}`);
+    assert.ok(measured.hatch >= 3, `hatch ${measured.hatch}`);
+    assert.ok(measured.redOutline >= 3, `2020 outline ${measured.redOutline}`);
+    assert.ok(measured.redOnOutline >= 3, `2020 red on outline ${measured.redOnOutline}`);
     assert.ok(contrast(BUTTON_INK, WHITE) >= 4.5);
+    assert.ok(measured.mobileHeadline >= 4.5, `mobile headline ${measured.mobileHeadline}`);
   });
 });
+
+async function coverRaw(file: string, width: number, height: number, posY: number) {
+  const meta = await sharp(file).metadata();
+  const sw = meta.width ?? width;
+  const sh = meta.height ?? height;
+  const scale = Math.max(width / sw, height / sh);
+  const nw = Math.max(width, Math.round(sw * scale));
+  const nh = Math.max(height, Math.round(sh * scale));
+  const { data, info } = await sharp(file).resize(nw, nh).raw().toBuffer({ resolveWithObject: true });
+  const left = Math.max(0, Math.min(nw - width, Math.round(0.5 * nw - width / 2)));
+  const top = Math.max(0, Math.min(nh - height, Math.round(posY * nh - height / 2)));
+  const out = Buffer.alloc(width * height * 3);
+  for (let y = 0; y < height; y += 1) {
+    const src = ((top + y) * info.width + left) * 3;
+    data.copy(out, y * width * 3, src, src + width * 3);
+  }
+  return { data: out, width, height };
+}
+
+function scrimmed(
+  rgb: readonly [number, number, number],
+  alpha: number,
+): [number, number, number] {
+  return [
+    Math.round(INK[0] * alpha + rgb[0] * (1 - alpha)),
+    Math.round(INK[1] * alpha + rgb[1] * (1 - alpha)),
+    Math.round(INK[2] * alpha + rgb[2] * (1 - alpha)),
+  ];
+}
+
+function panelOf(bg: readonly [number, number, number]): [number, number, number] {
+  return scrimmed(bg, HERO_PANEL_ALPHA);
+}
+
+async function measureHero(file: string) {
+  const desk = await coverRaw(file, 360, 140, 0.58);
+  const mobile = await coverRaw(file, 130, 220, 0.58);
+  let headline = Infinity;
+  let kicker = Infinity;
+  let body = Infinity;
+  let chartTitle = Infinity;
+  let ticks = Infinity;
+  let whiteBar = Infinity;
+  let hatch = Infinity;
+  let redOutline = Infinity;
+  const visit = (
+    frame: { data: Buffer; width: number; height: number },
+    x0: number,
+    x1: number,
+    y0: number,
+    y1: number,
+    onText: (ratio: number) => void,
+    onChart: boolean,
+  ) => {
+    for (let y = y0; y < y1; y += 1) {
+      for (let x = x0; x < x1; x += 1) {
+        const i = (y * frame.width + x) * 3;
+        const photo: [number, number, number] = [frame.data[i], frame.data[i + 1], frame.data[i + 2]];
+        const bg = scrimmed(photo, heroScrimAlpha(x / (frame.width - 1)));
+        onText(contrast(WHITE, bg));
+        if (!onChart) continue;
+        const panel = panelOf(bg);
+        chartTitle = Math.min(chartTitle, contrast(WHITE, panel));
+        ticks = Math.min(ticks, contrast(WHITE, panel));
+        const bar: [number, number, number] = [
+          Math.round(255 * 0.9 + panel[0] * 0.1),
+          Math.round(255 * 0.9 + panel[1] * 0.1),
+          Math.round(255 * 0.9 + panel[2] * 0.1),
+        ];
+        whiteBar = Math.min(whiteBar, contrast(bar, panel));
+        const hatched: [number, number, number] = [
+          Math.round(255 * 0.35 + panel[0] * 0.65),
+          Math.round(255 * 0.35 + panel[1] * 0.65),
+          Math.round(255 * 0.35 + panel[2] * 0.65),
+        ];
+        hatch = Math.min(hatch, contrast(hatched, panel));
+        redOutline = Math.min(redOutline, contrast(WHITE, panel));
+      }
+    }
+  };
+  const left = Math.round(desk.width * 0.42);
+  visit(desk, 4, left, Math.round(desk.height * 0.12), Math.round(desk.height * 0.28), (ratio) => {
+    kicker = Math.min(kicker, ratio);
+  }, false);
+  visit(desk, 4, left, Math.round(desk.height * 0.22), Math.round(desk.height * 0.5), (ratio) => {
+    headline = Math.min(headline, ratio);
+  }, false);
+  visit(desk, 4, left, Math.round(desk.height * 0.42), Math.round(desk.height * 0.7), (ratio) => {
+    body = Math.min(body, ratio);
+  }, false);
+  visit(desk, Math.round(desk.width * 0.5), desk.width - 2, 8, desk.height - 2, () => {}, true);
+  let mobileHeadline = Infinity;
+  visit(mobile, 4, Math.round(mobile.width * 0.92), 8, Math.round(mobile.height * 0.42), (ratio) => {
+    mobileHeadline = Math.min(mobileHeadline, ratio);
+  }, false);
+  return {
+    headline,
+    kicker,
+    body,
+    chartTitle,
+    ticks,
+    whiteBar,
+    hatch,
+    redOutline,
+    redOnOutline: contrast(RED, WHITE),
+    mobileHeadline,
+  };
+}

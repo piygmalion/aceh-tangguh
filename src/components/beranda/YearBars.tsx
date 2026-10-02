@@ -52,8 +52,10 @@ export function YearBars({
   return (
     <figure
       className={cn(
-        "min-w-0 rounded-xl p-3 max-sm:pr-16",
-        onPhoto ? "bg-transparent text-white" : "bg-[var(--chart-surface)] text-[var(--text)]",
+        "min-w-0 max-sm:pr-16",
+        onPhoto
+          ? "rounded-2xl bg-[rgba(17,17,17,0.66)] p-4 text-white backdrop-blur-[8px]"
+          : "rounded-xl bg-[var(--chart-surface)] p-3 text-[var(--text)]",
       )}
     >
       <figcaption className="mb-1 font-semibold">{title}</figcaption>
@@ -93,6 +95,17 @@ export function YearBars({
                 >
                   {formatCount(row.kejadian)}
                 </text>
+              ) : null}
+              {highlight && onPhoto ? (
+                <rect
+                  x={x - 1}
+                  y={y - 1}
+                  width={barW + 2}
+                  height={barH + 2}
+                  rx="1"
+                  fill="#ffffff"
+                  shapeRendering="crispEdges"
+                />
               ) : null}
               <rect
                 x={x}
