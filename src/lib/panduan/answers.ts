@@ -406,12 +406,12 @@ function composeKejadian(match: GuideMatch, ctx: GuideContext, locale: GuideLoca
     parts.push(
       t(
         locale,
-        `SIK ${ctx.sikStats.year}: ${ctx.sikStats.total} kejadian operasional${top ? `, teratas ${top.jenis} (${top.count})` : ""}.`,
-        `SIK ${ctx.sikStats.year}: ${ctx.sikStats.total} operational events${top ? `, top ${top.jenis} (${top.count})` : ""}.`
+        `Data Kejadian BPBA ${ctx.sikStats.year}: ${ctx.sikStats.total} kejadian operasional${top ? `, teratas ${top.jenis} (${top.count})` : ""}.`,
+        `BPBA incident data ${ctx.sikStats.year}: ${ctx.sikStats.total} operational events${top ? `, top ${top.jenis} (${top.count})` : ""}.`
       )
     );
   } else if (ctx.failed.includes("sikStats")) {
-    parts.push(failedNote(locale, "SIK"));
+    parts.push(failedNote(locale, t(locale, "Data Kejadian BPBA", "BPBA incident data")));
   }
 
   if (ctx.kejadian) {
@@ -441,7 +441,7 @@ function composeKejadian(match: GuideMatch, ctx: GuideContext, locale: GuideLoca
     intent: "kejadian",
     body: parts.join(" "),
     links: [link("/data-bencana", "linkDataBencana"), link("/peta", "linkPeta")],
-    source: t(locale, "SIK publik + katalog kejadian", "Public SIK + event catalogue"),
+    source: t(locale, "Data Kejadian BPBA + katalog kejadian", "Data Kejadian BPBA + event catalogue"),
   };
 }
 

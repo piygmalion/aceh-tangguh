@@ -276,3 +276,22 @@ describe("feature-card fixture inventory", () => {
     assert.equal(cardHasDeniedLeak(sample), false);
   });
 });
+
+describe("disasterEvents source labels", () => {
+  it("maps only sik_aceh.db and leaves the event title and layer alone", () => {
+    const pdf = "https://bpba.acehprov.go.id/media/2023.09/rekap.pdf";
+    const card = toFeatureCard(
+      point("ACEH-2023-0372", "disasterEvents", {
+        title: "Kebakaran — Aceh Besar",
+        jenis_bencana: "Kebakaran",
+        sumber_data: [pdf, "https://www.antaranews.com/berita/1", "sik_aceh.db"],
+        source: "sik_aceh.db",
+      }),
+    );
+    assert.equal(card.title, "Kebakaran — Aceh Besar");
+    assert.equal(card.layer, "disasterEvents");
+    assert.equal(card.category, "KEJADIAN BENCANA");
+    assert.deepEqual(card.sources, [pdf, "https://www.antaranews.com/berita/1", "Data Kejadian BPBA"]);
+    assert.equal(card.subtitle?.includes("BPBA"), false);
+  });
+});

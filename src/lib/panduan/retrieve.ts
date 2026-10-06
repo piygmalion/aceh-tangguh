@@ -236,7 +236,7 @@ export function contextToChunks(ctx: GuideContext, locale: GuideLocale): Retriev
   }
 
   if (failed.has("sikStats")) {
-    chunks.push(delayedChunk("live:sik-stats", "rekap SIK", "/data-bencana", "linkDataBencana", locale));
+    chunks.push(delayedChunk("live:sik-stats", "Data Kejadian BPBA", "/data-bencana", "linkDataBencana", locale));
   } else if (ctx.sikStats) {
     const top = ctx.sikStats.byJenis
       .slice(0, 3)
@@ -244,10 +244,10 @@ export function contextToChunks(ctx: GuideContext, locale: GuideLocale): Retriev
       .join(", ");
     chunks.push({
       sourceId: "live:sik-stats",
-      title: "SIK",
+      title: "Data Kejadian BPBA",
       text: locale === "en"
-        ? `SIK ${ctx.sikStats.year}: ${ctx.sikStats.total} events.${top ? ` ${top}.` : ""}`
-        : `SIK ${ctx.sikStats.year}: ${ctx.sikStats.total} kejadian.${top ? ` ${top}.` : ""}`,
+        ? `BPBA incident data ${ctx.sikStats.year}: ${ctx.sikStats.total} events.${top ? ` ${top}.` : ""}`
+        : `Data Kejadian BPBA ${ctx.sikStats.year}: ${ctx.sikStats.total} kejadian.${top ? ` ${top}.` : ""}`,
       href: "/data-bencana",
       labelKey: "linkDataBencana",
     });

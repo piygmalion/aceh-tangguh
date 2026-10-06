@@ -190,6 +190,30 @@ export function MapFeatureCard({
         </section>
       ) : null}
 
+      {card?.sources && card.sources.length > 0 ? (
+        <section className="flex flex-col gap-1.5" data-event-sources>
+          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{t("sumber")}</div>
+          <ul className="flex flex-col gap-1">
+            {card.sources.map((entry) => (
+              <li key={entry} className="break-all text-[0.8125rem] leading-snug text-[var(--text)]">
+                {/^https?:\/\//i.test(entry) ? (
+                  <a
+                    href={entry}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[var(--text)] underline-offset-2 hover:underline"
+                  >
+                    {entry}
+                  </a>
+                ) : (
+                  entry
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       {card && card.details.length > 0 ? (
         <section className="flex flex-col gap-1.5">
           <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>

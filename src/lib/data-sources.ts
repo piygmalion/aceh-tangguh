@@ -41,12 +41,11 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     id: "sik-aceh",
-    titleId: "SIK Aceh — master SQLite (pengayaan)",
-    titleEn: "SIK Aceh — master SQLite (enrichment)",
+    titleId: "Data Kejadian BPBA — master SQLite (pengayaan)",
+    titleEn: "BPBA incident data",
     source:
       "Local master sik_aceh.db (operator path: data bencana aceh/database/master). Copied to data/sik/sik_aceh.db (gitignored). Not a public dump.",
-    license:
-      "Operational BPBA / SIK Aceh compilation — do not republish the raw SQLite",
+    license: "Operational BPBA compilation — do not republish the raw SQLite",
     date: "Imported on demand via python3 scripts/import-sik-aceh.py (dry-run default)",
     format: "SQLite → kejadian_bencana payload + disasterEvents GeoJSON",
     usedFor:

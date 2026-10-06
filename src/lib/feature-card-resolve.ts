@@ -10,7 +10,9 @@ import {
   loadOverlayVector,
 } from "@/lib/overlay-live";
 import type { OverlayLayerKey } from "@/lib/types";
+import { loadKejadianFixture } from "@/lib/kejadian";
 import {
+  featurePublicId,
   findFeatureByPublicId,
   toFeatureCard,
   type FeatureCard,
@@ -113,6 +115,19 @@ export async function resolvePublicFeature(
   return null;
 }
 
+/** Copy fixture `sumber_data` onto the card input. Does not write the fixture or marker file. */
+async function withFixtureSumber(feature: Feature): Promise<Feature> {
+  const props = { ...((feature.properties ?? {}) as Record<string, unknown>) };
+  if (String(props.layer ?? "") !== "disasterEvents") return feature;
+  if (props.sumber_data != null) return feature;
+  const id = featurePublicId(feature);
+  if (!id) return feature;
+  const fixture = await loadKejadianFixture();
+  const row = fixture.kejadian.find((item) => item.id === id);
+  if (!row?.sumber_data) return feature;
+  return { ...feature, properties: { ...props, sumber_data: row.sumber_data } };
+}
+
 export async function resolveFeatureCard(
   id: string,
   layerHint?: string,
@@ -120,6 +135,6 @@ export async function resolveFeatureCard(
 ): Promise<FeatureCard | null> {
   const feature = await resolvePublicFeature(id, layerHint);
   if (!feature) return null;
-  return toFeatureCard(feature, { stack });
+  return toFeatureCard(await withFixtureSumber(feature), { stack });
 }
 
