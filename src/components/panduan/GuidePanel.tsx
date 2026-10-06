@@ -69,7 +69,7 @@ export function GuidePanel({
   }, [messages, busy]);
 
   return (
-    <GlassPanel className="flex max-h-[70vh] w-[min(calc(100vw-1.5rem),400px)] flex-col overflow-hidden border border-[var(--glass-border)] shadow-[var(--shadow-elevated)]">
+    <GlassPanel className="flex max-h-[70vh] w-[min(calc(100vw-1.5rem),400px)] flex-col overflow-hidden border border-[var(--glass-border)] !bg-[var(--bg-raised)] shadow-[var(--shadow-elevated)]">
       <div className="flex items-start justify-between gap-3 border-b border-[var(--glass-border)] px-4 py-3">
         <div className="flex items-center gap-3">
           <span className="inline-flex h-9 w-9 shrink-0 overflow-hidden rounded-full bg-[var(--forest-700)]">

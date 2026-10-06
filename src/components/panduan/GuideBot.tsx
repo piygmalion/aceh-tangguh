@@ -466,7 +466,7 @@ export function GuideBot() {
     <div
       data-tanggapi
       className={cn(
-        "pointer-events-none fixed bottom-[max(5rem,calc(env(safe-area-inset-bottom)+4.5rem))] right-3 z-30 flex flex-col items-end gap-2 sm:right-6",
+        "pointer-events-none fixed bottom-[max(5rem,calc(env(safe-area-inset-bottom)+4.5rem))] right-3 z-[48] flex flex-col items-end gap-2 sm:right-6",
         mobileNavOpen && "hidden",
       )}
     >

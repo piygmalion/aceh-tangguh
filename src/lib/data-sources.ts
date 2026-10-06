@@ -42,7 +42,7 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   {
     id: "sik-aceh",
     titleId: "Data Kejadian BPBA — master SQLite (pengayaan)",
-    titleEn: "BPBA incident data",
+    titleEn: "BPBA incident data — master SQLite (enrichment)",
     source:
       "Local master sik_aceh.db (operator path: data bencana aceh/database/master). Copied to data/sik/sik_aceh.db (gitignored). Not a public dump.",
     license: "Operational BPBA compilation — do not republish the raw SQLite",

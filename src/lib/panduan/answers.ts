@@ -329,7 +329,7 @@ function composeDestana(match: GuideMatch, ctx: GuideContext, locale: GuideLocal
         `Village ${place}.${level} This is resilience status, not an evacuation order.`
       ),
       links: [link("/destana", "linkDestana")],
-      source: t(locale, "SIK publik — Destana / profil desa", "Public SIK — Destana / village profile"),
+      source: t(locale, "SIK Aceh — Destana / profil desa", "SIK Aceh — Destana / village profile"),
     };
   }
   if (ctx.failed.includes("destana") || !ctx.destana) {
@@ -349,7 +349,7 @@ function composeDestana(match: GuideMatch, ctx: GuideContext, locale: GuideLocal
       `Destana summary for ${scope}: not yet ${c.belum ?? 0}, pratama ${c.pratama ?? 0}, madya ${c.madya ?? 0}, utama ${c.utama ?? 0}. This is village resilience status, not an evacuation order.`
     ),
     links: [link("/destana", "linkDestana")],
-    source: t(locale, "SIK publik — Destana", "Public SIK — Destana"),
+    source: t(locale, "SIK Aceh — Destana", "SIK Aceh — Destana"),
   };
 }
 
@@ -383,7 +383,7 @@ function composeNomor(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
       `Published numbers: ${lines}. The full list is on the contacts page.`
     ),
     links: [link("/nomor-penting", "linkNomor")],
-    source: t(locale, "SIK publik — nomor penting", "Public SIK — contacts"),
+    source: t(locale, "SIK Aceh — Nomor penting", "SIK Aceh — contacts"),
   };
 }
 
@@ -406,12 +406,12 @@ function composeKejadian(match: GuideMatch, ctx: GuideContext, locale: GuideLoca
     parts.push(
       t(
         locale,
-        `Data Kejadian BPBA ${ctx.sikStats.year}: ${ctx.sikStats.total} kejadian operasional${top ? `, teratas ${top.jenis} (${top.count})` : ""}.`,
-        `BPBA incident data ${ctx.sikStats.year}: ${ctx.sikStats.total} operational events${top ? `, top ${top.jenis} (${top.count})` : ""}.`
+        `Kejadian operasional ${ctx.sikStats.year}: ${ctx.sikStats.total} kejadian${top ? `, teratas ${top.jenis} (${top.count})` : ""}.`,
+        `Operational incidents ${ctx.sikStats.year}: ${ctx.sikStats.total} events${top ? `, top ${top.jenis} (${top.count})` : ""}.`
       )
     );
   } else if (ctx.failed.includes("sikStats")) {
-    parts.push(failedNote(locale, t(locale, "Data Kejadian BPBA", "BPBA incident data")));
+    parts.push(failedNote(locale, t(locale, "Kejadian operasional", "Operational incidents")));
   }
 
   if (ctx.kejadian) {
@@ -441,7 +441,7 @@ function composeKejadian(match: GuideMatch, ctx: GuideContext, locale: GuideLoca
     intent: "kejadian",
     body: parts.join(" "),
     links: [link("/data-bencana", "linkDataBencana"), link("/peta", "linkPeta")],
-    source: t(locale, "Data Kejadian BPBA + katalog kejadian", "Data Kejadian BPBA + event catalogue"),
+    source: t(locale, "Kejadian operasional + katalog kejadian", "Operational incidents + event catalogue"),
   };
 }
 
@@ -616,7 +616,7 @@ function composePelatihan(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
       `Published training (sample): ${lines}. The full list and requests are on the Training page.`
     ),
     links: [link("/pelatihan", "linkPelatihan")],
-    source: t(locale, "SIK publik — pelatihan", "Public SIK — training"),
+    source: t(locale, "SIK Aceh — Pelatihan", "SIK Aceh — training"),
   };
 }
 
@@ -648,7 +648,7 @@ function composeMitra(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
       `Published partners (sample): ${names}. Operational notes are on the Partners page.`
     ),
     links: [link("/mitra", "linkMitra")],
-    source: t(locale, "SIK publik — mitra", "Public SIK — partners"),
+    source: t(locale, "SIK Aceh — Mitra", "SIK Aceh — partners"),
   };
 }
 

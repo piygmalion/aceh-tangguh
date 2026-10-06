@@ -17,11 +17,21 @@ describe("disasterEvents source display", () => {
     assert.equal(mixed[2], "sik_aceh.db");
   });
 
-  it("leaves every other source token unchanged", () => {
-    assert.equal(displaySumberEntry("SIK operasional"), "SIK operasional");
-    assert.equal(displaySumberEntry("kejadian-bencana.json"), "kejadian-bencana.json");
+  it("maps sik_aceh.db to Data Kejadian BPBA and operational tokens to Kejadian operasional", () => {
+    const mixed = ["sik_aceh.db", "kejadian_operasi", "SIK operasional", "kejadian-bencana.json"];
+    assert.deepEqual(displaySumberEntries(mixed), [
+      "Data Kejadian BPBA",
+      "Kejadian operasional",
+      "Kejadian operasional",
+      "kejadian-bencana.json",
+    ]);
+    assert.equal(mixed[0], "sik_aceh.db");
+    assert.equal(mixed[1], "kejadian_operasi");
+    assert.equal(mixed[2], "SIK operasional");
     assert.equal(displaySumberEntry("sik_aceh"), "sik_aceh");
     assert.equal(displaySumberEntry("SIK_ACEH.DB"), "SIK_ACEH.DB");
     assert.deepEqual(displaySumberEntries("sik_aceh.db"), ["Data Kejadian BPBA"]);
+    assert.deepEqual(displaySumberEntries("kejadian_operasi"), ["Kejadian operasional"]);
+    assert.deepEqual(displaySumberEntries("SIK operasional"), ["Kejadian operasional"]);
   });
 });
