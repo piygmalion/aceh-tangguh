@@ -315,7 +315,7 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleEn: "Brand basemap presets (Light / Dark / Minimalist Grey)",
     source:
       "Owned MapLibre GL Style v8 (src/lib/basemap-presets.ts) over OpenFreeMap OpenMapTiles",
-    license: "OpenFreeMap terms; © OpenStreetMap contributors; Aceh Tangguh Sistem Warna tokens",
+    license: "OpenFreeMap terms; © OpenStreetMap contributors; SIK Aceh Sistem Warna tokens",
     date: "Style JSON in-repo",
     format: "MapLibre style JSON + OpenFreeMap vector PBF",
     usedFor:

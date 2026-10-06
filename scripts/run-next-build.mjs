@@ -141,10 +141,10 @@ try {
   <meta charset="utf-8" />
   <meta http-equiv="refresh" content="0; url=./id/" />
   <link rel="canonical" href="./id/" />
-  <title>Aceh Tangguh</title>
+  <title>SIK Aceh</title>
 </head>
 <body>
-  <p><a href="./id/">Aceh Tangguh</a></p>
+  <p><a href="./id/">SIK Aceh</a></p>
 </body>
 </html>
 `

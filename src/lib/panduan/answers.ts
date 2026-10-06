@@ -703,8 +703,8 @@ function composeTentang(ctx: GuideContext, locale: GuideLocale): GuideAnswer {
     intent: "tentang",
     body: t(
       locale,
-      `Aceh Tangguh adalah observatorium dan SIK publik untuk kesiapsiagaan serta penanganan bencana di Aceh.${live} Saya memandu halaman situs dan merangkai riset dari sumber resmi di sini — bukan pengganti 112 atau Pusdalops.`,
-      `Aceh Tangguh is a public observatory and SIK for preparedness and disaster response in Aceh.${live} I guide the site and rephrase research from official sources here — not a substitute for 112 or Pusdalops.`
+      `SIK Aceh adalah observatorium publik untuk kesiapsiagaan serta penanganan bencana di Aceh.${live} Saya memandu halaman situs dan merangkai riset dari sumber resmi di sini — bukan pengganti 112 atau Pusdalops.`,
+      `SIK Aceh is a public observatory for preparedness and disaster response in Aceh.${live} I guide the site and rephrase research from official sources here — not a substitute for 112 or Pusdalops.`
     ),
     links: [
       link("/", "linkMulaiTur", { hash: "hero" }),

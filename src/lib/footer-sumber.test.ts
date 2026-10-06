@@ -75,7 +75,7 @@ describe("footer sumber column", () => {
   it("keeps Jelajah and moves visual credits to the copyright row", () => {
     const footer = read("src/components/SiteFooter.tsx");
     assert.match(footer, /t\("jelajah"\)/);
-    assert.match(footer, /© \{new Date\(\)\.getFullYear\(\)\} Aceh Tangguh/);
+    assert.match(footer, /© \{new Date\(\)\.getFullYear\(\)\} SIK Aceh/);
     const copyrightBlock = footer.slice(footer.indexOf("getFullYear()"));
     assert.match(copyrightBlock, /SITE_MEDIA\.heroPoster\.credit/);
     assert.match(copyrightBlock, /UI_CREDITS/);

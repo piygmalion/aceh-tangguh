@@ -10,7 +10,7 @@ export function buildWhatsAppMessage(template: string, payload: WaPayload): stri
       const tipe = payload.tipe ? String(payload.tipe) : "";
       const detail = jenis || tipe;
       return [
-        "Aceh Tangguh — laporan diterima.",
+        "SIK Aceh — laporan diterima.",
         nomor ? `Nomor: ${nomor}.` : "",
         detail ? `Jenis: ${detail}.` : "",
         "Laporan kejadian dimoderasi BPBA Pusdalops sebelum tampil di peta.",
@@ -19,15 +19,15 @@ export function buildWhatsAppMessage(template: string, payload: WaPayload): stri
         .filter(Boolean)
         .join(" ");
     case "laporan_approved":
-      return `Aceh Tangguh: laporan ${payload.nomor_laporan ?? ""} disetujui dan dapat tampil di peta publik.`;
+      return `SIK Aceh: laporan ${payload.nomor_laporan ?? ""} disetujui dan dapat tampil di peta publik.`;
     case "laporan_rejected":
-      return `Aceh Tangguh: laporan ${payload.nomor_laporan ?? ""} tidak dapat dipublikasikan. Hubungi BPBA Pusdalops jika perlu klarifikasi.`;
+      return `SIK Aceh: laporan ${payload.nomor_laporan ?? ""} tidak dapat dipublikasikan. Hubungi BPBA Pusdalops jika perlu klarifikasi.`;
     case "daily_brief":
       return typeof payload.message === "string" && payload.message.trim()
         ? payload.message
-        : "Aceh Tangguh — ringkasan harian. Untuk darurat hubungi 112 / Pusdalops.";
+        : "SIK Aceh — ringkasan harian. Untuk darurat hubungi 112 / Pusdalops.";
     default:
-      return `Aceh Tangguh: ${template} ${JSON.stringify(payload)}`;
+      return `SIK Aceh: ${template} ${JSON.stringify(payload)}`;
   }
 }
 

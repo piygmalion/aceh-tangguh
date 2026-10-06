@@ -4,7 +4,7 @@ import { redirect } from "@/i18n/routing";
 import { routing } from "@/i18n/routing";
 
 export const metadata: Metadata = {
-  title: "Pratinjau beranda, Aceh Tangguh",
+  title: "Pratinjau beranda, SIK Aceh",
   robots: { index: false, follow: false },
 };
 

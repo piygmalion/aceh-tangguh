@@ -680,3 +680,11 @@ Latar bagian statistik memakai turunan `public/media/hero-slides/03.jpg` (foto d
 | --- | --- | --- | --- | --- |
 | FE-68 | frontend | Foto latar hero statistik | jurnal/FE-68.md | diverifikasi |
 
+## FE-69 — rebrand tampilan SIK Aceh
+
+Nama yang dibaca pengguna menjadi "SIK Aceh". Bentuk panjang "Sistem Informasi Kebencanaan Aceh" sekali di footer dan deskripsi meta. Kredit foto, User-Agent, katalog sumber `sik-aceh`, dan binari peta tidak diubah.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-69 | frontend | Rebrand tampilan SIK Aceh | jurnal/FE-69.md | draf |
+
