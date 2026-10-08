@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, it } from "node:test";
-import { displaySumberEntries, displaySumberEntry } from "./sumber-label";
+import { displaySumberEntries, displaySumberEntry, renderSumberLine } from "./sumber-label";
 
 describe("disasterEvents source display", () => {
   it("relabels only an exact sik_aceh.db entry inside a mixed list", () => {
@@ -33,5 +35,49 @@ describe("disasterEvents source display", () => {
     assert.deepEqual(displaySumberEntries("sik_aceh.db"), ["Data Kejadian BPBA"]);
     assert.deepEqual(displaySumberEntries("kejadian_operasi"), ["Kejadian operasional"]);
     assert.deepEqual(displaySumberEntries("SIK operasional"), ["Kejadian operasional"]);
+  });
+
+  it("labels the three stored tokens in id and en without rewriting them", () => {
+    const tokens = ["sik_aceh.db", "kejadian_operasi", "SIK operasional"] as const;
+    assert.deepEqual(
+      tokens.map((token) => displaySumberEntry(token, "id")),
+      ["Data Kejadian BPBA", "Kejadian operasional", "Kejadian operasional"],
+    );
+    assert.deepEqual(
+      tokens.map((token) => displaySumberEntry(token, "en")),
+      ["BPBA incident data", "Operational incidents", "Operational incidents"],
+    );
+    assert.deepEqual(displaySumberEntries([...tokens], "en"), [
+      "BPBA incident data",
+      "Operational incidents",
+      "Operational incidents",
+    ]);
+    assert.deepEqual(displaySumberEntries([...tokens], "id"), [
+      "Data Kejadian BPBA",
+      "Kejadian operasional",
+      "Kejadian operasional",
+    ]);
+    assert.equal(tokens[0], "sik_aceh.db");
+    assert.equal(tokens[1], "kejadian_operasi");
+    assert.equal(tokens[2], "SIK operasional");
+    assert.equal(displaySumberEntry("sik_aceh", "en"), "sik_aceh");
+    assert.equal(displaySumberEntry("https://bpba.acehprov.go.id/rekap.pdf", "en"), "https://bpba.acehprov.go.id/rekap.pdf");
+  });
+
+  it("renders Indonesian card labels and raw tokens for the active locale", () => {
+    assert.equal(renderSumberLine("sik_aceh.db", "id"), "Data Kejadian BPBA");
+    assert.equal(renderSumberLine("kejadian_operasi", "id"), "Kejadian operasional");
+    assert.equal(renderSumberLine("SIK operasional", "id"), "Kejadian operasional");
+    assert.equal(renderSumberLine("Data Kejadian BPBA", "en"), "BPBA incident data");
+    assert.equal(renderSumberLine("Kejadian operasional", "en"), "Operational incidents");
+    assert.equal(renderSumberLine("sik_aceh.db", "en"), "BPBA incident data");
+    assert.equal(renderSumberLine("kejadian_operasi", "en"), "Operational incidents");
+    assert.equal(renderSumberLine("SIK operasional", "en"), "Operational incidents");
+    assert.equal(renderSumberLine("Data Kejadian BPBA", "id"), "Data Kejadian BPBA");
+    assert.equal(renderSumberLine("https://www.antaranews.com/berita/1", "en"), "https://www.antaranews.com/berita/1");
+
+    const popup = readFileSync(join(process.cwd(), "src/components/map/MapFeatureCard.tsx"), "utf8");
+    assert.match(popup, /useLocale\(/);
+    assert.match(popup, /renderSumberLine\(entry, sumberLocale\)/);
   });
 });

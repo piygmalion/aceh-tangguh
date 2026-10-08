@@ -294,4 +294,29 @@ describe("disasterEvents source labels", () => {
     assert.deepEqual(card.sources, [pdf, "https://www.antaranews.com/berita/1", "Data Kejadian BPBA"]);
     assert.equal(card.subtitle?.includes("BPBA"), false);
   });
+
+  it("renders disasterEvents source labels for the active locale", () => {
+    const pdf = "https://bpba.acehprov.go.id/media/2023.09/rekap.pdf";
+    const stored = [pdf, "kejadian_operasi", "SIK operasional", "sik_aceh.db"];
+    const card = toFeatureCard(
+      point("ACEH-2023-0372", "disasterEvents", {
+        title: "Kebakaran — Aceh Besar",
+        jenis_bencana: "Kebakaran",
+        sumber_data: stored,
+      }),
+      { locale: "en" },
+    );
+    assert.deepEqual(card.sources, [
+      pdf,
+      "Operational incidents",
+      "Operational incidents",
+      "BPBA incident data",
+    ]);
+    assert.deepEqual(stored, [pdf, "kejadian_operasi", "SIK operasional", "sik_aceh.db"]);
+    const idCard = toFeatureCard(
+      point("ops-1", "disasterEvents", { source: "kejadian_operasi" }),
+      { locale: "id" },
+    );
+    assert.deepEqual(idCard.sources, ["Kejadian operasional"]);
+  });
 });
