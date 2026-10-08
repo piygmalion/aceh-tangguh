@@ -236,18 +236,28 @@ export function contextToChunks(ctx: GuideContext, locale: GuideLocale): Retriev
   }
 
   if (failed.has("sikStats")) {
-    chunks.push(delayedChunk("live:sik-stats", "rekap SIK", "/data-bencana", "linkDataBencana", locale));
+    chunks.push(
+      delayedChunk(
+        "live:sik-stats",
+        locale === "en" ? "Operational incidents" : "Kejadian operasional",
+        "/data-bencana",
+        "linkDataBencana",
+        locale,
+      ),
+    );
   } else if (ctx.sikStats) {
     const top = ctx.sikStats.byJenis
       .slice(0, 3)
       .map((row) => `${row.jenis} ${row.count}`)
       .join(", ");
+    const line =
+      locale === "en"
+        ? `Operational incidents ${ctx.sikStats.year}: ${ctx.sikStats.total} events`
+        : `Kejadian operasional ${ctx.sikStats.year}: ${ctx.sikStats.total} kejadian`;
     chunks.push({
       sourceId: "live:sik-stats",
-      title: "SIK",
-      text: locale === "en"
-        ? `SIK ${ctx.sikStats.year}: ${ctx.sikStats.total} events.${top ? ` ${top}.` : ""}`
-        : `SIK ${ctx.sikStats.year}: ${ctx.sikStats.total} kejadian.${top ? ` ${top}.` : ""}`,
+      title: line,
+      text: `${line}.${top ? ` ${top}.` : ""}`,
       href: "/data-bencana",
       labelKey: "linkDataBencana",
     });

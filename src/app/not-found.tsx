@@ -11,7 +11,7 @@ export default function NotFound() {
       >
         <h1>404</h1>
         <p>
-          <a href="./id/">Aceh Tangguh</a>
+          <a href="./id/">SIK Aceh</a>
         </p>
       </body>
     </html>

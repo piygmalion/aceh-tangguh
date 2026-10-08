@@ -146,7 +146,7 @@ describe("AN-38 daily brief compose", () => {
       kejadian: { rowOk: true, activeIncidents: 0 },
     });
     const text = buildDailyBriefWhatsApp(summary, "id");
-    assert.match(text, /Aceh Tangguh — ringkasan harian/);
+    assert.match(text, /SIK Aceh — ringkasan harian/);
     assert.match(text, /\/id\/brief\/2026-09-07/);
     assert.match(text, /112/);
     assert.doesNotMatch(text, /\+62|phone_enc/);

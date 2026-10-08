@@ -270,8 +270,11 @@ export const GUIDE_INTENTS: GuideIntentDef[] = [
       id: [
         "apa itu aceh tangguh",
         "tentang aceh tangguh",
+        "apa itu sik aceh",
+        "tentang sik aceh",
         "tentang situs",
         "siapa aceh tangguh",
+        "siapa sik aceh",
         "halo",
         "hai",
         "selamat pagi",
@@ -281,6 +284,8 @@ export const GUIDE_INTENTS: GuideIntentDef[] = [
       en: [
         "what is aceh tangguh",
         "about aceh tangguh",
+        "what is sik aceh",
+        "about sik aceh",
         "about this site",
         "hello",
         "hi",

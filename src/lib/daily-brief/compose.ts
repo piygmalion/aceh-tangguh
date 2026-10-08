@@ -419,7 +419,7 @@ export function buildDailyBriefWhatsApp(
   });
 
   return [
-    "Aceh Tangguh — ringkasan harian",
+    "SIK Aceh — ringkasan harian",
     summary.briefDate,
     "",
     ...lines,

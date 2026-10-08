@@ -41,12 +41,11 @@ export const DATA_SOURCES: DataSourceEntry[] = [
   },
   {
     id: "sik-aceh",
-    titleId: "SIK Aceh — master SQLite (pengayaan)",
-    titleEn: "SIK Aceh — master SQLite (enrichment)",
+    titleId: "Data Kejadian BPBA — master SQLite (pengayaan)",
+    titleEn: "BPBA incident data — master SQLite (enrichment)",
     source:
       "Local master sik_aceh.db (operator path: data bencana aceh/database/master). Copied to data/sik/sik_aceh.db (gitignored). Not a public dump.",
-    license:
-      "Operational BPBA / SIK Aceh compilation — do not republish the raw SQLite",
+    license: "Operational BPBA compilation — do not republish the raw SQLite",
     date: "Imported on demand via python3 scripts/import-sik-aceh.py (dry-run default)",
     format: "SQLite → kejadian_bencana payload + disasterEvents GeoJSON",
     usedFor:
@@ -315,7 +314,7 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleEn: "Brand basemap presets (Light / Dark / Minimalist Grey)",
     source:
       "Owned MapLibre GL Style v8 (src/lib/basemap-presets.ts) over OpenFreeMap OpenMapTiles",
-    license: "OpenFreeMap terms; © OpenStreetMap contributors; Aceh Tangguh Sistem Warna tokens",
+    license: "OpenFreeMap terms; © OpenStreetMap contributors; SIK Aceh Sistem Warna tokens",
     date: "Style JSON in-repo",
     format: "MapLibre style JSON + OpenFreeMap vector PBF",
     usedFor:

@@ -22,6 +22,14 @@ import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import type { MarkerLayerKey } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
+function sourceHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
 export async function fetchFeatureCard(id: string, layer?: string): Promise<FeatureCard> {
   const qs = new URLSearchParams();
   if (layer) qs.set("layer", layer);
@@ -257,6 +265,34 @@ export function MapFeatureCard({
             </li>
           ))}
         </ul>
+      ) : null}
+
+      {card?.sources && card.sources.length > 0 ? (
+        <section className="flex flex-col gap-1" data-event-sources>
+          <div className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("sumber")}</div>
+          <ul className="flex flex-col gap-0.5">
+            {card.sources.map((entry) => {
+              const isUrl = /^https?:\/\//i.test(entry);
+              return (
+                <li key={entry} className="text-[0.8125rem] leading-snug text-[var(--text)]">
+                  {isUrl ? (
+                    <a
+                      href={entry}
+                      title={entry}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[var(--text)] underline-offset-2 hover:underline"
+                    >
+                      {sourceHostname(entry)}
+                    </a>
+                  ) : (
+                    entry
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       ) : null}
     </article>
   );

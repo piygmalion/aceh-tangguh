@@ -88,11 +88,11 @@ describe("FE-62 beranda mengikuti urutan SIAGA", () => {
     assert.equal(enFitur.beranda.fitur.analisisTitle, "Disaster data analysis");
     assert.equal(
       idFitur.beranda.fitur.analisisIsi,
-      "Potong kejadian Aceh menurut jenis, wilayah, dan waktu dari katalog Aceh Tangguh. Agregat DIBI bisa ditampilkan terpisah.",
+      "Potong kejadian Aceh menurut jenis, wilayah, dan waktu dari katalog SIK Aceh. Agregat DIBI bisa ditampilkan terpisah.",
     );
     assert.equal(
       enFitur.beranda.fitur.analisisIsi,
-      "Slice Aceh events by type, area, and time from the Aceh Tangguh catalog. DIBI aggregates can be shown separately.",
+      "Slice Aceh events by type, area, and time from the SIK Aceh catalog. DIBI aggregates can be shown separately.",
     );
     const idAnalisis = JSON.parse(read("messages/id.json")) as {
       analisisData: { lead: string };

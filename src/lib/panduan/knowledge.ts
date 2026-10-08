@@ -37,8 +37,8 @@ function juklakCards(): KnowledgeCard[] {
     cards.push({
       sourceId: `juklak-${entry.kode}`,
       title: entry.jenis,
-      bodyId: `${entry.jenis} (kode ${entry.kode}) adalah ${klas} dalam Juklak Standar Data Kejadian dan Dampak Bencana BNPB No. 7 Tahun 2023 yang dipakai SIK Aceh Tangguh. Nama kejadian dalam jenis ini: ${names}. Ini label katalog, bukan jumlah korban, SK darurat, atau perintah evakuasi.`,
-      bodyEn: `${entry.jenis} (code ${entry.kode}) is a ${entry.klasifikasi} hazard in BNPB Juklak No. 7/2023 used by Aceh Tangguh SIK. Event names in this type: ${names}. This is a catalogue label, not a casualty count, emergency decree, or evacuation order.`,
+      bodyId: `${entry.jenis} (kode ${entry.kode}) adalah ${klas} dalam Juklak Standar Data Kejadian dan Dampak Bencana BNPB No. 7 Tahun 2023 yang dipakai SIK Aceh. Nama kejadian dalam jenis ini: ${names}. Ini label katalog, bukan jumlah korban, SK darurat, atau perintah evakuasi.`,
+      bodyEn: `${entry.jenis} (code ${entry.kode}) is a ${entry.klasifikasi} hazard in BNPB Juklak No. 7/2023 used by SIK Aceh. Event names in this type: ${names}. This is a catalogue label, not a casualty count, emergency decree, or evacuation order.`,
       href: "/data-bencana",
       labelKey: "linkDataBencana",
       terms: [
@@ -148,9 +148,9 @@ function staticConceptCards(): KnowledgeCard[] {
       sourceId: "concept-tanggapi-asisten",
       title: "Tanggapi asisten situs",
       bodyId:
-        "Tanggapi adalah asisten riset sipil di Aceh Tangguh: menavigasi situs dan merangkai cuplikan sumber resmi yang sudah ada di situs. Bukan chatbot merek xAI di UI, dan bukan portal publikasi Tanggapi Aceh. Saya tidak mengarang angka korban, SK darurat, atau perintah evakuasi.",
+        "Tanggapi adalah asisten riset sipil di SIK Aceh: menavigasi situs dan merangkai cuplikan sumber resmi yang sudah ada di situs. Bukan chatbot merek xAI di UI, dan bukan portal publikasi Tanggapi Aceh. Saya tidak mengarang angka korban, SK darurat, atau perintah evakuasi.",
       bodyEn:
-        "Tanggapi is the civic research assistant on Aceh Tangguh: it navigates the site and rephrases official snippets already on this site. It is not an xAI-branded chatbot in the UI, and it is not the Tanggapi Aceh publication portal. I do not invent casualty figures, emergency decrees, or evacuation orders.",
+        "Tanggapi is the civic research assistant on SIK Aceh: it navigates the site and rephrases official snippets already on this site. It is not an xAI-branded chatbot in the UI, and it is not the Tanggapi Aceh publication portal. I do not invent casualty figures, emergency decrees, or evacuation orders.",
       href: "/",
       labelKey: "linkSection",
       terms: [

@@ -21,7 +21,7 @@ function pickInvoker() {
 function systemPrompt(locale: GuideLocale): string {
   if (locale === "en") {
     return [
-      "You are Tanggapi, the Aceh Tangguh civic research assistant — not the Tanggapi Aceh BTT publication portal.",
+      "You are Tanggapi, the SIK Aceh civic research assistant — not the Tanggapi Aceh BTT publication portal.",
       "Rephrase only the provided site snippets. Cite the human titles of those snippets, not sourceId values.",
       "Do not invent casualties, emergency decrees, alert levels, or evacuation orders.",
       "If a snippet is marked delayed, say the data is delayed and do not fill numbers.",
@@ -29,7 +29,7 @@ function systemPrompt(locale: GuideLocale): string {
     ].join(" ");
   }
   return [
-    "Anda Tanggapi, asisten riset sipil Aceh Tangguh — bukan portal publikasi Tanggapi Aceh (BTT).",
+    "Anda Tanggapi, asisten riset sipil SIK Aceh — bukan portal publikasi Tanggapi Aceh (BTT).",
     "Rangkai hanya cuplikan situs yang diberi. Sitasi judul manusia pada cuplikan, bukan sourceId.",
     "Dilarang mengarang korban, SK darurat, siaga, atau perintah evakuasi.",
     "Jika cuplikan berlabel tertunda, katakan data tertunda dan jangan mengisi angka.",

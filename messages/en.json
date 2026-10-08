@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "Aceh Tangguh",
-    "description": "Aceh disaster observatory & response"
+    "title": "SIK Aceh",
+    "description": "Sistem Informasi Kebencanaan Aceh — Aceh Disaster Information System"
   },
   "staticPreview": {
     "kicker": "GitHub Pages preview",
@@ -47,7 +47,7 @@
     "emergencyClock": "WIB"
   },
   "hero": {
-    "title": "Stay ready for <brand>Aceh Tangguh</brand>,<br></br>respond for better handling.",
+    "title": "Stay ready for a resilient Aceh,<br></br>respond for better handling.",
     "subtitle": "Disaster preparedness and data-driven response",
     "kicker": "Aceh observatory",
     "liveBadge": "Live",
@@ -171,7 +171,7 @@
     "kreditVisual": "Visual credits"
   },
   "map": {
-    "title": "Aceh Tangguh · Map",
+    "title": "SIK Aceh · Map",
     "distribusi": "Distribution",
     "lokasi": "Locations",
     "legenda": "Legend",
@@ -182,6 +182,7 @@
     "reportKejadian": "Report incident",
     "reportPenanganan": "Report response",
     "disasterEvents": "Disaster events",
+    "sumber": "Sources",
     "poskos": "Posts",
     "tendPoints": "Shelter points",
     "citizenReports": "Citizen reports",
@@ -428,7 +429,7 @@
     "success": "Report queued for moderation."
   },
   "laporHub": {
-    "title": "Report to Aceh Tangguh",
+    "title": "Report to the people of Aceh",
     "subtitle": "Choose the type of report. Incident and response reports may appear on the map after BPBA Pusdalops moderation.",
     "home": "Home",
     "crumb": "Report",
@@ -504,7 +505,7 @@
     "lead": "Overlay signals waiting to be accepted or rejected. Accepting creates a draft incident, not an active one.",
     "navFromList": "Candidates",
     "overviewTitle": "Candidate incidents",
-    "overviewBody": "Review overlay signals (BMKG, MAGMA, Sipongi, Tatonas) before they become SIK incidents.",
+    "overviewBody": "Review overlay signals (BMKG, MAGMA, Sipongi, Tatonas) before they are published.",
     "tabDraf": "Draft",
     "tabDitolak": "Rejected",
     "tabDiterima": "Accepted",
@@ -641,7 +642,7 @@
   },
   "sumberData": {
     "title": "Data sources",
-    "lead": "Datasets, boundaries, basemaps, and media used by Aceh Tangguh. Catalogued from the Drive → app fixture pipeline.",
+    "lead": "Datasets, boundaries, basemaps, and media used by SIK Aceh. Catalogued from the Drive → app fixture pipeline.",
     "source": "Source",
     "license": "License",
     "date": "Date / version",
@@ -654,7 +655,7 @@
   },
   "metodologi": {
     "title": "Methodology",
-    "lead": "How we join R3P damage figures to kab/kota and village geometries — rewritten from the Aceh Tangguh inventory pipeline, not copied from other projects.",
+    "lead": "How we join R3P damage figures to kab/kota and village geometries — rewritten from the SIK Aceh inventory pipeline, not copied from other projects.",
     "backHome": "Home",
     "seeSumber": "Data sources",
     "s1": {
@@ -768,7 +769,7 @@
     "seeMap": "View on map",
     "loading": "Loading IRBI…",
     "error": "Failed to load IRBI data.",
-    "sourceNote": "BNPB IRBI 2025 · Aceh Tangguh fixture",
+    "sourceNote": "BNPB IRBI 2025 · SIK Aceh fixture",
     "hazard_banjir": "Flood",
     "hazard_gempabumi": "Earthquake",
     "hazard_tsunami": "Tsunami",
@@ -800,7 +801,7 @@
     "seeMap": "View on map",
     "loading": "Loading KRB…",
     "error": "Failed to load KRB data.",
-    "sourceNote": "BNPB IRBI 2025 · PVMBG · Aceh Tangguh krb_* database",
+    "sourceNote": "BNPB IRBI 2025 · PVMBG · SIK Aceh krb_* database",
     "sikKicker": "IRBI context",
     "sikTitle": "IRBI hazard class for this kabupaten",
     "sikLead": "Risk-assessment catalog, not volcanic KRB I/II/III zones. Does not fill emergency status or decrees.",
@@ -901,7 +902,7 @@
   "analisisData": {
     "kicker": "Data analysis",
     "title": "Disaster data analysis",
-    "lead": "Slice Aceh events by type, area, and time from the Aceh Tangguh catalog. DIBI aggregates can be shown separately.",
+    "lead": "Slice Aceh events by type, area, and time from the SIK Aceh catalog. DIBI aggregates can be shown separately.",
     "backHome": "Home",
     "seeTable": "Event table",
     "seeMap": "Map",
@@ -1003,7 +1004,7 @@
     "proyeksiBandGte6": "≥ M6",
     "openIrbiMap": "View class on the map",
     "kodeKabupaten": "Code {kode}",
-    "sourceIrbiKrb": "BNPB IRBI 2025 · Aceh Tangguh krb_* database · event catalogue"
+    "sourceIrbiKrb": "BNPB IRBI 2025 · SIK Aceh krb_* database · event catalogue"
   },
   "panduan": {
     "open": "Open Tanggapi",
@@ -1063,7 +1064,7 @@
   "anggaranBencana": {
     "title": "Disaster budget",
     "lead": "Summary and exploration of the disaster-handling budget in the APBA elaboration. Figures load for signed-in staff.",
-    "source": "Source: PERGUB APBA elaboration No. 4 / 2026 · Aceh Tangguh fixture",
+    "source": "Source: PERGUB APBA elaboration No. 4 / 2026 · SIK Aceh fixture",
     "backHome": "Home",
     "seeData": "Disaster data",
     "seeSumber": "Data sources",
@@ -1212,7 +1213,7 @@
     "irbiScoreAria": "IRB score {score}",
     "cuacaEkstremChip": "Ext. wx {kelas}",
     "thumbAria": "{name}, {desc}, {temp} degrees, {kelas} risk, IRB {score}",
-    "attribution": "Data sources: BMKG (Indonesian Meteorology Agency) and Open-Meteo.com (CC BY 4.0). District/city coordinates from the Aceh Tangguh inventory."
+    "attribution": "Data sources: BMKG (Indonesian Meteorology Agency) and Open-Meteo.com (CC BY 4.0). District/city coordinates from the SIK Aceh inventory."
   },
   "weatherInovasi": {
     "title": "AI model context (experimental)",
@@ -1257,7 +1258,7 @@
     "navOverview": "Overview",
     "navOpsDash": "Data dashboard",
     "navModeration": "Report moderation",
-    "navKejadianOps": "SIK incidents",
+    "navKejadianOps": "Operational incidents",
     "navMaster": "Master data",
     "navLogistik": "Logistics",
     "navDestana": "Destana / PKD",
@@ -1344,13 +1345,13 @@
     "opsDashCoverage": "Coverage",
     "opsDashModulesWithData": "Modules with data",
     "opsDashQueue": "Queue",
-    "opsDashIncidents": "SIK incidents",
+    "opsDashIncidents": "Operational incidents",
     "opsDashLogisticsBound": "Bound logistics",
     "opsDashLifecycle": "Operational flow",
     "opsDashPhaseIncoming": "Inbound",
     "opsDashPhaseReview": "In review",
     "opsDashPhaseApproved": "Approved",
-    "opsDashPhaseOps": "SIK incidents",
+    "opsDashPhaseOps": "Operational incidents",
     "opsDashPhaseLogistics": "Distribution",
     "opsDashFeeds": "Module feeds",
     "opsDashOpen": "Open module",
@@ -1474,7 +1475,7 @@
     "dbLead": "A constrained table editor — not a SQL console. Only whitelisted columns can change.",
     "dbTable": "Table",
     "opsDashVolumeHintModerasi": "Reports and responses from queue through approval",
-    "opsDashVolumeHintKejadian": "SIK incidents plus draft candidates",
+    "opsDashVolumeHintKejadian": "Operational incidents plus draft candidates",
     "opsDashVolumeHintLogistik": "Stock plus what is already distributed",
     "opsDashVolumeHintDestana": "Program villages, activities, and PKD tasks",
     "opsDashVolumeHintRehab": "Needs, monitoring, and recipients",
@@ -1576,7 +1577,7 @@
   },
   "nomorPentingPublic": {
     "title": "Essential disaster-service numbers",
-    "lead": "BPBA, kabupaten BPBD, health facilities, and related services. Staff manage this list in the SIK console.",
+    "lead": "BPBA, kabupaten BPBD, health facilities, and related services. Staff manage this list in the staff console.",
     "backHome": "Home",
     "empty": "No numbers have been published yet."
   },
@@ -1626,7 +1627,7 @@
   "beranda": {
     "hero": {
       "kicker": "Aceh stands ready for disaster",
-      "title": "Preparedness and response for Aceh Tangguh.",
+      "title": "Preparedness and response for a resilient Aceh.",
       "lead": "Predictive data for mitigation analysis, operations maps based on risk assessment, and data-driven response.",
       "statusTitle": "Aceh status today",
       "pulse": "Data refreshes automatically",
@@ -1664,7 +1665,7 @@
       "perairanAceh": "Aceh waters"
     },
     "metrics": {
-      "aria": "Aceh Tangguh key figures",
+      "aria": "SIK Aceh key figures",
       "kejadian": "Recorded events",
       "kejadianNote": "Aceh {from}-{to} according to DIBI BNPB",
       "kejadianNoteFallback": "Indonesia Disaster Information Data",
@@ -1692,7 +1693,7 @@
     },
     "peringatan": {
       "title": "Early warning from five official sources",
-      "lead": "Aceh Tangguh reads BMKG, MAGMA ESDM, SIPONGI, and Tatonas telemetry on a regular cycle. Each card links to its original source.",
+      "lead": "SIK Aceh reads BMKG, MAGMA ESDM, SIPONGI, and Tatonas telemetry on a regular cycle. Each card links to its original source.",
       "toRisiko": "See long-term risk",
       "error": "Early-warning data could not be loaded. Official sources remain available from the Data sources page.",
       "sumber": "Source",
@@ -1808,7 +1809,7 @@
     "sumber": {
       "kicker": "Open data",
       "title": "Where the figures on this page come from",
-      "lead": "Aceh Tangguh does not invent the numbers. This page rearranges official data so it can be read in one flow.",
+      "lead": "SIK Aceh does not invent the numbers. This page rearranges official data so it can be read in one flow.",
       "dibi": "BNPB, DIBI",
       "dibiIsi": "Aceh disaster impact from 2008 to 2026",
       "irbi": "BNPB, IRBI 2025",
@@ -1874,7 +1875,7 @@
       "countHeader": "Events"
     },
     "tentang": {
-      "kicker": "About Aceh Tangguh",
+      "kicker": "About SIK Aceh",
       "b1": "Incident reports with a location and a photo enter the BPBA moderation queue.",
       "b2": "Early warnings for weather, MAGMA earthquakes, hotspots, water level, and sea waves.",
       "b3": "An operations map and BPBA publications on one site."
@@ -1891,7 +1892,7 @@
       "petaTitle": "Map and monitoring",
       "petaIsi": "Hazards, facilities, and field reports on the same map.",
       "analisisTitle": "Disaster data analysis",
-      "analisisIsi": "Slice Aceh events by type, area, and time from the Aceh Tangguh catalog. DIBI aggregates can be shown separately.",
+      "analisisIsi": "Slice Aceh events by type, area, and time from the SIK Aceh catalog. DIBI aggregates can be shown separately.",
       "infoTitle": "Information and publications",
       "infoIsi": "BPBA activity news and material already published."
     },

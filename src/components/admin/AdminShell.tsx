@@ -129,14 +129,14 @@ export function AdminShell({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${
+                  className={`inline-flex w-max max-w-full shrink-0 items-start gap-2 rounded-xl px-3 py-2 text-left text-sm leading-snug transition md:w-full ${
                     active
                       ? "bg-[var(--primary-dim)] font-medium text-[var(--primary)]"
                       : "text-[var(--text-dim)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)]"
                   }`}
                 >
-                  <Icon size={16} />
-                  {item.label}
+                  <Icon size={16} className="mt-0.5 shrink-0" />
+                  <span className="whitespace-normal">{item.label}</span>
                 </Link>
               );
             })}

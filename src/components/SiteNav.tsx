@@ -136,12 +136,13 @@ export function SiteNav() {
         <div className="flex items-center justify-between gap-3">
           <Link
             href="/"
+            aria-label="SIK Aceh, Sistem Informasi Kebencanaan Aceh — beranda"
             className={cn(
-              "shrink-0 rounded-lg px-1.5 py-1 text-sm font-semibold tracking-wide text-[var(--primary-fg)] md:text-base",
+              "shrink-0 whitespace-nowrap rounded-lg px-1.5 py-1 text-sm font-semibold text-[var(--primary-fg)] md:text-base",
               NAV_ACCENT_HOVER
             )}
           >
-            Aceh Tangguh
+            SIK Aceh
           </Link>
 
           <nav className="hidden items-center gap-1 text-sm lg:flex" aria-label="Primary" data-nav-ia="desktop">

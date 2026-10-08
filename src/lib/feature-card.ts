@@ -23,6 +23,7 @@ import {
 } from "./coord-quality";
 import { formatStatusLabel, normalizeStatus, statusTone } from "./status-vocab";
 import { isOverlayLayerKey } from "./overlay-layers";
+import { displaySumberEntries } from "./sumber-label";
 import { isValidKodeDesa10, readKodeDesa10 } from "./tanggapi-distribusi";
 import type { MarkerLayerKey, OverlayLayerKey } from "./types";
 
@@ -78,6 +79,8 @@ export type FeatureCard = {
   details: FeatureCardDetail[];
   coordQuality?: "truncated" | "offshore" | null;
   stack?: FeatureCardStackItem[];
+  /** Display labels for disasterEvents sources. Stored tokens are not rewritten. */
+  sources?: string[];
   /** 10-digit desa code from properties when present. Never invented. */
   kodeDesa?: string;
   kecamatan?: string;
@@ -724,6 +727,10 @@ export function toFeatureCard(
     (part) => part && part !== FEATURE_CARD_EMPTY,
   );
   const subtitle = subtitleParts.length ? subtitleParts.join(" • ") : undefined;
+  const sources =
+    layer === "disasterEvents"
+      ? displaySumberEntries(props.sumber_data != null ? props.sumber_data : props.source)
+      : [];
   const kodeDesa = readKodeDesa10(props);
   const kecamatan = !isEmptyCardValue(props.kecamatan) ? String(props.kecamatan).trim() : undefined;
   const kabupaten = !isEmptyCardValue(props.kabupaten ?? props.kabupaten_kota)
@@ -743,6 +750,7 @@ export function toFeatureCard(
     details,
     coordQuality: coordQualityOf(props),
     stack: options.stack?.length ? options.stack : undefined,
+    ...(sources.length ? { sources } : {}),
     ...(kodeDesa && isValidKodeDesa10(kodeDesa) ? { kodeDesa } : {}),
     ...(kecamatan ? { kecamatan } : {}),
     ...(kabupaten ? { kabupaten } : {}),

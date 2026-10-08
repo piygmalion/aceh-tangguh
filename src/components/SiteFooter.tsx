@@ -16,7 +16,12 @@ export function SiteFooter() {
     <footer className="reveal mt-16 bg-[var(--primary)] px-4 pb-20 pt-14 text-[var(--primary-fg)] sm:pb-10 md:pt-16">
       <div className="mx-auto grid max-w-[1080px] gap-10 md:grid-cols-3">
         <div>
-          <div className="text-base font-semibold tracking-tight">Aceh Tangguh</div>
+          <div className="text-base font-semibold tracking-tight">SIK Aceh</div>
+          <p className="mt-1 max-w-xs text-sm font-normal leading-snug">
+            {locale === "en"
+              ? "Aceh Disaster Information System"
+              : "Sistem Informasi Kebencanaan Aceh"}
+          </p>
         </div>
         <nav aria-label={t("jelajah")}>
           <ul className="space-y-2 text-sm text-[var(--primary-fg)]">
@@ -109,7 +114,7 @@ export function SiteFooter() {
           TYPE_FLOOR_CLASS
         )}
       >
-        <div>© {new Date().getFullYear()} Aceh Tangguh</div>
+        <div>© {new Date().getFullYear()} SIK Aceh</div>
         <details className="mt-3">
           <summary className="cursor-pointer text-[var(--primary-fg)] transition hover:underline">
             {t("kreditVisual")}

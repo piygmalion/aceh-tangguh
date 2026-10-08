@@ -74,7 +74,7 @@ describe("FE-46 cuaca slideshow, copy, footer, renduk", () => {
       beranda: { hero: Record<string, string>; dibi: Record<string, string> };
     };
     assert.match(id.beranda.hero.kicker, /siaga hadapi bencana/i);
-    assert.match(id.beranda.hero.title, /Siapsiaga dan Tanggap untuk Aceh Tangguh/);
+    assert.match(id.beranda.hero.title, /Siapsiaga dan Tanggap untuk Aceh yang Tangguh/);
     assert.match(id.beranda.hero.lead, /Data prediktif/);
     assert.match(id.beranda.hero.lead, /kajian risiko/);
     assert.equal(id.beranda.dibi.title, "Menghitung Dampak Bencana di Aceh");
