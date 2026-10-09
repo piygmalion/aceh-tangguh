@@ -696,3 +696,11 @@ Gulir sapaan Tanggapi ke awal pesan. Kartu peta bergulir di dalam dengan judul l
 | --- | --- | --- | --- | --- |
 | FE-70 | frontend | visual-3 | jurnal/FE-70.md | diverifikasi |
 
+## FE-71 — visual-4
+
+Gelembung Tanggapi di telepon duduk di atas FAB. Chip panduan satu baris. Header kartu peta memendek saat digulir. Panel layer menutup popup. Pegangan panel menghormati tepi bawah. Laporkan di menu 390 sejajar tautan lain.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-71 | frontend | visual-4 | jurnal/FE-71.md | diverifikasi |
+
