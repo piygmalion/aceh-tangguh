@@ -6,12 +6,10 @@ import type { MetricPoint } from "@/lib/dibi-beranda";
 export function MetricSpark({
   points,
   peakYear,
-  peakLabel,
   runningYear,
 }: {
   points: MetricPoint[];
   peakYear: number | null;
-  peakLabel: string;
   runningYear: number | null;
 }) {
   const w = 148;
@@ -41,10 +39,9 @@ export function MetricSpark({
       : "";
   const peakIndex = peakYear == null ? -1 : points.findIndex((point) => point.tahun === peakYear);
   const peakX = peakIndex >= 0 ? xAt(peakIndex) : 0;
-  const labelAnchor = peakX > w * 0.72 ? "end" : "middle";
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="mt-2 h-12 w-full text-[var(--band-fg)]" aria-hidden>
+    <svg viewBox={`0 0 ${w} ${h}`} className="mt-1 h-8 w-full text-[var(--band-fg)] sm:mt-2 sm:h-12" aria-hidden>
       {solid ? <path d={solid} fill="none" stroke="currentColor" strokeWidth="1.5" /> : null}
       {dashed ? (
         <path
@@ -67,19 +64,7 @@ export function MetricSpark({
         />
       ) : null}
       {peakIndex >= 0 ? (
-        <>
-          <circle cx={peakX} cy={yAt(points[peakIndex].value)} r="2.6" fill="currentColor" />
-          <text
-            x={peakX}
-            y={Math.max(12, yAt(points[peakIndex].value) - 5)}
-            textAnchor={labelAnchor}
-            fontSize="13"
-            fontWeight="600"
-            fill="currentColor"
-          >
-            {peakLabel}
-          </text>
-        </>
+        <circle cx={peakX} cy={yAt(points[peakIndex].value)} r="2.6" fill="currentColor" />
       ) : null}
     </svg>
   );

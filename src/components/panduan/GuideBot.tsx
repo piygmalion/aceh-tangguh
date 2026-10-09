@@ -132,7 +132,6 @@ export function GuideBot() {
   const [session, setSession] = useState<GuideSlots>({});
   const [faq, setFaq] = useState<GuideFaqEntry[]>(STATIC_GUIDE_FAQ);
   const [showBubble, setShowBubble] = useState(false);
-  const [inviteDesktop, setInviteDesktop] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [threadReady, setThreadReady] = useState(false);
   const sessionRef = useRef(session);
@@ -163,6 +162,7 @@ export function GuideBot() {
   const goTour = useCallback(
     (href: GuideHref, hash?: string) => {
       if (href === "/peta") {
+        setOpen(false);
         router.push("/peta");
         return;
       }
@@ -173,7 +173,7 @@ export function GuideBot() {
       queueTourTarget(href, hash);
       router.push(href);
     },
-    [pathname, router]
+    [pathname, router, setOpen]
   );
 
   useEffect(() => {
@@ -328,16 +328,8 @@ export function GuideBot() {
   }, []);
 
   useEffect(() => {
-    const query = window.matchMedia("(min-width: 640px)");
-    const sync = () => setInviteDesktop(query.matches);
-    sync();
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
-  }, []);
-
-  useEffect(() => {
     const allowCard =
-      visible && !open && inviteDesktop && shouldShowTanggapiInvite(pathname) && !hasSeenTanggapiBubble();
+      visible && !open && shouldShowTanggapiInvite(pathname) && !hasSeenTanggapiBubble();
     if (!allowCard) {
       setShowBubble(false);
       return;
@@ -354,7 +346,7 @@ export function GuideBot() {
       window.clearTimeout(timer);
       window.removeEventListener("scroll", onScroll);
     };
-  }, [inviteDesktop, open, pathname, visible]);
+  }, [open, pathname, visible]);
 
   useEffect(() => {
     if (consumeOpenTanggapi()) handleOpen();
@@ -511,7 +503,7 @@ export function GuideBot() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: motionMs ?? 0.16 }}
-            className="pointer-events-auto relative mb-1 hidden max-w-[16rem] sm:block"
+            className="pointer-events-auto relative mb-1 hidden max-w-[16rem] sm:block max-sm:!block max-sm:fixed max-sm:bottom-auto max-sm:right-3 max-sm:top-24 max-sm:z-[48]"
           >
             <div className="rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 shadow-[var(--shadow)]">
               <div className="flex items-start gap-2">

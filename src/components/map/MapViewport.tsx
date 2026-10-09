@@ -566,6 +566,7 @@ export function MapViewport({
   overlays = [],
   nasaLayers = [],
   nasaDate,
+  onFeaturePopupChange,
 }: {
   view: MapViewState;
   onViewChange: (v: Partial<MapViewState>) => void;
@@ -581,6 +582,7 @@ export function MapViewport({
   overlays?: OverlayLayerKey[];
   nasaLayers?: NasaNrtLayerKey[];
   nasaDate?: string;
+  onFeaturePopupChange?: (open: boolean) => void;
 }) {
   const t = useTranslations("map");
   const mapRef = useRef<MapRef>(null);
@@ -592,6 +594,16 @@ export function MapViewport({
     stack?: { id: string; title: string }[];
     localCard?: FeatureCard;
   } | null>(null);
+
+  const popupWasOpen = useRef(false);
+  useEffect(() => {
+    const open = popup != null;
+    if (popupWasOpen.current && !open) {
+      mapRef.current?.getCanvas()?.focus();
+    }
+    popupWasOpen.current = open;
+    onFeaturePopupChange?.(open);
+  }, [popup, onFeaturePopupChange]);
   const [cardId, setCardId] = useState<string | null>(null);
   const [overlayPopup, setOverlayPopup] = useState<OverlayHit | null>(null);
   const [nasaFirmsPopup, setNasaFirmsPopup] = useState<FirmsFeature | null>(null);
@@ -1083,7 +1095,7 @@ export function MapViewport({
   );
 
   return (
-    <div className="absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
+    <div className="map-stage absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
       <Map
         ref={mapRef}
         initialViewState={view}

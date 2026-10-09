@@ -47,7 +47,7 @@ export function HeroPhotoCaption({ meta = HERO_PHOTO }: { meta?: HeroPhotoMeta |
   return (
     <p
       data-hero-caption
-      className="pointer-events-none ml-auto mt-3 w-fit max-w-[18rem] rounded-md bg-[#111111]/90 px-2 py-1 text-right text-[0.8125rem] leading-snug text-white md:mt-4"
+      className="pointer-events-none ml-auto mt-3 w-fit max-w-[18rem] rounded-md bg-[#111111]/90 px-2 py-1 text-right text-[0.8125rem] leading-snug text-white md:mt-4 lg:max-w-none lg:whitespace-nowrap"
     >
       {caption}
     </p>

@@ -688,3 +688,11 @@ Nama yang dibaca pengguna menjadi "SIK Aceh". Bentuk panjang "Sistem Informasi K
 | --- | --- | --- | --- | --- |
 | FE-69 | frontend | Rebrand tampilan SIK Aceh | jurnal/FE-69.md | diverifikasi |
 
+## FE-70 — visual-3
+
+Gulir sapaan Tanggapi ke awal pesan. Kartu peta bergulir di dalam dengan judul lengket. Tautan Sumber bergaris; teks polos senada label. Laci menu 390 layar penuh. Sisa FE-68: caption, pita angka, garis header, urutan IRBI, teaser batas dari fixture.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-70 | frontend | visual-3 | jurnal/FE-70.md | diverifikasi |
+

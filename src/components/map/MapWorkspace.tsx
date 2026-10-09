@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useMapUrlState } from "@/hooks/useMapUrlState";
 import { SiteNav } from "@/components/SiteNav";
@@ -33,6 +33,10 @@ function MapWorkspaceInner() {
   const [lodSelection, setLodSelection] =
     useState<VillageClickSelection | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [featurePopupOpen, setFeaturePopupOpen] = useState(false);
+  const onFeaturePopupChange = useCallback((open: boolean) => {
+    setFeaturePopupOpen(open);
+  }, []);
 
   useEffect(() => {
     setVillageSelection(null);
@@ -45,7 +49,10 @@ function MapWorkspaceInner() {
   };
 
   return (
-    <div className="relative h-[100svh] w-full overflow-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div
+      data-feature-popup={featurePopupOpen ? "open" : undefined}
+      className="relative h-[100svh] w-full overflow-hidden bg-[var(--bg)] text-[var(--text)]"
+    >
       <MapViewport
         view={state.view}
         onViewChange={setView}
@@ -60,6 +67,7 @@ function MapWorkspaceInner() {
         overlays={state.overlays}
         nasaLayers={state.nasaLayers}
         nasaDate={state.nasaDate}
+        onFeaturePopupChange={onFeaturePopupChange}
       />
       {villageSelection && isAdminLodArea(state.areaLayer) ? (
         <AreaProfilPanel
@@ -77,6 +85,7 @@ function MapWorkspaceInner() {
         className={cn(
           "absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:hidden",
           settingsOpen && "hidden",
+          featurePopupOpen && "hidden",
         )}
       />
       <MapToolbar
@@ -96,7 +105,12 @@ function MapWorkspaceInner() {
         onToggleNasaLayer={toggleNasaLayer}
         onNasaDateChange={setNasaDate}
       />
-      <div className="pointer-events-none absolute bottom-[5.75rem] left-3 z-30 flex flex-col items-start gap-3 sm:bottom-6 md:bottom-4 md:left-4">
+      <div
+        className={cn(
+          "pointer-events-none absolute bottom-[5.75rem] left-3 z-30 flex flex-col items-start gap-3 sm:bottom-6 md:bottom-4 md:left-4",
+          featurePopupOpen && "max-md:hidden",
+        )}
+      >
         <StatusLegend
           className={cn(
             "pointer-events-auto",
@@ -112,7 +126,9 @@ function MapWorkspaceInner() {
           className="pointer-events-auto static bottom-auto left-auto sm:bottom-auto"
         />
       </div>
-      <ReportFAB />
+      <div className={cn(featurePopupOpen && "max-md:hidden")}>
+        <ReportFAB />
+      </div>
     </div>
   );
 }

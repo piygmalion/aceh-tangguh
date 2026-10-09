@@ -59,7 +59,7 @@ function Counter({
   className?: string;
 }) {
   return (
-    <div className={cn("flex h-full flex-col bg-[var(--band-bg)] p-4 text-[var(--band-fg)]", className)}>
+    <div className={cn("flex h-full flex-col bg-[var(--band-bg)] p-3 text-[var(--band-fg)] sm:p-4", className)}>
       <p className={cn("band-label text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{label}</p>
       <div className="mt-1">{children}</div>
       <p className={cn("band-note text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{note ?? "\u00a0"}</p>
@@ -122,12 +122,7 @@ function SparkSlot({
   const peak = impactPeakYear(trend, metric);
   return (
     <>
-      <MetricSpark
-        points={points}
-        peakYear={peak}
-        peakLabel={peak == null ? "" : String(peak)}
-        runningYear={openYear}
-      />
+      <MetricSpark points={points} peakYear={peak} runningYear={openYear} />
       <table className="sr-only">
         <caption>{metric}</caption>
         <thead>
@@ -169,7 +164,7 @@ function Counters({
   const spark = (key: SparklineKey | null) =>
     showSparks ? (
       key == null ? (
-        <div className="mt-2 h-12" data-hilang-slot="" aria-hidden />
+        <div className="mt-1 h-8 sm:mt-2 sm:h-12" data-hilang-slot="" aria-hidden />
       ) : (
         <SparkSlot
           trend={trend}

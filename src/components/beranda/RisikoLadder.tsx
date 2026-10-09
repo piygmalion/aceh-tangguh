@@ -13,6 +13,14 @@ import { SectionShell } from "./SectionShell";
 
 const AWAL_TAMPIL = 10;
 
+/** IRB 2025 descending, then kabupaten/kota name ascending (Indonesian collation). */
+export function urutKabupatenIrbi(rows: readonly IrbiKabView[]): IrbiKabView[] {
+  return [...rows].sort(
+    (a, b) =>
+      b.irb_2025 - a.irb_2025 || a.kabupaten_kota.localeCompare(b.kabupaten_kota, "id"),
+  );
+}
+
 function BarisKab({
   kab,
   peringkat,
@@ -78,7 +86,7 @@ export function RisikoLadder() {
       hitung.set(k.ancaman_tertinggi, (hitung.get(k.ancaman_tertinggi) ?? 0) + 1);
     }
     return {
-      daftar: kabupaten,
+      daftar: urutKabupatenIrbi(kabupaten),
       maks: kabupaten.reduce((m, k) => Math.max(m, k.irb_2025), 0),
       tally: Array.from(hitung.entries())
         .sort((a, b) => b[1] - a[1])

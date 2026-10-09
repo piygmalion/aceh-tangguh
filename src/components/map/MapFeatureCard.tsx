@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock, X } from "lucide-react";
+import { ArrowUpRight, Clock, X } from "lucide-react";
+import { useLayoutEffect, useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { renderSumberLine } from "@/lib/sumber-label";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,28 @@ import { isOverlayLayerKey, overlayColor } from "@/lib/overlay-layers";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import type { MarkerLayerKey } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+function keepMapScroll(event: { stopPropagation: () => void }) {
+  event.stopPropagation();
+}
+
+/** Ceiling is `100dvh - 6rem - 32px`. On a narrow screen, also clear the attribution strip. */
+function fitCardToViewport(el: HTMLElement) {
+  const top = el.getBoundingClientRect().top;
+  const ceiling = window.innerHeight - 96 - 32;
+  let reserve = 16;
+  if (window.innerWidth < 768) {
+    const strip = document.querySelector(".maplibregl-ctrl-bottom-right");
+    const stripHeight = strip ? strip.getBoundingClientRect().height : 0;
+    reserve = stripHeight + 8;
+    const stripTop = strip?.getBoundingClientRect().top;
+    if (stripTop != null && stripTop < window.innerHeight) {
+      reserve = Math.max(reserve, window.innerHeight - stripTop + 8);
+    }
+  }
+  const room = window.innerHeight - top - reserve;
+  el.style.maxHeight = `${Math.round(Math.max(160, Math.min(ceiling, room)))}px`;
+}
 
 function sourceHostname(url: string): string {
   try {
@@ -107,6 +130,24 @@ export function MapFeatureCard({
   const t = useTranslations("map");
   const tPanduan = useTranslations("panduan");
   const sumberLocale = useLocale() === "en" ? "en" : "id";
+  const cardRef = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const fit = () => fitCardToViewport(el);
+    fit();
+    const popup = el.closest(".maplibregl-popup");
+    const obs = new MutationObserver(fit);
+    if (popup) obs.observe(popup, { attributes: true, attributeFilter: ["style"] });
+    window.addEventListener("resize", fit);
+    const frame = window.requestAnimationFrame(fit);
+    return () => {
+      obs.disconnect();
+      window.removeEventListener("resize", fit);
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
   const title = card?.title ?? (loading ? t("cardLoading") : t("cardError"));
   const layer = card?.layer ?? "disasterEvents";
@@ -117,47 +158,70 @@ export function MapFeatureCard({
     : "";
 
   return (
-    <article className="map-feature-card flex flex-col gap-2" data-testid="map-feature-card">
-      <header className="flex items-start justify-between gap-2">
-        <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{category}</div>
-        <button
-          type="button"
-          className="grid h-7 w-7 place-items-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-muted)]"
-          onClick={onClose}
-          aria-label={t("cardClose")}
+    <article
+      ref={cardRef}
+      className="map-feature-card flex flex-col gap-2"
+      data-testid="map-feature-card"
+      onWheel={keepMapScroll}
+      onWheelCapture={keepMapScroll}
+      onTouchStart={keepMapScroll}
+      onTouchStartCapture={keepMapScroll}
+      onTouchMove={keepMapScroll}
+      onTouchMoveCapture={keepMapScroll}
+    >
+      <header className="sticky top-0 z-20 shrink-0 bg-[var(--map-chrome)] pb-2">
+        <div className="flex items-center justify-between gap-2">
+          {card?.updatedAt ? (
+            <div
+              className={cn(
+                "flex min-w-0 items-center gap-1 text-[var(--text-dim)]",
+                TYPE_FLOOR_CLASS,
+              )}
+            >
+              <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span>{card.updatedAt}</span>
+            </div>
+          ) : (
+            <span />
+          )}
+          <button
+            type="button"
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-muted)]"
+            onClick={onClose}
+            aria-label={t("cardClose")}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="mt-1 flex w-full min-w-0 items-center gap-2">
+          <MapLayerIcon
+            iconSrc={cardIconSrc(layer)}
+            fallbackColor={cardFallbackColor(layer)}
+          />
+          <div className={cn("min-w-0 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{category}</div>
+        </div>
+        <h3
+          data-card-heading
+          className="mt-1 w-full text-[1.05rem] font-semibold leading-snug text-[var(--text)]"
         >
-          <X className="h-4 w-4" />
-        </button>
+          {title}
+        </h3>
+        {card?.subtitle ? (
+          <p className={cn("w-full text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
+            {card.subtitle}
+          </p>
+        ) : null}
       </header>
 
-      <div className="flex items-start gap-2.5">
-        <MapLayerIcon
-          iconSrc={cardIconSrc(layer)}
-          fallbackColor={cardFallbackColor(layer)}
-        />
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <h3 className="text-[1.05rem] font-semibold leading-snug text-[var(--text)]">
-            {title}
-          </h3>
-          {card?.subtitle ? (
-            <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-              {card.subtitle}
-            </p>
-          ) : null}
-        </div>
-        {card?.updatedAt ? (
-          <div
-            className={cn(
-              "flex shrink-0 items-center gap-1 text-[var(--text-dim)]",
-              TYPE_FLOOR_CLASS,
-            )}
-          >
-            <Clock className="h-3.5 w-3.5" aria-hidden />
-            <span>{card.updatedAt}</span>
-          </div>
-        ) : null}
-      </div>
-
+      <div
+        className="map-feature-card-body flex min-h-0 flex-1 flex-col gap-2"
+        onWheel={keepMapScroll}
+        onWheelCapture={keepMapScroll}
+        onTouchStart={keepMapScroll}
+        onTouchStartCapture={keepMapScroll}
+        onTouchMove={keepMapScroll}
+        onTouchMoveCapture={keepMapScroll}
+      >
       {loading ? (
         <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("cardLoading")}</p>
       ) : null}
@@ -276,19 +340,20 @@ export function MapFeatureCard({
             {card.sources.map((entry) => {
               const isUrl = /^https?:\/\//i.test(entry);
               return (
-                <li key={entry} className="text-[0.8125rem] leading-snug text-[var(--text)]">
+                <li key={entry} className="text-[0.8125rem] leading-snug">
                   {isUrl ? (
                     <a
                       href={entry}
                       title={entry}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-[var(--text)] underline-offset-2 hover:underline"
+                      className="inline-flex items-baseline gap-0.5 text-[var(--text)] underline decoration-[1px] underline-offset-[2px] hover:decoration-[2px] focus-visible:decoration-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
                     >
                       {sourceHostname(entry)}
+                      <ArrowUpRight className="h-3 w-3 shrink-0" aria-hidden />
                     </a>
                   ) : (
-                    renderSumberLine(entry, sumberLocale)
+                    <span className="text-[var(--text-dim)]">{renderSumberLine(entry, sumberLocale)}</span>
                   )}
                 </li>
               );
@@ -296,6 +361,7 @@ export function MapFeatureCard({
           </ul>
         </section>
       ) : null}
+      </div>
     </article>
   );
 }
