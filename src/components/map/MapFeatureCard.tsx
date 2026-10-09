@@ -1,7 +1,8 @@
 "use client";
 
 import { Clock, X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { renderSumberLine } from "@/lib/sumber-label";
 import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/Chip";
 import { MapLayerIcon } from "@/components/map/MapLayerIcon";
@@ -105,6 +106,7 @@ export function MapFeatureCard({
 }) {
   const t = useTranslations("map");
   const tPanduan = useTranslations("panduan");
+  const sumberLocale = useLocale() === "en" ? "en" : "id";
 
   const title = card?.title ?? (loading ? t("cardLoading") : t("cardError"));
   const layer = card?.layer ?? "disasterEvents";
@@ -286,7 +288,7 @@ export function MapFeatureCard({
                       {sourceHostname(entry)}
                     </a>
                   ) : (
-                    entry
+                    renderSumberLine(entry, sumberLocale)
                   )}
                 </li>
               );

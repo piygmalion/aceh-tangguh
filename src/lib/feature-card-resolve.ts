@@ -11,6 +11,8 @@ import {
 } from "@/lib/overlay-live";
 import type { OverlayLayerKey } from "@/lib/types";
 import { loadKejadianFixture } from "@/lib/kejadian";
+import { createServerClient, type TypedSupabaseClient } from "@/lib/supabase/server";
+import { SIK_OPERASIONAL_SOURCE } from "@/lib/sumber-label";
 import {
   featurePublicId,
   findFeatureByPublicId,
@@ -115,17 +117,130 @@ export async function resolvePublicFeature(
   return null;
 }
 
-/** Copy fixture `sumber_data` onto the card input. Does not write the fixture or marker file. */
-async function withFixtureSumber(feature: Feature): Promise<Feature> {
-  const props = { ...((feature.properties ?? {}) as Record<string, unknown>) };
+/** One jsonb field. `kejadian_bencana` has no top-level `sumber_data` column. */
+const KEJADIAN_SUMBER_SELECT = "sumber_data:payload->sumber_data";
+const OPS_ID_PREFIX = "ops-";
+const OPS_PUBLIC_STATUS = ["aktif", "selesai"] as const;
+
+type SumberResult = {
+  data: { sumber_data?: unknown; id?: string } | null;
+  error: { message: string } | null;
+};
+
+type SumberChain = {
+  select: (columns: string) => SumberChain;
+  eq: (column: string, value: string) => SumberChain;
+  in: (column: string, values: readonly string[]) => SumberChain;
+  maybeSingle: () => PromiseLike<SumberResult>;
+};
+
+type SumberClient = {
+  from: (table: string) => SumberChain;
+};
+
+export type EventSumberOptions = {
+  /**
+   * Supabase client to read with. Pass `null` when unconfigured.
+   * Omit the key to use the anon server client.
+   */
+  client?: TypedSupabaseClient | null;
+  /** Fixture lookup for one id. Default reads `loadKejadianFixture()`. */
+  readFixtureSumber?: (id: string) => Promise<unknown>;
+};
+
+function hasSumber(value: unknown): boolean {
+  if (typeof value === "string") return value.trim().length > 0;
+  if (!Array.isArray(value)) return false;
+  return value.some((item) => typeof item === "string" && item.trim().length > 0);
+}
+
+async function fixtureSumberById(id: string): Promise<unknown | null> {
+  try {
+    const fixture = await loadKejadianFixture();
+    const row = fixture.kejadian.find((item) => item.id === id);
+    const sumber = row?.sumber_data;
+    return hasSumber(sumber) ? sumber : null;
+  } catch {
+    return null;
+  }
+}
+
+function asSumberClient(client: TypedSupabaseClient): SumberClient {
+  return client as unknown as SumberClient;
+}
+
+/**
+ * One public id.
+ * `ACEH-*` (and any non-ops id) reads `kejadian_bencana.payload->sumber_data`.
+ * `ops-<uuid>` reads that one `kejadian_operasi` row. A public row carries the
+ * same stored token `loadKejadian()` attaches: `SIK operasional`.
+ */
+async function readLiveSumber(client: TypedSupabaseClient, id: string): Promise<unknown | null> {
+  const db = asSumberClient(client);
+  if (id.startsWith(OPS_ID_PREFIX)) {
+    const opsId = id.slice(OPS_ID_PREFIX.length).trim();
+    if (!opsId) return null;
+    const { data, error } = await db
+      .from("kejadian_operasi")
+      .select("id")
+      .eq("id", opsId)
+      .in("status", OPS_PUBLIC_STATUS)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data?.id) return null;
+    return [SIK_OPERASIONAL_SOURCE];
+  }
+
+  const { data, error } = await db
+    .from("kejadian_bencana")
+    .select(KEJADIAN_SUMBER_SELECT)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) return null;
+  return hasSumber(data.sumber_data) ? data.sumber_data : null;
+}
+
+/**
+ * Copy one event's stored `sumber_data` onto the card input.
+ * Live row first; fixture when Supabase is unconfigured, errors, or has no row.
+ * Does not write the fixture, the marker file, or any stored token.
+ */
+export async function withEventSumber(
+  feature: Feature,
+  options?: EventSumberOptions,
+): Promise<Feature> {
+  const props = (feature.properties ?? {}) as Record<string, unknown>;
   if (String(props.layer ?? "") !== "disasterEvents") return feature;
   if (props.sumber_data != null) return feature;
   const id = featurePublicId(feature);
   if (!id) return feature;
-  const fixture = await loadKejadianFixture();
-  const row = fixture.kejadian.find((item) => item.id === id);
-  if (!row?.sumber_data) return feature;
-  return { ...feature, properties: { ...props, sumber_data: row.sumber_data } };
+
+  const readFixture = options?.readFixtureSumber ?? fixtureSumberById;
+  const explicitClient = options !== undefined && "client" in options;
+  const client = explicitClient ? (options.client ?? null) : createServerClient();
+
+  let live: unknown | null = null;
+  if (client) {
+    try {
+      live = await readLiveSumber(client, id);
+    } catch {
+      live = null;
+    }
+  }
+
+  let chosen: unknown = null;
+  if (hasSumber(live)) {
+    chosen = live;
+  } else {
+    try {
+      chosen = await readFixture(id);
+    } catch {
+      chosen = null;
+    }
+  }
+  if (!hasSumber(chosen)) return feature;
+  return { ...feature, properties: { ...props, sumber_data: chosen } };
 }
 
 export async function resolveFeatureCard(
@@ -135,6 +250,6 @@ export async function resolveFeatureCard(
 ): Promise<FeatureCard | null> {
   const feature = await resolvePublicFeature(id, layerHint);
   if (!feature) return null;
-  return toFeatureCard(await withFixtureSumber(feature), { stack });
+  return toFeatureCard(await withEventSumber(feature), { stack });
 }
 

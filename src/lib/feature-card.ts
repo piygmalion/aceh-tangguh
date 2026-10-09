@@ -653,7 +653,7 @@ export function featureMatchesPublicId(feature: Feature, id: string): boolean {
 
 export function toFeatureCard(
   feature: Feature,
-  options: { stack?: FeatureCardStackItem[] } = {},
+  options: { stack?: FeatureCardStackItem[]; locale?: string | null } = {},
 ): FeatureCard {
   const rawProps = asRecord(feature.properties);
   const props = publicProperties(rawProps);
@@ -729,7 +729,10 @@ export function toFeatureCard(
   const subtitle = subtitleParts.length ? subtitleParts.join(" • ") : undefined;
   const sources =
     layer === "disasterEvents"
-      ? displaySumberEntries(props.sumber_data != null ? props.sumber_data : props.source)
+      ? displaySumberEntries(
+          props.sumber_data != null ? props.sumber_data : props.source,
+          options.locale,
+        )
       : [];
   const kodeDesa = readKodeDesa10(props);
   const kecamatan = !isEmptyCardValue(props.kecamatan) ? String(props.kecamatan).trim() : undefined;
