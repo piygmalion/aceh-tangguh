@@ -966,15 +966,31 @@ html[data-theme="dark"] .map-layer-icon-disc {
 .map-feature-card {
   width: min(21rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 6rem - 32px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
+  /* Scroll lives on the body. overflow-y on this shell punches a #d4dce4 plate into the MapLibre canvas. */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   padding: 0.625rem 0.75rem 0.75rem;
   border-radius: 1rem;
   border: 1px solid var(--border);
   background: var(--map-chrome);
   box-shadow: var(--shadow-elevated);
   color: var(--text);
+}
+
+.map-feature-card-body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+/* Popup stays under the attribution control. The map stage rises above the
+   legend/settings wrapper (z-30) only while a card is open on a narrow screen. */
+@media (max-width: 767px) {
+  [data-feature-popup="open"] .map-stage {
+    z-index: 40;
+  }
 }
 
 .maplibregl-ctrl-top-left,

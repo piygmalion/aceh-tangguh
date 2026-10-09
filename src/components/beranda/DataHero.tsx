@@ -122,12 +122,7 @@ function SparkSlot({
   const peak = impactPeakYear(trend, metric);
   return (
     <>
-      <MetricSpark
-        points={points}
-        peakYear={peak}
-        peakLabel={peak == null ? "" : String(peak)}
-        runningYear={openYear}
-      />
+      <MetricSpark points={points} peakYear={peak} runningYear={openYear} />
       <table className="sr-only">
         <caption>{metric}</caption>
         <thead>

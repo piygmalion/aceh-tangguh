@@ -595,8 +595,18 @@ export function MapViewport({
     localCard?: FeatureCard;
   } | null>(null);
 
+  const popupWasOpen = useRef(false);
   useEffect(() => {
-    onFeaturePopupChange?.(popup != null);
+    const open = popup != null;
+    if (popupWasOpen.current && !open) {
+      const canvas = mapRef.current?.getCanvas();
+      if (canvas) {
+        canvas.setAttribute("tabindex", "-1");
+        canvas.focus();
+      }
+    }
+    popupWasOpen.current = open;
+    onFeaturePopupChange?.(open);
   }, [popup, onFeaturePopupChange]);
   const [cardId, setCardId] = useState<string | null>(null);
   const [overlayPopup, setOverlayPopup] = useState<OverlayHit | null>(null);
@@ -1089,7 +1099,7 @@ export function MapViewport({
   );
 
   return (
-    <div className="absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
+    <div className="map-stage absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
       <Map
         ref={mapRef}
         initialViewState={view}

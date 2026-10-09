@@ -49,7 +49,10 @@ function MapWorkspaceInner() {
   };
 
   return (
-    <div className="relative h-[100svh] w-full overflow-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div
+      data-feature-popup={featurePopupOpen ? "open" : undefined}
+      className="relative h-[100svh] w-full overflow-hidden bg-[var(--bg)] text-[var(--text)]"
+    >
       <MapViewport
         view={state.view}
         onViewChange={setView}
@@ -102,7 +105,12 @@ function MapWorkspaceInner() {
         onToggleNasaLayer={toggleNasaLayer}
         onNasaDateChange={setNasaDate}
       />
-      <div className="pointer-events-none absolute bottom-[5.75rem] left-3 z-30 flex flex-col items-start gap-3 sm:bottom-6 md:bottom-4 md:left-4">
+      <div
+        className={cn(
+          "pointer-events-none absolute bottom-[5.75rem] left-3 z-30 flex flex-col items-start gap-3 sm:bottom-6 md:bottom-4 md:left-4",
+          featurePopupOpen && "max-md:hidden",
+        )}
+      >
         <StatusLegend
           className={cn(
             "pointer-events-auto",

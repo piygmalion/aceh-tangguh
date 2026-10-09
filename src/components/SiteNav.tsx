@@ -77,11 +77,17 @@ function NavGroup({
   );
 }
 
+const DRAWER_FOCUSABLE =
+  'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
 export function SiteNav() {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const historyPushed = useRef(false);
 
   const peta: NavItem = { key: "peta", href: "/peta", label: t("peta") };
   const dataItems: NavItem[] = [
@@ -118,6 +124,59 @@ export function SiteNav() {
       document.documentElement.removeAttribute("data-mobile-nav");
     };
   }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    const drawer = drawerRef.current;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || !drawer) return;
+      const items = Array.from(drawer.querySelectorAll<HTMLElement>(DRAWER_FOCUSABLE));
+      if (!items.length) {
+        event.preventDefault();
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && (active === first || !drawer.contains(active))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || !drawer.contains(active))) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    const menuButton = menuButtonRef.current;
+    document.addEventListener("keydown", onKey);
+    window.history.pushState({ acehMobileNav: true }, "");
+    historyPushed.current = true;
+    const onPop = () => {
+      historyPushed.current = false;
+      setOpen(false);
+    };
+    window.addEventListener("popstate", onPop);
+    drawer?.querySelector<HTMLElement>("[data-mobile-nav-close]")?.focus();
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("popstate", onPop);
+      if (historyPushed.current) {
+        historyPushed.current = false;
+        window.history.back();
+      }
+      menuButton?.focus();
+    };
+  }, [open]);
+
+  const closeFromLink = () => {
+    historyPushed.current = false;
+    if (window.history.state?.acehMobileNav) window.history.replaceState(null, "");
+    setOpen(false);
+  };
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -161,9 +220,10 @@ export function SiteNav() {
             </div>
             <AuthMenu />
             <button
+              ref={menuButtonRef}
               type="button"
               className={cn(
-                "inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/40 text-[var(--primary-fg)] lg:hidden",
+                "inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/40 text-[var(--primary-fg)] lg:hidden",
                 NAV_UTILITY_HOVER
               )}
               aria-expanded={open}
@@ -178,13 +238,35 @@ export function SiteNav() {
 
         {open ? (
           <div
+            ref={drawerRef}
             id="mobile-nav"
-            className="fixed inset-0 z-40 overflow-y-auto bg-[var(--primary)] px-4 pb-10 pt-[5.75rem] lg:hidden"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t("openMenu")}
+            className="fixed inset-0 z-40 overflow-y-auto bg-[var(--primary)] px-4 pb-10 pt-4 lg:hidden"
           >
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <Link
+                href="/"
+                onClick={closeFromLink}
+                className="rounded-lg px-1.5 py-1 text-base font-semibold text-[var(--primary-fg)]"
+              >
+                SIK Aceh
+              </Link>
+              <button
+                type="button"
+                data-mobile-nav-close
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/40 text-[var(--primary-fg)]"
+                aria-label={t("closeMenu")}
+                onClick={() => setOpen(false)}
+              >
+                <X size={22} />
+              </button>
+            </div>
             <nav className="flex flex-col gap-1" aria-label="Mobile" data-nav-ia="mobile">
               <Link
                 href={peta.href}
-                onClick={() => setOpen(false)}
+                onClick={closeFromLink}
                 className={navInteractiveClass({ active: isActive(peta.href), shape: "row", surface: "brand" })}
               >
                 {peta.label}
@@ -196,7 +278,7 @@ export function SiteNav() {
                 <Link
                   key={item.key}
                   href={item.href}
-                  onClick={() => setOpen(false)}
+                  onClick={closeFromLink}
                   className={navInteractiveClass({ active: isActive(item.href), shape: "row", surface: "brand" })}
                 >
                   {item.label}
@@ -209,7 +291,7 @@ export function SiteNav() {
                 <Link
                   key={item.key}
                   href={item.href}
-                  onClick={() => setOpen(false)}
+                  onClick={closeFromLink}
                   className={navInteractiveClass({ active: isActive(item.href), shape: "row", surface: "brand" })}
                 >
                   {item.label}
