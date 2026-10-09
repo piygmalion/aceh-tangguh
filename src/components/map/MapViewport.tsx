@@ -604,6 +604,11 @@ export function MapViewport({
     popupWasOpen.current = open;
     onFeaturePopupChange?.(open);
   }, [popup, onFeaturePopupChange]);
+  useEffect(() => {
+    const closeFromPanel = () => setPopup(null);
+    window.addEventListener("aceh:close-feature-popup", closeFromPanel);
+    return () => window.removeEventListener("aceh:close-feature-popup", closeFromPanel);
+  }, []);
   const [cardId, setCardId] = useState<string | null>(null);
   const [overlayPopup, setOverlayPopup] = useState<OverlayHit | null>(null);
   const [nasaFirmsPopup, setNasaFirmsPopup] = useState<FirmsFeature | null>(null);

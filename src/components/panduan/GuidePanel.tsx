@@ -155,12 +155,15 @@ export function GuidePanel({
       </div>
 
       <div className="flex flex-col gap-3 border-t border-[var(--glass-border)] px-4 py-3">
-        <div className="flex flex-wrap gap-1.5">
+        <div
+          data-guide-chips
+          className="flex flex-nowrap gap-1.5 overflow-x-auto overscroll-x-contain snap-x snap-mandatory"
+        >
           {chipKeys.map((key) => (
             <Chip
               key={key}
               tone={key === "lapor" ? "accent" : "ok"}
-              className={cn(TYPE_FLOOR_CLASS, "font-semibold")}
+              className={cn(TYPE_FLOOR_CLASS, "min-h-[44px] shrink-0 snap-start font-semibold")}
               onClick={() => onChip(key)}
             >
               {t(`chips.${key}`)}

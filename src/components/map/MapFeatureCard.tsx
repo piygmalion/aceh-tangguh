@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUpRight, Clock, X } from "lucide-react";
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { renderSumberLine } from "@/lib/sumber-label";
 import { Button } from "@/components/ui/button";
@@ -131,6 +131,7 @@ export function MapFeatureCard({
   const tPanduan = useTranslations("panduan");
   const sumberLocale = useLocale() === "en" ? "en" : "id";
   const cardRef = useRef<HTMLElement>(null);
+  const [headerCompact, setHeaderCompact] = useState(false);
 
   useLayoutEffect(() => {
     const el = cardRef.current;
@@ -169,21 +170,51 @@ export function MapFeatureCard({
       onTouchMove={keepMapScroll}
       onTouchMoveCapture={keepMapScroll}
     >
-      <header className="sticky top-0 z-20 shrink-0 bg-[var(--map-chrome)] pb-2">
-        <div className="flex items-center justify-between gap-2">
+      <header className="sticky top-0 z-20 shrink-0 bg-[var(--map-chrome)] pb-1">
+        <div
+          data-card-kicker
+          className={cn(
+            "mb-1 flex w-full min-w-0 items-center gap-2",
+            headerCompact && "hidden",
+          )}
+        >
+          <MapLayerIcon
+            iconSrc={cardIconSrc(layer)}
+            fallbackColor={cardFallbackColor(layer)}
+          />
+          <div className={cn("min-w-0 truncate text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{category}</div>
           {card?.updatedAt ? (
             <div
               className={cn(
-                "flex min-w-0 items-center gap-1 text-[var(--text-dim)]",
+                "ml-auto flex shrink-0 items-center gap-1 text-[var(--text-dim)]",
                 TYPE_FLOOR_CLASS,
               )}
             >
               <Clock className="h-3.5 w-3.5 shrink-0" aria-hidden />
               <span>{card.updatedAt}</span>
             </div>
-          ) : (
-            <span />
-          )}
+          ) : null}
+        </div>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <h3
+              data-card-heading
+              className="w-full text-[1.05rem] font-semibold leading-snug text-[var(--text)]"
+            >
+              {title}
+            </h3>
+            {card?.subtitle ? (
+              <p
+                className={cn(
+                  "w-full text-[var(--text-dim)]",
+                  TYPE_FLOOR_CLASS,
+                  headerCompact && "hidden",
+                )}
+              >
+                {card.subtitle}
+              </p>
+            ) : null}
+          </div>
           <button
             type="button"
             className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-muted)]"
@@ -193,28 +224,11 @@ export function MapFeatureCard({
             <X className="h-4 w-4" />
           </button>
         </div>
-        <div className="mt-1 flex w-full min-w-0 items-center gap-2">
-          <MapLayerIcon
-            iconSrc={cardIconSrc(layer)}
-            fallbackColor={cardFallbackColor(layer)}
-          />
-          <div className={cn("min-w-0 text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{category}</div>
-        </div>
-        <h3
-          data-card-heading
-          className="mt-1 w-full text-[1.05rem] font-semibold leading-snug text-[var(--text)]"
-        >
-          {title}
-        </h3>
-        {card?.subtitle ? (
-          <p className={cn("w-full text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-            {card.subtitle}
-          </p>
-        ) : null}
       </header>
 
       <div
         className="map-feature-card-body flex min-h-0 flex-1 flex-col gap-2"
+        onScroll={(event) => setHeaderCompact(event.currentTarget.scrollTop > 0)}
         onWheel={keepMapScroll}
         onWheelCapture={keepMapScroll}
         onTouchStart={keepMapScroll}

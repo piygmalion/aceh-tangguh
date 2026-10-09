@@ -168,10 +168,10 @@ export function MapToolbar({
 
   return (
     <aside
-      className={`map-chrome-elevated absolute z-30 flex flex-col overflow-hidden transition-[max-height] duration-300 ease-out max-md:inset-x-2 max-md:bottom-2 max-md:rounded-2xl md:bottom-3 md:right-3 md:top-24 md:w-[19.5rem] md:max-h-none md:rounded-2xl ${
+      className={`map-chrome-elevated absolute z-30 flex flex-col overflow-hidden transition-[max-height] duration-300 ease-out max-md:inset-x-2 max-md:bottom-[max(0.5rem,env(safe-area-inset-bottom))] max-md:rounded-2xl md:bottom-3 md:right-3 md:top-24 md:w-[19.5rem] md:max-h-none md:rounded-2xl ${
         expanded
           ? "max-md:max-h-[min(52vh,28rem)]"
-          : "max-md:max-h-[3.35rem]"
+          : "max-md:max-h-[4.25rem]"
       }`}
       aria-label={t("toolbarHandle")}
     >
@@ -179,7 +179,13 @@ export function MapToolbar({
       <button
         type="button"
         className="flex w-full items-center gap-2 border-b border-[var(--border)] px-3 py-2.5 text-left md:hidden"
-        onClick={() => setExpanded((v) => !v)}
+        onClick={() => {
+          const next = !expanded;
+          if (next && window.matchMedia("(max-width: 767px)").matches) {
+            window.dispatchEvent(new Event("aceh:close-feature-popup"));
+          }
+          setExpanded((v) => !v);
+        }}
         aria-expanded={expanded}
         aria-label={expanded ? t("toolbarClose") : t("toolbarOpen")}
       >
