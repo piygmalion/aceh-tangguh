@@ -985,13 +985,8 @@ html[data-theme="dark"] .map-layer-icon-disc {
   touch-action: pan-y;
 }
 
-/* Popup stays under the attribution control. The map stage rises above the
-   legend/settings wrapper (z-30) only while a card is open on a narrow screen. */
-@media (max-width: 767px) {
-  [data-feature-popup="open"] .map-stage {
-    z-index: 40;
-  }
-}
+/* Popup stays under the attribution control. Legend and settings hide on a
+   narrow screen while a card is open; the layer handle stays at z-30. */
 
 .maplibregl-ctrl-top-left,
 .maplibregl-ctrl-bottom-right,

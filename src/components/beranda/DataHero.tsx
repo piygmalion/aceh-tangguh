@@ -164,7 +164,7 @@ function Counters({
   const spark = (key: SparklineKey | null) =>
     showSparks ? (
       key == null ? (
-        <div className="mt-2 h-12" data-hilang-slot="" aria-hidden />
+        <div className="mt-1 h-8 sm:mt-2 sm:h-12" data-hilang-slot="" aria-hidden />
       ) : (
         <SparkSlot
           trend={trend}

@@ -599,11 +599,7 @@ export function MapViewport({
   useEffect(() => {
     const open = popup != null;
     if (popupWasOpen.current && !open) {
-      const canvas = mapRef.current?.getCanvas();
-      if (canvas) {
-        canvas.setAttribute("tabindex", "-1");
-        canvas.focus();
-      }
+      mapRef.current?.getCanvas()?.focus();
     }
     popupWasOpen.current = open;
     onFeaturePopupChange?.(open);

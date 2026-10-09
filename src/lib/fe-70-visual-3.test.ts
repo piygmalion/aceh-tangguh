@@ -53,10 +53,11 @@ describe("FE-70 visual-3", () => {
     assert.match(card, /w-full/);
     assert.match(card, /sticky top-0 z-20/);
     assert.match(css, /overflow: hidden/);
-    assert.match(css, /\[data-feature-popup="open"\] \.map-stage/);
+    assert.doesNotMatch(css, /\[data-feature-popup="open"\] \.map-stage/);
     assert.doesNotMatch(css, /data-feature-popup="open"\] \.maplibregl-ctrl-bottom/);
     const viewport = read("src/components/map/MapViewport.tsx");
-    assert.match(viewport, /canvas\.focus\(\)/);
+    assert.match(viewport, /getCanvas\(\)\?\.focus\(\)/);
+    assert.doesNotMatch(viewport, /setAttribute\(\s*["']tabindex["']/);
     assert.match(viewport, /className="map-stage /);
     assert.match(card, /stopPropagation/);
     assert.match(card, /data-event-sources/);
