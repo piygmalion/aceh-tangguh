@@ -1,6 +1,7 @@
 "use client";
 
-import { Clock, X } from "lucide-react";
+import { ArrowUpRight, Clock, X } from "lucide-react";
+import { useLayoutEffect, useRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { renderSumberLine } from "@/lib/sumber-label";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,18 @@ import { isOverlayLayerKey, overlayColor } from "@/lib/overlay-layers";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import type { MarkerLayerKey } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+function keepMapScroll(event: { stopPropagation: () => void }) {
+  event.stopPropagation();
+}
+
+/** Ceiling is `100dvh - 6rem - 32px`. Shrink further so the card stays on screen. */
+function fitCardToViewport(el: HTMLElement) {
+  const top = el.getBoundingClientRect().top;
+  const ceiling = window.innerHeight - 96 - 32;
+  const room = window.innerHeight - top - 16;
+  el.style.maxHeight = `${Math.round(Math.max(160, Math.min(ceiling, room)))}px`;
+}
 
 function sourceHostname(url: string): string {
   try {
@@ -107,6 +120,24 @@ export function MapFeatureCard({
   const t = useTranslations("map");
   const tPanduan = useTranslations("panduan");
   const sumberLocale = useLocale() === "en" ? "en" : "id";
+  const cardRef = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const fit = () => fitCardToViewport(el);
+    fit();
+    const popup = el.closest(".maplibregl-popup");
+    const obs = new MutationObserver(fit);
+    if (popup) obs.observe(popup, { attributes: true, attributeFilter: ["style"] });
+    window.addEventListener("resize", fit);
+    const frame = window.requestAnimationFrame(fit);
+    return () => {
+      obs.disconnect();
+      window.removeEventListener("resize", fit);
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
   const title = card?.title ?? (loading ? t("cardLoading") : t("cardError"));
   const layer = card?.layer ?? "disasterEvents";
@@ -117,25 +148,24 @@ export function MapFeatureCard({
     : "";
 
   return (
-    <article className="map-feature-card flex flex-col gap-2" data-testid="map-feature-card">
-      <header className="flex items-start justify-between gap-2">
-        <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{category}</div>
-        <button
-          type="button"
-          className="grid h-7 w-7 place-items-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-muted)]"
-          onClick={onClose}
-          aria-label={t("cardClose")}
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </header>
-
-      <div className="flex items-start gap-2.5">
+    <article
+      ref={cardRef}
+      className="map-feature-card flex flex-col gap-2"
+      data-testid="map-feature-card"
+      onWheel={keepMapScroll}
+      onWheelCapture={keepMapScroll}
+      onTouchStart={keepMapScroll}
+      onTouchStartCapture={keepMapScroll}
+      onTouchMove={keepMapScroll}
+      onTouchMoveCapture={keepMapScroll}
+    >
+      <header className="sticky top-0 z-10 -mx-3 -mt-[0.625rem] flex items-start gap-2 bg-[var(--map-chrome)] px-3 pb-2 pt-[0.625rem]">
         <MapLayerIcon
           iconSrc={cardIconSrc(layer)}
           fallbackColor={cardFallbackColor(layer)}
         />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <div className={cn("text-[var(--text-dim)]", TYPE_KICKER_CLASS)}>{category}</div>
           <h3 className="text-[1.05rem] font-semibold leading-snug text-[var(--text)]">
             {title}
           </h3>
@@ -156,7 +186,15 @@ export function MapFeatureCard({
             <span>{card.updatedAt}</span>
           </div>
         ) : null}
-      </div>
+        <button
+          type="button"
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-[var(--text-dim)] hover:bg-[var(--bg-muted)]"
+          onClick={onClose}
+          aria-label={t("cardClose")}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </header>
 
       {loading ? (
         <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{t("cardLoading")}</p>
@@ -276,19 +314,20 @@ export function MapFeatureCard({
             {card.sources.map((entry) => {
               const isUrl = /^https?:\/\//i.test(entry);
               return (
-                <li key={entry} className="text-[0.8125rem] leading-snug text-[var(--text)]">
+                <li key={entry} className="text-[0.8125rem] leading-snug">
                   {isUrl ? (
                     <a
                       href={entry}
                       title={entry}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-[var(--text)] underline-offset-2 hover:underline"
+                      className="inline-flex items-baseline gap-0.5 text-[var(--text)] underline decoration-[1px] underline-offset-[2px] hover:decoration-[2px] focus-visible:decoration-[2px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
                     >
                       {sourceHostname(entry)}
+                      <ArrowUpRight className="h-3 w-3 shrink-0" aria-hidden />
                     </a>
                   ) : (
-                    renderSumberLine(entry, sumberLocale)
+                    <span className="text-[var(--text-dim)]">{renderSumberLine(entry, sumberLocale)}</span>
                   )}
                 </li>
               );

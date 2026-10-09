@@ -163,6 +163,7 @@ export function GuideBot() {
   const goTour = useCallback(
     (href: GuideHref, hash?: string) => {
       if (href === "/peta") {
+        setOpen(false);
         router.push("/peta");
         return;
       }
@@ -173,7 +174,7 @@ export function GuideBot() {
       queueTourTarget(href, hash);
       router.push(href);
     },
-    [pathname, router]
+    [pathname, router, setOpen]
   );
 
   useEffect(() => {

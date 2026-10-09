@@ -128,6 +128,7 @@ export function MapSettings({
         onClick={() => updateOpen(!open)}
         aria-expanded={open}
         aria-haspopup="dialog"
+        aria-label={t("settings")}
         className="map-chrome-elevated inline-flex h-11 items-center gap-2 rounded-xl px-3.5 text-sm font-medium transition hover:border-[var(--ink)] hover:text-[var(--text)]"
       >
         <Settings2 size={16} />

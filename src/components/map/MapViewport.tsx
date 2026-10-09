@@ -566,6 +566,7 @@ export function MapViewport({
   overlays = [],
   nasaLayers = [],
   nasaDate,
+  onFeaturePopupChange,
 }: {
   view: MapViewState;
   onViewChange: (v: Partial<MapViewState>) => void;
@@ -581,6 +582,7 @@ export function MapViewport({
   overlays?: OverlayLayerKey[];
   nasaLayers?: NasaNrtLayerKey[];
   nasaDate?: string;
+  onFeaturePopupChange?: (open: boolean) => void;
 }) {
   const t = useTranslations("map");
   const mapRef = useRef<MapRef>(null);
@@ -592,6 +594,10 @@ export function MapViewport({
     stack?: { id: string; title: string }[];
     localCard?: FeatureCard;
   } | null>(null);
+
+  useEffect(() => {
+    onFeaturePopupChange?.(popup != null);
+  }, [popup, onFeaturePopupChange]);
   const [cardId, setCardId] = useState<string | null>(null);
   const [overlayPopup, setOverlayPopup] = useState<OverlayHit | null>(null);
   const [nasaFirmsPopup, setNasaFirmsPopup] = useState<FirmsFeature | null>(null);

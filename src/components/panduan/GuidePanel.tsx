@@ -63,10 +63,14 @@ export function GuidePanel({
   const scrollerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const node = scrollerRef.current;
-    if (!node) return;
-    node.scrollTop = node.scrollHeight;
-  }, [messages, busy]);
+    const root = scrollerRef.current;
+    const last = messages[messages.length - 1];
+    if (!root || !last) return;
+    const node = root.querySelector<HTMLElement>(
+      `[data-guide-message="${CSS.escape(last.id)}"]`,
+    );
+    node?.scrollIntoView({ block: "start" });
+  }, [messages]);
 
   return (
     <GlassPanel className="flex max-h-[70vh] w-[min(calc(100vw-1.5rem),400px)] flex-col overflow-hidden border border-[var(--glass-border)] !bg-[var(--bg-raised)] shadow-[var(--shadow-elevated)]">
@@ -76,7 +80,7 @@ export function GuidePanel({
             <TanggapiAvatar size="panel" />
           </span>
           <div>
-            <p className={cn(TYPE_KICKER_CLASS, "text-[var(--accent-soft)]")}>{t("kicker")}</p>
+            <p className={cn(TYPE_KICKER_CLASS, "text-[var(--text-dim)]")}>{t("kicker")}</p>
             <p className="text-lg font-semibold leading-tight">{t("title")}</p>
           </div>
         </div>
@@ -138,6 +142,7 @@ export function GuidePanel({
         {messages.map((item) => (
           <GuideMessage
             key={item.id}
+            messageId={item.id}
             role={item.role}
             body={item.body}
             answer={item.answer}

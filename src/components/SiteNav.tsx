@@ -125,7 +125,7 @@ export function SiteNav() {
   };
 
   return (
-    <div data-sitenav className="fixed inset-x-0 top-0 z-50">
+    <div data-sitenav className="fixed inset-x-0 top-0 z-50 border-b border-[var(--band-rule)]">
       <EmergencyStrip />
       <header
         className={`bg-[var(--primary)] text-[var(--primary-fg)] ${
@@ -179,7 +179,7 @@ export function SiteNav() {
         {open ? (
           <div
             id="mobile-nav"
-            className="mt-3 border-t border-white/30 pt-3 lg:hidden"
+            className="fixed inset-0 z-40 overflow-y-auto bg-[var(--primary)] px-4 pb-10 pt-[5.75rem] lg:hidden"
           >
             <nav className="flex flex-col gap-1" aria-label="Mobile" data-nav-ia="mobile">
               <Link

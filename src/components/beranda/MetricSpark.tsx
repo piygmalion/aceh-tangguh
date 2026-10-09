@@ -44,7 +44,7 @@ export function MetricSpark({
   const labelAnchor = peakX > w * 0.72 ? "end" : "middle";
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="mt-2 h-12 w-full text-[var(--band-fg)]" aria-hidden>
+    <svg viewBox={`0 0 ${w} ${h}`} className="mt-1 h-8 w-full text-[var(--band-fg)] sm:mt-2 sm:h-12" aria-hidden>
       {solid ? <path d={solid} fill="none" stroke="currentColor" strokeWidth="1.5" /> : null}
       {dashed ? (
         <path

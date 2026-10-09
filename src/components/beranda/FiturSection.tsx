@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
+import { PetaTeaserSvg } from "./PetaTeaserSvg";
 import { SectionShell } from "./SectionShell";
 
 const KARTU = [
@@ -52,12 +53,18 @@ function Kartu({
   Icon: LucideIcon;
   id?: string;
 }) {
+  const peta = id === "peta-teaser";
   return (
     <Link
       id={id}
       href={href}
-      className="group flex scroll-mt-24 items-center gap-4 rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] p-4 transition hover:border-[var(--primary)] md:p-5"
+      className={cn(
+        "group flex scroll-mt-24 rounded-2xl border border-[var(--border)] bg-[var(--bg-raised)] transition hover:border-[var(--primary)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]",
+        peta ? "flex-col items-stretch overflow-hidden p-0" : "items-center gap-4 p-4 md:p-5",
+      )}
     >
+      {peta ? <PetaTeaserSvg /> : null}
+      <span className={cn("flex min-w-0 flex-1 items-center gap-4", peta && "p-4 md:p-5")}>
       <span
         className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--bg-muted)] text-[var(--text)]"
         aria-hidden
@@ -75,6 +82,7 @@ function Kartu({
         aria-hidden
         className="shrink-0 text-[var(--text-dim)] transition group-hover:text-[var(--primary)]"
       />
+      </span>
     </Link>
   );
 }

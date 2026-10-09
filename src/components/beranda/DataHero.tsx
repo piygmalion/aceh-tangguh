@@ -59,7 +59,7 @@ function Counter({
   className?: string;
 }) {
   return (
-    <div className={cn("flex h-full flex-col bg-[var(--band-bg)] p-4 text-[var(--band-fg)]", className)}>
+    <div className={cn("flex h-full flex-col bg-[var(--band-bg)] p-3 text-[var(--band-fg)] sm:p-4", className)}>
       <p className={cn("band-label text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{label}</p>
       <div className="mt-1">{children}</div>
       <p className={cn("band-note text-[var(--band-dim)]", TYPE_FLOOR_CLASS)}>{note ?? "\u00a0"}</p>
