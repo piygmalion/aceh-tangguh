@@ -503,7 +503,7 @@ export function GuideBot() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: motionMs ?? 0.16 }}
-            className="pointer-events-auto relative mb-1 hidden max-w-[16rem] sm:block max-sm:!block max-sm:fixed max-sm:bottom-auto max-sm:right-3 max-sm:top-24 max-sm:z-[48]"
+            className="pointer-events-auto relative mb-1 hidden max-w-[16rem] sm:block max-md:!block max-md:max-w-[17.5rem]"
           >
             <div className="rounded-2xl border border-[var(--glass-border)] bg-[var(--bg-raised)] px-3 py-2 shadow-[var(--shadow)]">
               <div className="flex items-start gap-2">

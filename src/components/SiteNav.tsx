@@ -297,8 +297,8 @@ export function SiteNav() {
                   {item.label}
                 </Link>
               ))}
-              <div className="px-1 py-2">
-                <ReportLaporDropdown active={laporActive} surface="brand" />
+              <div className="py-2">
+                <ReportLaporDropdown active={laporActive} surface="brand" shape="row" />
               </div>
             </nav>
             <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/30 pt-3 sm:hidden">
