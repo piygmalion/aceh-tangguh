@@ -195,7 +195,7 @@ describe("FE-72 map chrome at 390", () => {
     assert.ok(aside);
     assert.equal(aside.querySelector("[data-map-chrome]"), null);
 
-    const row = [...aside.querySelectorAll("label")].find((label) =>
+    const row = Array.from(aside.querySelectorAll("label")).find((label) =>
       label.textContent?.includes("Laporan Kejadian"),
     );
     assert.ok(row, "Laporan Kejadian row is in the open panel");
