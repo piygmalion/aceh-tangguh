@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, Layers } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
@@ -105,6 +105,7 @@ export function MapToolbar({
   nasaDate,
   onToggleNasaLayer,
   onNasaDateChange,
+  onExpandedChange,
 }: {
   areaLayer: AreaLayerKey | null;
   krbJenis?: string | null;
@@ -121,6 +122,8 @@ export function MapToolbar({
   nasaDate?: string;
   onToggleNasaLayer?: (k: NasaNrtLayerKey) => void;
   onNasaDateChange?: (ymd: string) => void;
+  /** Mobile sheet only. Desktop keeps the panel visible via md: classes. */
+  onExpandedChange?: (expanded: boolean) => void;
 }) {
   const t = useTranslations("map");
   const {
@@ -133,6 +136,9 @@ export function MapToolbar({
   const [tab, setTab] = useState<TabKey>(overlays.length ? "geospasial" : "lokasi");
   /** Mobile bottom-sheet open state. Desktop panel is always shown via md: classes. */
   const [expanded, setExpanded] = useState(false);
+  useEffect(() => {
+    onExpandedChange?.(expanded);
+  }, [expanded, onExpandedChange]);
   const [jenisExpanded, setJenisExpanded] = useState(false);
   const [fasilitasExpanded, setFasilitasExpanded] = useState(false);
 
@@ -174,6 +180,7 @@ export function MapToolbar({
           : "max-md:max-h-[4.25rem]"
       }`}
       aria-label={t("toolbarHandle")}
+      data-layer-panel={expanded ? "open" : "closed"}
     >
       {/* Mobile handle / collapse control */}
       <button

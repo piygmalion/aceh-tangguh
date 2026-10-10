@@ -704,3 +704,11 @@ Gelembung Tanggapi di telepon duduk di atas FAB. Chip panduan satu baris. Header
 | --- | --- | --- | --- | --- |
 | FE-71 | frontend | visual-4 | jurnal/FE-71.md | diverifikasi |
 
+## FE-72 — chrome peta di 390
+
+Saat Panel layer terbuka di bawah 768, tombol pengaturan dan tombol "+" disembunyikan supaya baris layer bisa diketuk. Keduanya kembali saat panel ditutup. Legenda status di telepon bergeser melewati kontrol zoom. Laporkan di menu 390 selebar tautan lain.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-72 | frontend | chrome peta di 390 | jurnal/FE-72.md | diverifikasi |
+
