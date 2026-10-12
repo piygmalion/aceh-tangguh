@@ -7,9 +7,13 @@ import { NextIntlClientProvider, type AbstractIntlMessages } from "next-intl";
 import { createElement, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { act } from "react";
-import { nextHeaderCompact } from "@/components/map/MapFeatureCard";
+import {
+  nextHeaderCompact,
+  popupBottomReserve,
+  popupHorizontalShift,
+} from "@/components/map/MapFeatureCard";
 import { StatusLegend } from "@/components/map/StatusLegend";
-import { yearChartBlocksTanggapiBubble } from "@/components/panduan/GuideBot";
+import { tanggapiBubbleOnViewport } from "@/components/panduan/GuideBot";
 import messages from "../../messages/id.json";
 
 function read(rel: string): string {
@@ -18,14 +22,19 @@ function read(rel: string): string {
 
 const HANDLE_HEIGHT = 4.25 * 16;
 const HANDLE_GAP = 0.5 * 16;
+const STAGE_PAD = 4.25 * 16;
 const ATTRIB_MARGIN = 10;
+const ATTRIB_BUTTON = 24;
 
+/** Distance from the viewport bottom to the top of the collapsed layer handle. */
 function handleTopFromBottom(inset: number): number {
   return Math.max(HANDLE_GAP, inset) + HANDLE_HEIGHT;
 }
 
-function attribButtonFromBottom(inset: number): number {
-  return HANDLE_HEIGHT + inset + ATTRIB_MARGIN;
+/** Distance from the viewport bottom to the bottom edge of the ⓘ button.
+ *  Stage padding already clears the handle; CSS bottom is only the inset. */
+function attribButtonBottomFromBottom(inset: number): number {
+  return STAGE_PAD + inset + ATTRIB_MARGIN;
 }
 
 function installDom() {
@@ -88,26 +97,60 @@ describe("FE-72b map follow-up", () => {
     dom.window.close();
   });
 
-  it("lifts attribution above the layer handle plus the safe-area inset", () => {
+  it("lifts attribution by the safe-area inset only", () => {
     const css = read("src/app/globals.css");
+    const rule = css.slice(css.indexOf("@media (max-width: 767px)"));
     assert.match(
-      css,
-      /bottom:\s*calc\(4\.25rem \+ var\(--map-safe-area-bottom, env\(safe-area-inset-bottom, 0px\)\)\)/,
+      rule,
+      /bottom:\s*var\(--map-safe-area-bottom, env\(safe-area-inset-bottom, 0px\)\)/,
     );
-    assert.match(css, /@media \(max-width: 767px\)/);
+    assert.doesNotMatch(rule, /4\.25rem \+/);
+    assert.match(rule, /z-index:\s*40\s*!important/);
     assert.doesNotMatch(css, /data-feature-popup="open"\] \.maplibregl-ctrl-bottom/);
-    assert.ok(attribButtonFromBottom(34) > handleTopFromBottom(34));
-    assert.ok(attribButtonFromBottom(0) > handleTopFromBottom(0));
+    assert.ok(attribButtonBottomFromBottom(34) > handleTopFromBottom(34));
+    assert.ok(attribButtonBottomFromBottom(0) > handleTopFromBottom(0));
     const viewportH = 844;
     const info = {
-      y: viewportH - attribButtonFromBottom(34) - 20,
-      h: 20,
+      y: viewportH - attribButtonBottomFromBottom(34) - ATTRIB_BUTTON,
+      h: ATTRIB_BUTTON,
     };
     const handle = {
       y: viewportH - handleTopFromBottom(34),
       h: HANDLE_HEIGHT,
     };
     assert.ok(info.y + info.h <= handle.y);
+    assert.ok(Math.abs(info.y - 708) <= 12);
+
+    const card = read("src/components/map/MapFeatureCard.tsx");
+    assert.match(card, /stripHeight \+ 8/);
+    assert.match(card, /safeAreaBottom/);
+    assert.equal(
+      popupBottomReserve({
+        viewportHeight: 844,
+        stripHeight: 44,
+        stripTop: 730,
+        safeAreaBottom: 34,
+      }),
+      844 - 730 + 8,
+    );
+    assert.equal(
+      popupBottomReserve({
+        viewportHeight: 844,
+        stripHeight: 0,
+        stripTop: null,
+        safeAreaBottom: 34,
+      }),
+      34,
+    );
+    assert.equal(
+      popupBottomReserve({
+        viewportHeight: 844,
+        stripHeight: 0,
+        stripTop: null,
+        safeAreaBottom: 0,
+      }),
+      8,
+    );
   });
 
   it("hides the phone legend while the panel is open and collapses it until opened", async () => {
@@ -171,24 +214,50 @@ describe("FE-72b map follow-up", () => {
     assert.match(toolbar, /aceh:close-feature-popup/);
     assert.doesNotMatch(toolbar, /\.focus\(\)/);
 
+    assert.match(read("src/components/map/MapFeatureCard.tsx"), /scrollTop > 24/);
+    assert.match(read("src/components/map/MapFeatureCard.tsx"), /scrollTop < 8/);
     assert.equal(nextHeaderCompact(0, false), false);
+    assert.equal(nextHeaderCompact(8, true), true);
     assert.equal(nextHeaderCompact(16, false), false);
     assert.equal(nextHeaderCompact(16, true), true);
+    assert.equal(nextHeaderCompact(24, false), false);
+    assert.equal(nextHeaderCompact(24, true), true);
     assert.equal(nextHeaderCompact(25, false), true);
     assert.equal(nextHeaderCompact(20, true), true);
     assert.equal(nextHeaderCompact(7, true), false);
   });
 
-  it("holds the phone invite while the year chart is on screen", () => {
-    assert.equal(yearChartBlocksTanggapiBubble(true, true), true);
-    assert.equal(yearChartBlocksTanggapiBubble(true, false), false);
-    assert.equal(yearChartBlocksTanggapiBubble(false, true), false);
+  it("keeps a loading and a loaded popup inside the 390 viewport", () => {
+    const card = read("src/components/map/MapFeatureCard.tsx");
+    assert.match(card, /popupHorizontalShift/);
+    assert.match(card, /translateX/);
+    assert.match(card, /ResizeObserver/);
+    const viewport = 390;
+    const loading = popupHorizontalShift({ left: -36, right: 180 }, viewport);
+    assert.equal(-36 + loading, 8);
+    assert.ok(180 + loading <= viewport - 8);
+    const loaded = popupHorizontalShift({ left: -12, right: 324 }, viewport);
+    assert.equal(-12 + loaded, 8);
+    assert.ok(324 + loaded <= viewport - 8);
+    assert.equal(popupHorizontalShift({ left: 16, right: 300 }, viewport), 0);
+    const overflowRight = popupHorizontalShift({ left: 80, right: 400 }, viewport);
+    assert.ok(80 + overflowRight >= 8);
+    assert.ok(400 + overflowRight <= viewport - 8);
+  });
+
+  it("shows no Tanggapi invite on a phone and keeps the desktop bubble", () => {
+    assert.equal(tanggapiBubbleOnViewport(true), false);
+    assert.equal(tanggapiBubbleOnViewport(false), true);
     const bot = read("src/components/panduan/GuideBot.tsx");
-    assert.match(bot, /IntersectionObserver/);
-    assert.match(bot, /data-year-chart/);
+    assert.doesNotMatch(bot, /IntersectionObserver/);
+    assert.doesNotMatch(bot, /data-year-chart/);
+    assert.match(bot, /tanggapiBubbleOnViewport/);
+    const gate = bot.slice(bot.indexOf("tanggapiBubbleOnViewport"), bot.indexOf("setShowBubble(true)"));
+    assert.match(gate, /setShowBubble\(false\)/);
+    assert.match(gate, /return/);
     assert.match(bot, /setTimeout\(dismiss, 6000\)/);
     assert.match(bot, /dismissInvite/);
-    assert.match(bot, /if \(!narrow\) window\.addEventListener\("scroll"/);
-    assert.match(read("src/components/beranda/YearBars.tsx"), /data-year-chart/);
+    assert.match(bot, /window\.addEventListener\("scroll"/);
+    assert.match(bot, /max-md:!block max-md:max-w-\[17\.5rem\]/);
   });
 });

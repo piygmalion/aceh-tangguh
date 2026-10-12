@@ -994,11 +994,14 @@ html[data-theme="dark"] .map-layer-icon-disc {
   z-index: 30 !important;
 }
 
-/* Collapsed layer handle is 4.25rem. Lift attribution above it, including the home-indicator inset. */
+/* The stage already pads pb-[4.25rem] above the collapsed handle.
+   Only the home-indicator inset still needs a lift.
+   The report button shares this corner at z-30, so the ⓘ stays above it. */
 @media (max-width: 767px) {
   .map-stage .maplibregl-ctrl-bottom-right,
   .map-stage .maplibregl-ctrl-bottom-left {
-    bottom: calc(4.25rem + var(--map-safe-area-bottom, env(safe-area-inset-bottom, 0px)));
+    bottom: var(--map-safe-area-bottom, env(safe-area-inset-bottom, 0px));
+    z-index: 40 !important;
   }
 }
 

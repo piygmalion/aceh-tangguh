@@ -36,6 +36,50 @@ export function nextHeaderCompact(scrollTop: number, compact: boolean): boolean 
   return false;
 }
 
+/** Pull a card that hangs off either edge back inside, leaving `margin` px. */
+export function popupHorizontalShift(
+  rect: { left: number; right: number },
+  viewportWidth: number,
+  margin = 8,
+): number {
+  const width = rect.right - rect.left;
+  if (width <= 0 || viewportWidth <= margin * 2) return 0;
+  let left = rect.left;
+  if (left < margin) left = margin;
+  const maxLeft = viewportWidth - margin - width;
+  if (left > maxLeft) left = Math.max(margin, maxLeft);
+  return left - rect.left;
+}
+
+/** Clear the attribution strip, and never less than the safe-area inset. */
+export function popupBottomReserve(opts: {
+  viewportHeight: number;
+  stripHeight: number;
+  stripTop: number | null;
+  safeAreaBottom: number;
+}): number {
+  let reserve = opts.stripHeight + 8;
+  if (opts.stripTop != null && opts.stripTop < opts.viewportHeight) {
+    reserve = Math.max(reserve, opts.viewportHeight - opts.stripTop + 8);
+  }
+  return Math.max(reserve, opts.safeAreaBottom);
+}
+
+function readSafeAreaBottom(): number {
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue("--map-safe-area-bottom")
+    .trim();
+  const fromVar = Number.parseFloat(raw);
+  if (Number.isFinite(fromVar)) return fromVar;
+  const probe = document.createElement("div");
+  probe.style.cssText =
+    "position:absolute;visibility:hidden;pointer-events:none;height:env(safe-area-inset-bottom, 0px);";
+  document.body.appendChild(probe);
+  const height = probe.getBoundingClientRect().height;
+  probe.remove();
+  return height;
+}
+
 /** Ceiling is `100dvh - 6rem - 32px`. On a narrow screen, also clear the attribution strip. */
 function fitCardToViewport(el: HTMLElement) {
   const top = el.getBoundingClientRect().top;
@@ -44,14 +88,23 @@ function fitCardToViewport(el: HTMLElement) {
   if (window.innerWidth < 768) {
     const strip = document.querySelector(".maplibregl-ctrl-bottom-right");
     const stripHeight = strip ? strip.getBoundingClientRect().height : 0;
-    reserve = stripHeight + 8;
-    const stripTop = strip?.getBoundingClientRect().top;
-    if (stripTop != null && stripTop < window.innerHeight) {
-      reserve = Math.max(reserve, window.innerHeight - stripTop + 8);
-    }
+    const stripTop = strip ? strip.getBoundingClientRect().top : null;
+    reserve = popupBottomReserve({
+      viewportHeight: window.innerHeight,
+      stripHeight,
+      stripTop,
+      safeAreaBottom: readSafeAreaBottom(),
+    });
   }
   const room = window.innerHeight - top - reserve;
   el.style.maxHeight = `${Math.round(Math.max(160, Math.min(ceiling, room)))}px`;
+}
+
+function clampCardHorizontally(el: HTMLElement) {
+  el.style.transform = "";
+  const rect = el.getBoundingClientRect();
+  const shift = popupHorizontalShift({ left: rect.left, right: rect.right }, window.innerWidth);
+  el.style.transform = shift === 0 ? "" : `translateX(${Math.round(shift)}px)`;
 }
 
 function sourceHostname(url: string): string {
@@ -144,15 +197,21 @@ export function MapFeatureCard({
   useLayoutEffect(() => {
     const el = cardRef.current;
     if (!el) return;
-    const fit = () => fitCardToViewport(el);
+    const fit = () => {
+      fitCardToViewport(el);
+      clampCardHorizontally(el);
+    };
     fit();
     const popup = el.closest(".maplibregl-popup");
     const obs = new MutationObserver(fit);
     if (popup) obs.observe(popup, { attributes: true, attributeFilter: ["style"] });
+    const resizeObs = new ResizeObserver(fit);
+    resizeObs.observe(el);
     window.addEventListener("resize", fit);
     const frame = window.requestAnimationFrame(fit);
     return () => {
       obs.disconnect();
+      resizeObs.disconnect();
       window.removeEventListener("resize", fit);
       window.cancelAnimationFrame(frame);
     };

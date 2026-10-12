@@ -714,7 +714,7 @@ Saat Panel layer terbuka di bawah 768, tombol pengaturan dan tombol "+" disembun
 
 ## FE-72b — tindak lanjut chrome peta
 
-Atribusi naik di atas pegangan panel pada telepon dengan safe-area. Legenda status di 390 tertutup sampai dibuka, dan hilang saat panel terbuka. Membuka panel tidak memindahkan fokus ke kanvas. Header popup punya histeresis. Gelembung Tanggapi menunggu grafik tahun keluar dari layar.
+Atribusi telepon hanya naik sebesar safe-area, karena stage sudah memberi `pb-[4.25rem]`. Popup menyisakan inset itu dan tetap di dalam layar. Di bawah 768 hanya tombol Tanggapi, tanpa gelembung. Header popup ringkas di atas 24px dan kembali di bawah 8px.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
