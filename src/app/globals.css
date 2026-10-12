@@ -994,6 +994,17 @@ html[data-theme="dark"] .map-layer-icon-disc {
   z-index: 30 !important;
 }
 
+/* The stage already pads pb-[4.25rem] above the collapsed handle.
+   Only the home-indicator inset still needs a lift.
+   The report button shares this corner at z-30, so the ⓘ stays above it. */
+@media (max-width: 767px) {
+  .map-stage .maplibregl-ctrl-bottom-right,
+  .map-stage .maplibregl-ctrl-bottom-left {
+    bottom: var(--map-safe-area-bottom, env(safe-area-inset-bottom, 0px));
+    z-index: 40 !important;
+  }
+}
+
 .peta-teaser-kab {
   stroke: rgba(17, 17, 17, 0.35);
 }

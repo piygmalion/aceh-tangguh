@@ -86,6 +86,11 @@ function chatToStored(item: GuideChatItem): StoredThreadMessage {
   };
 }
 
+/** Phones never show the invite bubble. Desktop does. */
+export function tanggapiBubbleOnViewport(narrow: boolean): boolean {
+  return !narrow;
+}
+
 function safeFallbackAnswer(locale: GuideLocale): GuideAnswer {
   return {
     intent: "unknown",
@@ -329,8 +334,12 @@ export function GuideBot() {
 
   useEffect(() => {
     const allowCard =
-      visible && !open && shouldShowTanggapiInvite(pathname) && !hasSeenTanggapiBubble();
-    if (!allowCard) {
+      visible &&
+      !open &&
+      shouldShowTanggapiInvite(pathname) &&
+      !hasSeenTanggapiBubble();
+    const narrow = window.matchMedia("(max-width: 767px)").matches;
+    if (!allowCard || !tanggapiBubbleOnViewport(narrow)) {
       setShowBubble(false);
       return;
     }

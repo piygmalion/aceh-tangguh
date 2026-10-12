@@ -712,3 +712,11 @@ Saat Panel layer terbuka di bawah 768, tombol pengaturan dan tombol "+" disembun
 | --- | --- | --- | --- | --- |
 | FE-72 | frontend | chrome peta di 390 | jurnal/FE-72.md | diverifikasi |
 
+## FE-72b — tindak lanjut chrome peta
+
+Atribusi telepon hanya naik sebesar safe-area, karena stage sudah memberi `pb-[4.25rem]`. Popup menyisakan inset itu dan tetap di dalam layar. Di bawah 768 hanya tombol Tanggapi, tanpa gelembung. Header popup ringkas di atas 24px dan kembali di bawah 8px.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-72b | frontend | tindak lanjut chrome peta | jurnal/FE-72b.md | diverifikasi |
+

@@ -86,10 +86,12 @@ function MapWorkspaceInner() {
       ) : null}
       <SiteNav />
       <StatusLegend
+        collapsible
         className={cn(
           "absolute left-14 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-6.5rem))] md:hidden",
           settingsOpen && "hidden",
           featurePopupOpen && "hidden",
+          layerPanelOpen && "hidden",
         )}
       />
       <MapToolbar
