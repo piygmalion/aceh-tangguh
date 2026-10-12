@@ -51,6 +51,7 @@ export function YearBars({
 
   return (
     <figure
+      data-year-chart=""
       className={cn(
         "min-w-0 max-sm:pr-16",
         onPhoto

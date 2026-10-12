@@ -712,3 +712,11 @@ Saat Panel layer terbuka di bawah 768, tombol pengaturan dan tombol "+" disembun
 | --- | --- | --- | --- | --- |
 | FE-72 | frontend | chrome peta di 390 | jurnal/FE-72.md | diverifikasi |
 
+## FE-72b — tindak lanjut chrome peta
+
+Atribusi naik di atas pegangan panel pada telepon dengan safe-area. Legenda status di 390 tertutup sampai dibuka, dan hilang saat panel terbuka. Membuka panel tidak memindahkan fokus ke kanvas. Header popup punya histeresis. Gelembung Tanggapi menunggu grafik tahun keluar dari layar.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-72b | frontend | tindak lanjut chrome peta | jurnal/FE-72b.md | diverifikasi |
+

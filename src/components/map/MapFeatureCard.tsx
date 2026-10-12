@@ -28,6 +28,14 @@ function keepMapScroll(event: { stopPropagation: () => void }) {
   event.stopPropagation();
 }
 
+/** Compact above 24px, restore below 8px, and hold the previous state in between. */
+export function nextHeaderCompact(scrollTop: number, compact: boolean): boolean {
+  if (scrollTop > 24) return true;
+  if (scrollTop < 8) return false;
+  if (scrollTop > 0) return compact;
+  return false;
+}
+
 /** Ceiling is `100dvh - 6rem - 32px`. On a narrow screen, also clear the attribution strip. */
 function fitCardToViewport(el: HTMLElement) {
   const top = el.getBoundingClientRect().top;
@@ -228,7 +236,10 @@ export function MapFeatureCard({
 
       <div
         className="map-feature-card-body flex min-h-0 flex-1 flex-col gap-2"
-        onScroll={(event) => setHeaderCompact(event.currentTarget.scrollTop > 0)}
+        onScroll={(event) => {
+          const scrollTop = event.currentTarget.scrollTop;
+          setHeaderCompact((compact) => nextHeaderCompact(scrollTop, compact));
+        }}
         onWheel={keepMapScroll}
         onWheelCapture={keepMapScroll}
         onTouchStart={keepMapScroll}

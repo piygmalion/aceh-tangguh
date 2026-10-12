@@ -596,22 +596,32 @@ export function MapViewport({
   } | null>(null);
 
   const popupWasOpen = useRef(false);
+  const skipCanvasFocus = useRef(false);
   useEffect(() => {
     const open = popup != null;
     if (popupWasOpen.current && !open) {
-      mapRef.current?.getCanvas()?.focus();
+      if (skipCanvasFocus.current) skipCanvasFocus.current = false;
+      else mapRef.current?.getCanvas()?.focus();
     }
     popupWasOpen.current = open;
     onFeaturePopupChange?.(open);
   }, [popup, onFeaturePopupChange]);
-  useEffect(() => {
-    const closeFromPanel = () => setPopup(null);
-    window.addEventListener("aceh:close-feature-popup", closeFromPanel);
-    return () => window.removeEventListener("aceh:close-feature-popup", closeFromPanel);
-  }, []);
   const [cardId, setCardId] = useState<string | null>(null);
   const [overlayPopup, setOverlayPopup] = useState<OverlayHit | null>(null);
   const [nasaFirmsPopup, setNasaFirmsPopup] = useState<FirmsFeature | null>(null);
+  useEffect(() => {
+    const closeFromPanel = () => {
+      setPopup((current) => {
+        if (current) skipCanvasFocus.current = true;
+        return null;
+      });
+      setCardId(null);
+      setOverlayPopup(null);
+      setNasaFirmsPopup(null);
+    };
+    window.addEventListener("aceh:close-feature-popup", closeFromPanel);
+    return () => window.removeEventListener("aceh:close-feature-popup", closeFromPanel);
+  }, []);
   const [cursor, setCursor] = useState<string>("auto");
   const [vectorFailed, setVectorFailed] = useState(false);
   const [chromeIconsReady, setChromeIconsReady] = useState(false);

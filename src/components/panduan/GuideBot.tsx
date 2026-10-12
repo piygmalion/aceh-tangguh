@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { composeGuideAnswer, composeTourStep, loadGuideContext, matchGuideIntent } from "@/lib/panduan";
 import { askGroundedLlm } from "@/lib/panduan/ask";
@@ -86,6 +86,11 @@ function chatToStored(item: GuideChatItem): StoredThreadMessage {
   };
 }
 
+/** Phones hold the invite while the year chart is on screen. Desktop never holds. */
+export function yearChartBlocksTanggapiBubble(narrow: boolean, chartInView: boolean): boolean {
+  return narrow && chartInView;
+}
+
 function safeFallbackAnswer(locale: GuideLocale): GuideAnswer {
   return {
     intent: "unknown",
@@ -132,6 +137,7 @@ export function GuideBot() {
   const [session, setSession] = useState<GuideSlots>({});
   const [faq, setFaq] = useState<GuideFaqEntry[]>(STATIC_GUIDE_FAQ);
   const [showBubble, setShowBubble] = useState(false);
+  const [yearChartBlocks, setYearChartBlocks] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [threadReady, setThreadReady] = useState(false);
   const sessionRef = useRef(session);
@@ -327,9 +333,53 @@ export function GuideBot() {
     welcomeLock.current = false;
   }, []);
 
+  useLayoutEffect(() => {
+    if (!visible) return;
+    const mq = window.matchMedia("(max-width: 767px)");
+    let intersection: IntersectionObserver | null = null;
+    let observed: Element | null = null;
+
+    const attach = () => {
+      if (!mq.matches) {
+        intersection?.disconnect();
+        observed = null;
+        setYearChartBlocks(yearChartBlocksTanggapiBubble(false, false));
+        return;
+      }
+      const chart = document.querySelector("[data-year-chart]");
+      if (!chart) {
+        intersection?.disconnect();
+        observed = null;
+        setYearChartBlocks(false);
+        return;
+      }
+      if (chart === observed) return;
+      intersection?.disconnect();
+      observed = chart;
+      intersection = new IntersectionObserver(([entry]) => {
+        setYearChartBlocks(yearChartBlocksTanggapiBubble(true, Boolean(entry?.isIntersecting)));
+      });
+      intersection.observe(chart);
+    };
+
+    attach();
+    const mutations = new MutationObserver(attach);
+    mutations.observe(document.body, { childList: true, subtree: true });
+    mq.addEventListener("change", attach);
+    return () => {
+      intersection?.disconnect();
+      mutations.disconnect();
+      mq.removeEventListener("change", attach);
+    };
+  }, [pathname, visible]);
+
   useEffect(() => {
     const allowCard =
-      visible && !open && shouldShowTanggapiInvite(pathname) && !hasSeenTanggapiBubble();
+      visible &&
+      !open &&
+      shouldShowTanggapiInvite(pathname) &&
+      !hasSeenTanggapiBubble() &&
+      !yearChartBlocks;
     if (!allowCard) {
       setShowBubble(false);
       return;
@@ -340,13 +390,14 @@ export function GuideBot() {
       setShowBubble(false);
     };
     const timer = window.setTimeout(dismiss, 6000);
+    const narrow = window.matchMedia("(max-width: 767px)").matches;
     const onScroll = () => dismiss();
-    window.addEventListener("scroll", onScroll, { passive: true, once: true });
+    if (!narrow) window.addEventListener("scroll", onScroll, { passive: true, once: true });
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener("scroll", onScroll);
     };
-  }, [open, pathname, visible]);
+  }, [open, pathname, visible, yearChartBlocks]);
 
   useEffect(() => {
     if (consumeOpenTanggapi()) handleOpen();
