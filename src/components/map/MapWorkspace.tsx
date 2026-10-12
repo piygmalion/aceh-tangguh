@@ -34,6 +34,10 @@ function MapWorkspaceInner() {
     useState<VillageClickSelection | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [featurePopupOpen, setFeaturePopupOpen] = useState(false);
+  const [layerPanelOpen, setLayerPanelOpen] = useState(false);
+  const onLayerPanelChange = useCallback((open: boolean) => {
+    setLayerPanelOpen(open);
+  }, []);
   const onFeaturePopupChange = useCallback((open: boolean) => {
     setFeaturePopupOpen(open);
   }, []);
@@ -83,7 +87,7 @@ function MapWorkspaceInner() {
       <SiteNav />
       <StatusLegend
         className={cn(
-          "absolute left-3 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-4.5rem))] md:hidden",
+          "absolute left-14 top-[5.75rem] z-20 w-[min(16rem,calc(100vw-6.5rem))] md:hidden",
           settingsOpen && "hidden",
           featurePopupOpen && "hidden",
         )}
@@ -104,11 +108,14 @@ function MapWorkspaceInner() {
         nasaDate={state.nasaDate}
         onToggleNasaLayer={toggleNasaLayer}
         onNasaDateChange={setNasaDate}
+        onExpandedChange={onLayerPanelChange}
       />
       <div
+        data-map-chrome="settings"
         className={cn(
           "pointer-events-none absolute bottom-[5.75rem] left-3 z-30 flex flex-col items-start gap-3 sm:bottom-6 md:bottom-4 md:left-4",
           featurePopupOpen && "max-md:hidden",
+          layerPanelOpen && "max-md:hidden",
         )}
       >
         <StatusLegend
@@ -126,7 +133,13 @@ function MapWorkspaceInner() {
           className="pointer-events-auto static bottom-auto left-auto sm:bottom-auto"
         />
       </div>
-      <div className={cn(featurePopupOpen && "max-md:hidden")}>
+      <div
+        data-map-chrome="fab"
+        className={cn(
+          featurePopupOpen && "max-md:hidden",
+          layerPanelOpen && "max-md:hidden",
+        )}
+      >
         <ReportFAB />
       </div>
     </div>

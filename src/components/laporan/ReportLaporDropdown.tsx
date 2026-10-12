@@ -39,12 +39,16 @@ export function ReportLaporDropdown({
   }, [open]);
 
   return (
-    <div ref={rootRef} className={cn("relative", className)}>
+    <div ref={rootRef} className={cn("relative", shape === "row" && "w-full", className)}>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className={cn("inline-flex items-center gap-1 text-sm", navInteractiveClass({ active, open, shape, surface }))}
+        className={cn(
+          "inline-flex items-center gap-1 text-sm",
+          shape === "row" && "w-full justify-start",
+          navInteractiveClass({ active, open, shape, surface }),
+        )}
       >
         {t("lapor")}
         <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
