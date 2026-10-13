@@ -123,6 +123,7 @@ describe("FE-73 map sheet", () => {
     assert.match(sheet, /addEventListener\("wheel", stop, \{ capture: true, passive: false \}\)/);
     assert.match(sheet, /event\.preventDefault\(\)/);
     assert.match(sheet, /event\.stopPropagation\(\)/);
+    assert.match(sheet, /sheetScrollTarget/);
     assert.match(sheet, /sheetWheelScrollTop/);
   });
 
@@ -132,9 +133,9 @@ describe("FE-73 map sheet", () => {
     assert.match(viewport, /aceh:map-move/);
     const card = read("src/components/map/MapFeatureCard.tsx");
     assert.match(card, /aceh:map-move/);
-    const clamp = card.slice(card.indexOf("function clampCardHorizontally"));
-    assert.match(clamp, /shiftIntoHorizontalArea/);
-    assert.match(clamp, /measureFreeMapArea\(window\.innerWidth\)/);
+    const clamp = card.slice(card.indexOf("function clampCardToFreeArea"));
+    assert.match(clamp, /shiftCardIntoFreeArea/);
+    assert.match(clamp, /measurePopupFreeArea/);
     assert.match(card, /requestAnimationFrame/);
   });
 

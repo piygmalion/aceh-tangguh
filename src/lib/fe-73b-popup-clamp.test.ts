@@ -2,11 +2,14 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { JSDOM } from "jsdom";
 import { phoneBandRightPad } from "@/lib/home-fab-reserve";
-import { sheetWheelScrollTop } from "@/lib/map-sheet";
+import { sheetScrollTarget, sheetWheelScrollTop } from "@/lib/map-sheet";
 import {
   freeMapHorizontalBounds,
   popupHorizontalShift,
+  maxCardHeightInFreeArea,
+  shiftCardIntoFreeArea,
   shiftIntoHorizontalArea,
 } from "@/components/map/MapFeatureCard";
 
@@ -42,6 +45,51 @@ describe("FE-73b popup clamp and sheet wheel", () => {
     assert.equal(-12 + phone, 8);
   });
 
+  it("keeps the card out of the legend, settings, panel, and attribution", () => {
+    const canvas = { left: 0, top: 96, right: 1112, bottom: 900 };
+    const legend = { left: 16, top: 528, right: 298, bottom: 828 };
+    const settings = { left: 16, top: 840, right: 147, bottom: 884 };
+    const panel = { left: 1116, top: 96, right: 1428, bottom: 888 };
+    const attrib = { left: 820, top: 848, right: 1098, bottom: 892 };
+    const offLeft = shiftCardIntoFreeArea({
+      card: { left: -12, top: 522, right: 324, bottom: 884 },
+      canvas,
+      obstacles: [legend, settings, panel, attrib],
+    });
+    const left = -12 + offLeft.dx;
+    const bottom = 884 + offLeft.dy;
+    assert.ok(left >= legend.right + 8);
+    assert.ok(bottom <= settings.top - 8 || left >= settings.right + 8);
+    assert.ok(left + 336 <= panel.left - 8);
+
+    const overPanel = shiftCardIntoFreeArea({
+      card: { left: 772, top: 522, right: 1108, bottom: 884 },
+      canvas,
+      obstacles: [legend, settings, panel, attrib],
+    });
+    const right = 1108 + overPanel.dx;
+    const overBottom = 884 + overPanel.dy;
+    assert.ok(right <= panel.left - 8);
+    assert.ok(right <= attrib.left - 8 || overBottom <= attrib.top - 8);
+    assert.ok(772 + overPanel.dx >= legend.right + 8);
+
+    const card = read("src/components/map/MapFeatureCard.tsx");
+    assert.match(card, /data-status-legend/);
+    assert.match(card, /button\[aria-expanded\]/);
+    assert.match(card, /aside\[data-layer-panel\]/);
+    assert.match(card, /maplibregl-ctrl-bottom-right/);
+    assert.match(card, /maplibregl-canvas/);
+
+    const tall = { left: 768, top: 104, right: 1104, bottom: 876 };
+    const room = maxCardHeightInFreeArea({
+      card: tall,
+      canvas,
+      obstacles: [legend, settings, panel, attrib],
+    });
+    assert.ok(room < tall.bottom - tall.top);
+    assert.ok(104 + room <= attrib.top - 8);
+  });
+
   it("re-clamps after move end", () => {
     const viewport = read("src/components/map/MapViewport.tsx");
     const end = viewport.slice(viewport.indexOf("const onMoveEnd"));
@@ -50,9 +98,7 @@ describe("FE-73b popup clamp and sheet wheel", () => {
     const card = read("src/components/map/MapFeatureCard.tsx");
     assert.match(card, /aceh:map-move/);
     assert.match(card, /fitSettled/);
-    assert.match(card, /data-map-chrome='settings'/);
-    assert.match(card, /maplibregl-ctrl-top-left/);
-    assert.match(card, /aside\[data-layer-panel\]/);
+    assert.match(card, /measurePopupFreeArea/);
   });
 
   it("pads the home band clear of the Tanggapi button and keeps the button low", () => {
@@ -96,5 +142,36 @@ describe("FE-73b popup clamp and sheet wheel", () => {
     assert.match(css, /\.map-feature-sheet \.map-feature-card-body[\s\S]*overflow:\s*visible/);
     assert.match(css, /\[data-sheet-header\],\s*\n\.map-feature-sheet \[data-sheet-handle\] \{\s*\n\s*user-select:\s*none;/);
     assert.match(sheet, /select-none/);
+    assert.match(sheet, /sheetScrollTarget/);
+    assert.match(sheet, /data-sheet-scroller/);
+
+    const dom = new JSDOM("<!doctype html><body></body>");
+    const previous = {
+      HTMLElement: globalThis.HTMLElement,
+      Node: globalThis.Node,
+    };
+    globalThis.HTMLElement = dom.window.HTMLElement;
+    globalThis.Node = dom.window.Node;
+    const root = dom.window.document.createElement("div");
+    const body = dom.window.document.createElement("div");
+    body.setAttribute("data-sheet-body", "true");
+    const inner = dom.window.document.createElement("div");
+    root.append(body);
+    body.append(inner);
+    const scrolled = sheetScrollTarget(root, inner, (el) => el === body);
+    assert.equal(scrolled, body);
+    const fallback = sheetScrollTarget(root, inner, () => false);
+    assert.equal(fallback, body);
+    globalThis.HTMLElement = previous.HTMLElement;
+    globalThis.Node = previous.Node;
+  });
+
+  it("does not focus the sheet header or the SIK Aceh logo while dragging", () => {
+    const sheet = read("src/components/map/MapFeatureSheet.tsx");
+    assert.match(sheet, /onMouseDown/);
+    assert.match(sheet, /event\.preventDefault\(\)/);
+    assert.match(sheet, /releaseSheetDragFocus/);
+    assert.match(sheet, /SIK Aceh/);
+    assert.match(sheet, /active\.blur\(\)/);
   });
 });

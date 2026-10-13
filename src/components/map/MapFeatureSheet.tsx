@@ -8,6 +8,7 @@ import {
   attributionLift,
   nearestSheetSnap,
   sheetFrame,
+  sheetScrollTarget,
   sheetWheelScrollTop,
   type SheetSnap,
 } from "@/lib/map-sheet";
@@ -25,6 +26,17 @@ function readSafeAreaBottom(): number {
   const height = probe.getBoundingClientRect().height;
   probe.remove();
   return height;
+}
+
+/** A drag must not leave focus on the sheet header or the SIK Aceh logo. */
+function releaseSheetDragFocus(header: HTMLElement) {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement)) return;
+  const onHeader = header.contains(active);
+  const label = active.getAttribute("aria-label") ?? "";
+  const onLogo = active.closest("[data-sitenav]") != null && label.includes("SIK Aceh");
+  if (!onHeader && !onLogo) return;
+  active.blur();
 }
 
 /** Phone sheet. Docks to the bottom edge. Safe area is padding inside. */
@@ -125,21 +137,52 @@ export function MapFeatureSheet({
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
+    // Window capture runs before React's root listener and before MapLibre's
+    // canvas listener. MapLibre calls preventDefault on the canvas container
+    // only, so a wheel whose target is the sheet never reaches it — unless a
+    // descendant stops the event first. Handle it here, on the real scroller.
     const stop = (event: WheelEvent) => {
-      const body = bodyRef.current;
-      if (!body) return;
+      const target = event.target;
+      if (!(target instanceof Node) || !el.contains(target)) return;
+      const scroller = sheetScrollTarget(el, target);
+      for (const node of Array.from(el.querySelectorAll("[data-sheet-scroller]"))) {
+        node.removeAttribute("data-sheet-scroller");
+      }
+      scroller.setAttribute("data-sheet-scroller", "true");
       event.preventDefault();
       event.stopPropagation();
-      body.scrollTop = sheetWheelScrollTop({
-        scrollTop: body.scrollTop,
-        scrollHeight: body.scrollHeight,
-        clientHeight: body.clientHeight,
+      scroller.scrollTop = sheetWheelScrollTop({
+        scrollTop: scroller.scrollTop,
+        scrollHeight: scroller.scrollHeight,
+        clientHeight: scroller.clientHeight,
         deltaY: event.deltaY,
         deltaMode: event.deltaMode,
       });
     };
-    el.addEventListener("wheel", stop, { capture: true, passive: false });
-    return () => el.removeEventListener("wheel", stop, { capture: true });
+    window.addEventListener("wheel", stop, { capture: true, passive: false });
+    return () => window.removeEventListener("wheel", stop, { capture: true });
+  }, []);
+
+  useEffect(() => {
+    const header = rootRef.current?.querySelector("[data-sheet-header]");
+    if (!(header instanceof HTMLElement)) return;
+    const blockFocus = (event: Event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest("[data-sheet-close]")) return;
+      event.preventDefault();
+    };
+    const release = () => {
+      releaseSheetDragFocus(header);
+      requestAnimationFrame(() => releaseSheetDragFocus(header));
+    };
+    header.addEventListener("pointerdown", blockFocus, true);
+    header.addEventListener("mousedown", blockFocus, true);
+    header.addEventListener("pointerup", release);
+    return () => {
+      header.removeEventListener("pointerdown", blockFocus, true);
+      header.removeEventListener("mousedown", blockFocus, true);
+      header.removeEventListener("pointerup", release);
+    };
   }, []);
 
   return (
@@ -165,8 +208,13 @@ export function MapFeatureSheet({
         aria-label={t("sheetHandle")}
         className="relative flex shrink-0 cursor-grab touch-none select-none items-center gap-2 px-3"
         style={{ height: SHEET_HEADER_PX }}
+        onMouseDown={(event) => {
+          if ((event.target as HTMLElement).closest("[data-sheet-close]")) return;
+          event.preventDefault();
+        }}
         onPointerDown={(event) => {
           if ((event.target as HTMLElement).closest("[data-sheet-close]")) return;
+          event.preventDefault();
           event.currentTarget.setPointerCapture(event.pointerId);
           dragOrigin.current = { y: event.clientY, height };
         }}
@@ -178,9 +226,10 @@ export function MapFeatureSheet({
           heightRef.current = clamped;
           setDragHeight(clamped);
         }}
-        onPointerUp={() => {
+        onPointerUp={(event) => {
           const origin = dragOrigin.current;
           dragOrigin.current = null;
+          releaseSheetDragFocus(event.currentTarget);
           if (!origin) return;
           const current = heightRef.current;
           setDragHeight(null);

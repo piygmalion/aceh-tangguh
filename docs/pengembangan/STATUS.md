@@ -730,7 +730,7 @@ Di bawah 768 keterangan fitur menjadi lembar dengan henti bawaan dan penuh, mene
 
 ## FE-73b — jepit popup ke area peta bebas
 
-Popup desktop dijepit ke kolom peta yang bebas: 8px dari chrome kiri dan dari panel Layer, termasuk setelah geser selesai. Pita angka beranda menyisakan 60px di kanan pada layar sempit. Roda di lembar telepon menggulir badan lembar.
+Popup desktop dijepit ke kanvas dikurangi legenda Status, tombol Pengaturan, panel Layer, dan strip atribusi, margin 8px, termasuk setelah geser selesai. Pita angka beranda menyisakan 60px di kanan pada layar sempit. Roda produksi menggulir `[data-sheet-body]` dan tidak mengubah zoom. Seretan lembar tidak menaruh cincin fokus pada logo SIK Aceh.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |

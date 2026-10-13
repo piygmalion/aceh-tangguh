@@ -85,6 +85,93 @@ export function shiftIntoHorizontalArea(
   return left - rect.left;
 }
 
+export type PopupRect = { left: number; top: number; right: number; bottom: number };
+
+export function inflateRect(box: PopupRect, margin: number): PopupRect {
+  return {
+    left: box.left - margin,
+    top: box.top - margin,
+    right: box.right + margin,
+    bottom: box.bottom + margin,
+  };
+}
+
+function translateRect(box: PopupRect, dx: number, dy: number): PopupRect {
+  return {
+    left: box.left + dx,
+    top: box.top + dy,
+    right: box.right + dx,
+    bottom: box.bottom + dy,
+  };
+}
+
+function rectsOverlap(a: PopupRect, b: PopupRect): boolean {
+  return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+}
+
+/** Keep the card inside the canvas. A card wider or taller than the canvas pins to the top-left inset. */
+function shiftInsideCanvas(card: PopupRect, bounds: PopupRect): { dx: number; dy: number } {
+  const width = card.right - card.left;
+  const height = card.bottom - card.top;
+  let dx = 0;
+  let dy = 0;
+  if (width >= bounds.right - bounds.left) dx = bounds.left - card.left;
+  else if (card.left < bounds.left) dx = bounds.left - card.left;
+  else if (card.right > bounds.right) dx = bounds.right - card.right;
+  if (height >= bounds.bottom - bounds.top) dy = bounds.top - card.top;
+  else if (card.top < bounds.top) dy = bounds.top - card.top;
+  else if (card.bottom > bounds.bottom) dy = bounds.bottom - card.bottom;
+  return { dx, dy };
+}
+
+/** Smallest move that takes `card` out of `blocked`. */
+function pushOutOfRect(card: PopupRect, blocked: PopupRect): { dx: number; dy: number } {
+  if (!rectsOverlap(card, blocked)) return { dx: 0, dy: 0 };
+  const overlapX = Math.min(card.right, blocked.right) - Math.max(card.left, blocked.left);
+  const overlapY = Math.min(card.bottom, blocked.bottom) - Math.max(card.top, blocked.top);
+  if (overlapX <= 0 || overlapY <= 0) return { dx: 0, dy: 0 };
+  if (overlapX <= overlapY) {
+    const pushLeft = blocked.left - card.right;
+    const pushRight = blocked.right - card.left;
+    return { dx: Math.abs(pushLeft) <= Math.abs(pushRight) ? pushLeft : pushRight, dy: 0 };
+  }
+  const pushUp = blocked.top - card.bottom;
+  const pushDown = blocked.bottom - card.top;
+  return { dx: 0, dy: Math.abs(pushUp) <= Math.abs(pushDown) ? pushUp : pushDown };
+}
+
+/**
+ * Free area is the map canvas inset by `margin`, minus the legend, Pengaturan,
+ * Layer panel, and attribution boxes (each grown by `margin`).
+ */
+export function shiftCardIntoFreeArea(opts: {
+  card: PopupRect;
+  canvas: PopupRect;
+  obstacles: PopupRect[];
+  margin?: number;
+}): { dx: number; dy: number } {
+  const margin = opts.margin ?? 8;
+  const bounds = inflateRect(opts.canvas, -margin);
+  if (bounds.right < bounds.left) bounds.right = bounds.left;
+  if (bounds.bottom < bounds.top) bounds.bottom = bounds.top;
+  let card = { ...opts.card };
+  let dx = 0;
+  let dy = 0;
+  const move = (shift: { dx: number; dy: number }) => {
+    if (shift.dx === 0 && shift.dy === 0) return;
+    dx += shift.dx;
+    dy += shift.dy;
+    card = translateRect(card, shift.dx, shift.dy);
+  };
+  const blocked = opts.obstacles.map((box) => inflateRect(box, margin));
+  move(shiftInsideCanvas(card, bounds));
+  for (let pass = 0; pass < blocked.length + 1; pass += 1) {
+    for (const obstacle of blocked) move(pushOutOfRect(card, obstacle));
+    move(shiftInsideCanvas(card, bounds));
+  }
+  return { dx, dy };
+}
+
 function visibleBox(el: Element | null): DOMRect | null {
   if (!(el instanceof HTMLElement)) return null;
   const style = getComputedStyle(el);
@@ -94,18 +181,36 @@ function visibleBox(el: Element | null): DOMRect | null {
   return rect;
 }
 
-/** Free map interval: left chrome/legend column and the desktop Layer panel, plus 8px. */
-export function measureFreeMapArea(viewportWidth = window.innerWidth): { left: number; right: number } {
-  const leftRights: number[] = [];
-  const settings = visibleBox(document.querySelector("[data-map-chrome='settings']"));
-  const zoom = visibleBox(document.querySelector(".maplibregl-ctrl-top-left"));
-  if (settings) leftRights.push(settings.right);
-  if (zoom) leftRights.push(zoom.right);
-  const rightLefts: number[] = [];
-  const panel = visibleBox(document.querySelector("aside[data-layer-panel]"));
-  if (panel && panel.left > viewportWidth / 2) rightLefts.push(panel.left);
-  const raw = freeMapHorizontalBounds({ viewportWidth, leftRights, rightLefts });
-  return { left: Math.ceil(raw.left), right: Math.floor(raw.right) };
+function rectOf(el: Element | null): PopupRect | null {
+  const rect = visibleBox(el);
+  if (!rect) return null;
+  return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
+}
+
+/** Canvas, then the legend, Pengaturan button, Layer panel, and attribution strip. */
+export function measurePopupFreeArea(): { canvas: PopupRect; obstacles: PopupRect[] } {
+  const canvas =
+    rectOf(document.querySelector(".maplibregl-canvas")) ??
+    rectOf(document.querySelector(".maplibregl-map")) ?? {
+      left: 0,
+      top: 0,
+      right: window.innerWidth,
+      bottom: window.innerHeight,
+    };
+  const obstacles: PopupRect[] = [];
+  for (const el of Array.from(document.querySelectorAll("[data-status-legend]"))) {
+    const box = rectOf(el);
+    if (box) obstacles.push(box);
+  }
+  const settings = rectOf(document.querySelector("[data-map-chrome='settings'] button[aria-expanded]"));
+  const panel = rectOf(document.querySelector("aside[data-layer-panel]"));
+  const attrib =
+    rectOf(document.querySelector(".maplibregl-ctrl-bottom-right")) ??
+    rectOf(document.querySelector(".maplibregl-ctrl-attrib"));
+  for (const box of [settings, panel, attrib]) {
+    if (box) obstacles.push(box);
+  }
+  return { canvas, obstacles };
 }
 
 /** Clear the attribution strip, and never less than the safe-area inset. */
@@ -137,9 +242,40 @@ function readSafeAreaBottom(): number {
   return height;
 }
 
+/**
+ * Largest height that fits in the canvas inset without entering an obstacle
+ * that shares the card's horizontal span. A card taller than this has to shrink;
+ * sliding it back inside the canvas would cover the obstacle again.
+ */
+export function maxCardHeightInFreeArea(opts: {
+  card: PopupRect;
+  canvas: PopupRect;
+  obstacles: PopupRect[];
+  margin?: number;
+}): number {
+  const margin = opts.margin ?? 8;
+  const bounds = inflateRect(opts.canvas, -margin);
+  let top = bounds.top;
+  let bottom = bounds.bottom;
+  for (const raw of opts.obstacles) {
+    const box = inflateRect(raw, margin);
+    const overlapX = Math.min(opts.card.right, box.right) - Math.max(opts.card.left, box.left);
+    if (overlapX <= 0) continue;
+    if (box.bottom <= top || box.top >= bottom) continue;
+    const above = box.top - top;
+    const below = bottom - box.bottom;
+    if (above >= below) bottom = box.top;
+    else top = box.bottom;
+  }
+  return Math.max(160, bottom - top);
+}
+
 /** Ceiling is `100dvh - 6rem - 32px`. On a narrow screen, also clear the attribution strip. */
 function fitCardToViewport(el: HTMLElement) {
+  const transform = el.style.transform;
+  if (transform) el.style.transform = "none";
   const top = el.getBoundingClientRect().top;
+  if (transform) el.style.transform = transform;
   const ceiling = window.innerHeight - 96 - 32;
   let reserve = 16;
   if (window.innerWidth < 768) {
@@ -157,14 +293,25 @@ function fitCardToViewport(el: HTMLElement) {
   el.style.maxHeight = `${Math.round(Math.max(160, Math.min(ceiling, room)))}px`;
 }
 
-function clampCardHorizontally(el: HTMLElement) {
+function clampCardToFreeArea(el: HTMLElement) {
   el.style.transform = "";
-  const rect = el.getBoundingClientRect();
-  const shift = shiftIntoHorizontalArea(
-    { left: rect.left, right: rect.right },
-    measureFreeMapArea(window.innerWidth),
-  );
-  el.style.transform = shift === 0 ? "" : `translateX(${Math.round(shift)}px)`;
+  const { canvas, obstacles } = measurePopupFreeArea();
+  for (let pass = 0; pass < 3; pass += 1) {
+    const rect = el.getBoundingClientRect();
+    const card = { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
+    const shift = shiftCardIntoFreeArea({ card, canvas, obstacles });
+    const placed = translateRect(card, shift.dx, shift.dy);
+    const room = maxCardHeightInFreeArea({ card: placed, canvas, obstacles });
+    if (rect.height > room + 1) {
+      el.style.maxHeight = `${Math.round(room)}px`;
+      continue;
+    }
+    const dx = Math.round(shift.dx);
+    const dy = Math.round(shift.dy);
+    el.style.transform =
+      dx === 0 && dy === 0 ? "" : `translateX(${dx}px) translateY(${dy}px)`;
+    return;
+  }
 }
 
 function sourceHostname(url: string): string {
@@ -275,7 +422,7 @@ export function MapFeatureCard({
     const fit = () => {
       if (!el.isConnected) return;
       fitCardToViewport(el);
-      clampCardHorizontally(el);
+      clampCardToFreeArea(el);
     };
     const fitSettled = () => {
       fit();
