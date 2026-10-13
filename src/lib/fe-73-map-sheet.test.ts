@@ -8,6 +8,7 @@ import {
   reduceFeatureSlot,
 } from "@/lib/feature-card-query";
 import {
+  attributionLift,
   nearestSheetSnap,
   sheetCameraPadding,
   sheetFrame,
@@ -57,7 +58,7 @@ describe("FE-73 map sheet", () => {
     assert.doesNotMatch(sheet, /peek/);
   });
 
-  it("hides the layer handle, closes on empty map, and keeps a marker tap open", () => {
+  it("hides the layer handle while the phone sheet is open", () => {
     const css = read("src/app/globals.css");
     const hide = css.slice(css.indexOf("Phone sheet covers"));
     assert.match(hide, /max-width: 767px/);
@@ -67,33 +68,60 @@ describe("FE-73 map sheet", () => {
     const toolbarAt = workspace.indexOf("<MapToolbar");
     const toolbarMount = workspace.slice(toolbarAt, workspace.indexOf("<div", toolbarAt));
     assert.equal(toolbarMount.includes("featurePopupOpen"), false);
+  });
+
+  it("closes from the button, Escape, a swipe past default, or an empty-map tap, then focuses the canvas", () => {
     assert.equal(
       shouldCloseSheetOnMapClick({ narrow: true, sheetOpen: true, hitFeature: false }),
       true,
     );
     assert.equal(
-      shouldCloseSheetOnMapClick({ narrow: true, sheetOpen: true, hitFeature: true }),
-      false,
-    );
-    assert.equal(
       shouldCloseSheetOnMapClick({ narrow: false, sheetOpen: true, hitFeature: false }),
       false,
     );
+    const frame = sheetFrame(844, 0, 2000);
+    assert.equal(nearestSheetSnap(frame.default - 40, frame), "closed");
     const viewport = read("src/components/map/MapViewport.tsx");
     assert.match(viewport, /shouldCloseSheetOnMapClick/);
     assert.match(viewport, /closeEmptySheet/);
-    assert.match(viewport, /setPopup\(\{/);
-    const marker = viewport.slice(viewport.indexOf("pointFeat && pointFeat.geometry.type"));
-    assert.match(marker, /setPopup\(\{/);
-    assert.doesNotMatch(marker.slice(0, marker.indexOf("setCardId(id)")), /setPopup\(null\)/);
+    assert.match(viewport, /getCanvas\(\)\?\.focus\(\)/);
     const sheet = read("src/components/map/MapFeatureSheet.tsx");
     assert.match(sheet, /event.key !== "Escape"/);
     assert.match(sheet, /data-sheet-close/);
     assert.match(sheet, /h-11 w-11/);
     assert.match(sheet, /height: SHEET_HEADER_PX/);
-    assert.match(viewport, /getCanvas\(\)\?\.focus\(\)/);
-    assert.match(sheet, /stopPropagation/);
-    assert.match(css, /z-index:\s*40 !important/);
+  });
+
+  it("replaces sheet content when another marker is tapped", () => {
+    assert.equal(
+      shouldCloseSheetOnMapClick({ narrow: true, sheetOpen: true, hitFeature: true }),
+      false,
+    );
+    const viewport = read("src/components/map/MapViewport.tsx");
+    const marker = viewport.slice(viewport.indexOf("pointFeat && pointFeat.geometry.type"));
+    assert.match(marker, /setPopup\(\{/);
+    assert.doesNotMatch(marker.slice(0, marker.indexOf("setCardId(id)")), /setPopup\(null\)/);
+    assert.match(viewport, /acceptFeatureCard/);
+    assert.match(viewport, /loadFeatureCard/);
+  });
+
+  it("lifts attribution above the default sheet and does not let a wheel inside the sheet zoom the map", () => {
+    const mapBottom = 776;
+    const sheetTop = 380;
+    const lift = attributionLift({ mapBottom, sheetTop, gap: 8 });
+    assert.equal(lift, mapBottom - sheetTop + 8);
+    assert.ok(mapBottom - lift <= sheetTop - 8);
+    const css = read("src/app/globals.css");
+    assert.match(css, /data-sheet-snap="default"\] \.maplibregl-ctrl-bottom-right/);
+    assert.match(css, /bottom:\s*var\(--map-attrib-lift, 0px\)/);
+    assert.match(css, /data-sheet-snap="full"\] \.maplibregl-ctrl-bottom-right/);
+    assert.match(css, /z-index:\s*20 !important/);
+    assert.doesNotMatch(css, /data-feature-popup="open"\] \.maplibregl-ctrl-bottom/);
+    const sheet = read("src/components/map/MapFeatureSheet.tsx");
+    assert.match(sheet, /attributionLift/);
+    assert.match(sheet, /--map-attrib-lift/);
+    assert.match(sheet, /addEventListener\("wheel", stop, \{ capture: true \}\)/);
+    assert.match(sheet, /event\.stopPropagation\(\)/);
   });
 
   it("re-clamps an open popup when the map moves", () => {

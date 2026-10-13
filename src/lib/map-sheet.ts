@@ -55,6 +55,19 @@ export function sheetCameraPadding(
   return { top: 0, right: 0, bottom: sheetHeight, left: 0 };
 }
 
+/**
+ * `bottom` offset for the map attribution, relative to the map box,
+ * so the strip's bottom edge sits `gap` px above the sheet.
+ */
+export function attributionLift(opts: {
+  mapBottom: number;
+  sheetTop: number;
+  gap?: number;
+}): number {
+  const gap = opts.gap ?? 8;
+  return Math.max(0, Math.round(opts.mapBottom - opts.sheetTop + gap));
+}
+
 /** A phone tap on empty map closes the sheet. A marker tap does not. */
 export function shouldCloseSheetOnMapClick(opts: {
   narrow: boolean;

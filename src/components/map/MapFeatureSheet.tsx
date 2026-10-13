@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   SHEET_HEADER_PX,
+  attributionLift,
   nearestSheetSnap,
   sheetFrame,
   type SheetSnap,
@@ -93,6 +94,32 @@ export function MapFeatureSheet({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
+
+  useLayoutEffect(() => {
+    const stage = rootRef.current?.closest(".map-stage");
+    if (!(stage instanceof HTMLElement) || !rootRef.current) return;
+    stage.setAttribute("data-sheet-snap", snap);
+    if (snap !== "default") {
+      stage.style.removeProperty("--map-attrib-lift");
+      return;
+    }
+    const map = stage.querySelector(".maplibregl-map");
+    if (!(map instanceof HTMLElement)) return;
+    const lift = attributionLift({
+      mapBottom: map.getBoundingClientRect().bottom,
+      sheetTop: rootRef.current.getBoundingClientRect().top,
+    });
+    stage.style.setProperty("--map-attrib-lift", `${lift}px`);
+  }, [snap, height]);
+
+  useEffect(() => {
+    return () => {
+      const stage = document.querySelector(".map-stage");
+      if (!(stage instanceof HTMLElement)) return;
+      stage.removeAttribute("data-sheet-snap");
+      stage.style.removeProperty("--map-attrib-lift");
+    };
+  }, []);
 
   useEffect(() => {
     const el = rootRef.current;

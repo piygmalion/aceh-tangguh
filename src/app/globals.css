@@ -1023,6 +1023,18 @@ html[data-theme="dark"] .map-layer-icon-disc {
     bottom: var(--map-safe-area-bottom, env(safe-area-inset-bottom, 0px));
     z-index: 40 !important;
   }
+
+  /* Default snap: sit the credit strip just above the sheet. Full snap: tuck it under the sheet. */
+  .map-stage[data-sheet-snap="default"] .maplibregl-ctrl-bottom-right,
+  .map-stage[data-sheet-snap="default"] .maplibregl-ctrl-bottom-left {
+    bottom: var(--map-attrib-lift, 0px);
+    z-index: 40 !important;
+  }
+
+  .map-stage[data-sheet-snap="full"] .maplibregl-ctrl-bottom-right,
+  .map-stage[data-sheet-snap="full"] .maplibregl-ctrl-bottom-left {
+    z-index: 20 !important;
+  }
 }
 
 .peta-teaser-kab {
