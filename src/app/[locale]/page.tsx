@@ -24,7 +24,7 @@ export default async function HomePage({
   return (
     <>
       <SiteNav />
-      <main className="overflow-x-hidden">
+      <main className="overflow-x-hidden pb-[4.5rem] md:pb-0">
         <DataHero />
         <TentangSection />
         <LaporCta />

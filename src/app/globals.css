@@ -963,6 +963,26 @@ html[data-theme="dark"] .map-layer-icon-disc {
   display: none;
 }
 
+.map-stage {
+  --map-credit-strip: 44px;
+}
+
+/* Phone sheet covers the collapsed layer handle, so the handle steps aside. */
+@media (max-width: 767px) {
+  [data-feature-popup="open"] aside[data-layer-panel] {
+    display: none;
+  }
+}
+
+.map-feature-sheet .map-feature-card {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
 .map-feature-card {
   width: min(21rem, calc(100vw - 2rem));
   max-height: calc(100dvh - 6rem - 32px);
@@ -1002,6 +1022,18 @@ html[data-theme="dark"] .map-layer-icon-disc {
   .map-stage .maplibregl-ctrl-bottom-left {
     bottom: var(--map-safe-area-bottom, env(safe-area-inset-bottom, 0px));
     z-index: 40 !important;
+  }
+
+  /* Default snap: sit the credit strip just above the sheet. Full snap: tuck it under the sheet. */
+  .map-stage[data-sheet-snap="default"] .maplibregl-ctrl-bottom-right,
+  .map-stage[data-sheet-snap="default"] .maplibregl-ctrl-bottom-left {
+    bottom: var(--map-attrib-lift, 0px);
+    z-index: 40 !important;
+  }
+
+  .map-stage[data-sheet-snap="full"] .maplibregl-ctrl-bottom-right,
+  .map-stage[data-sheet-snap="full"] .maplibregl-ctrl-bottom-left {
+    z-index: 20 !important;
   }
 }
 

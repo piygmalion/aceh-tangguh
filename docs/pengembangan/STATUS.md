@@ -720,3 +720,11 @@ Atribusi telepon hanya naik sebesar safe-area, karena stage sudah memberi `pb-[4
 | --- | --- | --- | --- | --- |
 | FE-72b | frontend | tindak lanjut chrome peta | jurnal/FE-72b.md | diverifikasi |
 
+## FE-73 — lembar bawah peta
+
+Di bawah 768 keterangan fitur menjadi lembar dengan henti bawaan dan penuh, menempel tepi bawah. Pegangan panel disembunyikan saat lembar terbuka. Strip atribusi duduk 8px di atas lembar pada henti bawaan. Popup desktop dijepit ulang saat peta bergerak. FAB peta ikut safe-area. Chip status minimal 44px. Daftar kab/kota menyisakan `pb-6`. Kueri kartu terikat pada id fitur.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-73 | frontend | lembar bawah peta | jurnal/FE-73.md | diverifikasi |
+

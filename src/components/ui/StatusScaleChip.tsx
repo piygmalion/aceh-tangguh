@@ -34,7 +34,7 @@ export function StatusScaleChip({
     <span
       data-status-level={level}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-[var(--map-keyline)] px-2.5 py-1 font-semibold uppercase tracking-[0.06em]",
+        "inline-flex min-h-[44px] min-w-[44px] items-center gap-1.5 rounded-full border border-[var(--map-keyline)] px-3 py-1 font-semibold uppercase tracking-[0.06em]",
         TYPE_FLOOR_CLASS,
         FILL[level],
         className,

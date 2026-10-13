@@ -115,11 +115,22 @@ function sourceHostname(url: string): string {
   }
 }
 
-export async function fetchFeatureCard(id: string, layer?: string): Promise<FeatureCard> {
+export async function fetchFeatureCard(
+  id: string,
+  layer?: string,
+  signal?: AbortSignal,
+): Promise<FeatureCard> {
   const qs = new URLSearchParams();
   if (layer) qs.set("layer", layer);
   const suffix = qs.toString() ? `?${qs.toString()}` : "";
-  const res = await fetchPublicApi(`/api/layers/features/${encodeURIComponent(id)}${suffix}`);
+  const res = await fetchPublicApi(`/api/layers/features/${encodeURIComponent(id)}${suffix}`, {
+    signal,
+  });
+  if (signal?.aborted) {
+    const err = new Error("aborted");
+    err.name = "AbortError";
+    throw err;
+  }
   if (!res.ok) throw new Error("feature_card_failed");
   return (await res.json()) as FeatureCard;
 }
@@ -181,12 +192,15 @@ export function MapFeatureCard({
   error = false,
   onClose,
   onSelectStack,
+  layout = "popup",
 }: {
   card: FeatureCard | null;
   loading?: boolean;
   error?: boolean;
   onClose: () => void;
   onSelectStack?: (id: string) => void;
+  /** Sheet fills its parent. Popup stays clamped to the viewport. */
+  layout?: "popup" | "sheet";
 }) {
   const t = useTranslations("map");
   const tPanduan = useTranslations("panduan");
@@ -196,7 +210,7 @@ export function MapFeatureCard({
 
   useLayoutEffect(() => {
     const el = cardRef.current;
-    if (!el) return;
+    if (!el || layout === "sheet") return;
     const fit = () => {
       fitCardToViewport(el);
       clampCardHorizontally(el);
@@ -208,14 +222,16 @@ export function MapFeatureCard({
     const resizeObs = new ResizeObserver(fit);
     resizeObs.observe(el);
     window.addEventListener("resize", fit);
+    window.addEventListener("aceh:map-move", fit);
     const frame = window.requestAnimationFrame(fit);
     return () => {
       obs.disconnect();
       resizeObs.disconnect();
       window.removeEventListener("resize", fit);
+      window.removeEventListener("aceh:map-move", fit);
       window.cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [layout]);
 
   const title = card?.title ?? (loading ? t("cardLoading") : t("cardError"));
   const layer = card?.layer ?? "disasterEvents";
@@ -228,7 +244,10 @@ export function MapFeatureCard({
   return (
     <article
       ref={cardRef}
-      className="map-feature-card flex flex-col gap-2"
+      className={cn(
+        "map-feature-card flex flex-col gap-2",
+        layout === "sheet" && "h-auto max-h-none w-full shadow-none",
+      )}
       data-testid="map-feature-card"
       onWheel={keepMapScroll}
       onWheelCapture={keepMapScroll}
@@ -262,7 +281,7 @@ export function MapFeatureCard({
             </div>
           ) : null}
         </div>
-        <div className="flex items-start justify-between gap-2">
+        <div className={cn("flex items-start justify-between gap-2", layout === "sheet" && "hidden")}>
           <div className="min-w-0 flex-1">
             <h3
               data-card-heading
