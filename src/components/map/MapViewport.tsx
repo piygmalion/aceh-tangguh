@@ -92,6 +92,7 @@ import { registerMapChromeIcons } from "@/lib/map-symbol-images";
 import { MapFeatureCard, fetchFeatureCard } from "@/components/map/MapFeatureCard";
 import { MapFeatureSheet } from "@/components/map/MapFeatureSheet";
 import { acceptFeatureCard, loadFeatureCard } from "@/lib/feature-card-query";
+import { sheetCameraPadding, shouldCloseSheetOnMapClick, type SheetSnap } from "@/lib/map-sheet";
 import { toFeatureCard, type FeatureCard } from "@/lib/feature-card";
 import { useTranslations } from "next-intl";
 import {
@@ -610,6 +611,13 @@ export function MapViewport({
   }, [popup, onFeaturePopupChange]);
   const [cardId, setCardId] = useState<string | null>(null);
   const [narrow, setNarrow] = useState(false);
+  const [sheetSnap, setSheetSnap] = useState<SheetSnap>("default");
+  const [sheetHeight, setSheetHeight] = useState(0);
+  const popupRef = useRef(popup);
+  popupRef.current = popup;
+  const narrowRef = useRef(narrow);
+  narrowRef.current = narrow;
+  const sheetPadRef = useRef(false);
   useLayoutEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     const sync = () => setNarrow(mq.matches);
@@ -816,6 +824,29 @@ export function MapViewport({
     enabled: fetchRemoteCard,
   });
   const shownFeatureCard = acceptFeatureCard(cardId, featureCard) ? featureCard : null;
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || !map.isStyleLoaded()) return;
+    if (popup && narrow && sheetHeight > 0) {
+      sheetPadRef.current = true;
+      const padding = sheetCameraPadding(sheetSnap, sheetHeight);
+      if (sheetSnap === "default") {
+        map.easeTo({
+          center: [popup.lng, popup.lat],
+          padding,
+          duration: 400,
+        });
+      } else {
+        map.easeTo({ padding, duration: 300 });
+      }
+      return;
+    }
+    if (sheetPadRef.current) {
+      sheetPadRef.current = false;
+      map.easeTo({ padding: sheetCameraPadding("closed", 0), duration: 300 });
+    }
+  }, [popup, narrow, sheetSnap, sheetHeight]);
 
   const markerGeojson = useMemo((): FeatureCollection => {
     if (!data?.features?.length) return EMPTY_FC;
@@ -1064,9 +1095,27 @@ export function MapViewport({
         return;
       }
 
-      if (!villageClickEnabled) return;
+      const closeEmptySheet = () => {
+        if (
+          shouldCloseSheetOnMapClick({
+            narrow: narrowRef.current,
+            sheetOpen: popupRef.current != null,
+            hitFeature: false,
+          })
+        ) {
+          setPopup(null);
+          setCardId(null);
+        }
+      };
+      if (!villageClickEnabled) {
+        closeEmptySheet();
+        return;
+      }
       const feature = e.features?.find((f) => isAreaFillLayerId(f.layer?.id));
-      if (!feature) return;
+      if (!feature) {
+        closeEmptySheet();
+        return;
+      }
       const fillLayerId = feature.layer?.id ?? "area-fill";
       const props = feature.properties as Record<string, unknown> | null;
       const sel = readVillageSelection(props);
@@ -1344,6 +1393,15 @@ export function MapViewport({
       </Map>
       {popup && narrow ? (
         <MapFeatureSheet
+          title={
+            popup.localCard?.title ??
+            shownFeatureCard?.title ??
+            (cardLoading ? t("cardLoading") : t("cardError"))
+          }
+          onSnap={(snap, height) => {
+            setSheetSnap(snap);
+            setSheetHeight(height);
+          }}
           onClose={() => {
             setPopup(null);
             setCardId(null);

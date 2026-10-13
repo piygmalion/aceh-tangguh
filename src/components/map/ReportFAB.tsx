@@ -12,11 +12,13 @@ export function ReportFAB() {
   useLayoutEffect(() => {
     let resizeObs: ResizeObserver | null = null;
     const apply = () => {
-      const strip = document.querySelector(".map-stage .maplibregl-ctrl-bottom-right");
-      if (!strip) return;
+      const stage = document.querySelector(".map-stage");
+      const strip = stage?.querySelector(".maplibregl-ctrl-bottom-right");
+      if (!stage || !strip) return;
       const height = Math.round(strip.getBoundingClientRect().height);
       if (height <= 0) return;
-      document.documentElement.style.setProperty("--map-credit-strip", `${height}px`);
+      document.documentElement.style.removeProperty("--map-credit-strip");
+      if (stage instanceof HTMLElement) stage.style.setProperty("--map-credit-strip", `${height}px`);
       if (!resizeObs) {
         resizeObs = new ResizeObserver(apply);
         resizeObs.observe(strip);
@@ -35,7 +37,7 @@ export function ReportFAB() {
   }, []);
 
   return (
-    <div className="absolute bottom-[calc(5.75rem+var(--map-credit-strip,44px)+8px)] right-3 z-30 md:bottom-6 md:right-[22rem]">
+    <div className="absolute bottom-[calc(5.75rem+var(--map-credit-strip,44px)+8px+var(--map-safe-area-bottom,env(safe-area-inset-bottom,0px)))] right-3 z-30 md:bottom-6 md:right-[22rem]">
       {open && (
         <div className="mb-2 glass rounded-xl border border-[var(--glass-border)] p-1 shadow-[var(--shadow-elevated)]">
           <Link

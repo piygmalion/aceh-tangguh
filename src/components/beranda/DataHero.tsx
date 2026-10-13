@@ -181,7 +181,7 @@ function Counters({
     <div
       id="dibi"
       data-number-band
-      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)] text-[var(--band-fg)]"
+      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)] text-[var(--band-fg)] max-md:scroll-mb-[4.5rem] max-md:pb-[4.5rem]"
     >
       <div className="grid h-full grid-cols-2 gap-px bg-white/20 sm:grid-cols-3 lg:grid-cols-6">
         <Counter label={t("statistik.kejadian")}>

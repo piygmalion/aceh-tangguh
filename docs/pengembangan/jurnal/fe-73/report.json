@@ -20,8 +20,10 @@
     },
     "infoHitsZoom": false,
     "infoHitsFab": false,
-    "stripHeight": 44,
-    "creditVar": "44px"
+    "gap": 42,
+    "creditOnStage": "44px",
+    "creditOnRoot": "",
+    "hit": "SUMMARY.maplibregl-ctrl-attrib-button"
   },
   "credit390Inset34": {
     "info": {
@@ -38,169 +40,138 @@
     },
     "fab": {
       "x": 322,
-      "y": 644,
+      "y": 610,
       "width": 56,
       "height": 56
     },
     "infoHitsZoom": false,
     "infoHitsFab": false,
-    "stripHeight": 44,
-    "creditVar": "44px"
+    "gap": 42,
+    "creditOnStage": "44px",
+    "creditOnRoot": "",
+    "hit": "SUMMARY.maplibregl-ctrl-attrib-button"
   },
-  "legendChips390": [
-    {
-      "text": "Aman",
-      "x": 69,
-      "y": 142.4,
-      "width": 88.1,
-      "height": 44
-    },
-    {
-      "text": "Waspada",
-      "x": 69,
-      "y": 192.4,
-      "width": 116.2,
-      "height": 44
-    },
-    {
-      "text": "Siaga",
-      "x": 69,
-      "y": 242.4,
-      "width": 90,
-      "height": 44
-    },
-    {
-      "text": "Awas",
-      "x": 69,
-      "y": 292.4,
-      "width": 87.5,
-      "height": 44
-    },
-    {
-      "text": "Aman",
-      "x": 0,
-      "y": 0,
-      "width": 0,
-      "height": 0
-    },
-    {
-      "text": "Waspada",
-      "x": 0,
-      "y": 0,
-      "width": 0,
-      "height": 0
-    },
-    {
-      "text": "Siaga",
-      "x": 0,
-      "y": 0,
-      "width": 0,
-      "height": 0
-    },
-    {
-      "text": "Awas",
-      "x": 0,
-      "y": 0,
-      "width": 0,
-      "height": 0
-    }
-  ],
-  "sheetHalf": {
-    "snap": "half",
-    "top": 432,
-    "bottom": 768,
-    "left": 8,
-    "right": 382,
-    "height": 336,
-    "title": "Kebakaran Hutan dan Lahan — Aceh Besar"
-  },
-  "sheetFull": {
-    "snap": "full",
-    "top": 96,
-    "bottom": 768,
-    "left": 8,
-    "right": 382,
-    "height": 672,
-    "title": "Kebakaran Hutan dan Lahan — Aceh Besar"
-  },
-  "sheetPeek": {
-    "snap": "peek",
-    "top": 648,
-    "bottom": 768,
-    "left": 8,
-    "right": 382,
-    "height": 120,
-    "title": "Kebakaran Hutan dan Lahan — Aceh Besar"
-  },
-  "popup1440Panned": {
-    "left": 8,
-    "right": 344,
-    "top": 522,
-    "bottom": 884,
-    "transform": "translateX(164px)",
+  "sheetDefaultInset0": {
+    "snap": "default",
+    "top": 380,
+    "bottom": 844,
+    "left": 0,
+    "right": 390,
+    "height": 464,
     "title": "Kebakaran Hutan dan Lahan — Aceh Besar",
-    "sheet": false
-  },
-  "legendChips1440": [
-    {
-      "text": "Aman",
-      "x": 29,
-      "y": 570.1,
-      "width": 88.1,
-      "height": 44
+    "close": {
+      "w": 44,
+      "h": 44
     },
-    {
-      "text": "Waspada",
-      "x": 29,
-      "y": 620.1,
-      "width": 116.2,
-      "height": 44
-    },
-    {
-      "text": "Siaga",
-      "x": 29,
-      "y": 670.1,
-      "width": 90,
-      "height": 44
-    },
-    {
-      "text": "Awas",
-      "x": 29,
-      "y": 720.1,
-      "width": 87.5,
-      "height": 44
+    "headerH": 64,
+    "handleDisplay": "none",
+    "padding": {
+      "top": 0,
+      "bottom": 464,
+      "left": 0,
+      "right": 0
     }
-  ],
-  "kabList390": {
-    "count": 23,
+  },
+  "sheetFullInset0": {
+    "snap": "full",
+    "top": 127,
+    "bottom": 844,
+    "left": 0,
+    "right": 390,
+    "height": 717,
+    "title": "Kebakaran Hutan dan Lahan — Aceh Besar",
+    "close": {
+      "w": 44,
+      "h": 44
+    },
+    "headerH": 64,
+    "handleDisplay": "none",
+    "padding": {
+      "top": 0,
+      "bottom": 0,
+      "left": 0,
+      "right": 0
+    }
+  },
+  "afterEscape": {
+    "sheet": false,
+    "padding": {
+      "top": 0,
+      "bottom": 0,
+      "left": 0,
+      "right": 0
+    },
+    "focus": "CANVAS.maplibregl-canvas"
+  },
+  "sheetDefaultInset34": {
+    "snap": "default",
+    "top": 380,
+    "bottom": 844,
+    "left": 0,
+    "right": 390,
+    "height": 464,
+    "title": "Kebakaran Hutan dan Lahan — Aceh Besar",
+    "close": {
+      "w": 44,
+      "h": 44
+    },
+    "headerH": 64,
+    "handleDisplay": "none",
+    "padding": {
+      "top": 0,
+      "bottom": 464,
+      "left": 0,
+      "right": 0
+    }
+  },
+  "sheetFullInset34": {
+    "snap": "full",
+    "top": 127,
+    "bottom": 844,
+    "left": 0,
+    "right": 390,
+    "height": 717,
+    "title": "Kebakaran Hutan dan Lahan — Aceh Besar",
+    "close": {
+      "w": 44,
+      "h": 44
+    },
+    "headerH": 64,
+    "handleDisplay": "none",
+    "padding": {
+      "top": 0,
+      "bottom": 0,
+      "left": 0,
+      "right": 0
+    }
+  },
+  "homeFab": {
+    "fab": {
+      "x": 322,
+      "y": 772,
+      "w": 56,
+      "h": 56,
+      "bottom": 828
+    },
+    "viewport": 844,
+    "fabFromBottom": 16,
+    "bandBottom": 2315.9375,
+    "label": "Kejadian2.5732.573kejadianTahunKejadian2",
+    "labelBox": {
+      "top": 1786.4375,
+      "bottom": 2314.9375
+    },
+    "coversBand": false,
+    "coversLabel": false
+  },
+  "kab390": {
     "lastName": "Kota Banda Aceh15",
     "lastTop": 339.9375,
     "lastBottom": 376.6875,
-    "listTop": 80.4375,
     "listBottom": 400.4375,
     "viewport": 844,
     "lastInside": true,
     "lastInViewport": true,
-    "paddingBottom": "24px",
-    "scrollTop": 813
-  },
-  "kabList1440": {
-    "count": 23,
-    "lastName": "Kota Banda Aceh15",
-    "lastTop": 339.671875,
-    "lastBottom": 376.421875,
-    "listTop": 80.171875,
-    "listBottom": 400.171875,
-    "viewport": 900,
-    "lastInside": true,
-    "lastInViewport": true,
-    "paddingBottom": "24px",
-    "scrollTop": 813
-  },
-  "legendBox1440": {
-    "x": 16,
-    "y": 528,
-    "w": 282,
-    "h": 300
+    "paddingBottom": "24px"
   }
 }

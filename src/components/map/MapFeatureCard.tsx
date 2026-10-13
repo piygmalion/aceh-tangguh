@@ -246,7 +246,7 @@ export function MapFeatureCard({
       ref={cardRef}
       className={cn(
         "map-feature-card flex flex-col gap-2",
-        layout === "sheet" && "h-full max-h-full w-full shadow-none",
+        layout === "sheet" && "h-auto max-h-none w-full shadow-none",
       )}
       data-testid="map-feature-card"
       onWheel={keepMapScroll}
@@ -281,7 +281,7 @@ export function MapFeatureCard({
             </div>
           ) : null}
         </div>
-        <div className="flex items-start justify-between gap-2">
+        <div className={cn("flex items-start justify-between gap-2", layout === "sheet" && "hidden")}>
           <div className="min-w-0 flex-1">
             <h3
               data-card-heading
