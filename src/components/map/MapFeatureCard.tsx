@@ -42,13 +42,70 @@ export function popupHorizontalShift(
   viewportWidth: number,
   margin = 8,
 ): number {
+  return shiftIntoHorizontalArea(rect, {
+    left: margin,
+    right: viewportWidth - margin,
+  });
+}
+
+/**
+ * Horizontal free-map interval. `leftRights` are the right edges of the left
+ * chrome column. `rightLefts` are the left edges of right-side panels.
+ */
+export function freeMapHorizontalBounds(opts: {
+  viewportWidth: number;
+  leftRights: number[];
+  rightLefts: number[];
+  margin?: number;
+}): { left: number; right: number } {
+  const margin = opts.margin ?? 8;
+  let left = margin;
+  for (const edge of opts.leftRights) {
+    if (edge > 0) left = Math.max(left, edge + margin);
+  }
+  let right = opts.viewportWidth - margin;
+  for (const edge of opts.rightLefts) {
+    if (edge > 0 && edge < opts.viewportWidth) right = Math.min(right, edge - margin);
+  }
+  if (right < left) return { left, right: left };
+  return { left, right };
+}
+
+/** Shift `rect` so it sits inside `area`. Pins to `area.left` when the card is wider. */
+export function shiftIntoHorizontalArea(
+  rect: { left: number; right: number },
+  area: { left: number; right: number },
+): number {
   const width = rect.right - rect.left;
-  if (width <= 0 || viewportWidth <= margin * 2) return 0;
+  if (width <= 0 || area.right <= area.left) return 0;
   let left = rect.left;
-  if (left < margin) left = margin;
-  const maxLeft = viewportWidth - margin - width;
-  if (left > maxLeft) left = Math.max(margin, maxLeft);
+  if (left < area.left) left = area.left;
+  const maxLeft = area.right - width;
+  if (left > maxLeft) left = Math.max(area.left, maxLeft);
   return left - rect.left;
+}
+
+function visibleBox(el: Element | null): DOMRect | null {
+  if (!(el instanceof HTMLElement)) return null;
+  const style = getComputedStyle(el);
+  if (style.display === "none" || style.visibility === "hidden") return null;
+  const rect = el.getBoundingClientRect();
+  if (rect.width < 1 || rect.height < 1) return null;
+  return rect;
+}
+
+/** Free map interval: left chrome/legend column and the desktop Layer panel, plus 8px. */
+export function measureFreeMapArea(viewportWidth = window.innerWidth): { left: number; right: number } {
+  const leftRights: number[] = [];
+  const settings = visibleBox(document.querySelector("[data-map-chrome='settings']"));
+  const zoom = visibleBox(document.querySelector(".maplibregl-ctrl-top-left"));
+  if (settings) leftRights.push(settings.right);
+  if (zoom) leftRights.push(zoom.right);
+  const rightLefts: number[] = [];
+  const panel = visibleBox(document.querySelector("aside[data-layer-panel]"));
+  if (panel && panel.left > viewportWidth / 2) rightLefts.push(panel.left);
+  const raw = freeMapHorizontalBounds({ viewportWidth, leftRights, rightLefts });
+  return { left: Math.ceil(raw.left), right: Math.floor(raw.right) };
 }
 
 /** Clear the attribution strip, and never less than the safe-area inset. */
@@ -103,7 +160,10 @@ function fitCardToViewport(el: HTMLElement) {
 function clampCardHorizontally(el: HTMLElement) {
   el.style.transform = "";
   const rect = el.getBoundingClientRect();
-  const shift = popupHorizontalShift({ left: rect.left, right: rect.right }, window.innerWidth);
+  const shift = shiftIntoHorizontalArea(
+    { left: rect.left, right: rect.right },
+    measureFreeMapArea(window.innerWidth),
+  );
   el.style.transform = shift === 0 ? "" : `translateX(${Math.round(shift)}px)`;
 }
 
@@ -211,25 +271,36 @@ export function MapFeatureCard({
   useLayoutEffect(() => {
     const el = cardRef.current;
     if (!el || layout === "sheet") return;
+    let raf = 0;
     const fit = () => {
+      if (!el.isConnected) return;
       fitCardToViewport(el);
       clampCardHorizontally(el);
     };
+    const fitSettled = () => {
+      fit();
+      window.cancelAnimationFrame(raf);
+      raf = window.requestAnimationFrame(() => {
+        fit();
+        raf = window.requestAnimationFrame(fit);
+      });
+    };
     fit();
     const popup = el.closest(".maplibregl-popup");
-    const obs = new MutationObserver(fit);
+    const obs = new MutationObserver(fitSettled);
     if (popup) obs.observe(popup, { attributes: true, attributeFilter: ["style"] });
     const resizeObs = new ResizeObserver(fit);
     resizeObs.observe(el);
     window.addEventListener("resize", fit);
-    window.addEventListener("aceh:map-move", fit);
+    window.addEventListener("aceh:map-move", fitSettled);
     const frame = window.requestAnimationFrame(fit);
     return () => {
       obs.disconnect();
       resizeObs.disconnect();
       window.removeEventListener("resize", fit);
-      window.removeEventListener("aceh:map-move", fit);
+      window.removeEventListener("aceh:map-move", fitSettled);
       window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(raf);
     };
   }, [layout]);
 

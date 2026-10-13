@@ -8,6 +8,7 @@ import {
   attributionLift,
   nearestSheetSnap,
   sheetFrame,
+  sheetWheelScrollTop,
   type SheetSnap,
 } from "@/lib/map-sheet";
 
@@ -125,9 +126,19 @@ export function MapFeatureSheet({
     const el = rootRef.current;
     if (!el) return;
     const stop = (event: WheelEvent) => {
+      const body = bodyRef.current;
+      if (!body) return;
+      event.preventDefault();
       event.stopPropagation();
+      body.scrollTop = sheetWheelScrollTop({
+        scrollTop: body.scrollTop,
+        scrollHeight: body.scrollHeight,
+        clientHeight: body.clientHeight,
+        deltaY: event.deltaY,
+        deltaMode: event.deltaMode,
+      });
     };
-    el.addEventListener("wheel", stop, { capture: true });
+    el.addEventListener("wheel", stop, { capture: true, passive: false });
     return () => el.removeEventListener("wheel", stop, { capture: true });
   }, []);
 
@@ -152,7 +163,7 @@ export function MapFeatureSheet({
         aria-valuemax={1}
         aria-valuenow={snap === "default" ? 0 : 1}
         aria-label={t("sheetHandle")}
-        className="relative flex shrink-0 cursor-grab touch-none items-center gap-2 px-3"
+        className="relative flex shrink-0 cursor-grab touch-none select-none items-center gap-2 px-3"
         style={{ height: SHEET_HEADER_PX }}
         onPointerDown={(event) => {
           if ((event.target as HTMLElement).closest("[data-sheet-close]")) return;

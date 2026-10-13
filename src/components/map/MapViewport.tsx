@@ -1171,7 +1171,12 @@ export function MapViewport({
         latitude: e.viewState.latitude,
         zoom: e.viewState.zoom,
       });
-      window.dispatchEvent(new Event("aceh:map-move"));
+      const nudge = () => window.dispatchEvent(new Event("aceh:map-move"));
+      nudge();
+      window.requestAnimationFrame(() => {
+        nudge();
+        window.requestAnimationFrame(nudge);
+      });
     },
     [onViewChange]
   );

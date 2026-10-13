@@ -728,3 +728,11 @@ Di bawah 768 keterangan fitur menjadi lembar dengan henti bawaan dan penuh, mene
 | --- | --- | --- | --- | --- |
 | FE-73 | frontend | lembar bawah peta | jurnal/FE-73.md | diverifikasi |
 
+## FE-73b — jepit popup ke area peta bebas
+
+Popup desktop dijepit ke kolom peta yang bebas: 8px dari chrome kiri dan dari panel Layer, termasuk setelah geser selesai. Pita angka beranda menyisakan 60px di kanan pada layar sempit. Roda di lembar telepon menggulir badan lembar.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-73b | frontend | jepit popup ke area peta bebas | jurnal/FE-73b.md | diverifikasi |
+
