@@ -479,7 +479,7 @@ export function DataHero() {
                 <p className={cn("mb-3 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
                   {t("statistik.kabNote")}
                 </p>
-                <ul className="max-h-80 space-y-3 overflow-y-auto pr-1" aria-hidden>
+                <ul className="max-h-80 space-y-3 overflow-y-auto pb-6 pr-1" aria-hidden>
                   {kabRows.rows.map((row) => {
                     const selected = kabupaten === row.kabupaten;
                     return (
