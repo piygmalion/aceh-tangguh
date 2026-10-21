@@ -1,7 +1,7 @@
 {
   "metadata": {
     "total_kabupaten_kota": 23,
-    "fetched_at": "2026-10-21T16:59:17.850Z",
+    "fetched_at": "2026-10-21T21:29:02.950Z",
     "source": "fixture",
     "providers": [
       "bmkg"
@@ -18,27 +18,19 @@
       "adm4": "11.01.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 26,
-        "humidity_pct": 93,
-        "weather_code": 61,
-        "weather_desc_id": "Hujan Ringan",
-        "weather_desc_en": "Light Rain",
-        "wind_speed_kmh": 4.3,
-        "wind_direction_deg": 49,
-        "precipitation_mm": 2,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/hujan ringan-pm.svg"
+        "temperature_c": 25,
+        "humidity_pct": 92,
+        "weather_code": 3,
+        "weather_desc_id": "Berawan",
+        "weather_desc_en": "Mostly Cloudy",
+        "wind_speed_kmh": 4.5,
+        "wind_direction_deg": 60,
+        "precipitation_mm": 0.1,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 2,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -46,7 +38,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 07:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 1,
@@ -54,23 +46,23 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 13:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.2,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 28,
           "precipitation_mm": 1,
           "weather_code": 61,
@@ -78,7 +70,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 19:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -86,15 +78,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 22:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -102,7 +94,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.2,
           "weather_code": 2,
@@ -110,23 +102,23 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 07:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.3,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -134,15 +126,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 1.7,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 19:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.6,
           "weather_code": 3,
@@ -150,7 +142,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.5,
           "weather_code": 3,
@@ -158,7 +150,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 1.8,
           "weather_code": 61,
@@ -166,17 +158,9 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 2.2,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 24,
-          "precipitation_mm": 2.8,
+          "precipitation_mm": 2.2,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
@@ -187,10 +171,10 @@
           "date": "2026-10-22",
           "temp_min_c": 25,
           "temp_max_c": 29,
-          "precipitation_mm": 3.6,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "precipitation_mm": 1.6,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-23",
@@ -205,14 +189,14 @@
           "date": "2026-10-24",
           "temp_min_c": 24,
           "temp_max_c": 25,
-          "precipitation_mm": 6.8,
+          "precipitation_mm": 4,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:44.686Z",
+      "fetched_at": "2026-10-21T21:28:28.083Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 8.8,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -228,26 +212,18 @@
       "is_kota": false,
       "current": {
         "temperature_c": 21,
-        "humidity_pct": 93,
+        "humidity_pct": 87,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 1.9,
-        "wind_direction_deg": 287,
-        "precipitation_mm": 0.1,
+        "wind_speed_kmh": 2.1,
+        "wind_direction_deg": 281,
+        "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 21,
-          "precipitation_mm": 0.1,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
           "temperature_c": 21,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -255,39 +231,31 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 21,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-22 08:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 11:00:00",
+          "temperature_c": 28,
+          "precipitation_mm": 0.1,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 14:00:00",
           "temperature_c": 29,
-          "precipitation_mm": 0.1,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 26,
           "precipitation_mm": 0.9,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 17:00:00",
           "temperature_c": 23,
           "precipitation_mm": 0.7,
           "weather_code": 3,
@@ -295,7 +263,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 20:00:00",
           "temperature_c": 22,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -303,7 +271,31 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 23:00:00",
+          "temperature_c": 22,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 02:00:00",
+          "temperature_c": 21,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-23 05:00:00",
+          "temperature_c": 20,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 08:00:00",
           "temperature_c": 22,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -311,47 +303,23 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
-          "temperature_c": 21,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 20,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 11:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 0.3,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 14:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 1.2,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 17:00:00",
           "temperature_c": 22,
           "precipitation_mm": 1.4,
           "weather_code": 61,
@@ -359,7 +327,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 20:00:00",
           "temperature_c": 22,
           "precipitation_mm": 1.3,
           "weather_code": 61,
@@ -367,7 +335,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 21,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -375,7 +343,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 02:00:00",
           "temperature_c": 21,
           "precipitation_mm": 0.4,
           "weather_code": 3,
@@ -383,7 +351,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 05:00:00",
           "temperature_c": 20,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -396,32 +364,32 @@
           "date": "2026-10-22",
           "temp_min_c": 21,
           "temp_max_c": 29,
-          "precipitation_mm": 1.9000000000000001,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "date": "2026-10-23",
-          "temp_min_c": 20,
-          "temp_max_c": 28,
-          "precipitation_mm": 4.2,
+          "precipitation_mm": 1.8,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
+          "date": "2026-10-23",
+          "temp_min_c": 20,
+          "temp_max_c": 27,
+          "precipitation_mm": 4.5,
+          "weather_code": 61,
+          "weather_desc_id": "Hujan Ringan",
+          "weather_desc_en": "Light Rain"
+        },
+        {
           "date": "2026-10-24",
           "temp_min_c": 20,
           "temp_max_c": 21,
-          "precipitation_mm": 0.7999999999999999,
+          "precipitation_mm": 0.5,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:46.141Z",
+      "fetched_at": "2026-10-21T21:28:29.560Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 6.91,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -436,27 +404,19 @@
       "adm4": "11.03.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 25,
+        "temperature_c": 24,
         "humidity_pct": 96,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 4.1,
-        "wind_direction_deg": 189,
+        "wind_speed_kmh": 7,
+        "wind_direction_deg": 159,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -464,31 +424,31 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 07:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 30,
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0.1,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.2,
           "weather_code": 1,
@@ -496,15 +456,15 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 19:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 0.2,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -512,15 +472,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 1,
@@ -528,7 +480,15 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
+          "temperature_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-23 07:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
           "weather_code": 1,
@@ -536,23 +496,23 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0.1,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 28,
-          "precipitation_mm": 0.1,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 27,
           "precipitation_mm": 1.6,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 16:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -560,15 +520,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 19:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.2,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -576,35 +536,27 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-24 01:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.2,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.3,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 1.3,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
         }
       ],
       "daily": [
         {
           "date": "2026-10-22",
           "temp_min_c": 24,
-          "temp_max_c": 30,
+          "temp_max_c": 29,
           "precipitation_mm": 0.5,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
@@ -613,7 +565,7 @@
         {
           "date": "2026-10-23",
           "temp_min_c": 25,
-          "temp_max_c": 28,
+          "temp_max_c": 29,
           "precipitation_mm": 2.1,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
@@ -621,16 +573,16 @@
         },
         {
           "date": "2026-10-24",
-          "temp_min_c": 25,
+          "temp_min_c": 26,
           "temp_max_c": 26,
-          "precipitation_mm": 1.8,
+          "precipitation_mm": 0.5,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:47.570Z",
+      "fetched_at": "2026-10-21T21:28:31.015Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 7.94,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -645,83 +597,67 @@
       "adm4": "11.04.01.2003",
       "is_kota": false,
       "current": {
-        "temperature_c": 20,
-        "humidity_pct": 99,
+        "temperature_c": 19,
+        "humidity_pct": 98,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 1.3,
-        "wind_direction_deg": 88,
+        "wind_speed_kmh": 2.1,
+        "wind_direction_deg": 98,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
+          "temperature_c": 19,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 08:00:00",
           "temperature_c": 20,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 19,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 19,
-          "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 22,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 11:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.1,
-          "weather_code": 1,
+          "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 23,
+          "datetime_local": "2026-10-22 14:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 1.5,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 21,
+          "datetime_local": "2026-10-22 17:00:00",
+          "temperature_c": 22,
           "precipitation_mm": 0.2,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 20:00:00",
           "temperature_c": 20,
           "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 23:00:00",
           "temperature_c": 19,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -729,7 +665,15 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 02:00:00",
+          "temperature_c": 19,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 05:00:00",
           "temperature_c": 18,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -737,23 +681,15 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 18,
+          "datetime_local": "2026-10-23 08:00:00",
+          "temperature_c": 21,
           "precipitation_mm": 0,
           "weather_code": 10,
           "weather_desc_id": "Udara Kabur",
           "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 23,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 11:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -761,15 +697,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 14:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 1.3,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 17:00:00",
           "temperature_c": 21,
           "precipitation_mm": 2.1,
           "weather_code": 61,
@@ -777,7 +713,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 20:00:00",
           "temperature_c": 20,
           "precipitation_mm": 0.1,
           "weather_code": 10,
@@ -785,48 +721,48 @@
           "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 19,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 19,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 18,
           "precipitation_mm": 0,
           "weather_code": 10,
           "weather_desc_id": "Udara Kabur",
           "weather_desc_en": "Mist/Haze"
+        },
+        {
+          "datetime_local": "2026-10-24 02:00:00",
+          "temperature_c": 19,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-24 05:00:00",
+          "temperature_c": 18,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "daily": [
         {
           "date": "2026-10-22",
           "temp_min_c": 19,
-          "temp_max_c": 28,
+          "temp_max_c": 26,
           "precipitation_mm": 1.8,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 61,
+          "weather_desc_id": "Hujan Ringan",
+          "weather_desc_en": "Light Rain"
         },
         {
           "date": "2026-10-23",
           "temp_min_c": 18,
           "temp_max_c": 27,
           "precipitation_mm": 3.8000000000000003,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 61,
+          "weather_desc_id": "Hujan Ringan",
+          "weather_desc_en": "Light Rain"
         },
         {
           "date": "2026-10-24",
@@ -839,7 +775,7 @@
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:49.017Z",
+      "fetched_at": "2026-10-21T21:28:32.966Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 7.78,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -855,26 +791,18 @@
       "is_kota": false,
       "current": {
         "temperature_c": 26,
-        "humidity_pct": 87,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 7.7,
-        "wind_direction_deg": 61,
-        "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "humidity_pct": 90,
+        "weather_code": 61,
+        "weather_desc_id": "Hujan Ringan",
+        "weather_desc_en": "Light Rain",
+        "wind_speed_kmh": 8.5,
+        "wind_direction_deg": 69,
+        "precipitation_mm": 1.6,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/hujan ringan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 26,
           "precipitation_mm": 1.6,
           "weather_code": 61,
@@ -882,23 +810,15 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 07:00:00",
           "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
           "precipitation_mm": 0,
           "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 10:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 0,
@@ -906,7 +826,15 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.2,
           "weather_code": 3,
@@ -914,7 +842,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 19:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.4,
           "weather_code": 3,
@@ -922,31 +850,31 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 22:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.5,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 07:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -954,31 +882,31 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.2,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 0.9,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 19:00:00",
           "temperature_c": 26,
           "precipitation_mm": 1.8,
           "weather_code": 61,
@@ -986,7 +914,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 25,
           "precipitation_mm": 1.4,
           "weather_code": 61,
@@ -994,7 +922,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 1.6,
           "weather_code": 61,
@@ -1002,20 +930,12 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 1.5,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0.1,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "daily": [
@@ -1024,7 +944,7 @@
           "temp_min_c": 26,
           "temp_max_c": 29,
           "precipitation_mm": 2.2,
-          "weather_code": 0,
+          "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
@@ -1033,22 +953,22 @@
           "temp_min_c": 25,
           "temp_max_c": 28,
           "precipitation_mm": 4.800000000000001,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
           "date": "2026-10-24",
           "temp_min_c": 24,
           "temp_max_c": 25,
-          "precipitation_mm": 3.2,
+          "precipitation_mm": 3.1,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:50.435Z",
+      "fetched_at": "2026-10-21T21:28:34.437Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 5.26,
       "kelas_cuaca_ekstrem": "RENDAH"
@@ -1064,26 +984,18 @@
       "is_kota": false,
       "current": {
         "temperature_c": 25,
-        "humidity_pct": 87,
-        "weather_code": 2,
-        "weather_desc_id": "Cerah Berawan",
-        "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 0.4,
-        "wind_direction_deg": 109,
+        "humidity_pct": 84,
+        "weather_code": 1,
+        "weather_desc_id": "Cerah",
+        "weather_desc_en": "Sunny",
+        "wind_speed_kmh": 0.7,
+        "wind_direction_deg": 113,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 1,
@@ -1091,31 +1003,31 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 09:00:00",
+          "datetime_local": "2026-10-22 08:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 11:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.1,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 14:00:00",
+          "temperature_c": 27,
+          "precipitation_mm": 0.5,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 17:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.5,
           "weather_code": 2,
@@ -1123,15 +1035,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0.5,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 20:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.1,
           "weather_code": 2,
@@ -1139,15 +1043,15 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 23:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 02:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.6,
           "weather_code": 2,
@@ -1155,7 +1059,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 05:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -1163,47 +1067,47 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-23 08:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0.2,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-23 11:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 2.4,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-23 14:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 1.4,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 17:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 1.5,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-23 20:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0.5,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 10,
+          "weather_desc_id": "Udara Kabur",
+          "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.4,
           "weather_code": 3,
@@ -1211,15 +1115,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-24 02:00:00",
+          "temperature_c": 23,
           "precipitation_mm": 1.5,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 05:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.5,
           "weather_code": 3,
@@ -1231,8 +1135,8 @@
         {
           "date": "2026-10-22",
           "temp_min_c": 25,
-          "temp_max_c": 27,
-          "precipitation_mm": 1.2000000000000002,
+          "temp_max_c": 28,
+          "precipitation_mm": 1.3000000000000003,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
@@ -1240,24 +1144,24 @@
         {
           "date": "2026-10-23",
           "temp_min_c": 24,
-          "temp_max_c": 26,
-          "precipitation_mm": 6.699999999999999,
+          "temp_max_c": 27,
+          "precipitation_mm": 7,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
           "date": "2026-10-24",
-          "temp_min_c": 24,
+          "temp_min_c": 23,
           "temp_max_c": 24,
-          "precipitation_mm": 2.4,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
+          "precipitation_mm": 2,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:51.864Z",
+      "fetched_at": "2026-10-21T21:28:35.912Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 7.57,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -1272,35 +1176,19 @@
       "adm4": "11.07.03.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 25,
+        "temperature_c": 24,
         "humidity_pct": 98,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 2.5,
-        "wind_direction_deg": 177,
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 3.3,
+        "wind_direction_deg": 233,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0.2,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -1308,15 +1196,15 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 08:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 11:00:00",
           "temperature_c": 30,
           "precipitation_mm": 0,
           "weather_code": 1,
@@ -1324,39 +1212,39 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 29,
+          "datetime_local": "2026-10-22 14:00:00",
+          "temperature_c": 30,
           "precipitation_mm": 0.4,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 17:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.2,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 21:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0.1,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 20:00:00",
+          "temperature_c": 27,
+          "precipitation_mm": 0.1,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 23:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.9,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 02:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.9,
           "weather_code": 2,
@@ -1364,47 +1252,47 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 05:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 08:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.6,
-          "weather_code": 1,
+          "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 29,
+          "datetime_local": "2026-10-23 11:00:00",
+          "temperature_c": 30,
           "precipitation_mm": 0.7,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 14:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.4,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-23 17:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 1.3,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 20:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.8,
           "weather_code": 3,
@@ -1412,15 +1300,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.1,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 02:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -1428,7 +1316,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 05:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.2,
           "weather_code": 3,
@@ -1441,7 +1329,7 @@
           "date": "2026-10-22",
           "temp_min_c": 24,
           "temp_max_c": 30,
-          "precipitation_mm": 0.9,
+          "precipitation_mm": 1.6,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
@@ -1449,8 +1337,8 @@
         {
           "date": "2026-10-23",
           "temp_min_c": 24,
-          "temp_max_c": 29,
-          "precipitation_mm": 5.6,
+          "temp_max_c": 30,
+          "precipitation_mm": 4.8,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
@@ -1459,14 +1347,14 @@
           "date": "2026-10-24",
           "temp_min_c": 24,
           "temp_max_c": 24,
-          "precipitation_mm": 0.6000000000000001,
+          "precipitation_mm": 0.5,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:53.294Z",
+      "fetched_at": "2026-10-21T21:28:37.486Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 7.3,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -1482,18 +1370,18 @@
       "is_kota": false,
       "current": {
         "temperature_c": 24,
-        "humidity_pct": 98,
+        "humidity_pct": 97,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 3.7,
-        "wind_direction_deg": 132,
+        "wind_speed_kmh": 5.3,
+        "wind_direction_deg": 131,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -1501,63 +1389,47 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 07:00:00",
           "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 31,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 30,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 30,
           "precipitation_mm": 0.3,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 30,
           "precipitation_mm": 0.6,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-22 19:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0.8,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -1565,7 +1437,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -1573,31 +1445,39 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 07:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 13:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 1,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 16:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.8,
           "weather_code": 3,
@@ -1605,7 +1485,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 19:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.6,
           "weather_code": 3,
@@ -1613,7 +1493,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.2,
           "weather_code": 3,
@@ -1621,35 +1501,27 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-24 01:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0.4,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.7,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 1.2,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
         }
       ],
       "daily": [
         {
           "date": "2026-10-22",
           "temp_min_c": 24,
-          "temp_max_c": 31,
+          "temp_max_c": 30,
           "precipitation_mm": 1.7,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
@@ -1658,7 +1530,7 @@
         {
           "date": "2026-10-23",
           "temp_min_c": 24,
-          "temp_max_c": 28,
+          "temp_max_c": 29,
           "precipitation_mm": 2.6,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
@@ -1667,15 +1539,15 @@
         {
           "date": "2026-10-24",
           "temp_min_c": 25,
-          "temp_max_c": 26,
-          "precipitation_mm": 2.3,
+          "temp_max_c": 25,
+          "precipitation_mm": 1.1,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:54.744Z",
+      "fetched_at": "2026-10-21T21:28:38.948Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 8.21,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -1692,33 +1564,25 @@
       "current": {
         "temperature_c": 26,
         "humidity_pct": 91,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 7.7,
-        "wind_direction_deg": 23,
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 5.4,
+        "wind_direction_deg": 54,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 07:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 1,
@@ -1726,15 +1590,15 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
-          "weather_code": 0,
+          "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 13:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.4,
           "weather_code": 1,
@@ -1742,23 +1606,23 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 16:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 1.3,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 19:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 0.5,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -1766,7 +1630,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -1774,23 +1638,23 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.9,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
+          "datetime_local": "2026-10-23 07:00:00",
+          "temperature_c": 26,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 10:00:00",
           "temperature_c": 27,
           "precipitation_mm": 1.3,
           "weather_code": 61,
@@ -1798,7 +1662,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 27,
           "precipitation_mm": 4.6,
           "weather_code": 61,
@@ -1806,15 +1670,15 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.4,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 19:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.5,
           "weather_code": 3,
@@ -1822,15 +1686,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-23 22:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0.5,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.6,
           "weather_code": 3,
@@ -1838,17 +1702,9 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 25,
           "precipitation_mm": 1.8,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 1.5,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
@@ -1858,7 +1714,7 @@
         {
           "date": "2026-10-22",
           "temp_min_c": 26,
-          "temp_max_c": 28,
+          "temp_max_c": 29,
           "precipitation_mm": 2.2,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
@@ -1866,8 +1722,8 @@
         },
         {
           "date": "2026-10-23",
-          "temp_min_c": 26,
-          "temp_max_c": 27,
+          "temp_min_c": 25,
+          "temp_max_c": 28,
           "precipitation_mm": 8.2,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
@@ -1877,14 +1733,14 @@
           "date": "2026-10-24",
           "temp_min_c": 25,
           "temp_max_c": 25,
-          "precipitation_mm": 3.9,
+          "precipitation_mm": 2.4,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:56.182Z",
+      "fetched_at": "2026-10-21T21:28:40.421Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 16.61,
       "kelas_cuaca_ekstrem": "TINGGI"
@@ -1900,26 +1756,18 @@
       "is_kota": false,
       "current": {
         "temperature_c": 28,
-        "humidity_pct": 73,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 3.6,
-        "wind_direction_deg": 67,
-        "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "humidity_pct": 76,
+        "weather_code": 61,
+        "weather_desc_id": "Hujan Ringan",
+        "weather_desc_en": "Light Rain",
+        "wind_speed_kmh": 6.9,
+        "wind_direction_deg": 96,
+        "precipitation_mm": 2,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/hujan ringan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 28,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 28,
           "precipitation_mm": 2,
           "weather_code": 61,
@@ -1927,7 +1775,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 07:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0,
           "weather_code": 1,
@@ -1935,7 +1783,7 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
+          "datetime_local": "2026-10-22 10:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0,
           "weather_code": 0,
@@ -1943,15 +1791,15 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -1959,15 +1807,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 19:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.1,
           "weather_code": 2,
@@ -1975,7 +1823,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 28,
           "precipitation_mm": 2.4,
           "weather_code": 95,
@@ -1983,7 +1831,7 @@
           "weather_desc_en": "Thunderstorm"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.5,
           "weather_code": 10,
@@ -1991,7 +1839,7 @@
           "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 07:00:00",
           "temperature_c": 27,
           "precipitation_mm": 2.8,
           "weather_code": 61,
@@ -1999,31 +1847,31 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
+          "datetime_local": "2026-10-23 10:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.8,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 19:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -2031,36 +1879,28 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 22:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 1.6,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-24 01:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 0.2,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-24 04:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.8,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 1.7,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
         }
       ],
       "daily": [
@@ -2075,25 +1915,25 @@
         },
         {
           "date": "2026-10-23",
-          "temp_min_c": 27,
+          "temp_min_c": 26,
           "temp_max_c": 28,
           "precipitation_mm": 8.399999999999999,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-24",
           "temp_min_c": 26,
           "temp_max_c": 27,
-          "precipitation_mm": 2.7,
+          "precipitation_mm": 1,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:57.592Z",
+      "fetched_at": "2026-10-21T21:28:41.894Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 8.8,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2109,34 +1949,18 @@
       "is_kota": false,
       "current": {
         "temperature_c": 26,
-        "humidity_pct": 90,
-        "weather_code": 61,
-        "weather_desc_id": "Hujan Ringan",
-        "weather_desc_en": "Light Rain",
-        "wind_speed_kmh": 6.2,
-        "wind_direction_deg": 129,
-        "precipitation_mm": 2.2,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/hujan ringan-pm.svg"
+        "humidity_pct": 86,
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 6.4,
+        "wind_direction_deg": 101,
+        "precipitation_mm": 0.1,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 2.2,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0.4,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.1,
           "weather_code": 2,
@@ -2144,95 +1968,95 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 08:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 30,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 11:00:00",
           "temperature_c": 29,
-          "precipitation_mm": 0.1,
+          "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 14:00:00",
+          "temperature_c": 30,
+          "precipitation_mm": 0.1,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 17:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.3,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 20:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-23 00:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0.6,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-22 23:00:00",
+          "temperature_c": 26,
+          "precipitation_mm": 0.6,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-23 02:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0.4,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 05:00:00",
+          "temperature_c": 25,
+          "precipitation_mm": 0.1,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 08:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.1,
           "weather_code": 10,
           "weather_desc_id": "Udara Kabur",
           "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 28,
-          "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 30,
+          "datetime_local": "2026-10-23 11:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 14:00:00",
+          "temperature_c": 30,
           "precipitation_mm": 1.2,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 17:00:00",
           "temperature_c": 27,
           "precipitation_mm": 1.3,
           "weather_code": 61,
@@ -2240,15 +2064,15 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-23 20:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.8,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -2256,7 +2080,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 02:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.9,
           "weather_code": 3,
@@ -2264,7 +2088,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 05:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -2277,32 +2101,32 @@
           "date": "2026-10-22",
           "temp_min_c": 26,
           "temp_max_c": 30,
-          "precipitation_mm": 3.2,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "date": "2026-10-23",
-          "temp_min_c": 24,
-          "temp_max_c": 30,
-          "precipitation_mm": 4.5,
+          "precipitation_mm": 1.2,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
+          "date": "2026-10-23",
+          "temp_min_c": 24,
+          "temp_max_c": 30,
+          "precipitation_mm": 3.9999999999999996,
+          "weather_code": 61,
+          "weather_desc_id": "Hujan Ringan",
+          "weather_desc_en": "Light Rain"
+        },
+        {
           "date": "2026-10-24",
           "temp_min_c": 25,
           "temp_max_c": 25,
-          "precipitation_mm": 1.3,
+          "precipitation_mm": 1.2,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:58:59.025Z",
+      "fetched_at": "2026-10-21T21:28:43.358Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 7.17,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2317,35 +2141,19 @@
       "adm4": "11.12.01.2006",
       "is_kota": false,
       "current": {
-        "temperature_c": 25,
-        "humidity_pct": 90,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 4.2,
-        "wind_direction_deg": 3,
+        "temperature_c": 24,
+        "humidity_pct": 85,
+        "weather_code": 1,
+        "weather_desc_id": "Cerah",
+        "weather_desc_en": "Sunny",
+        "wind_speed_kmh": 5.4,
+        "wind_direction_deg": 47,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 1,
@@ -2353,31 +2161,39 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 07:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 13:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.2,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 16:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 1.9,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 19:00:00",
           "temperature_c": 26,
           "precipitation_mm": 2.5,
           "weather_code": 61,
@@ -2385,7 +2201,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.4,
           "weather_code": 2,
@@ -2393,7 +2209,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.2,
           "weather_code": 1,
@@ -2401,23 +2217,23 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-23 04:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 07:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
+          "datetime_local": "2026-10-23 10:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.2,
           "weather_code": 3,
@@ -2425,15 +2241,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 13:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 0.6,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 16:00:00",
           "temperature_c": 26,
           "precipitation_mm": 2.5,
           "weather_code": 61,
@@ -2441,15 +2257,15 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-23 19:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 1.6,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 24,
           "precipitation_mm": 3.7,
           "weather_code": 61,
@@ -2457,7 +2273,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 24,
           "precipitation_mm": 2.8,
           "weather_code": 95,
@@ -2465,17 +2281,9 @@
           "weather_desc_en": "Thunderstorm"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 2.9,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 23,
-          "precipitation_mm": 1.7,
+          "precipitation_mm": 2.9,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
@@ -2487,14 +2295,14 @@
           "temp_min_c": 24,
           "temp_max_c": 29,
           "precipitation_mm": 5,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-23",
           "temp_min_c": 24,
-          "temp_max_c": 28,
+          "temp_max_c": 27,
           "precipitation_mm": 8.9,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
@@ -2504,14 +2312,14 @@
           "date": "2026-10-24",
           "temp_min_c": 23,
           "temp_max_c": 24,
-          "precipitation_mm": 7.3999999999999995,
+          "precipitation_mm": 5.699999999999999,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:00.440Z",
+      "fetched_at": "2026-10-21T21:28:44.805Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 8.8,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2526,27 +2334,19 @@
       "adm4": "11.13.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 18,
+        "temperature_c": 17,
         "humidity_pct": 93,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 1.7,
-        "wind_direction_deg": 122,
+        "wind_speed_kmh": 3,
+        "wind_direction_deg": 115,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 18,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
           "temperature_c": 17,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -2554,103 +2354,95 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 16,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 22,
+          "datetime_local": "2026-10-22 08:00:00",
+          "temperature_c": 20,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 11:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.1,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 22,
+          "datetime_local": "2026-10-22 14:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 1.1,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 20,
+          "datetime_local": "2026-10-22 17:00:00",
+          "temperature_c": 21,
           "precipitation_mm": 0.8,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 20:00:00",
           "temperature_c": 19,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 23:00:00",
           "temperature_c": 18,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-23 02:00:00",
+          "temperature_c": 16,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 05:00:00",
           "temperature_c": 16,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 16,
+          "datetime_local": "2026-10-23 08:00:00",
+          "temperature_c": 19,
           "precipitation_mm": 0,
           "weather_code": 10,
           "weather_desc_id": "Udara Kabur",
           "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 21,
-          "precipitation_mm": 0,
-          "weather_code": 10,
-          "weather_desc_id": "Udara Kabur",
-          "weather_desc_en": "Mist/Haze"
-        },
-        {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 11:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.3,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 10,
+          "weather_desc_id": "Udara Kabur",
+          "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 21,
+          "datetime_local": "2026-10-23 14:00:00",
+          "temperature_c": 22,
           "precipitation_mm": 3,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 17:00:00",
           "temperature_c": 20,
           "precipitation_mm": 1.6,
           "weather_code": 61,
@@ -2658,7 +2450,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 20:00:00",
           "temperature_c": 20,
           "precipitation_mm": 1.6,
           "weather_code": 61,
@@ -2666,7 +2458,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 18,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -2674,7 +2466,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 02:00:00",
           "temperature_c": 18,
           "precipitation_mm": 0.8,
           "weather_code": 3,
@@ -2682,8 +2474,8 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 17,
+          "datetime_local": "2026-10-24 05:00:00",
+          "temperature_c": 18,
           "precipitation_mm": 0,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
@@ -2693,34 +2485,34 @@
       "daily": [
         {
           "date": "2026-10-22",
-          "temp_min_c": 16,
-          "temp_max_c": 27,
+          "temp_min_c": 17,
+          "temp_max_c": 26,
           "precipitation_mm": 2,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 61,
+          "weather_desc_id": "Hujan Ringan",
+          "weather_desc_en": "Light Rain"
         },
         {
           "date": "2026-10-23",
           "temp_min_c": 16,
-          "temp_max_c": 27,
-          "precipitation_mm": 6.5,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "temp_max_c": 26,
+          "precipitation_mm": 6.8,
+          "weather_code": 61,
+          "weather_desc_id": "Hujan Ringan",
+          "weather_desc_en": "Light Rain"
         },
         {
           "date": "2026-10-24",
-          "temp_min_c": 17,
+          "temp_min_c": 18,
           "temp_max_c": 18,
-          "precipitation_mm": 1.1,
+          "precipitation_mm": 0.8,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:01.840Z",
+      "fetched_at": "2026-10-21T21:28:46.297Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 8.8,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2735,75 +2527,67 @@
       "adm4": "11.14.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 25,
-        "humidity_pct": 94,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 8.1,
-        "wind_direction_deg": 68,
-        "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "temperature_c": 24,
+        "humidity_pct": 93,
+        "weather_code": 1,
+        "weather_desc_id": "Cerah",
+        "weather_desc_en": "Sunny",
+        "wind_speed_kmh": 8.3,
+        "wind_direction_deg": 78,
+        "precipitation_mm": 0.2,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0.2,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 24,
+          "precipitation_mm": 0.2,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-22 07:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 30,
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 29,
+          "datetime_local": "2026-10-22 16:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.2,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 19:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.3,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.1,
           "weather_code": 2,
@@ -2811,7 +2595,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
           "weather_code": 2,
@@ -2819,31 +2603,31 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.4,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 07:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 28,
+          "precipitation_mm": 0.1,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 27,
-          "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.7,
           "weather_code": 3,
@@ -2851,23 +2635,23 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 1.8,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-23 19:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 1.6,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 24,
           "precipitation_mm": 1.2,
           "weather_code": 61,
@@ -2875,7 +2659,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.7,
           "weather_code": 3,
@@ -2883,27 +2667,19 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 1.1,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "daily": [
         {
           "date": "2026-10-22",
           "temp_min_c": 24,
-          "temp_max_c": 30,
+          "temp_max_c": 29,
           "precipitation_mm": 0.7999999999999999,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
@@ -2929,7 +2705,7 @@
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:03.262Z",
+      "fetched_at": "2026-10-21T21:28:47.777Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 7.09,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -2945,66 +2721,58 @@
       "is_kota": false,
       "current": {
         "temperature_c": 25,
-        "humidity_pct": 95,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 7,
-        "wind_direction_deg": 62,
+        "humidity_pct": 94,
+        "weather_code": 1,
+        "weather_desc_id": "Cerah",
+        "weather_desc_en": "Sunny",
+        "wind_speed_kmh": 5.8,
+        "wind_direction_deg": 74,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 07:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0,
+          "weather_code": 0,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-22 13:00:00",
           "temperature_c": 30,
           "precipitation_mm": 0,
-          "weather_code": 0,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 29,
+          "datetime_local": "2026-10-22 16:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.8,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 19:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.6,
           "weather_code": 3,
@@ -3012,7 +2780,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -3020,7 +2788,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -3028,15 +2796,15 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 07:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -3044,31 +2812,31 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.1,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.3,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 2.2,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 19:00:00",
           "temperature_c": 25,
           "precipitation_mm": 1.7,
           "weather_code": 61,
@@ -3076,7 +2844,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 24,
           "precipitation_mm": 2.4,
           "weather_code": 61,
@@ -3084,7 +2852,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 24,
           "precipitation_mm": 3.8,
           "weather_code": 61,
@@ -3092,53 +2860,45 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-24 04:00:00",
+          "temperature_c": 23,
           "precipitation_mm": 1.7,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 23,
-          "precipitation_mm": 0.2,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "daily": [
         {
           "date": "2026-10-22",
-          "temp_min_c": 24,
+          "temp_min_c": 25,
           "temp_max_c": 30,
           "precipitation_mm": 1.4,
-          "weather_code": 0,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-23",
           "temp_min_c": 24,
           "temp_max_c": 29,
           "precipitation_mm": 6.800000000000001,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
           "date": "2026-10-24",
           "temp_min_c": 23,
           "temp_max_c": 24,
-          "precipitation_mm": 5.7,
+          "precipitation_mm": 5.5,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:04.674Z",
+      "fetched_at": "2026-10-21T21:28:49.230Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 6.93,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -3155,33 +2915,25 @@
       "current": {
         "temperature_c": 24,
         "humidity_pct": 98,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 2.8,
-        "wind_direction_deg": 245,
-        "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 6.2,
+        "wind_direction_deg": 173,
+        "precipitation_mm": 0.3,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.3,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 07:00:00",
           "temperature_c": 23,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -3189,39 +2941,39 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 31,
+          "precipitation_mm": 0.1,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 31,
-          "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 30,
           "precipitation_mm": 0.3,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 19:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -3229,7 +2981,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -3237,55 +2989,55 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-23 04:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 07:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 10,
           "weather_desc_id": "Udara Kabur",
           "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 30,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 13:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 1.4,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 1.1,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-23 19:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0.7,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -3293,7 +3045,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -3301,17 +3053,9 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0.1,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
@@ -3323,14 +3067,14 @@
           "temp_min_c": 23,
           "temp_max_c": 31,
           "precipitation_mm": 0.7999999999999999,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-23",
           "temp_min_c": 24,
-          "temp_max_c": 28,
+          "temp_max_c": 30,
           "precipitation_mm": 3.2,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
@@ -3340,14 +3084,14 @@
           "date": "2026-10-24",
           "temp_min_c": 24,
           "temp_max_c": 24,
-          "precipitation_mm": 0.1,
+          "precipitation_mm": 0,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:06.143Z",
+      "fetched_at": "2026-10-21T21:28:50.687Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 5.92,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -3362,27 +3106,19 @@
       "adm4": "11.17.01.2001",
       "is_kota": false,
       "current": {
-        "temperature_c": 21,
-        "humidity_pct": 94,
+        "temperature_c": 20,
+        "humidity_pct": 90,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 0.4,
-        "wind_direction_deg": 91,
-        "precipitation_mm": 0.2,
+        "wind_speed_kmh": 1,
+        "wind_direction_deg": 171,
+        "precipitation_mm": 0.1,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 21,
-          "precipitation_mm": 0.2,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 20,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -3390,39 +3126,39 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 19,
+          "datetime_local": "2026-10-22 07:00:00",
+          "temperature_c": 20,
           "precipitation_mm": 0,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 23,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 1.2,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 22,
+          "datetime_local": "2026-10-22 16:00:00",
+          "temperature_c": 23,
           "precipitation_mm": 2.6,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 19:00:00",
           "temperature_c": 22,
           "precipitation_mm": 1,
           "weather_code": 3,
@@ -3430,15 +3166,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
-          "temperature_c": 21,
-          "precipitation_mm": 0.1,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
           "temperature_c": 20,
           "precipitation_mm": 0.1,
           "weather_code": 2,
@@ -3446,7 +3174,15 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
+          "temperature_c": 20,
+          "precipitation_mm": 0.1,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 19,
           "precipitation_mm": 0.1,
           "weather_code": 2,
@@ -3454,7 +3190,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 07:00:00",
           "temperature_c": 19,
           "precipitation_mm": 0,
           "weather_code": 10,
@@ -3462,7 +3198,7 @@
           "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
+          "datetime_local": "2026-10-23 10:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.3,
           "weather_code": 2,
@@ -3470,7 +3206,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 24,
           "precipitation_mm": 1.3,
           "weather_code": 61,
@@ -3478,7 +3214,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 16:00:00",
           "temperature_c": 22,
           "precipitation_mm": 1.5,
           "weather_code": 61,
@@ -3486,15 +3222,15 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
-          "temperature_c": 22,
+          "datetime_local": "2026-10-23 19:00:00",
+          "temperature_c": 21,
           "precipitation_mm": 0.7,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 21,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -3502,7 +3238,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 20,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -3510,28 +3246,20 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 19,
           "precipitation_mm": 0,
           "weather_code": 10,
           "weather_desc_id": "Udara Kabur",
           "weather_desc_en": "Mist/Haze"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 20,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "daily": [
         {
           "date": "2026-10-22",
-          "temp_min_c": 19,
-          "temp_max_c": 24,
-          "precipitation_mm": 5.199999999999999,
+          "temp_min_c": 20,
+          "temp_max_c": 25,
+          "precipitation_mm": 5,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
@@ -3556,7 +3284,7 @@
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:07.554Z",
+      "fetched_at": "2026-10-21T21:28:52.144Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 6.52,
       "kelas_cuaca_ekstrem": "SEDANG"
@@ -3572,74 +3300,58 @@
       "is_kota": false,
       "current": {
         "temperature_c": 26,
-        "humidity_pct": 89,
-        "weather_code": 61,
-        "weather_desc_id": "Hujan Ringan",
-        "weather_desc_en": "Light Rain",
-        "wind_speed_kmh": 3.6,
-        "wind_direction_deg": 137,
-        "precipitation_mm": 3.3,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/hujan ringan-pm.svg"
+        "humidity_pct": 87,
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 2.3,
+        "wind_direction_deg": 111,
+        "precipitation_mm": 0.1,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
           "temperature_c": 26,
-          "precipitation_mm": 3.3,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 1,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 26,
-          "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 29,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 15:00:00",
-          "temperature_c": 29,
-          "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 28,
           "precipitation_mm": 0.1,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 08:00:00",
+          "temperature_c": 26,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-22 11:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0,
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
+        },
+        {
+          "datetime_local": "2026-10-22 14:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0.1,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 17:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0.1,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 20:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.1,
           "weather_code": 1,
@@ -3647,15 +3359,15 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-22 23:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.3,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 02:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.2,
           "weather_code": 2,
@@ -3663,23 +3375,23 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 05:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 08:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.1,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 11:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.1,
           "weather_code": 2,
@@ -3687,15 +3399,15 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 14:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 1,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 17:00:00",
           "temperature_c": 27,
           "precipitation_mm": 1,
           "weather_code": 61,
@@ -3703,7 +3415,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 20:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.7,
           "weather_code": 3,
@@ -3711,7 +3423,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -3719,7 +3431,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 02:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.5,
           "weather_code": 3,
@@ -3727,7 +3439,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 05:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.2,
           "weather_code": 3,
@@ -3740,19 +3452,19 @@
           "date": "2026-10-22",
           "temp_min_c": 26,
           "temp_max_c": 29,
-          "precipitation_mm": 4.699999999999998,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "precipitation_mm": 0.7,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-23",
           "temp_min_c": 24,
           "temp_max_c": 29,
-          "precipitation_mm": 3.4000000000000004,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "precipitation_mm": 3.0999999999999996,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         },
         {
           "date": "2026-10-24",
@@ -3765,7 +3477,7 @@
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:08.973Z",
+      "fetched_at": "2026-10-21T21:28:53.591Z",
       "analysis_date": "2026-10-21T12:00:00",
       "ir_cuaca_ekstrem": 17.6,
       "kelas_cuaca_ekstrem": "TINGGI"
@@ -3780,35 +3492,19 @@
       "adm4": "11.71.01.2006",
       "is_kota": true,
       "current": {
-        "temperature_c": 25,
-        "humidity_pct": 93,
+        "temperature_c": 24,
+        "humidity_pct": 92,
         "weather_code": 2,
         "weather_desc_id": "Cerah Berawan",
         "weather_desc_en": "Partly Cloudy",
-        "wind_speed_kmh": 5.6,
+        "wind_speed_kmh": 5.8,
         "wind_direction_deg": 116,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -3816,15 +3512,15 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-22 08:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 11:00:00",
           "temperature_c": 30,
           "precipitation_mm": 1.7,
           "weather_code": 61,
@@ -3832,15 +3528,15 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 14:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.4,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 17:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.2,
           "weather_code": 2,
@@ -3848,7 +3544,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 20:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0,
           "weather_code": 1,
@@ -3856,7 +3552,7 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 23:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.4,
           "weather_code": 1,
@@ -3864,7 +3560,7 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 02:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.7,
           "weather_code": 2,
@@ -3872,55 +3568,55 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 05:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 08:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 0.1,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 29,
+          "datetime_local": "2026-10-23 11:00:00",
+          "temperature_c": 30,
           "precipitation_mm": 0.4,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 14:00:00",
+          "temperature_c": 29,
+          "precipitation_mm": 0.5,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 17:00:00",
           "temperature_c": 28,
-          "precipitation_mm": 0.5,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "precipitation_mm": 2.1,
+          "weather_code": 61,
+          "weather_desc_id": "Hujan Ringan",
+          "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 20:00:00",
           "temperature_c": 26,
-          "precipitation_mm": 2.1,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-23 21:00:00",
-          "temperature_c": 25,
           "precipitation_mm": 0.6,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 10,
+          "weather_desc_id": "Udara Kabur",
+          "weather_desc_en": "Mist/Haze"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.5,
           "weather_code": 3,
@@ -3928,7 +3624,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 02:00:00",
           "temperature_c": 25,
           "precipitation_mm": 2.1,
           "weather_code": 61,
@@ -3936,7 +3632,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 05:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -3949,16 +3645,16 @@
           "date": "2026-10-22",
           "temp_min_c": 24,
           "temp_max_c": 30,
-          "precipitation_mm": 2.3000000000000003,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
+          "precipitation_mm": 2.7,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-23",
-          "temp_min_c": 24,
-          "temp_max_c": 29,
-          "precipitation_mm": 4.8,
+          "temp_min_c": 25,
+          "temp_max_c": 30,
+          "precipitation_mm": 4.8999999999999995,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
@@ -3967,14 +3663,14 @@
           "date": "2026-10-24",
           "temp_min_c": 25,
           "temp_max_c": 25,
-          "precipitation_mm": 2.7,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
+          "precipitation_mm": 2.2,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:10.945Z",
+      "fetched_at": "2026-10-21T21:28:55.467Z",
       "analysis_date": "2026-10-21T12:00:00"
     },
     {
@@ -3989,41 +3685,25 @@
       "current": {
         "temperature_c": 27,
         "humidity_pct": 86,
-        "weather_code": 1,
-        "weather_desc_id": "Cerah",
-        "weather_desc_en": "Sunny",
-        "wind_speed_kmh": 16.1,
-        "wind_direction_deg": 109,
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 17,
+        "wind_direction_deg": 110,
         "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah-pm.svg"
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
+          "datetime_local": "2026-10-22 05:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 27,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 27,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 09:00:00",
+          "datetime_local": "2026-10-22 08:00:00",
           "temperature_c": 28,
           "precipitation_mm": 2.6,
           "weather_code": 61,
@@ -4031,7 +3711,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 11:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -4039,7 +3719,15 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 14:00:00",
+          "temperature_c": 30,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 17:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -4047,15 +3735,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 28,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 20:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.1,
           "weather_code": 1,
@@ -4063,15 +3743,15 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 23:00:00",
           "temperature_c": 28,
           "precipitation_mm": 0.8,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
+          "weather_code": 1,
+          "weather_desc_id": "Cerah",
+          "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 02:00:00",
           "temperature_c": 26,
           "precipitation_mm": 1.7,
           "weather_code": 61,
@@ -4079,7 +3759,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 05:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.4,
           "weather_code": 1,
@@ -4087,15 +3767,15 @@
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 28,
+          "datetime_local": "2026-10-23 08:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 0.4,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 11:00:00",
           "temperature_c": 30,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -4103,7 +3783,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 14:00:00",
           "temperature_c": 29,
           "precipitation_mm": 0.5,
           "weather_code": 3,
@@ -4111,7 +3791,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 17:00:00",
           "temperature_c": 27,
           "precipitation_mm": 0.6,
           "weather_code": 2,
@@ -4119,7 +3799,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 20:00:00",
           "temperature_c": 26,
           "precipitation_mm": 1,
           "weather_code": 3,
@@ -4127,7 +3807,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-23 23:00:00",
           "temperature_c": 26,
           "precipitation_mm": 1.5,
           "weather_code": 61,
@@ -4135,15 +3815,15 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-24 02:00:00",
+          "temperature_c": 26,
           "precipitation_mm": 1.4,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 05:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -4155,8 +3835,8 @@
         {
           "date": "2026-10-22",
           "temp_min_c": 27,
-          "temp_max_c": 29,
-          "precipitation_mm": 2.7,
+          "temp_max_c": 30,
+          "precipitation_mm": 3.5,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
@@ -4165,23 +3845,23 @@
           "date": "2026-10-23",
           "temp_min_c": 26,
           "temp_max_c": 30,
-          "precipitation_mm": 5.5,
+          "precipitation_mm": 6.2,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
           "date": "2026-10-24",
-          "temp_min_c": 25,
+          "temp_min_c": 26,
           "temp_max_c": 26,
-          "precipitation_mm": 3.1999999999999997,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
+          "precipitation_mm": 1.7,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:12.367Z",
+      "fetched_at": "2026-10-21T21:28:57.318Z",
       "analysis_date": "2026-10-21T12:00:00"
     },
     {
@@ -4199,14 +3879,14 @@
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 2,
-        "wind_direction_deg": 179,
+        "wind_speed_kmh": 5.7,
+        "wind_direction_deg": 129,
         "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -4214,15 +3894,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 03:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 06:00:00",
+          "datetime_local": "2026-10-22 07:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -4230,23 +3902,23 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
-          "weather_code": 1,
+          "weather_code": 0,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 31,
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 30,
           "precipitation_mm": 0.2,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 29,
           "precipitation_mm": 1.2,
           "weather_code": 61,
@@ -4254,7 +3926,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
+          "datetime_local": "2026-10-22 19:00:00",
           "temperature_c": 26,
           "precipitation_mm": 1.8,
           "weather_code": 61,
@@ -4262,15 +3934,15 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-22 22:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -4278,7 +3950,7 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -4286,39 +3958,39 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 07:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 28,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 10:00:00",
           "temperature_c": 29,
-          "precipitation_mm": 0.8,
+          "precipitation_mm": 0,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 28,
+          "precipitation_mm": 0.8,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 1.6,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 19:00:00",
           "temperature_c": 26,
           "precipitation_mm": 0.5,
           "weather_code": 3,
@@ -4326,7 +3998,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -4334,7 +4006,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.1,
           "weather_code": 3,
@@ -4342,17 +4014,9 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0.2,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0.7,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
@@ -4362,7 +4026,7 @@
         {
           "date": "2026-10-22",
           "temp_min_c": 24,
-          "temp_max_c": 31,
+          "temp_max_c": 30,
           "precipitation_mm": 3.2,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
@@ -4370,25 +4034,25 @@
         },
         {
           "date": "2026-10-23",
-          "temp_min_c": 24,
+          "temp_min_c": 25,
           "temp_max_c": 29,
           "precipitation_mm": 3.0000000000000004,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-24",
-          "temp_min_c": 24,
+          "temp_min_c": 25,
           "temp_max_c": 25,
-          "precipitation_mm": 1,
+          "precipitation_mm": 0.30000000000000004,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:13.773Z",
+      "fetched_at": "2026-10-21T21:28:58.833Z",
       "analysis_date": "2026-10-21T12:00:00"
     },
     {
@@ -4403,81 +4067,73 @@
       "current": {
         "temperature_c": 24,
         "humidity_pct": 98,
-        "weather_code": 3,
-        "weather_desc_id": "Berawan",
-        "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 1.9,
-        "wind_direction_deg": 275,
-        "precipitation_mm": 0,
-        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
+        "weather_code": 2,
+        "weather_desc_id": "Cerah Berawan",
+        "weather_desc_en": "Partly Cloudy",
+        "wind_speed_kmh": 4.8,
+        "wind_direction_deg": 155,
+        "precipitation_mm": 0.1,
+        "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/cerah berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.1,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 23,
+          "datetime_local": "2026-10-22 07:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 29,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
-          "temperature_c": 31,
+          "datetime_local": "2026-10-22 13:00:00",
+          "temperature_c": 32,
           "precipitation_mm": 0.2,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
           "weather_desc_en": "Sunny"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 30,
           "precipitation_mm": 0.7,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 27,
-          "precipitation_mm": 0.3,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-22 21:00:00",
+          "datetime_local": "2026-10-22 19:00:00",
           "temperature_c": 26,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "precipitation_mm": 0.3,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-22 22:00:00",
+          "temperature_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 25,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -4485,7 +4141,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 2,
@@ -4493,47 +4149,47 @@
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 06:00:00",
-          "temperature_c": 24,
+          "datetime_local": "2026-10-23 07:00:00",
+          "temperature_c": 25,
+          "precipitation_mm": 0,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 30,
           "precipitation_mm": 0,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 28,
-          "precipitation_mm": 0,
-          "weather_code": 2,
-          "weather_desc_id": "Cerah Berawan",
-          "weather_desc_en": "Partly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-23 12:00:00",
-          "temperature_c": 27,
           "precipitation_mm": 1.8,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
-          "temperature_c": 29,
+          "datetime_local": "2026-10-23 16:00:00",
+          "temperature_c": 27,
           "precipitation_mm": 1.9,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
-          "temperature_c": 25,
+          "datetime_local": "2026-10-23 19:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 1.2,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -4541,7 +4197,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -4549,15 +4205,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -4568,8 +4216,8 @@
       "daily": [
         {
           "date": "2026-10-22",
-          "temp_min_c": 23,
-          "temp_max_c": 31,
+          "temp_min_c": 24,
+          "temp_max_c": 32,
           "precipitation_mm": 1.3,
           "weather_code": 1,
           "weather_desc_id": "Cerah",
@@ -4578,7 +4226,7 @@
         {
           "date": "2026-10-23",
           "temp_min_c": 24,
-          "temp_max_c": 29,
+          "temp_max_c": 30,
           "precipitation_mm": 4.9,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
@@ -4595,7 +4243,7 @@
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:15.181Z",
+      "fetched_at": "2026-10-21T21:29:00.288Z",
       "analysis_date": "2026-10-21T12:00:00"
     },
     {
@@ -4609,26 +4257,18 @@
       "is_kota": true,
       "current": {
         "temperature_c": 24,
-        "humidity_pct": 96,
+        "humidity_pct": 95,
         "weather_code": 3,
         "weather_desc_id": "Berawan",
         "weather_desc_en": "Mostly Cloudy",
-        "wind_speed_kmh": 1.8,
-        "wind_direction_deg": 69,
-        "precipitation_mm": 0.5,
+        "wind_speed_kmh": 2.7,
+        "wind_direction_deg": 56,
+        "precipitation_mm": 0,
         "image_url": "https://api-apps.bmkg.go.id/storage/icon/cuaca/berawan-pm.svg"
       },
       "hourly": [
         {
-          "datetime_local": "2026-10-22 00:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 0.5,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
-        },
-        {
-          "datetime_local": "2026-10-22 03:00:00",
+          "datetime_local": "2026-10-22 04:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -4636,31 +4276,31 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 06:00:00",
-          "temperature_c": 23,
+          "datetime_local": "2026-10-22 07:00:00",
+          "temperature_c": 24,
           "precipitation_mm": 0,
           "weather_code": 3,
           "weather_desc_id": "Berawan",
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 09:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-22 10:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 12:00:00",
+          "datetime_local": "2026-10-22 13:00:00",
           "temperature_c": 30,
           "precipitation_mm": 0,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 15:00:00",
+          "datetime_local": "2026-10-22 16:00:00",
           "temperature_c": 26,
           "precipitation_mm": 2.6,
           "weather_code": 61,
@@ -4668,39 +4308,31 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-22 18:00:00",
-          "temperature_c": 26,
+          "datetime_local": "2026-10-22 19:00:00",
+          "temperature_c": 25,
           "precipitation_mm": 0.6,
+          "weather_code": 3,
+          "weather_desc_id": "Berawan",
+          "weather_desc_en": "Mostly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-22 22:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0.1,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-22 21:00:00",
-          "temperature_c": 25,
-          "precipitation_mm": 0.1,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-23 00:00:00",
+          "datetime_local": "2026-10-23 01:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.4,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 03:00:00",
-          "temperature_c": 23,
-          "precipitation_mm": 0,
-          "weather_code": 1,
-          "weather_desc_id": "Cerah",
-          "weather_desc_en": "Sunny"
-        },
-        {
-          "datetime_local": "2026-10-23 06:00:00",
+          "datetime_local": "2026-10-23 04:00:00",
           "temperature_c": 23,
           "precipitation_mm": 0,
           "weather_code": 3,
@@ -4708,15 +4340,23 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 09:00:00",
-          "temperature_c": 27,
+          "datetime_local": "2026-10-23 07:00:00",
+          "temperature_c": 24,
+          "precipitation_mm": 0,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
+        },
+        {
+          "datetime_local": "2026-10-23 10:00:00",
+          "temperature_c": 28,
           "precipitation_mm": 0.2,
           "weather_code": 2,
           "weather_desc_id": "Cerah Berawan",
           "weather_desc_en": "Partly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 12:00:00",
+          "datetime_local": "2026-10-23 13:00:00",
           "temperature_c": 29,
           "precipitation_mm": 1.5,
           "weather_code": 61,
@@ -4724,7 +4364,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 15:00:00",
+          "datetime_local": "2026-10-23 16:00:00",
           "temperature_c": 25,
           "precipitation_mm": 4.2,
           "weather_code": 61,
@@ -4732,7 +4372,7 @@
           "weather_desc_en": "Light Rain"
         },
         {
-          "datetime_local": "2026-10-23 18:00:00",
+          "datetime_local": "2026-10-23 19:00:00",
           "temperature_c": 24,
           "precipitation_mm": 1,
           "weather_code": 3,
@@ -4740,7 +4380,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-23 21:00:00",
+          "datetime_local": "2026-10-23 22:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.2,
           "weather_code": 3,
@@ -4748,7 +4388,7 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 00:00:00",
+          "datetime_local": "2026-10-24 01:00:00",
           "temperature_c": 24,
           "precipitation_mm": 0.3,
           "weather_code": 3,
@@ -4756,17 +4396,9 @@
           "weather_desc_en": "Mostly Cloudy"
         },
         {
-          "datetime_local": "2026-10-24 03:00:00",
-          "temperature_c": 24,
-          "precipitation_mm": 1.8,
-          "weather_code": 61,
-          "weather_desc_id": "Hujan Ringan",
-          "weather_desc_en": "Light Rain"
-        },
-        {
-          "datetime_local": "2026-10-24 06:00:00",
+          "datetime_local": "2026-10-24 04:00:00",
           "temperature_c": 23,
-          "precipitation_mm": 1.9,
+          "precipitation_mm": 1.8,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
@@ -4775,12 +4407,12 @@
       "daily": [
         {
           "date": "2026-10-22",
-          "temp_min_c": 23,
+          "temp_min_c": 24,
           "temp_max_c": 30,
-          "precipitation_mm": 3.8000000000000003,
-          "weather_code": 3,
-          "weather_desc_id": "Berawan",
-          "weather_desc_en": "Mostly Cloudy"
+          "precipitation_mm": 3.3000000000000003,
+          "weather_code": 2,
+          "weather_desc_id": "Cerah Berawan",
+          "weather_desc_en": "Partly Cloudy"
         },
         {
           "date": "2026-10-23",
@@ -4795,14 +4427,14 @@
           "date": "2026-10-24",
           "temp_min_c": 23,
           "temp_max_c": 24,
-          "precipitation_mm": 4,
+          "precipitation_mm": 2.1,
           "weather_code": 61,
           "weather_desc_id": "Hujan Ringan",
           "weather_desc_en": "Light Rain"
         }
       ],
       "source": "bmkg",
-      "fetched_at": "2026-10-21T16:59:16.650Z",
+      "fetched_at": "2026-10-21T21:29:01.750Z",
       "analysis_date": "2026-10-21T12:00:00"
     }
   ]
