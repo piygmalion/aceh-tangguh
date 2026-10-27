@@ -30,3 +30,7 @@ jobs:
 
       - name: Unit tests
         run: npm test
+
+      - name: Marker kab PIP (report-only)
+        continue-on-error: true
+        run: python3 scripts/check-marker-kab-pip.py --tolerance-m 20
