@@ -50,9 +50,19 @@ export function ReportLaporDropdown({
           navInteractiveClass({ active, open, shape, surface }),
         )}
         style={shape === "row" ? { minHeight: 44 } : undefined}
+        onKeyDown={(event) => {
+          if (shape !== "row") return;
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          setOpen((value) => !value);
+        }}
       >
         {t("lapor")}
-        <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
+        <ChevronDown
+          data-lapor-chevron
+          size={14}
+          className={cn("transition-transform duration-200", open && "rotate-180")}
+        />
       </button>
       {open && shape === "row" ? (
         <div data-lapor-accordion className="flex w-full flex-col">
@@ -61,7 +71,7 @@ export function ReportLaporDropdown({
             data-lapor-subrow
             onClick={() => setOpen(false)}
             className="flex w-full items-center text-sm text-[var(--primary-fg)]"
-            style={{ paddingLeft: 28, minHeight: 44 }}
+            style={{ marginLeft: -16, paddingLeft: 28, minHeight: 44 }}
           >
             {t("laporKejadian")}
           </Link>
@@ -70,7 +80,7 @@ export function ReportLaporDropdown({
             data-lapor-subrow
             onClick={() => setOpen(false)}
             className="flex w-full items-center text-sm text-[var(--primary-fg)]"
-            style={{ paddingLeft: 28, minHeight: 44 }}
+            style={{ marginLeft: -16, paddingLeft: 28, minHeight: 44 }}
           >
             {t("laporPenanganan")}
           </Link>

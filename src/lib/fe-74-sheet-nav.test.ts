@@ -6,6 +6,7 @@ import {
   SHEET_WHEEL_LINE_PX,
   mapCreditFromAnchors,
   mapCreditParts,
+  sheetFooterCredit,
   sheetWheelDelta,
   sheetWheelStep,
 } from "@/lib/map-sheet";
@@ -21,16 +22,20 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
     assert.equal(sheetWheelDelta(3, 1, bodyHeight), 48);
     assert.equal(sheetWheelDelta(1, 2, bodyHeight), bodyHeight);
     assert.equal(sheetWheelDelta(-2, 1, bodyHeight), -32);
+    const sheetHeight = 464;
+    assert.equal(sheetWheelDelta(1, 2, sheetHeight), sheetHeight);
     const page = sheetWheelStep({
       scrollTop: 0,
-      scrollHeight: 772,
+      scrollHeight: 1200,
       clientHeight: 200,
-      pageHeight: bodyHeight,
+      pageHeight: sheetHeight,
       deltaY: 1,
       deltaMode: 2,
     });
-    assert.equal(page.scrollTop, bodyHeight);
+    assert.equal(page.scrollTop, sheetHeight);
     assert.equal(page.remainder, 0);
+    const source = read("src/components/map/MapFeatureSheet.tsx");
+    assert.match(source, /pageHeight = el\.clientHeight/);
   });
 
   it("keeps trackpad momentum in the sheet without dropping sub-pixel ticks", () => {
@@ -71,6 +76,14 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
     assert.match(sheet, /select-none/);
     assert.match(sheet, /data-sheet-header/);
     assert.match(sheet, /data-sheet-handle/);
+    assert.match(
+      css,
+      /\[data-sheet-body\],\s*\n\.map-feature-sheet \[data-sheet-body\] \* \{\s*\n\s*user-select:\s*text;/,
+    );
+    assert.match(sheet, /data-sheet-grip/);
+    assert.match(css, /\[data-sheet-grip\] \{\s*\n\s*user-select:\s*none;/);
+    const body = sheet.slice(sheet.indexOf("data-sheet-body"), sheet.indexOf("data-sheet-body") + 280);
+    assert.doesNotMatch(body, /select-none/);
   });
 
   it("opens Laporkan in the phone drawer as an inline accordion", () => {
@@ -79,8 +92,10 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
     assert.match(lapor, /shape === "row" && "w-full"/);
     assert.match(lapor, /shape === "row" && "w-full justify-start"/);
     assert.match(lapor, /data-lapor-accordion/);
-    assert.match(lapor, /paddingLeft: 28/);
-    assert.match(lapor, /minHeight: 44/);
+    assert.match(lapor, /data-lapor-chevron/);
+    assert.match(lapor, /rotate-180/);
+    assert.match(lapor, /event\.key !== "Enter" && event\.key !== " "/);
+    assert.match(lapor, /marginLeft: -16, paddingLeft: 28, minHeight: 44/);
     assert.match(lapor, /shape !== "row"/);
     assert.match(lapor, /absolute right-0 top-full/);
     const nav = read("src/components/SiteNav.tsx");
@@ -90,7 +105,7 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
     assert.doesNotMatch(desktop, /shape="row"/);
   });
 
-  it("shows the map credit in the sheet header at full height", () => {
+  it("shows the map credit in the sheet footer at full height", () => {
     const links = mapCreditFromAnchors([
       { href: "https://www.openstreetmap.org/copyright", text: " OpenStreetMap " },
       { href: "https://carto.com/attributions", text: "CARTO" },
@@ -109,14 +124,27 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
       { href: null, label: "© OpenStreetMap contributors" },
       { href: "https://maplibre.org/", label: "MapLibre" },
     ]);
+    const line = sheetFooterCredit(mixed);
+    assert.deepEqual(
+      line.map((item) => item.label).join(" · "),
+      "© OpenStreetMap · MapLibre",
+    );
+    assert.equal(line[0]?.href, "https://www.openstreetmap.org/copyright");
+    assert.equal(line[1]?.href, "https://maplibre.org/");
+    assert.deepEqual(sheetFooterCredit([{ href: null, label: "Tiles © Esri" }]), []);
     const sheet = read("src/components/map/MapFeatureSheet.tsx");
-    assert.match(sheet, /data-sheet-credit/);
+    const header = sheet.slice(sheet.indexOf('role="slider"'), sheet.indexOf("data-sheet-body"));
+    assert.doesNotMatch(header, /data-sheet-credit/);
+    const footer = sheet.slice(sheet.indexOf("data-sheet-body"));
+    assert.match(footer, /data-sheet-credit/);
+    assert.match(sheet, /sheetFooterCredit/);
     assert.match(sheet, /mapCreditParts/);
     assert.match(sheet, /\.maplibregl-ctrl-attrib-inner/);
     assert.match(sheet, /inner\.childNodes/);
-    assert.match(sheet, /snap === "full" && credit\.length > 0/);
+    assert.match(sheet, /snap === "full"/);
     assert.match(sheet, /\.maplibregl-ctrl-attrib/);
     assert.match(sheet, /text-\[0\.8125rem\]/);
+    assert.match(sheet, /height,/);
     const css = read("src/app/globals.css");
     assert.match(css, /data-sheet-snap="full"\] \.maplibregl-ctrl-bottom-right/);
   });

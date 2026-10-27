@@ -8,6 +8,7 @@ import {
   attributionLift,
   nearestSheetSnap,
   mapCreditParts,
+  sheetFooterCredit,
   sheetFrame,
   sheetScrollTarget,
   sheetWheelStep,
@@ -171,8 +172,8 @@ export function MapFeatureSheet({
     // canvas listener. MapLibre calls preventDefault on the canvas container
     // only, so a wheel whose target is the sheet never reaches it — unless a
     // descendant stops the event first. Handle it here, on the real scroller.
-    // Line and page modes become pixels. Sub-pixel trackpad momentum is kept
-    // in `remainder` so a flick still moves the sheet and never the map zoom.
+    // Line mode is ~16px per line. Page mode is the sheet height.
+    // Sub-pixel trackpad momentum is kept in `remainder`.
     let remainder = 0;
     let idle = 0;
     const stop = (event: WheelEvent) => {
@@ -185,8 +186,7 @@ export function MapFeatureSheet({
       scroller.setAttribute("data-sheet-scroller", "true");
       event.preventDefault();
       event.stopPropagation();
-      const body = el.querySelector("[data-sheet-body]");
-      const pageHeight = body instanceof HTMLElement ? body.clientHeight : scroller.clientHeight;
+      const pageHeight = el.clientHeight;
       const step = sheetWheelStep({
         scrollTop: scroller.scrollTop,
         scrollHeight: scroller.scrollHeight,
@@ -217,7 +217,7 @@ export function MapFeatureSheet({
       const target = event.target;
       if (
         target instanceof Element &&
-        target.closest("[data-sheet-close], [data-sheet-credit]")
+        target.closest("[data-sheet-close]")
       ) {
         return;
       }
@@ -236,6 +236,8 @@ export function MapFeatureSheet({
       header.removeEventListener("pointerup", release);
     };
   }, []);
+
+  const footerCredit = snap === "full" ? sheetFooterCredit(credit) : [];
 
   return (
     <div
@@ -261,11 +263,11 @@ export function MapFeatureSheet({
         className="relative flex shrink-0 cursor-grab touch-none select-none items-center gap-2 px-3 pt-3"
         style={{ height: SHEET_HEADER_PX }}
         onMouseDown={(event) => {
-          if ((event.target as HTMLElement).closest("[data-sheet-close], [data-sheet-credit]")) return;
+          if ((event.target as HTMLElement).closest("[data-sheet-close]")) return;
           event.preventDefault();
         }}
         onPointerDown={(event) => {
-          if ((event.target as HTMLElement).closest("[data-sheet-close], [data-sheet-credit]")) return;
+          if ((event.target as HTMLElement).closest("[data-sheet-close]")) return;
           event.preventDefault();
           event.currentTarget.setPointerCapture(event.pointerId);
           dragOrigin.current = { y: event.clientY, height };
@@ -296,38 +298,13 @@ export function MapFeatureSheet({
       >
         <span
           aria-hidden
-          className="absolute left-1/2 top-2 h-1.5 w-10 -translate-x-1/2 rounded-full bg-[var(--border)]"
+          data-sheet-grip
+          className="absolute left-1/2 top-2 h-1.5 w-10 -translate-x-1/2 select-none rounded-full bg-[var(--border)]"
         />
         <div className="min-w-0 flex-1">
           <h2 data-sheet-title className="truncate text-[1.05rem] font-semibold leading-snug">
             {title}
           </h2>
-          {snap === "full" && credit.length > 0 ? (
-            <p
-              data-sheet-credit
-              className="truncate text-[0.8125rem] leading-tight text-[var(--text-dim)]"
-            >
-              {credit.map((item, index) =>
-                item.href ? (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline"
-                  >
-                    {index > 0 ? " · " : ""}
-                    {item.label}
-                  </a>
-                ) : (
-                  <span key={item.label}>
-                    {index > 0 ? " · " : ""}
-                    {item.label}
-                  </span>
-                ),
-              )}
-            </p>
-          ) : null}
         </div>
         <button
           type="button"
@@ -349,6 +326,21 @@ export function MapFeatureSheet({
       >
         {children}
       </div>
+      {footerCredit.length > 0 ? (
+        <p
+          data-sheet-credit
+          className="shrink-0 truncate px-3 pb-3 text-[0.8125rem] leading-none text-[var(--text-dim)]"
+        >
+          {footerCredit.map((item, index) => (
+            <span key={item.label}>
+              {index > 0 ? " · " : ""}
+              <a href={item.href} target="_blank" rel="noreferrer" className="underline">
+                {item.label}
+              </a>
+            </span>
+          ))}
+        </p>
+      ) : null}
     </div>
   );
 }

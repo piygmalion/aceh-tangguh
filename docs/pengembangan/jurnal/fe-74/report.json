@@ -1,127 +1,109 @@
 {
+  "browser": "firefox",
   "open": {
     "ok": true,
     "x": 195.0000000037399,
     "y": 436.00000000187,
     "zoom": 16,
-    "attrib": "© OpenStreetMap contributors | MapLibre"
+    "browser": "Mozilla/5.0 (X11; Linux x86_64; rv:158.0) Gecko/20100101 Firefox/158.0"
   },
-  "beforeWheel": {
+  "defaultSheet": {
     "snap": "default",
-    "title": "Kebakaran Hutan dan Lahan — Aceh Besar",
-    "scrollTop": 0,
-    "scrollHeight": 772,
-    "clientHeight": 398,
+    "height": 464,
+    "clientHeight": 462,
+    "bodyClientHeight": 398,
     "headerSelect": "none",
-    "creditText": "",
-    "creditBox": null,
-    "headerBox": {
-      "x": 1,
-      "y": 381,
-      "w": 388,
-      "h": 64
-    },
-    "attribText": "© OpenStreetMap contributors | MapLibre",
-    "attribBox": {
-      "x": 121,
-      "y": 338,
-      "w": 259,
-      "h": 24
-    },
-    "sheetBox": {
-      "x": 0,
-      "y": 380,
-      "w": 390,
-      "h": 464
-    }
+    "gripSelect": "none",
+    "bodySelect": "text",
+    "sampleSelect": "text",
+    "credit": false
   },
-  "wheel": {
+  "firefoxWheel": {
+    "wheels": [
+      {
+        "deltaY": 120,
+        "deltaMode": 0,
+        "defaultPrevented": true
+      }
+    ],
+    "scrollTop": 120,
+    "zoom": 16,
+    "zoomBefore": 16
+  },
+  "modes": {
     "zoomBefore": 16,
     "zoomAfter": 16,
-    "canvasWheels": 0,
-    "lineDefaultPrevented": true,
-    "pageDefaultPrevented": true,
     "afterLine": 48,
-    "afterPage": 374,
-    "afterPartial": 99,
-    "partialExpected": 99.5,
-    "afterFlick": 17,
-    "flickSum": 16.8,
-    "scrollHeight": 772,
-    "clientHeight": 398,
-    "max": 374
+    "afterPartial": 115,
+    "sheetHeight": 462,
+    "bodyHeight": 398,
+    "partialExpected": 115.5,
+    "lineDefaultPrevented": true
   },
   "full": {
     "snap": "full",
-    "title": "Kebakaran Hutan dan Lahan — Aceh Besar",
-    "scrollTop": 17,
-    "scrollHeight": 772,
-    "clientHeight": 651,
-    "headerSelect": "none",
-    "creditText": "© OpenStreetMap contributors · MapLibre",
-    "creditBox": {
-      "x": 13,
-      "y": 169,
-      "w": 312,
-      "h": 16
-    },
-    "headerBox": {
-      "x": 1,
-      "y": 128,
-      "w": 388,
-      "h": 64
-    },
-    "attribText": "© OpenStreetMap contributors | MapLibre",
-    "attribBox": {
-      "x": 121,
-      "y": 742,
-      "w": 259,
-      "h": 24
-    },
-    "sheetBox": {
-      "x": 0,
-      "y": 127,
-      "w": 390,
-      "h": 717
-    }
+    "height": 717,
+    "creditText": "© OpenStreetMap · MapLibre",
+    "fontSize": "13px",
+    "links": [
+      {
+        "href": "https://www.openstreetmap.org/copyright",
+        "text": "© OpenStreetMap"
+      },
+      {
+        "href": "https://maplibre.org/",
+        "text": "MapLibre"
+      }
+    ],
+    "creditY": 818,
+    "creditBottom": 843,
+    "headerBottom": 192,
+    "sheetBottom": 844,
+    "inFooter": true
   },
-  "accordion": {
+  "menuClosed": {
+    "ariaExpanded": "false",
+    "accordion": false,
+    "popover": false,
+    "transform": "none"
+  },
+  "menuEnter": {
     "ariaExpanded": "true",
     "accordion": true,
-    "absoluteMenu": false,
+    "popover": false,
+    "transform": "matrix(-1, 0, 0, -1, 0, 0)",
     "rows": [
       {
         "text": "Laporkan Kejadian",
         "height": 44,
-        "paddingLeft": "28px",
-        "indentFromToggle": 0
+        "left": 0,
+        "textX": 28,
+        "paddingLeft": "28px"
       },
       {
         "text": "Laporkan Penanganan",
         "height": 44,
-        "paddingLeft": "28px",
-        "indentFromToggle": 0
+        "left": 0,
+        "textX": 28,
+        "paddingLeft": "28px"
       }
     ]
   },
-  "desktopAttrib": {
+  "menuSpace": {
+    "ariaExpanded": "false",
+    "rows": 0
+  },
+  "desktop": {
     "text": "© OpenStreetMap contributors | MapLibre",
     "x": 843,
     "y": 866,
     "w": 259,
     "h": 24,
-    "visible": true,
     "sheet": false
   },
   "desktopMenu": {
     "ariaExpanded": "true",
     "accordion": false,
-    "position": "absolute",
-    "panel": {
-      "x": 601,
-      "y": 84,
-      "w": 220,
-      "h": 90
-    }
+    "position": "absolute"
   }
 }

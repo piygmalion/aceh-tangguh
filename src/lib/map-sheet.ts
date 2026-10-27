@@ -73,7 +73,7 @@ export const SHEET_WHEEL_LINE_PX = 16;
 
 /**
  * Pixel delta for a wheel tick.
- * Line mode is ~16px. Page mode is the sheet body's client height.
+ * Line mode is ~16px. Page mode is the sheet height.
  * Pixel mode (trackpad, including momentum) stays in CSS pixels.
  */
 export function sheetWheelDelta(deltaY: number, deltaMode: number, pageHeight: number): number {
@@ -123,6 +123,30 @@ export function mapCreditParts(
     parts.push({ href, label });
   }
   return parts;
+}
+
+const OSM_CREDIT_HREF = "https://www.openstreetmap.org/copyright";
+const MAPLIBRE_CREDIT_HREF = "https://maplibre.org/";
+
+/**
+ * Short footer line for a full-height sheet: "© OpenStreetMap · MapLibre".
+ * Hrefs come from the live attribution when it has them. The line is empty
+ * when the control does not mention OpenStreetMap or MapLibre.
+ */
+export function sheetFooterCredit(
+  parts: { href: string | null; label: string }[],
+): { href: string; label: string }[] {
+  const osm = parts.find(
+    (part) => /openstreetmap/i.test(part.label) || /openstreetmap\.org/i.test(part.href ?? ""),
+  );
+  const libre = parts.find(
+    (part) => /maplibre/i.test(part.label) || /maplibre\.org/i.test(part.href ?? ""),
+  );
+  if (!osm && !libre) return [];
+  return [
+    { href: osm?.href || OSM_CREDIT_HREF, label: "© OpenStreetMap" },
+    { href: libre?.href || MAPLIBRE_CREDIT_HREF, label: "MapLibre" },
+  ];
 }
 
 /** The element that actually overflows. MapLibre's wheel handler is not this check. */

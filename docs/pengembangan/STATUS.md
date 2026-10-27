@@ -738,7 +738,7 @@ Popup desktop dijepit ke kanvas dikurangi legenda Status, tombol Pengaturan, pan
 
 ## FE-74 — roda lembar, akordeon Laporkan, kredit peta
 
-Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi klien badan lembar) menjadi piksel, dan momentum trackpad menggulir lembar tanpa mengubah zoom. Kepala dan pegangan tidak bisa diseleksi. Di laci 390, Laporkan menjadi akordeon sebaris (inden 28px, baris 44px, `aria-expanded`). Pada henti penuh, kredit yang sudah ada di kontrol peta disalin ke kepala lembar.
+Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi lembar) menjadi piksel. Di Firefox scrollTop naik dan zoom tetap. `user-select: none` hanya pada kepala dan grip; teks badan tetap bisa diseleksi. Di laci 390, Laporkan menjadi akordeon sebaris (teks di x28, baris 44px, `aria-expanded`, chevron berputar, Enter/Space). Pada henti penuh, kaki lembar memuat "© OpenStreetMap · MapLibre" 13px sebagai tautan. Tinggi henti bawaan tetap.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
