@@ -6,10 +6,17 @@ import {
   MAGMA_HOME,
   MAGMA_VSI_HOME,
   applyMagmaFetchReason,
+  magmaUnavailableReason,
   unavailableMagmaCard,
 } from "@/lib/peringatan-dini-types";
 import type { Feature, Point } from "geojson";
-import { isoTimestamp, newestOverlayRowFetchedAt } from "@/lib/overlay-live";
+import {
+  isoTimestamp,
+  newestOverlayRowFetchedAt,
+  overlayLiveExpiresAt,
+  resolveOverlayLiveRead,
+  type OverlayLiveRefreshLedger,
+} from "@/lib/overlay-live";
 import { fetchMagmaLive, getMagmaPeringatanFromLive } from "./magma-live";
 import { magmaCardFromOverlayRead } from "./overlay-cards";
 import {
@@ -783,5 +790,174 @@ describe("BE-76 MAGMA stale overlay is unavailable", () => {
     );
     assert.doesNotMatch(magmaView, /reason/);
     assert.doesNotMatch(bento, /magma\.reason|card\.reason|\.reason/);
+  });
+});
+
+const BE77_REQUEST = "2026-10-27T23:10:00.000Z";
+const BE77_REFRESHED = "2026-10-27T18:18:14.000Z";
+const BE77_NOW = Date.parse(BE77_REQUEST);
+
+function be77Ledger(
+  patch: Partial<OverlayLiveRefreshLedger> & Pick<OverlayLiveRefreshLedger, "ok" | "feature_count">,
+): OverlayLiveRefreshLedger {
+  return {
+    error: null,
+    refreshed_at: BE77_REFRESHED,
+    ...patch,
+  };
+}
+
+describe("BE-77 MAGMA expired cache keeps the ledger", () => {
+  it("accepts the standalone expired code and still drops a URL", () => {
+    assert.equal(magmaUnavailableReason("expired"), "expired");
+    assert.equal(magmaUnavailableReason("maps:upstream_403;vsi:timeout"), "maps:upstream_403;vsi:timeout");
+    assert.equal(magmaUnavailableReason("maps:expired"), undefined);
+    assert.equal(magmaUnavailableReason("expired;maps:upstream_403"), undefined);
+    assert.equal(
+      magmaUnavailableReason("https://magma.esdm.go.id/_api/home/maps"),
+      undefined,
+    );
+  });
+
+  it("marks an ok ledger with rows past expires_at as expired at the ledger time", () => {
+    const ledger = be77Ledger({ ok: true, feature_count: 4 });
+    const overlay = resolveOverlayLiveRead(
+      [
+        {
+          expires_at: "2026-10-27T20:18:14.000Z",
+          updated_at: ROW_FETCHED_AT,
+          feature: cachedQuake(),
+        },
+      ],
+      BE77_NOW,
+      ledger,
+    );
+    assert.equal(overlay.status, 200);
+    assert.equal(overlay.body.stale, true);
+    const card = magmaCardFromOverlayRead(overlay, BE77_REQUEST, {
+      ledger,
+      rowFetchedAt: ROW_FETCHED_AT,
+    });
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.empty, true);
+    assert.equal(card.event, null);
+    assert.equal(card.stale, true);
+    assert.equal(card.reason, "expired");
+    assert.equal(card.fetched_at, BE77_REFRESHED);
+    assert.notEqual(card.fetched_at, BE77_REQUEST);
+    assert.notEqual(card.fetched_at, ROW_FETCHED_AT);
+    assert.notEqual(card.fetched_at, QUAKE_OCCURRED_AT);
+    assertNoJune18(card);
+    const kept = applyMagmaFetchReason(card, null);
+    assert.equal(kept.reason, "expired");
+    assert.equal(kept.fetched_at, BE77_REFRESHED);
+  });
+
+  it("keeps a per-source ledger error on a stale card instead of expired", () => {
+    const ledger = be77Ledger({
+      ok: false,
+      feature_count: 4,
+      error: "maps:upstream_403;vsi:timeout",
+    });
+    const overlay = resolveOverlayLiveRead(
+      [
+        {
+          expires_at: overlayLiveExpiresAt("magmaQuakes", BE77_NOW),
+          updated_at: ROW_FETCHED_AT,
+          feature: cachedQuake(),
+        },
+      ],
+      BE77_NOW,
+      ledger,
+    );
+    assert.equal(overlay.status, 200);
+    assert.equal(overlay.body.stale, true);
+    const card = magmaCardFromOverlayRead(overlay, BE77_REQUEST, {
+      ledger,
+      rowFetchedAt: ROW_FETCHED_AT,
+    });
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.event, null);
+    assert.equal(card.reason, "maps:upstream_403;vsi:timeout");
+    assert.notEqual(card.reason, "expired");
+    assert.equal(card.fetched_at, BE77_REFRESHED);
+    assert.notEqual(card.fetched_at, BE77_REQUEST);
+    assert.notEqual(card.fetched_at, ROW_FETCHED_AT);
+    assertNoJune18(card);
+  });
+
+  it("passes a ledger error through a 503 card without calling it expired", () => {
+    const ledger = be77Ledger({
+      ok: false,
+      feature_count: 0,
+      error: "maps:timeout;vsi:timeout;home:timeout;vsi-home:timeout",
+    });
+    const overlay = resolveOverlayLiveRead([], BE77_NOW, ledger);
+    assert.equal(overlay.status, 503);
+    const card = magmaCardFromOverlayRead(overlay, BE77_REQUEST, { ledger });
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.event, null);
+    assert.equal(card.stale, true);
+    assert.equal(card.reason, ledger.error);
+    assert.notEqual(card.reason, "expired");
+    assert.equal(card.fetched_at, BE77_REFRESHED);
+    assert.notEqual(card.fetched_at, BE77_REQUEST);
+  });
+
+  it("stamps a 503 with an ok ledger from refreshed_at and does not call it expired", () => {
+    const ledger = be77Ledger({ ok: true, feature_count: 4, error: null });
+    const overlay = resolveOverlayLiveRead([], BE77_NOW, ledger);
+    assert.equal(overlay.status, 503);
+    const card = magmaCardFromOverlayRead(overlay, BE77_REQUEST, { ledger });
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.event, null);
+    assert.equal(Object.hasOwn(card, "reason"), false);
+    assert.equal(card.fetched_at, BE77_REFRESHED);
+    assert.notEqual(card.fetched_at, BE77_REQUEST);
+  });
+
+  it("keeps a fresh ok ledger as a live card without a reason", () => {
+    const ledger = be77Ledger({ ok: true, feature_count: 1, error: null });
+    const overlay = resolveOverlayLiveRead(
+      [
+        {
+          expires_at: overlayLiveExpiresAt("magmaQuakes", BE77_NOW),
+          updated_at: ROW_FETCHED_AT,
+          feature: cachedQuake(),
+        },
+      ],
+      BE77_NOW,
+      ledger,
+    );
+    assert.equal(overlay.body.stale, undefined);
+    const card = magmaCardFromOverlayRead(overlay, BE77_REQUEST, {
+      ledger,
+      rowFetchedAt: ROW_FETCHED_AT,
+    });
+    assert.equal(card.source, "live");
+    assert.equal(card.stale, false);
+    assert.equal(card.empty, false);
+    assert.equal(card.event?.id, JUNE18_ID);
+    assert.equal(Object.hasOwn(card, "reason"), false);
+    assert.equal(card.fetched_at, ROW_FETCHED_AT);
+    assert.notEqual(card.fetched_at, BE77_REQUEST);
+    assert.notEqual(card.fetched_at, BE77_REFRESHED);
+  });
+
+  it("passes the ledger row into the MAGMA card on the GET read", () => {
+    const magma = readFileSync(join(process.cwd(), "src/lib/peringatan-dini/magma.ts"), "utf8");
+    const overlay = readFileSync(join(process.cwd(), "src/lib/overlay-live.ts"), "utf8");
+    assert.match(magma, /ledger: select\.ledger/);
+    const pd = overlay.slice(overlay.indexOf("export async function readOverlayLiveForPd"));
+    assert.match(pd, /\n\s+ledger,/);
+    const section = readFileSync(
+      join(process.cwd(), "src/components/PeringatanDiniSection.tsx"),
+      "utf8",
+    );
+    const magmaView = section.slice(
+      section.indexOf("function MagmaCardView"),
+      section.indexOf("function SipongiCardView"),
+    );
+    assert.doesNotMatch(magmaView, /reason/);
   });
 });
