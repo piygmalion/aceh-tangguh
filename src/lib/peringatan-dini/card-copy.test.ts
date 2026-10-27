@@ -4,7 +4,13 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { unavailableMagmaCard } from "@/lib/peringatan-dini-types";
 import type { TatonasHighlight } from "@/lib/tatonas/types";
-import { magmaSummary, newestHighlightAgeMinutes, tatonasCopy, tatonasStaleRow } from "./card-copy";
+import {
+  highlightAgeMinutes,
+  magmaSummary,
+  newestHighlightAgeMinutes,
+  tatonasCopy,
+  tatonasStaleRow,
+} from "./card-copy";
 
 const NOW = Date.parse("2026-10-27T03:20:00.000Z");
 
@@ -72,6 +78,19 @@ describe("tatonas stale rows", () => {
     assert.equal(id.beranda.peringatan.tatonasRowStale, "{nama} · {menit} mnt lalu");
     assert.equal(en.beranda.peringatan.tatonasRowStale, "{nama} · {min} min ago");
   });
+
+  it("renders only the post name when the clock is missing", () => {
+    assert.equal(highlightAgeMinutes(null, NOW), null);
+    assert.equal(highlightAgeMinutes("", NOW), null);
+    assert.equal(highlightAgeMinutes("bukan-waktu", NOW), null);
+    const row = tatonasStaleRow("Klimatologi Kampung Mesjid", null, NOW);
+    assert.equal(row.nama, "Klimatologi Kampung Mesjid");
+    assert.equal(row.menit, null);
+    assert.equal(row.min, null);
+    const rendered = row.menit == null ? row.nama : `${row.nama} · ${row.menit} mnt lalu`;
+    assert.equal(rendered, "Klimatologi Kampung Mesjid");
+    assert.equal(/\d|mnt|min|AMAN|WASPADA|SIAGA|AWAS/.test(rendered), false);
+  });
 });
 
 describe("magmaSummary", () => {
@@ -114,6 +133,7 @@ describe("PeringatanBento copy wiring", () => {
     assert.match(src, /tatonasStaleRow/);
     assert.match(src, /peringatan\.tatonasStale/);
     assert.match(src, /peringatan\.tatonasRowStale/);
+    assert.match(src, /if \(row\.menit == null \|\| row\.min == null\) return row\.nama/);
     assert.match(src, /peringatan\.magmaUnavailable/);
     assert.match(src, /tone\.info/);
     assert.equal(src.includes("pd.tatonas.highlights.length"), false);
