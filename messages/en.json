@@ -583,8 +583,10 @@
     "slideOf": "{current} / {total}",
     "tone": {
       "neutral": "Normal",
+      "info": "INFO",
       "warn": "Watch",
-      "danger": "Alert"
+      "siaga": "Alert",
+      "danger": "Warning"
     },
     "cuaca": {
       "source": "Weather warning · BMKG",
@@ -1703,9 +1705,13 @@
       "cuacaEmpty": "No active weather warning",
       "cuacaCount": "{count} districts and cities on watch",
       "magmaEmpty": "No recent earthquake",
+      "magmaUnavailable": "Earthquake data is unavailable",
       "sipongiEmpty": "No hotspots observed",
       "sipongiCount": "{count} hotspots observed",
       "tatonasEmpty": "All monitoring stations normal",
+      "tatonasStale": "Station data has not been updated · {menit} min",
+      "tatonasStaleNoClock": "Station data not updated",
+      "tatonasRowStale": "{nama} · {min} min ago",
       "tatonasCount": "{count} stations above threshold",
       "maritimEmpty": "Aceh waters within safe limits",
       "maritimCount": "{count} waters need attention",

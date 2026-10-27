@@ -4,7 +4,15 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 import { MAGMA_HOME, MAGMA_VSI_HOME } from "@/lib/peringatan-dini-types";
 import { fetchMagmaLive, getMagmaPeringatanFromLive } from "./magma-live";
-import { parseMagmaHomepage } from "./magma-parse";
+import {
+  cardFromMagmaRaws,
+  magmaRawsFromPublicPayload,
+  magmaTone,
+  mergeMagmaRaws,
+  normalizeEvent,
+  parseMagmaHomepage,
+  type MagmaRaw,
+} from "./magma-parse";
 
 const JUNE18_ID = "ROQ20260618170813";
 const SNIPPET = readFileSync(
@@ -54,6 +62,38 @@ describe("parseMagmaHomepage", () => {
 
   it("throws on unparseable HTML", () => {
     assert.throws(() => parseMagmaHomepage("<html>no feed</html>"), /feed not found/);
+  });
+});
+
+function toneOf(partial: MagmaRaw): ReturnType<typeof magmaTone> {
+  const raw = { merusak: 0, mmi: null, magtype: "SR", area: "Aceh", ...partial };
+  return magmaTone(normalizeEvent(raw), raw);
+}
+
+describe("magmaTone", () => {
+  it("keeps an M2.7 with MMI text neutral", () => {
+    assert.equal(toneOf({ magnitude: 2.7, mmi: "II-III Bener Meriah" }), "neutral");
+  });
+
+  it("keeps an M4.9 neutral", () => {
+    assert.equal(toneOf({ magnitude: 4.9, mmi: null }), "neutral");
+  });
+
+  it("keeps M5+ neutral when the feed has no alert level", () => {
+    assert.equal(toneOf({ magnitude: 5 }), "neutral");
+    assert.equal(toneOf({ magnitude: 5.4, mmi: "III Kab. Aceh Selatan" }), "neutral");
+    assert.equal(toneOf({ magnitude: 6.2, merusak: 1 }), "neutral");
+  });
+
+  it("keeps a missing magnitude neutral", () => {
+    assert.equal(toneOf({ mmi: null }), "neutral");
+  });
+
+  it("uses only an explicit upstream level word", () => {
+    assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "WASPADA" }), "warn");
+    assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "AWAS" }), "danger");
+    assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "SIAGA" }), "siaga");
+    assert.equal(toneOf({ magnitude: 4.9, mmi: "IV Gayo Lues", level: "Level II (Waspada)" }), "neutral");
   });
 });
 
@@ -132,6 +172,145 @@ describe("fetchMagmaLive", () => {
     assertNoJune18(card);
   });
 
+  it("does not treat a 200 homepage without markersGempa as an empty success", async () => {
+    const fetchImpl: typeof fetch = async () =>
+      new Response("<html><body>Next.js</body></html>", {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      });
+    await assert.rejects(fetchMagmaLive(fetchImpl), /unavailable|feed not found|unreadable/i);
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assert.equal(card.empty, true);
+    assert.equal(card.stale, true);
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.event, null);
+    assertNoJune18(card);
+  });
+
+  it("keeps a maps-only read when the earthquake list returns 403", async () => {
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+      if (url.endsWith("/home/maps")) {
+        return Response.json({
+          success: true,
+          data: {
+            earthquake: [
+              {
+                id: "uuid-maps",
+                report_id: "ROQ20261027010101",
+                magnitude: "2.7",
+                latitude: 4.77,
+                longitude: 96.88,
+                region: "Kabupaten Bener Meriah",
+                affected_area: "Kabupaten Bener Meriah",
+                datetime_wib: "2026-10-27T01:01:01",
+              },
+            ],
+          },
+        });
+      }
+      if (url.endsWith("/earthquake/list")) {
+        return new Response("blocked", { status: 403, statusText: "Forbidden" });
+      }
+      throw new Error(`unexpected url ${url}`);
+    };
+    const card = await fetchMagmaLive(fetchImpl);
+    assert.equal(card.event?.id, "ROQ20261027010101");
+    assert.equal(card.event?.magnitude, 2.7);
+    assert.equal(card.tone, "neutral");
+    assert.equal(card.empty, false);
+  });
+
+  it("fail-closes when maps fails even if the earthquake list is readable", async () => {
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+      if (url.endsWith("/home/maps")) {
+        return new Response("blocked", { status: 403, statusText: "Forbidden" });
+      }
+      if (url.endsWith("/earthquake/list")) {
+        return Response.json({
+          success: true,
+          data: {
+            data: [
+              {
+                report_id: "ROQ-FROM-LIST-ONLY",
+                datetime_wib: "2026-10-27T02:02:02",
+                magnitude: "6.1",
+                latitude: 5.5,
+                longitude: 95.3,
+                region: "Banda Aceh",
+                affected_area: "Banda Aceh",
+              },
+            ],
+          },
+        });
+      }
+      return new Response("<html>no feed</html>", {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      });
+    };
+    await assert.rejects(fetchMagmaLive(fetchImpl), /403|unavailable|feed not found/i);
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.stale, true);
+    assert.equal(card.event, null);
+    assert.equal(JSON.stringify(card).includes("ROQ-FROM-LIST-ONLY"), false);
+  });
+
+  it("reads the public JSON list ahead of HTML and stays neutral", async () => {
+    let htmlHits = 0;
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+      if (url.endsWith("/home/maps")) {
+        return Response.json({
+          success: true,
+          data: {
+            earthquake: [
+              {
+                id: "uuid-map",
+                report_id: null,
+                magnitude: "5.4",
+                latitude: 4.13,
+                longitude: 96.12,
+                region: "Meulaboh",
+                affected_area: "Kabupaten Aceh Barat",
+              },
+            ],
+          },
+        });
+      }
+      if (url.endsWith("/earthquake/list")) {
+        return Response.json({
+          success: true,
+          data: {
+            data: [
+              {
+                report_id: "ROQ20261020232935",
+                datetime_wib: "2026-10-20T23:29:35",
+                magnitude: "5.4",
+                depth: 10,
+                latitude: 4.13,
+                longitude: 96.12,
+                region: "Meulaboh",
+                affected_area: "Kabupaten Aceh Barat",
+                is_destructive_earthquake: false,
+              },
+            ],
+          },
+        });
+      }
+      htmlHits += 1;
+      return new Response("no", { status: 500 });
+    };
+    const card = await fetchMagmaLive(fetchImpl);
+    assert.equal(htmlHits, 0);
+    assert.equal(card.event?.id, "ROQ20261020232935");
+    assert.equal(card.event?.magnitude, 5.4);
+    assert.equal(card.tone, "neutral");
+    assert.equal(card.empty, false);
+  });
+
   it("throws on timeout from both official homepages", async () => {
     const fetchImpl: typeof fetch = async () => {
       const err = new Error("The operation was aborted due to timeout");
@@ -143,5 +322,69 @@ describe("fetchMagmaLive", () => {
     assert.equal(card.empty, true);
     assert.equal(card.source, "unavailable");
     assertNoJune18(card);
+  });
+});
+
+describe("public MAGMA JSON", () => {
+  it("keeps the dated Aceh ROQ over an undated map row and stays neutral", () => {
+    const maps = magmaRawsFromPublicPayload({
+      success: true,
+      data: {
+        earthquake: [
+          {
+            id: "uuid-tamiang",
+            report_id: null,
+            magnitude: "4.9",
+            latitude: 4.24,
+            longitude: 97.65,
+            region: "Aceh Tamiang",
+            affected_area: "Aceh Tamiang",
+            intensity: "IV Gayo Lues",
+          },
+          {
+            id: "uuid-meulaboh",
+            report_id: null,
+            magnitude: "5.4",
+            latitude: 4.13,
+            longitude: 96.12,
+            region: "Meulaboh",
+            affected_area: "Kabupaten Aceh Barat",
+          },
+        ],
+      },
+    });
+    const list = magmaRawsFromPublicPayload({
+      success: true,
+      data: {
+        data: [
+          {
+            report_id: "ROQ20261020232935",
+            datetime_wib: "2026-10-20T23:29:35",
+            magnitude: "5.4",
+            depth: 10,
+            latitude: 4.13,
+            longitude: 96.12,
+            region: "Meulaboh",
+            affected_area: "Kabupaten Aceh Barat",
+            is_destructive_earthquake: false,
+          },
+        ],
+      },
+    });
+    const merged = mergeMagmaRaws([maps, list]);
+    assert.equal(merged.filter((row) => row.magnitude === 5.4).length, 1);
+    assert.equal(
+      merged.find((row) => row.magnitude === 5.4)?.id_lap,
+      "ROQ20261020232935",
+    );
+    const card = cardFromMagmaRaws(merged);
+    assert.equal(card.event?.id, "ROQ20261020232935");
+    assert.equal(card.event?.magnitude, 5.4);
+    assert.equal(card.tone, "neutral");
+  });
+
+  it("does not treat success:false or an empty list as rows", () => {
+    assert.deepEqual(magmaRawsFromPublicPayload({ success: false, data: { earthquake: [] } }), []);
+    assert.deepEqual(magmaRawsFromPublicPayload({ success: true, data: { earthquake: [] } }), []);
   });
 });

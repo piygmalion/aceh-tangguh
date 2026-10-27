@@ -39,6 +39,8 @@ export type MagmaRaw = {
   mmi?: string | null;
   nearest_volcano?: string | null;
   merusak?: number;
+  /** Exact upstream alert word, when the feed has one. Not derived from magnitude. */
+  level?: string | null;
 };
 
 export function extractMarkersGempa(html: string): MagmaRaw[] {
@@ -112,12 +114,26 @@ export function occurredIso(raw: MagmaRaw): string | null {
   return null;
 }
 
+export function explicitMagmaLevel(value: unknown): "AWAS" | "SIAGA" | "WASPADA" | null {
+  if (typeof value !== "string") return null;
+  const token = value.trim().toUpperCase();
+  if (token === "AWAS" || token === "SIAGA" || token === "WASPADA") return token;
+  return null;
+}
+
+/**
+ * Neutral unless the record's own level field is WASPADA, SIAGA, or AWAS.
+ * Magnitude, MMI text, and `merusak` are not alert levels. AN-4 records that
+ * this site has no magnitude-minimum policy (`docs/pengembangan/jurnal/AN-4.md`).
+ * SIAGA is the orange legend step. Only AWAS is danger (red #B42318).
+ */
 export function magmaTone(event: MagmaEvent | null, raw?: MagmaRaw): PeringatanTone {
   if (!event) return "neutral";
-  const mag = event.magnitude ?? 0;
-  if ((raw?.merusak ?? 0) > 0 || mag >= 5) return "danger";
-  if (mag >= 3 || event.intensitas_mmi) return "warn";
-  return "warn";
+  const level = explicitMagmaLevel(raw?.level);
+  if (level === "AWAS") return "danger";
+  if (level === "SIAGA") return "siaga";
+  if (level === "WASPADA") return "warn";
+  return "neutral";
 }
 
 export function normalizeEvent(raw: MagmaRaw): MagmaEvent {
@@ -158,8 +174,7 @@ function pickLatestAceh(list: MagmaRaw[]): { event: MagmaEvent | null; raw?: Mag
 
 export type MagmaLiveCard = Omit<MagmaCard, "stale" | "source" | "example">;
 
-export function parseMagmaHomepage(html: string): MagmaLiveCard {
-  const list = extractMarkersGempa(html);
+export function cardFromMagmaRaws(list: MagmaRaw[]): MagmaLiveCard {
   const { event, raw } = pickLatestAceh(list);
   return {
     kind: "magma",
@@ -169,4 +184,138 @@ export function parseMagmaHomepage(html: string): MagmaLiveCard {
     fetched_at: new Date().toISOString(),
     href: event?.href ?? MAGMA_HOME,
   };
+}
+
+export function parseMagmaHomepage(html: string): MagmaLiveCard {
+  return cardFromMagmaRaws(extractMarkersGempa(html));
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function asFinite(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function quakeRows(payload: unknown): Record<string, unknown>[] {
+  const root = asRecord(payload);
+  if (!root || root.success === false) return [];
+  const data = asRecord(root.data);
+  const earthquake = data?.earthquake ?? root.earthquake;
+  const nested = data?.data;
+  const list = Array.isArray(earthquake) ? earthquake : Array.isArray(nested) ? nested : [];
+  return list.filter((row): row is Record<string, unknown> => asRecord(row) !== null);
+}
+
+/** Map one object from the public MAGMA JSON feed onto the legacy raw row. */
+export function magmaRawFromPublicQuake(row: Record<string, unknown>): MagmaRaw | null {
+  const lat = asFinite(row.latitude ?? row.lat_lima);
+  const lon = asFinite(row.longitude ?? row.lon_lima);
+  if (lat == null || lon == null) return null;
+  const reportId = typeof row.report_id === "string" ? row.report_id.trim() : "";
+  const uuid = typeof row.id === "string" ? row.id.trim() : "";
+  const level =
+    explicitMagmaLevel(row.level) ??
+    explicitMagmaLevel(row.alert_level) ??
+    explicitMagmaLevel(row.status_label);
+  const destructive = row.is_destructive_earthquake;
+  const area =
+    (typeof row.affected_area === "string" && row.affected_area) ||
+    (typeof row.area === "string" && row.area) ||
+    (typeof row.region === "string" && row.region) ||
+    undefined;
+  return {
+    id_lap: reportId || uuid || undefined,
+    datetime_wib: typeof row.datetime_wib === "string" ? row.datetime_wib : undefined,
+    datetime_utc:
+      typeof row.datetime === "string"
+        ? row.datetime
+        : typeof row.datetime_utc === "string"
+          ? row.datetime_utc
+          : undefined,
+    magnitude: asFinite(row.magnitude) ?? undefined,
+    magtype:
+      typeof row.magnitude_type === "string"
+        ? row.magnitude_type
+        : typeof row.magtype === "string"
+          ? row.magtype
+          : "SR",
+    depth: asFinite(row.depth) ?? undefined,
+    dep_unit:
+      typeof row.depth_unit === "string"
+        ? row.depth_unit
+        : typeof row.dep_unit === "string"
+          ? row.dep_unit
+          : "Km",
+    lon_lima: lon,
+    lat_lima: lat,
+    latlon_text:
+      typeof row.coordinates_text === "string"
+        ? row.coordinates_text
+        : typeof row.latlon_text === "string"
+          ? row.latlon_text
+          : undefined,
+    area,
+    koter: typeof row.region === "string" ? row.region : typeof row.koter === "string" ? row.koter : undefined,
+    mmi:
+      typeof row.intensity === "string"
+        ? row.intensity
+        : typeof row.mmi === "string"
+          ? row.mmi
+          : null,
+    nearest_volcano: typeof row.nearest_volcano === "string" ? row.nearest_volcano : null,
+    merusak:
+      destructive === true ? 1 : destructive === false ? 0 : (asFinite(row.merusak) ?? undefined),
+    level,
+  };
+}
+
+export function magmaRawsFromPublicPayload(payload: unknown): MagmaRaw[] {
+  return quakeRows(payload)
+    .map(magmaRawFromPublicQuake)
+    .filter((row): row is MagmaRaw => row !== null);
+}
+
+function richness(raw: MagmaRaw): number {
+  return (
+    (raw.datetime_wib ? 4 : 0) +
+    (raw.id_lap?.startsWith("ROQ") ? 2 : 0) +
+    (typeof raw.depth === "number" ? 1 : 0)
+  );
+}
+
+function dedupeKeys(raw: MagmaRaw): string[] {
+  const keys: string[] = [];
+  if (raw.id_lap) keys.push(`id:${raw.id_lap}`);
+  if (typeof raw.lat_lima === "number" && typeof raw.lon_lima === "number") {
+    keys.push(`geo:${raw.lat_lima.toFixed(3)}:${raw.lon_lima.toFixed(3)}:${raw.magnitude ?? "x"}`);
+  }
+  return keys;
+}
+
+/** Keep one row per quake. A dated list row replaces the same map row that has no clock. */
+export function mergeMagmaRaws(groups: MagmaRaw[][]): MagmaRaw[] {
+  const out: MagmaRaw[] = [];
+  const index = new Map<string, number>();
+  for (const raw of groups.flat()) {
+    const keys = dedupeKeys(raw);
+    const slot = keys.map((key) => index.get(key)).find((n): n is number => n != null);
+    if (slot == null) {
+      const at = out.length;
+      out.push(raw);
+      for (const key of keys) index.set(key, at);
+      continue;
+    }
+    if (richness(raw) > richness(out[slot])) out[slot] = raw;
+    for (const key of dedupeKeys(out[slot])) index.set(key, slot);
+  }
+  return out;
 }

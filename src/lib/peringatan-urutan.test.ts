@@ -37,7 +37,7 @@ describe("AN-47 urutan keparahan vs katalog", () => {
     const src = read("src/components/beranda/PeringatanBento.tsx");
     assert.match(
       src,
-      /URUTAN_TONE:\s*Record<PeringatanTone,\s*number>\s*=\s*\{\s*danger:\s*0,\s*warn:\s*1,\s*neutral:\s*2/,
+      /URUTAN_TONE:\s*Record<PeringatanTone,\s*number>\s*=\s*\{\s*danger:\s*0,\s*siaga:\s*1,\s*warn:\s*2,\s*neutral:\s*3/,
     );
     assert.match(src, /kartu\.sort\(\(a, b\) => URUTAN_TONE\[a\.tone\] - URUTAN_TONE\[b\.tone\]\)/);
     assert.match(src, /lead cell is the most severe feed/);

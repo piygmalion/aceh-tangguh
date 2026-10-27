@@ -583,8 +583,10 @@
     "slideOf": "{current} / {total}",
     "tone": {
       "neutral": "Normal",
+      "info": "INFO",
       "warn": "Waspada",
-      "danger": "Siaga"
+      "siaga": "Siaga",
+      "danger": "Awas"
     },
     "cuaca": {
       "source": "Peringatan cuaca · BMKG",
@@ -1703,9 +1705,13 @@
       "cuacaEmpty": "Tidak ada peringatan cuaca aktif",
       "cuacaCount": "{count} kabupaten/kota berstatus perhatian",
       "magmaEmpty": "Tidak ada gempa terkini",
+      "magmaUnavailable": "Data gempa tidak tersedia",
       "sipongiEmpty": "Tidak ada titik panas terpantau",
       "sipongiCount": "{count} titik panas terpantau",
       "tatonasEmpty": "Seluruh pos pantau normal",
+      "tatonasStale": "Data pos belum diperbarui · {menit} mnt",
+      "tatonasStaleNoClock": "Data pos belum diperbarui",
+      "tatonasRowStale": "{nama} · {menit} mnt lalu",
       "tatonasCount": "{count} pos di atas ambang",
       "maritimEmpty": "Perairan Aceh dalam batas aman",
       "maritimCount": "{count} perairan perlu perhatian",

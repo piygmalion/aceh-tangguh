@@ -64,6 +64,10 @@ export type TatonasCard = {
   href: string;
   stale: boolean;
   source: PeringatanSource;
+  /** Posts updated within TATONAS_STALE_MS. Optional so older payloads still typecheck. */
+  fresh_count?: number;
+  /** Fresh posts whose feed level is WASPADA or AWAS. */
+  alert_count?: number;
   example?: boolean;
 };
 

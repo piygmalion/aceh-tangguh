@@ -79,11 +79,13 @@ function CardShell({
 }) {
   const level = toneLevel(tone);
   const ring =
-    level === "siaga"
-      ? "hover:ring-[var(--status-siaga)]/50"
-      : level === "waspada"
-        ? "hover:ring-[var(--status-waspada)]/50"
-        : "hover:ring-[var(--status-aman)]/40";
+    level === "awas"
+      ? "hover:ring-[#B42318]/50"
+      : level === "siaga"
+        ? "hover:ring-[var(--status-siaga)]/50"
+        : level === "waspada"
+          ? "hover:ring-[var(--status-waspada)]/50"
+          : "hover:ring-[var(--status-aman)]/40";
   const className = cn(
     "glass flex h-[20rem] flex-col gap-2 overflow-hidden rounded-2xl p-4 transition hover:ring-1",
     ring,
@@ -141,7 +143,11 @@ function CardHeader({
         </span>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
-        <StatusScaleChip level={toneLevel(tone)} label={t(`tone.${tone}`)} />
+        <StatusScaleChip
+          level={toneLevel(tone)}
+          label={t(`tone.${tone}`)}
+          className={toneLevel(tone) === "awas" ? "bg-[#B42318] text-white shadow-none" : undefined}
+        />
         {stamp ? (
           <span className={cn("text-[var(--text-dim)]", TYPE_STAMP_CLASS)}>{stamp}</span>
         ) : null}

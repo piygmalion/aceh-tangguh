@@ -2,7 +2,8 @@ import { readFile } from "fs/promises";
 import path from "path";
 import type { Feature, FeatureCollection, Point } from "geojson";
 import { isAcehRelevant, isInsideAcehBbox } from "@/lib/peringatan-dini/aceh";
-import { extractMarkersGempa, occurredIso, type MagmaRaw } from "@/lib/peringatan-dini/magma-parse";
+import { fetchMagmaQuakeRaws } from "@/lib/peringatan-dini/magma-live";
+import { occurredIso, type MagmaRaw } from "@/lib/peringatan-dini/magma-parse";
 import { SIPONGI_OPSROOM, SIPONGI_PETA } from "@/lib/peringatan-dini-types";
 import { fetchTatonasDtData } from "@/lib/tatonas/client";
 import { parseTatonasStations } from "@/lib/tatonas/parse";
@@ -313,6 +314,7 @@ function magmaToPoint(raw: MagmaRaw, layer: OverlayLayerKey): Feature<Point> | n
       merusak: raw.merusak,
       magtype: raw.magtype,
       latlon_text: raw.latlon_text,
+      level: raw.level ?? null,
       occurred_at: occurredIso(raw),
     },
   });
@@ -353,8 +355,8 @@ async function fetchMagmaHtml(): Promise<string> {
 }
 
 async function fetchMagmaQuakes(): Promise<Feature<Point>[]> {
-  const html = await fetchMagmaHtml();
-  return extractMarkersGempa(html)
+  const raws = await fetchMagmaQuakeRaws();
+  return raws
     .map((raw) => magmaToPoint(raw, "magmaQuakes"))
     .filter((f): f is Feature<Point> => f !== null);
 }

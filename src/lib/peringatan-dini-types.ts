@@ -1,6 +1,7 @@
 import type { TatonasCard } from "@/lib/tatonas/types";
 
-export type PeringatanTone = "neutral" | "warn" | "danger";
+/** neutral = no alert, warn = WASPADA, siaga = SIAGA (orange), danger = AWAS only. */
+export type PeringatanTone = "neutral" | "warn" | "siaga" | "danger";
 export type PeringatanSource = "live" | "fixture" | "unavailable";
 export type { TatonasCard, TatonasHighlight } from "@/lib/tatonas/types";
 

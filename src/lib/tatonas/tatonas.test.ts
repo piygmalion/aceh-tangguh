@@ -214,11 +214,82 @@ describe("Tatonas helpers", () => {
   });
 });
 
+function station(partial: Partial<TatonasStation> & Pick<TatonasStation, "uid" | "level" | "stale">): TatonasStation {
+  return {
+    kd_hardware: partial.uid,
+    project: "BWS Aceh",
+    plant: "026",
+    pos_name: partial.uid,
+    logger_kind: "wl",
+    nm_logger: "WL",
+    time_local: "2026-09-03 11:30:00",
+    occurred_at: "2026-09-03T04:30:00.000Z",
+    condition: 1,
+    lat: 5.35,
+    lng: 95.58,
+    primary: null,
+    alert_text: null,
+    ...partial,
+  };
+}
+
+describe("cardFromStations fresh_count and alert_count", () => {
+  it("counts no fresh alerts when every post is stale, and keeps highlights", () => {
+    const stations = [
+      station({ uid: "awas", level: "AWAS", stale: true, pos_name: "Pos Awas" }),
+      station({ uid: "waspada", level: "WASPADA", stale: true, pos_name: "Pos Waspada" }),
+      station({ uid: "aman", level: "AMAN", stale: true, pos_name: "Pos Aman" }),
+    ];
+    const card = cardFromStations(stations, { source: "live" });
+    assert.equal(card.fresh_count, 0);
+    assert.equal(card.alert_count, 0);
+    assert.equal(card.tone, "neutral");
+    assert.equal(card.stale, true);
+    assert.equal(card.highlights.length, 3);
+    assert.equal(card.highlights[0]?.level, "AWAS");
+    assert.equal(card.extra_count, 0);
+    assert.equal(card.station_count, 3);
+  });
+
+  it("counts fresh normal posts without an alert", () => {
+    const stations = [
+      station({ uid: "a", level: "AMAN", stale: false }),
+      station({ uid: "b", level: "AMAN", stale: false }),
+      station({ uid: "old", level: "WASPADA", stale: true }),
+    ];
+    const card = cardFromStations(stations, { source: "live" });
+    assert.equal(card.fresh_count, 2);
+    assert.equal(card.alert_count, 0);
+    assert.equal(card.tone, "neutral");
+    assert.equal(card.stale, false);
+    assert.equal(card.highlights.length, 2);
+    assert.equal(card.highlights.some((row) => row.uid === "old"), false);
+  });
+
+  it("counts only fresh WASPADA and AWAS posts", () => {
+    const stations = [
+      station({ uid: "awas", level: "AWAS", stale: false }),
+      station({ uid: "waspada", level: "WASPADA", stale: false }),
+      station({ uid: "aman", level: "AMAN", stale: false }),
+      station({ uid: "old-awas", level: "AWAS", stale: true }),
+    ];
+    const card = cardFromStations(stations, { source: "live" });
+    assert.equal(card.fresh_count, 3);
+    assert.equal(card.alert_count, 2);
+    assert.equal(card.tone, "danger");
+    assert.equal(card.highlights.length, 3);
+    assert.equal(card.highlights.some((row) => row.uid === "old-awas"), false);
+    assert.equal(card.extra_count, 0);
+  });
+});
+
 describe("cardFromStations empty", () => {
   it("is empty and neutral without stations", () => {
     const card = cardFromStations([] as TatonasStation[], { source: "live" });
     assert.equal(card.empty, true);
     assert.equal(card.tone, "neutral");
     assert.equal(card.stale, true);
+    assert.equal(card.fresh_count, 0);
+    assert.equal(card.alert_count, 0);
   });
 });

@@ -100,6 +100,13 @@ describe("AN-52 isolation: GET PD modules do not scrape overlay upstream", () =>
     assert.match(magmaFn, /koter/);
     assert.match(magmaFn, /mmi/);
     assert.match(magmaFn, /merusak/);
+    assert.match(magmaFn, /level/);
+    const quakes = src.slice(
+      src.indexOf("async function fetchMagmaQuakes"),
+      src.indexOf("async function fetchMagmaVolcanoes"),
+    );
+    assert.match(quakes, /fetchMagmaQuakeRaws/);
+    assert.doesNotMatch(quakes, /extractMarkersGempa/);
     assert.match(magmaFn, /magtype/);
     assert.match(magmaFn, /latlon_text/);
     assert.match(magmaFn, /occurred_at/);
@@ -143,6 +150,7 @@ describe("AN-52 MAGMA / Sipongi / Tatonas cards from overlay L1", () => {
     assert.equal(card.empty, false);
     assert.equal(card.event?.id, JUNE18_ID);
     assert.equal(card.event?.magnitude, 2.7);
+    assert.equal(card.tone, "neutral");
     assert.match(card.event?.wilayah ?? "", /Bener Meriah/);
   });
 
@@ -263,5 +271,51 @@ describe("AN-52 MAGMA / Sipongi / Tatonas cards from overlay L1", () => {
     assert.equal(card.highlights[0]?.satuan, "cm");
     assert.equal(card.highlights[0]?.logger_kind, "wl");
     assert.equal(card.tone, "danger");
+    assert.equal(card.fresh_count, 1);
+    assert.equal(card.alert_count, 1);
+  });
+
+  it("ages a stored Tatonas post from occurred_at, not the overlay TTL", async () => {
+    const { tatonasCardFromOverlayRead } = await import("./overlay-cards");
+    const old: Feature<Point> = {
+      type: "Feature",
+      id: "tatonas-1",
+      geometry: { type: "Point", coordinates: [95.58, 5.35] },
+      properties: {
+        layer: "tatonasStations",
+        title: "Pos Lama",
+        pos_name: "Pos Lama",
+        level: "WASPADA",
+        occurred_at: new Date(nowMs - 16 * 60 * 1000).toISOString(),
+        time_local: "2026-09-16 09:44:00",
+      },
+    };
+    const fresh: Feature<Point> = {
+      type: "Feature",
+      id: "tatonas-2",
+      geometry: { type: "Point", coordinates: [95.59, 5.36] },
+      properties: {
+        layer: "tatonasStations",
+        title: "Pos Baru",
+        pos_name: "Pos Baru",
+        level: "AMAN",
+        occurred_at: new Date(nowMs - 60 * 1000).toISOString(),
+        time_local: "2026-09-16 09:59:00",
+      },
+    };
+    const overlay = resolveOverlayLiveRead(
+      [
+        { expires_at: overlayLiveExpiresAt("tatonasStations", nowMs), feature: old },
+        { expires_at: overlayLiveExpiresAt("tatonasStations", nowMs), feature: fresh },
+      ],
+      nowMs,
+      { ok: true, feature_count: 2 },
+    );
+    const card = tatonasCardFromOverlayRead(overlay, fetchedAt, nowMs);
+    assert.equal(card.fresh_count, 1);
+    assert.equal(card.alert_count, 0);
+    assert.equal(card.tone, "neutral");
+    assert.equal(card.highlights.some((row) => row.pos_name === "Pos Lama"), false);
+    assert.equal(card.highlights[0]?.pos_name, "Pos Baru");
   });
 });

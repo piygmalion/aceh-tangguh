@@ -74,11 +74,11 @@ describe("AN-36 parse PDGT + filter Aceh", () => {
 });
 
 describe("AN-36 tone, kosong sah, unavailable", () => {
-  it("uses BMKG categories only: Sedang=warn, worse=danger", () => {
+  it("uses BMKG categories only: Sedang=warn, worse=siaga", () => {
     assert.equal(toneFromWaveCat("Sedang"), "warn");
-    assert.equal(toneFromWaveCat("Tinggi"), "danger");
-    assert.equal(toneFromWaveCat("Sangat tinggi"), "danger");
-    assert.equal(toneFromWaveCat("Ekstrem"), "danger");
+    assert.equal(toneFromWaveCat("Tinggi"), "siaga");
+    assert.equal(toneFromWaveCat("Sangat tinggi"), "siaga");
+    assert.equal(toneFromWaveCat("Ekstrem"), "siaga");
     assert.equal(worstWaveCat(["Sedang", "Tinggi", "Sangat tinggi"]), "Sangat tinggi");
   });
 
@@ -90,7 +90,7 @@ describe("AN-36 tone, kosong sah, unavailable", () => {
     });
     assert.equal(card.kind, "maritim");
     assert.equal(card.empty, false);
-    assert.equal(card.tone, "danger");
+    assert.equal(card.tone, "siaga");
     assert.equal(card.source, "live");
     assert.equal(card.stale, false);
     assert.equal(card.href, PDGT_NASIONAL_URL);
