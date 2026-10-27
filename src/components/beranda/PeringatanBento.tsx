@@ -124,7 +124,9 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       tone: pd.tatonas.tone,
       ringkas:
         copy.kind === "stale"
-          ? t("peringatan.tatonasStale", { menit: copy.menit })
+          ? copy.menit == null
+            ? t("peringatan.tatonasStaleNoClock")
+            : t("peringatan.tatonasStale", { menit: copy.menit })
           : copy.kind === "normal"
             ? t("peringatan.tatonasEmpty")
             : t("peringatan.tatonasCount", { count: copy.count }),

@@ -1,5 +1,5 @@
 import type { MagmaCard } from "@/lib/peringatan-dini-types";
-import { TATONAS_STALE_MS, type TatonasCard } from "@/lib/tatonas/types";
+import type { TatonasCard } from "@/lib/tatonas/types";
 
 /** WIB wall clock, same offset as parseTatonasLocalTime. Kept here so the bento does not import node:crypto. */
 export function parseWibMillis(value: string | null | undefined): number | null {
@@ -20,19 +20,15 @@ export function highlightAgeMinutes(
   return Math.max(0, Math.floor((nowMs - ms) / 60_000));
 }
 
-/**
- * Age in minutes of the newest dated highlight.
- * The card sentence always includes {menit}. When no highlight has a clock,
- * that sentence keeps the existing 15-minute floor. A row must not use it.
- */
+/** Age in minutes of the newest dated highlight. Null when none of the clocks can be read. */
 export function newestHighlightAgeMinutes(
   times: Array<string | null | undefined>,
   nowMs: number,
-): number {
+): number | null {
   const dated = times
     .map((value) => highlightAgeMinutes(value, nowMs))
     .filter((age): age is number => age != null);
-  if (dated.length === 0) return Math.floor(TATONAS_STALE_MS / 60_000);
+  if (dated.length === 0) return null;
   return Math.min(...dated);
 }
 
@@ -47,7 +43,7 @@ export function tatonasStaleRow(
 }
 
 export type TatonasCopy =
-  | { kind: "stale"; menit: number }
+  | { kind: "stale"; menit: number | null }
   | { kind: "normal" }
   | { kind: "alert"; count: number };
 
