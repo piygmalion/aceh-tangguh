@@ -49,6 +49,8 @@ export type MagmaCard = {
   stale: boolean;
   source: PeringatanSource;
   example?: boolean;
+  /** Short fail-closed code. Omitted on live cards. */
+  reason?: string;
 };
 
 export type SipongiPoint = {
@@ -119,9 +121,40 @@ export const MARITIME_WARNING_STATUS_ID = "__status__";
 /** Official MAGMA homepages that expose (or may expose) `var markersGempa`. */
 export const MAGMA_HOMES = [MAGMA_HOME, MAGMA_VSI_HOME] as const;
 
+const MAGMA_REASON_SOURCE = /^(?:maps|vsi|home|vsi-home)$/;
+const MAGMA_REASON_CODE =
+  /^(?:upstream_[1-5]\d{2}|timeout|json_unreadable|empty|network|unreadable)$/;
+
+/** Keep a short code. Drop URLs, headers, bodies, and anything outside the list. */
+export function sanitizeMagmaReason(value: string | null | undefined): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.length > 160) return undefined;
+  if (MAGMA_REASON_CODE.test(trimmed)) return trimmed;
+  const parts = trimmed.split(";");
+  if (parts.length === 0 || parts.length > 8) return undefined;
+  for (const part of parts) {
+    const splitAt = part.indexOf(":");
+    if (splitAt <= 0 || part.indexOf(":", splitAt + 1) !== -1) return undefined;
+    const source = part.slice(0, splitAt);
+    const code = part.slice(splitAt + 1);
+    if (!MAGMA_REASON_SOURCE.test(source) || !MAGMA_REASON_CODE.test(code)) return undefined;
+  }
+  return parts.join(";");
+}
+
+function withoutMagmaReason(card: MagmaCard): MagmaCard {
+  if (card.reason === undefined) return card;
+  const { reason: _drop, ...rest } = card;
+  return rest;
+}
+
 /** Fail-closed gempa card when live MAGMA cannot be read. Never copies a last-known event. */
-export function unavailableMagmaCard(fetchedAt = new Date().toISOString()): MagmaCard {
-  return {
+export function unavailableMagmaCard(
+  fetchedAt = new Date().toISOString(),
+  reason?: string,
+): MagmaCard {
+  const card: MagmaCard = {
     kind: "magma",
     tone: "neutral",
     empty: true,
@@ -131,6 +164,20 @@ export function unavailableMagmaCard(fetchedAt = new Date().toISOString()): Magm
     stale: true,
     source: "unavailable",
   };
+  const safe = sanitizeMagmaReason(reason);
+  if (safe) card.reason = safe;
+  return card;
+}
+
+/** Attach a ledger reason only to the fail-closed card. Live cards stay without one. */
+export function applyMagmaRefreshReason(
+  card: MagmaCard,
+  refreshError: string | null | undefined,
+): MagmaCard {
+  if (card.source !== "unavailable") return withoutMagmaReason(card);
+  const reason = sanitizeMagmaReason(refreshError);
+  if (!reason) return withoutMagmaReason(card);
+  return { ...withoutMagmaReason(card), reason };
 }
 
 function baseMaritimCard(

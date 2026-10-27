@@ -1,7 +1,11 @@
 import { unstable_cache } from "next/cache";
 import { ACEH_BBOX } from "@/lib/basemap";
 import { readOverlayLiveForPd } from "@/lib/overlay-live";
-import { unavailableMagmaCard, type MagmaCard } from "@/lib/peringatan-dini-types";
+import {
+  applyMagmaRefreshReason,
+  unavailableMagmaCard,
+  type MagmaCard,
+} from "@/lib/peringatan-dini-types";
 import { magmaCardFromOverlayRead } from "./overlay-cards";
 
 const getCachedMagmaOverlay = unstable_cache(
@@ -14,7 +18,10 @@ export async function getMagmaPeringatan(): Promise<MagmaCard> {
   try {
     const select = await getCachedMagmaOverlay();
     if (select.kind === "select-impossible") return unavailableMagmaCard();
-    return magmaCardFromOverlayRead(select.result);
+    return applyMagmaRefreshReason(
+      magmaCardFromOverlayRead(select.result),
+      select.refreshError,
+    );
   } catch (err) {
     console.error("[peringatan-dini/magma]", err);
     return unavailableMagmaCard();
