@@ -94,6 +94,8 @@ export function overlayLiveOk(features: Feature<Point>[]): OverlayLiveResult {
 
 export type OverlayLiveStoredRow = {
   expires_at: string | null;
+  /** `overlay_live_features.updated_at`: when this row was written from a fetch. */
+  updated_at?: string | null;
   feature: Feature<Point>;
 };
 
@@ -102,7 +104,34 @@ export type OverlayLiveRefreshLedger = {
   ok: boolean;
   feature_count: number;
   error?: string | null;
+  /** `overlay_live_refresh.refreshed_at`: last fetch attempt, success or failure. */
+  refreshed_at?: string | null;
 };
+
+export function isoTimestamp(value: unknown): string | null {
+  if (typeof value !== "string" || value.trim() === "") return null;
+  const ms = Date.parse(value);
+  if (!Number.isFinite(ms)) return null;
+  return new Date(ms).toISOString();
+}
+
+/** Newest row write time. This is the fetch time, not the quake `occurred_at`. */
+export function newestOverlayRowFetchedAt(
+  rows: Array<{ updated_at?: string | null }> | null,
+): string | null {
+  if (!rows) return null;
+  let bestMs = Number.NEGATIVE_INFINITY;
+  let best: string | null = null;
+  for (const row of rows) {
+    const iso = isoTimestamp(row.updated_at);
+    if (!iso) continue;
+    const ms = Date.parse(iso);
+    if (ms < bestMs) continue;
+    bestMs = ms;
+    best = iso;
+  }
+  return best;
+}
 
 function hasStoredLiveRows(rows: OverlayLiveStoredRow[] | null): rows is OverlayLiveStoredRow[] {
   return Boolean(rows && rows.length > 0);
@@ -592,6 +621,7 @@ type LiveCacheRow = {
   properties: Json;
   occurred_at: string | null;
   expires_at: string | null;
+  updated_at: string | null;
 };
 
 async function readStoredLive(layer: OverlayLayerKey): Promise<OverlayLiveStoredRow[] | null> {
@@ -599,7 +629,7 @@ async function readStoredLive(layer: OverlayLayerKey): Promise<OverlayLiveStored
   if (!client) return null;
   const result = await client
     .from("overlay_live_features")
-    .select("id, longitude, latitude, properties, occurred_at, expires_at")
+    .select("id, longitude, latitude, properties, occurred_at, expires_at, updated_at")
     .eq("layer_key", layer);
   if (result.error) return null;
   const data = (result.data ?? []) as unknown as LiveCacheRow[];
@@ -611,6 +641,7 @@ async function readStoredLive(layer: OverlayLayerKey): Promise<OverlayLiveStored
         : {};
     return {
       expires_at: row.expires_at,
+      updated_at: row.updated_at ?? null,
       feature: pointFeature({
         id: row.id,
         lon: row.longitude,
@@ -662,7 +693,12 @@ function overlayLiveRefreshFrom(
 
 function asRefreshLedger(value: unknown): OverlayLiveRefreshLedger | null {
   if (!value || typeof value !== "object") return null;
-  const row = value as { ok?: unknown; feature_count?: unknown; error?: unknown };
+  const row = value as {
+    ok?: unknown;
+    feature_count?: unknown;
+    error?: unknown;
+    refreshed_at?: unknown;
+  };
   if (typeof row.ok !== "boolean") return null;
   if (
     typeof row.feature_count !== "number" ||
@@ -672,7 +708,9 @@ function asRefreshLedger(value: unknown): OverlayLiveRefreshLedger | null {
     return null;
   }
   const error = typeof row.error === "string" || row.error === null ? row.error : null;
-  return { ok: row.ok, feature_count: row.feature_count, error };
+  const refreshedAt =
+    typeof row.refreshed_at === "string" || row.refreshed_at === null ? row.refreshed_at : null;
+  return { ok: row.ok, feature_count: row.feature_count, error, refreshed_at: refreshedAt };
 }
 
 async function readStoredRefresh(
@@ -681,7 +719,7 @@ async function readStoredRefresh(
   const client = createServerClient();
   if (!client) return null;
   const result = await overlayLiveRefreshFrom(client)
-    .select("ok, feature_count, error")
+    .select("ok, feature_count, error, refreshed_at")
     .eq("layer_key", layer)
     .maybeSingle();
   if (result.error) return null;
@@ -820,7 +858,15 @@ export async function refreshAllOverlayLive(
 
 export type OverlayLivePdSelect =
   | { kind: "select-impossible" }
-  | { kind: "ok"; result: OverlayLiveResult; refreshError: string | null };
+  | {
+      kind: "ok";
+      result: OverlayLiveResult;
+      refreshError: string | null;
+      /** Last fetch attempt from `overlay_live_refresh.refreshed_at`. */
+      refreshedAt: string | null;
+      /** Newest `overlay_live_features.updated_at` on the rows in this read. */
+      rowsFetchedAt: string | null;
+    };
 
 /**
  * GET PD read. Distinguishes "no Supabase / SELECT threw" from AN-5 503-equivalent
@@ -839,6 +885,8 @@ export async function readOverlayLiveForPd(
       kind: "ok",
       result: resolveOverlayLiveRead(rows, Date.now(), ledger),
       refreshError: ledger?.error ?? null,
+      refreshedAt: isoTimestamp(ledger?.refreshed_at),
+      rowsFetchedAt: newestOverlayRowFetchedAt(rows),
     };
   } catch {
     return { kind: "select-impossible" };

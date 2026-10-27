@@ -14,7 +14,14 @@ export async function getMagmaPeringatan(): Promise<MagmaCard> {
   try {
     const select = await getCachedMagmaOverlay();
     if (select.kind === "select-impossible") return unavailableMagmaCard();
-    return applyMagmaFetchReason(magmaCardFromOverlayRead(select.result), select.refreshError);
+    const requestAt = new Date().toISOString();
+    return applyMagmaFetchReason(
+      magmaCardFromOverlayRead(select.result, requestAt, {
+        rowFetchedAt: select.rowsFetchedAt,
+        ledgerFetchedAt: select.refreshedAt,
+      }),
+      select.refreshError,
+    );
   } catch (err) {
     console.error("[peringatan-dini/magma]", err);
     return unavailableMagmaCard();
