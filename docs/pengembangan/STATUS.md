@@ -738,7 +738,7 @@ Popup desktop dijepit ke kanvas dikurangi legenda Status, tombol Pengaturan, pan
 
 ## FE-74 — roda lembar, akordeon Laporkan, kredit peta
 
-Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi lembar) menjadi piksel. Di Firefox scrollTop naik dan zoom tetap. `user-select: none` hanya pada kepala dan grip; teks badan tetap bisa diseleksi. Di laci 390, Laporkan menjadi akordeon sebaris (teks di x28, baris 44px, `aria-expanded`, chevron berputar, Enter/Space). Pada henti penuh, kaki lembar memuat "© OpenStreetMap · MapLibre" 13px sebagai tautan. Tinggi henti bawaan tetap.
+Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi lembar) menjadi piksel. Di Firefox scrollTop naik dan zoom tetap. `user-select: none` hanya pada kepala dan grip; teks badan tetap bisa diseleksi. Di laci 390, Laporkan menjadi akordeon sebaris (teks di x28, baris 44px, `aria-expanded`, chevron berputar, Enter/Space). Pada henti penuh, kaki lembar memuat "© OpenStreetMap · MapLibre" 13px sebagai tautan. Tinggi henti bawaan tetap. Di 1440 setelah geser kanan, jepit popup juga menghindar dari tombol "+" dan tombol ⓘ, margin 8px.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
