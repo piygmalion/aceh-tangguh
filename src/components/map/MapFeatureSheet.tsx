@@ -7,9 +7,10 @@ import {
   SHEET_HEADER_PX,
   attributionLift,
   nearestSheetSnap,
+  mapCreditParts,
   sheetFrame,
   sheetScrollTarget,
-  sheetWheelScrollTop,
+  sheetWheelStep,
   type SheetSnap,
 } from "@/lib/map-sheet";
 
@@ -56,6 +57,7 @@ export function MapFeatureSheet({
   const [dragHeight, setDragHeight] = useState<number | null>(null);
   const [safeArea, setSafeArea] = useState(0);
   const [contentHeight, setContentHeight] = useState(SHEET_HEADER_PX);
+  const [credit, setCredit] = useState<{ href: string | null; label: string }[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const dragOrigin = useRef<{ y: number; height: number } | null>(null);
@@ -135,12 +137,44 @@ export function MapFeatureSheet({
   }, []);
 
   useEffect(() => {
+    if (snap !== "full") {
+      setCredit([]);
+      return;
+    }
+    const read = () => {
+      const root = document.querySelector(".maplibregl-ctrl-attrib");
+      if (!(root instanceof HTMLElement)) return;
+      const inner = root.querySelector(".maplibregl-ctrl-attrib-inner");
+      const nodes: { href: string | null; text: string }[] = [];
+      if (inner instanceof HTMLElement) {
+        for (const child of Array.from(inner.childNodes)) {
+          if (child instanceof HTMLAnchorElement) {
+            nodes.push({ href: child.href, text: child.textContent ?? "" });
+          } else {
+            nodes.push({ href: null, text: child.textContent ?? "" });
+          }
+        }
+      }
+      setCredit(mapCreditParts(nodes));
+    };
+    read();
+    const root = document.querySelector(".maplibregl-ctrl-attrib");
+    const obs = new MutationObserver(read);
+    if (root) obs.observe(root, { childList: true, subtree: true, characterData: true });
+    return () => obs.disconnect();
+  }, [snap]);
+
+  useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
     // Window capture runs before React's root listener and before MapLibre's
     // canvas listener. MapLibre calls preventDefault on the canvas container
     // only, so a wheel whose target is the sheet never reaches it — unless a
     // descendant stops the event first. Handle it here, on the real scroller.
+    // Line and page modes become pixels. Sub-pixel trackpad momentum is kept
+    // in `remainder` so a flick still moves the sheet and never the map zoom.
+    let remainder = 0;
+    let idle = 0;
     const stop = (event: WheelEvent) => {
       const target = event.target;
       if (!(target instanceof Node) || !el.contains(target)) return;
@@ -151,16 +185,29 @@ export function MapFeatureSheet({
       scroller.setAttribute("data-sheet-scroller", "true");
       event.preventDefault();
       event.stopPropagation();
-      scroller.scrollTop = sheetWheelScrollTop({
+      const body = el.querySelector("[data-sheet-body]");
+      const pageHeight = body instanceof HTMLElement ? body.clientHeight : scroller.clientHeight;
+      const step = sheetWheelStep({
         scrollTop: scroller.scrollTop,
         scrollHeight: scroller.scrollHeight,
         clientHeight: scroller.clientHeight,
+        pageHeight,
         deltaY: event.deltaY,
         deltaMode: event.deltaMode,
+        remainder,
       });
+      remainder = step.remainder;
+      scroller.scrollTop = step.scrollTop;
+      window.clearTimeout(idle);
+      idle = window.setTimeout(() => {
+        remainder = 0;
+      }, 120);
     };
     window.addEventListener("wheel", stop, { capture: true, passive: false });
-    return () => window.removeEventListener("wheel", stop, { capture: true });
+    return () => {
+      window.clearTimeout(idle);
+      window.removeEventListener("wheel", stop, { capture: true });
+    };
   }, []);
 
   useEffect(() => {
@@ -168,7 +215,12 @@ export function MapFeatureSheet({
     if (!(header instanceof HTMLElement)) return;
     const blockFocus = (event: Event) => {
       const target = event.target;
-      if (target instanceof Element && target.closest("[data-sheet-close]")) return;
+      if (
+        target instanceof Element &&
+        target.closest("[data-sheet-close], [data-sheet-credit]")
+      ) {
+        return;
+      }
       event.preventDefault();
     };
     const release = () => {
@@ -206,14 +258,14 @@ export function MapFeatureSheet({
         aria-valuemax={1}
         aria-valuenow={snap === "default" ? 0 : 1}
         aria-label={t("sheetHandle")}
-        className="relative flex shrink-0 cursor-grab touch-none select-none items-center gap-2 px-3"
+        className="relative flex shrink-0 cursor-grab touch-none select-none items-center gap-2 px-3 pt-3"
         style={{ height: SHEET_HEADER_PX }}
         onMouseDown={(event) => {
-          if ((event.target as HTMLElement).closest("[data-sheet-close]")) return;
+          if ((event.target as HTMLElement).closest("[data-sheet-close], [data-sheet-credit]")) return;
           event.preventDefault();
         }}
         onPointerDown={(event) => {
-          if ((event.target as HTMLElement).closest("[data-sheet-close]")) return;
+          if ((event.target as HTMLElement).closest("[data-sheet-close], [data-sheet-credit]")) return;
           event.preventDefault();
           event.currentTarget.setPointerCapture(event.pointerId);
           dragOrigin.current = { y: event.clientY, height };
@@ -246,9 +298,37 @@ export function MapFeatureSheet({
           aria-hidden
           className="absolute left-1/2 top-2 h-1.5 w-10 -translate-x-1/2 rounded-full bg-[var(--border)]"
         />
-        <h2 data-sheet-title className="min-w-0 flex-1 truncate text-[1.05rem] font-semibold leading-snug">
-          {title}
-        </h2>
+        <div className="min-w-0 flex-1">
+          <h2 data-sheet-title className="truncate text-[1.05rem] font-semibold leading-snug">
+            {title}
+          </h2>
+          {snap === "full" && credit.length > 0 ? (
+            <p
+              data-sheet-credit
+              className="truncate text-[0.8125rem] leading-tight text-[var(--text-dim)]"
+            >
+              {credit.map((item, index) =>
+                item.href ? (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline"
+                  >
+                    {index > 0 ? " · " : ""}
+                    {item.label}
+                  </a>
+                ) : (
+                  <span key={item.label}>
+                    {index > 0 ? " · " : ""}
+                    {item.label}
+                  </span>
+                ),
+              )}
+            </p>
+          ) : null}
+        </div>
         <button
           type="button"
           data-sheet-close

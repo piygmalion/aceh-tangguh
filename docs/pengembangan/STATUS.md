@@ -736,3 +736,11 @@ Popup desktop dijepit ke kanvas dikurangi legenda Status, tombol Pengaturan, pan
 | --- | --- | --- | --- | --- |
 | FE-73b | frontend | jepit popup ke area peta bebas | jurnal/FE-73b.md | diverifikasi |
 
+## FE-74 — roda lembar, akordeon Laporkan, kredit peta
+
+Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi klien badan lembar) menjadi piksel, dan momentum trackpad menggulir lembar tanpa mengubah zoom. Kepala dan pegangan tidak bisa diseleksi. Di laci 390, Laporkan menjadi akordeon sebaris (inden 28px, baris 44px, `aria-expanded`). Pada henti penuh, kredit yang sudah ada di kontrol peta disalin ke kepala lembar.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-74 | frontend | roda lembar, akordeon Laporkan, kredit peta | jurnal/FE-74.md | diverifikasi |
+

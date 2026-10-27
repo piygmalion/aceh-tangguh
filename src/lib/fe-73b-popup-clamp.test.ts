@@ -135,7 +135,7 @@ describe("FE-73b popup clamp and sheet wheel", () => {
     });
     assert.equal(capped, 374);
     const sheet = read("src/components/map/MapFeatureSheet.tsx");
-    assert.match(sheet, /sheetWheelScrollTop/);
+    assert.match(sheet, /sheetWheelStep/);
     assert.match(sheet, /event\.preventDefault\(\)/);
     assert.match(sheet, /passive: false/);
     const css = read("src/app/globals.css");

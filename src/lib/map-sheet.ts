@@ -68,11 +68,61 @@ export function attributionLift(opts: {
   return Math.max(0, Math.round(opts.mapBottom - opts.sheetTop + gap));
 }
 
-/** Pixel delta for a wheel tick. Line mode is 16px; page mode is one viewport. */
-export function sheetWheelDelta(deltaY: number, deltaMode: number, clientHeight: number): number {
-  if (deltaMode === 1) return deltaY * 16;
-  if (deltaMode === 2) return deltaY * clientHeight;
+/** One DOM_DELTA_LINE tick, in CSS pixels. */
+export const SHEET_WHEEL_LINE_PX = 16;
+
+/**
+ * Pixel delta for a wheel tick.
+ * Line mode is ~16px. Page mode is the sheet body's client height.
+ * Pixel mode (trackpad, including momentum) stays in CSS pixels.
+ */
+export function sheetWheelDelta(deltaY: number, deltaMode: number, pageHeight: number): number {
+  if (deltaMode === 1) return deltaY * SHEET_WHEEL_LINE_PX;
+  if (deltaMode === 2) return deltaY * pageHeight;
   return deltaY;
+}
+
+/** Anchors already rendered by the map attribution control. */
+export function mapCreditFromAnchors(
+  anchors: { href: string; text: string }[],
+): { href: string; label: string }[] {
+  const seen = new Set<string>();
+  const links: { href: string; label: string }[] = [];
+  for (const anchor of anchors) {
+    const label = anchor.text.trim();
+    const href = anchor.href.trim();
+    if (!label || !href || seen.has(href)) continue;
+    seen.add(href);
+    links.push({ href, label });
+  }
+  return links;
+}
+
+/**
+ * Credit already shown by MapLibre, in DOM order.
+ * Text nodes stay (raster OSM/Carto). Anchors stay links. A lone MapLibre
+ * link does not replace the OpenStreetMap text beside it.
+ */
+export function mapCreditParts(
+  nodes: { href?: string | null; text: string }[],
+): { href: string | null; label: string }[] {
+  const parts: { href: string | null; label: string }[] = [];
+  const seenHref = new Set<string>();
+  for (const node of nodes) {
+    const label = node.text
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/^[|·]+|[|·]+$/g, "")
+      .trim();
+    if (!label) continue;
+    const href = node.href?.trim() || null;
+    if (href) {
+      if (seenHref.has(href)) continue;
+      seenHref.add(href);
+    }
+    parts.push({ href, label });
+  }
+  return parts;
 }
 
 /** The element that actually overflows. MapLibre's wheel handler is not this check. */
@@ -114,10 +164,43 @@ export function sheetWheelScrollTop(opts: {
   clientHeight: number;
   deltaY: number;
   deltaMode?: number;
+  /** Page-mode height. Defaults to the scroller's client height. */
+  pageHeight?: number;
 }): number {
   const max = Math.max(0, opts.scrollHeight - opts.clientHeight);
-  const delta = sheetWheelDelta(opts.deltaY, opts.deltaMode ?? 0, opts.clientHeight);
+  const delta = sheetWheelDelta(
+    opts.deltaY,
+    opts.deltaMode ?? 0,
+    opts.pageHeight ?? opts.clientHeight,
+  );
   return Math.min(max, Math.max(0, opts.scrollTop + delta));
+}
+
+/**
+ * Apply one wheel tick and keep the sub-pixel remainder.
+ * Trackpad momentum is a run of small pixel deltas; truncating each one
+ * drops the flick. The remainder is added to the next tick.
+ */
+export function sheetWheelStep(opts: {
+  scrollTop: number;
+  scrollHeight: number;
+  clientHeight: number;
+  deltaY: number;
+  deltaMode?: number;
+  pageHeight?: number;
+  remainder?: number;
+}): { scrollTop: number; remainder: number } {
+  const max = Math.max(0, opts.scrollHeight - opts.clientHeight);
+  const delta = sheetWheelDelta(
+    opts.deltaY,
+    opts.deltaMode ?? 0,
+    opts.pageHeight ?? opts.clientHeight,
+  );
+  const raw = opts.scrollTop + (opts.remainder ?? 0) + delta;
+  if (raw <= 0) return { scrollTop: 0, remainder: 0 };
+  if (raw >= max) return { scrollTop: max, remainder: 0 };
+  const scrollTop = Math.trunc(raw);
+  return { scrollTop, remainder: raw - scrollTop };
 }
 
 /** A phone tap on empty map closes the sheet. A marker tap does not. */

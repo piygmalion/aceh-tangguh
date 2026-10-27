@@ -49,11 +49,34 @@ export function ReportLaporDropdown({
           shape === "row" && "w-full justify-start",
           navInteractiveClass({ active, open, shape, surface }),
         )}
+        style={shape === "row" ? { minHeight: 44 } : undefined}
       >
         {t("lapor")}
         <ChevronDown size={14} className={open ? "rotate-180 transition" : "transition"} />
       </button>
-      {open && (
+      {open && shape === "row" ? (
+        <div data-lapor-accordion className="flex w-full flex-col">
+          <Link
+            href="/lapor/kejadian"
+            data-lapor-subrow
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center text-sm text-[var(--primary-fg)]"
+            style={{ paddingLeft: 28, minHeight: 44 }}
+          >
+            {t("laporKejadian")}
+          </Link>
+          <Link
+            href="/lapor/penanganan"
+            data-lapor-subrow
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center text-sm text-[var(--primary-fg)]"
+            style={{ paddingLeft: 28, minHeight: 44 }}
+          >
+            {t("laporPenanganan")}
+          </Link>
+        </div>
+      ) : null}
+      {open && shape !== "row" ? (
         <div className="absolute right-0 top-full z-50 mt-2 min-w-[220px] rounded-xl border border-[var(--glass-border)] bg-[var(--bg-raised)] p-1 shadow-[var(--shadow-elevated)]">
           <Link
             href="/lapor/kejadian"
@@ -70,7 +93,7 @@ export function ReportLaporDropdown({
             {t("laporPenanganan")}
           </Link>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
