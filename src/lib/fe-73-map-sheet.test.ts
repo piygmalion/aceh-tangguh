@@ -120,8 +120,11 @@ describe("FE-73 map sheet", () => {
     const sheet = read("src/components/map/MapFeatureSheet.tsx");
     assert.match(sheet, /attributionLift/);
     assert.match(sheet, /--map-attrib-lift/);
-    assert.match(sheet, /addEventListener\("wheel", stop, \{ capture: true \}\)/);
+    assert.match(sheet, /addEventListener\("wheel", stop, \{ capture: true, passive: false \}\)/);
+    assert.match(sheet, /event\.preventDefault\(\)/);
     assert.match(sheet, /event\.stopPropagation\(\)/);
+    assert.match(sheet, /sheetScrollTarget/);
+    assert.match(sheet, /sheetWheelScrollTop/);
   });
 
   it("re-clamps an open popup when the map moves", () => {
@@ -130,8 +133,10 @@ describe("FE-73 map sheet", () => {
     assert.match(viewport, /aceh:map-move/);
     const card = read("src/components/map/MapFeatureCard.tsx");
     assert.match(card, /aceh:map-move/);
-    const clamp = card.slice(card.indexOf("function clampCardHorizontally"));
-    assert.match(clamp, /popupHorizontalShift\(\{ left: rect\.left, right: rect\.right \}, window\.innerWidth\)/);
+    const clamp = card.slice(card.indexOf("function clampCardToFreeArea"));
+    assert.match(clamp, /shiftCardIntoFreeArea/);
+    assert.match(clamp, /measurePopupFreeArea/);
+    assert.match(card, /requestAnimationFrame/);
   });
 
   it("keeps the credit button and the report FAB apart at 390", () => {

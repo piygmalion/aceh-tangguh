@@ -68,6 +68,58 @@ export function attributionLift(opts: {
   return Math.max(0, Math.round(opts.mapBottom - opts.sheetTop + gap));
 }
 
+/** Pixel delta for a wheel tick. Line mode is 16px; page mode is one viewport. */
+export function sheetWheelDelta(deltaY: number, deltaMode: number, clientHeight: number): number {
+  if (deltaMode === 1) return deltaY * 16;
+  if (deltaMode === 2) return deltaY * clientHeight;
+  return deltaY;
+}
+
+/** The element that actually overflows. MapLibre's wheel handler is not this check. */
+export function canSheetScroll(el: HTMLElement): boolean {
+  const overflow = getComputedStyle(el).overflowY;
+  if (overflow !== "auto" && overflow !== "scroll" && overflow !== "overlay") return false;
+  return el.scrollHeight > el.clientHeight + 1;
+}
+
+/**
+ * Nearest overflow container from the wheel target up to the sheet.
+ * Falls back to `[data-sheet-body]` when the hit target itself cannot scroll.
+ */
+export function sheetScrollTarget(
+  root: HTMLElement,
+  target: EventTarget | null,
+  canScroll: (el: HTMLElement) => boolean = canSheetScroll,
+): HTMLElement {
+  const start = target instanceof Node && root.contains(target) ? target : root;
+  let node: Node | null = start;
+  while (node instanceof HTMLElement) {
+    if (canScroll(node)) return node;
+    if (node === root) break;
+    node = node.parentElement;
+  }
+  const body = root.querySelector("[data-sheet-body]");
+  if (body instanceof HTMLElement && canScroll(body)) return body;
+  for (const node of Array.from(root.querySelectorAll("*"))) {
+    if (node instanceof HTMLElement && canScroll(node)) return node;
+  }
+  if (body instanceof HTMLElement) return body;
+  return root;
+}
+
+/** Next sheet-body scrollTop after a wheel, clamped to the scroll range. */
+export function sheetWheelScrollTop(opts: {
+  scrollTop: number;
+  scrollHeight: number;
+  clientHeight: number;
+  deltaY: number;
+  deltaMode?: number;
+}): number {
+  const max = Math.max(0, opts.scrollHeight - opts.clientHeight);
+  const delta = sheetWheelDelta(opts.deltaY, opts.deltaMode ?? 0, opts.clientHeight);
+  return Math.min(max, Math.max(0, opts.scrollTop + delta));
+}
+
 /** A phone tap on empty map closes the sheet. A marker tap does not. */
 export function shouldCloseSheetOnMapClick(opts: {
   narrow: boolean;
