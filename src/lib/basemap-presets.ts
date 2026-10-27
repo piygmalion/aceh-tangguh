@@ -1,11 +1,7 @@
 import type { BrandBasemapId } from "./types";
 import { COLOR_TOKENS } from "./layer-colors";
-import {
-  ACEH_OSM_PMTILES_FILENAME,
-  configuredAcehOsmPmtilesUrl,
-  overlayPmtilesUrl,
-  toMapLibreVectorSourceUrl,
-} from "./tiles-url";
+import { withBasePath } from "./preview/env";
+import { configuredBasemapPmtilesUrl, toMapLibreVectorSourceUrl } from "./tiles-url";
 
 /**
  * Ink scale 50–900 derived from paper #F4F5F0, charcoal #242420, and ink #1A1A17.
@@ -24,9 +20,20 @@ export const INK_SCALE = {
   900: "#1A1A17",
 } as const;
 
-export const OPENFREEMAP_TILEJSON = "https://tiles.openfreemap.org/planet";
-export const OPENFREEMAP_GLYPHS =
-  "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf";
+/**
+ * Self-hosted MapLibre glyph ranges (`public/fonts`). Noto Sans Regular,
+ * SIL OFL 1.1. No sprite atlas: labels are text-only, so a sprite URL is omitted.
+ * Do not point this at a public glyph CDN.
+ */
+export const BASEMAP_GLYPHS_TEMPLATE = "/fonts/{fontstack}/{range}.pbf";
+
+export function basemapGlyphsUrl(): string {
+  return withBasePath(BASEMAP_GLYPHS_TEMPLATE);
+}
+
+/** Shown by MapLibre from the vector source `attribution` field. */
+export const OSM_BASEMAP_ATTRIBUTION =
+  '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
 
 export const BRAND_BASEMAP_IDS = [
   "brand-light",
@@ -62,6 +69,8 @@ type Palette = {
   background: string;
   landSecondary: string;
   landcover: string;
+  /** Parks. Light uses forest; dark uses sage with the other landcover. */
+  park: string;
   landcoverOpacity: number;
   water: string;
   roadMinor: string;
@@ -79,8 +88,9 @@ type Palette = {
 
 const LIGHT: Palette = {
   background: COLOR_TOKENS.paperWarm,
-  landSecondary: INK_SCALE[100],
-  landcover: COLOR_TOKENS.forest,
+  landSecondary: COLOR_TOKENS.sage,
+  landcover: COLOR_TOKENS.sage,
+  park: COLOR_TOKENS.forest,
   landcoverOpacity: 0.34,
   water: COLOR_TOKENS.teal,
   roadMinor: INK_SCALE[200],
@@ -100,8 +110,9 @@ export const DARK_WATER = "#4D807B";
 
 const DARK: Palette = {
   background: COLOR_TOKENS.ink,
-  landSecondary: INK_SCALE[800],
+  landSecondary: COLOR_TOKENS.sage,
   landcover: COLOR_TOKENS.sage,
+  park: COLOR_TOKENS.sage,
   landcoverOpacity: 0.32,
   water: DARK_WATER,
   roadMinor: INK_SCALE[600],
@@ -120,6 +131,7 @@ const GREY: Palette = {
   background: INK_SCALE[50],
   landSecondary: INK_SCALE[100],
   landcover: INK_SCALE[200],
+  park: INK_SCALE[200],
   landcoverOpacity: 0.55,
   water: INK_SCALE[500],
   roadMinor: INK_SCALE[200],
@@ -198,7 +210,7 @@ function layersFor(p: Palette): MapLibreLayer[] {
       "source-layer": "park",
       filter: POLY,
       paint: {
-        "fill-color": p.landcover,
+        "fill-color": p.park,
         "fill-opacity": p.landcoverOpacity,
       },
     },
@@ -422,7 +434,9 @@ function layersFor(p: Palette): MapLibreLayer[] {
   ];
 }
 
-export type BrandVectorTilesKind = "aceh-pmtiles" | "openfreemap";
+export type BasemapTone = "light" | "dark" | "grey";
+
+export type BrandVectorTilesKind = "aceh-pmtiles";
 
 export type BrandVectorTilesSource = {
   kind: BrandVectorTilesKind;
@@ -430,43 +444,62 @@ export type BrandVectorTilesSource = {
   attribution: string;
 };
 
+const TONE_BACKGROUND: Record<BasemapTone, string> = {
+  light: COLOR_TOKENS.paperWarm,
+  dark: COLOR_TOKENS.ink,
+  grey: INK_SCALE[50],
+};
+
+export function basemapToneForBrand(id: BrandBasemapId): BasemapTone {
+  if (id === "brand-dark") return "dark";
+  if (id === "brand-grey") return "grey";
+  return "light";
+}
+
+/** Theme canvas only. No tile URL, so a missing archive cannot fall through to a public server. */
+export function buildEmptyBasemapStyle(tone: BasemapTone): MapLibreStyleV8 {
+  return {
+    version: 8,
+    name: `aceh-basemap-unavailable-${tone}`,
+    glyphs: basemapGlyphsUrl(),
+    sources: {},
+    layers: [
+      {
+        id: "basemap-background",
+        type: "background",
+        paint: { "background-color": TONE_BACKGROUND[tone] },
+      },
+    ],
+  };
+}
+
 /**
- * Brand vector tiles: Aceh extract when env/file is configured, else OpenFreeMap
- * planet TileJSON. Carto raster is applied by `getBasemapStyle({ rasterFallback })`.
+ * Owned Aceh PMTiles when `NEXT_PUBLIC_BASEMAP_PMTILES_URL` (or the legacy
+ * `NEXT_PUBLIC_ACEH_OSM_PMTILES`) is set. Otherwise null — callers paint the
+ * empty canvas. A local file on disk is not implied.
  */
 export function resolveBrandVectorTilesSource(opts?: {
   acehOsmUrl?: string | null;
-  localAcehOsmPresent?: boolean;
-}): BrandVectorTilesSource {
-  const aceh =
-    opts?.acehOsmUrl?.trim() ||
-    configuredAcehOsmPmtilesUrl() ||
-    (opts?.localAcehOsmPresent
-      ? overlayPmtilesUrl(ACEH_OSM_PMTILES_FILENAME)
-      : null);
-  if (aceh) {
-    return {
-      kind: "aceh-pmtiles",
-      url: toMapLibreVectorSourceUrl(aceh),
-      attribution: "© OpenStreetMap © OpenMapTiles · Aceh extract",
-    };
-  }
+}): BrandVectorTilesSource | null {
+  const aceh = opts?.acehOsmUrl?.trim() || configuredBasemapPmtilesUrl();
+  if (!aceh) return null;
   return {
-    kind: "openfreemap",
-    url: OPENFREEMAP_TILEJSON,
-    attribution: "© OpenFreeMap © OpenMapTiles © OpenStreetMap",
+    kind: "aceh-pmtiles",
+    url: toMapLibreVectorSourceUrl(aceh),
+    attribution: OSM_BASEMAP_ATTRIBUTION,
   };
 }
 
 export function buildBrandBasemapStyle(
   id: BrandBasemapId,
-  opts?: { acehOsmUrl?: string | null; localAcehOsmPresent?: boolean }
+  opts?: { acehOsmUrl?: string | null }
 ): MapLibreStyleV8 {
   const tiles = resolveBrandVectorTilesSource(opts);
+  if (!tiles) return buildEmptyBasemapStyle(basemapToneForBrand(id));
   return {
     version: 8,
     name: STYLE_NAMES[id],
-    glyphs: OPENFREEMAP_GLYPHS,
+    glyphs: basemapGlyphsUrl(),
     sources: {
       openmaptiles: {
         type: "vector",

@@ -2,7 +2,7 @@
 
 Agent: frontend (gaya peta, pemilih, uji) bersama data (skrip bangun arsip)
 Gelombang: tiket pemilik, di luar gelombang bernomor
-Status: draf
+Status: selesai
 
 ## Niat
 
@@ -32,24 +32,65 @@ Niat bisa dijalankan tanpa menebak data resmi. Profil OpenMapTiles dipilih karen
 
 ## Perubahan
 
-|
+| Berkas | Isi |
+| --- | --- |
+| `scripts/basemap/build-aceh-pmtiles.sh`, `scripts/basemap/README.md` | Planetiler 0.9.0, profil OpenMapTiles. Unduh Geofabrik Indonesia, gunting `ACEH_BBOX`, keluaran `public/tiles/aceh-osm.pmtiles` (gitignored). |
+| `src/lib/basemap.ts`, `src/lib/basemap-presets.ts`, `src/lib/tiles-url.ts` | Satu-satunya basemap vektor adalah PMTiles milik sendiri. URL kosong atau `rasterFallback` → gaya kosong warna tema. Tidak ada Carto, tidak ada ubin OSM publik, tidak ada OpenFreeMap. |
+| `src/components/map/MapViewport.tsx`, `src/app/globals.css` | Latar stage dan gaya = `basemapCanvasColor`. Pemberitahuan `data-basemap-notice` tidak memblokir klik. Kesalahan sumber `openmaptiles` saja yang mengosongkan basemap. Overlay status memakai `statusOverlayBeforeId`. |
+| `public/fonts/` | Glif Noto Sans Regular di-host sendiri (`/fonts/{fontstack}/{range}.pbf`). Tanpa sprite. |
+| `src/lib/basemap-fallback.test.ts` | Kontrak: tidak ada `tile.openstreetmap.org` / `cartocdn`; URL terpasang → PMTiles; selain itu kanvas tema. |
+| `messages/id.json`, `messages/en.json`, `docs/basemap.md`, `README.md`, `.env.example` | Salinan dan runbook mengikuti keputusan tanpa kunci. |
+| `scripts/verify-basemap.mjs` | Probe tidak mengambil OSM atau Carto. Range PMTiles hanya jika URL http(s) terpasang. |
+
+## Temuan ketentuan CARTO
+
+Dibaca 27 Oktober 2026.
+
+- [CARTO Basemaps Terms and Conditions](https://carto.com/legal/basemap-terms/), last updated 29 September 2026. Pasal 3.b: Free Basemap Services hanya untuk Customer yang meminta dan memakai kunci API terbitan CARTO. Pasal 3.d: permintaan tanpa kunci yang sah boleh diberi watermark, dan Customer tidak boleh menyingkirkannya. Pasal 8: "Customer must always use the Basemap Services with Customer's own unique API keys."
+- [FAQ CARTO Basemaps](https://docs.carto.com/faqs/carto-basemaps). Sejak 25 September 2026 ubin raster tidak dilayani tanpa kunci (ubin bertuliskan "API KEY REQUIRED"). Tingkat gratis tetap mensyaratkan kunci (non-komersial sampai 5 juta permintaan per bulan, komersial 1 juta). FAQ juga menulis bahwa gaya vektor hari ini masih bisa dimuat tanpa kunci, dan bahwa kewajiban kunci mungkin diperluas ke vektor.
+
+Pemakaian tanpa kunci tidak diizinkan dengan jelas untuk situs informasi bencana publik ini. Kunci gratis tetap sebuah kunci, sedangkan pemilik memilih biaya kunci nol. Carto dijatuhkan seluruhnya. PMTiles adalah satu-satunya basemap vektor. Jika URL kosong atau ubin gagal, kanvas tetap warna tema dan ada pemberitahuan singkat. Overlay tetap hidup. Tidak ada ubin OSM publik.
 
 ## Bukti
 
 ```
+npm test
+# tests 1019
+# pass 1019
+# fail 0
+
+npm run typecheck   # tsc --noEmit, exit 0
+npm run lint        # exit 0; peringatan <img> yang sudah ada (CmsCoverField, MapFeatureCard, MapLayerIcon, MapMarkerPin)
+npm run build       # next build, exit 0, 84 halaman statis
+npm run check:tiles
+# aceh-osm.pmtiles skip (not built; npm run build:basemap — local/manual, not CI)
+# overlay irbi / kecamatan / village lulus anggaran
+
+src/lib/basemap-fallback.test.ts: 4 lulus
+(URL kosong → sources {} dan latar #F4F5F0; URL terpasang → pmtiles://…; rasterFallback gelap → kanvas #1A1A17)
+
+Chrome headless, next start -p 3456, /id/peta, env basemap kosong.
+Kanvas terang sampel piksel (244, 245, 240) = #F4F5F0.
+/id/peta?basemap=dark sampel piksel (26, 26, 23) = #1A1A17.
+Netlog 138 URL: tidak ada openstreetmap.org, cartocdn, atau openfreemap.
+Pemberitahuan "Peta dasar belum tersedia. Lapisan lain tetap bisa dipakai." terlihat; legenda status dan panel lapisan tetap ada.
+
+Ukuran aceh-osm.pmtiles: tidak diukur. osmium-tool tidak terpasang. Java 21 ada
+(OpenJDK 21.0.12.1). Geofabrik Indonesia sekitar 1,6 GB; bangun penuh tidak dijalankan.
+Biner tidak di-commit.
 ```
 
 ## Bacaan ulang bukti versus kriteria
 
-- [ ] Skrip bangun + README, biner tidak di-commit, URL env, Range
-- [ ] Protokol pmtiles://
-- [ ] Gaya terang dan gelap, token air, tanpa oranye/lime/biru-hitam
-- [ ] Tidak ada sumber tile.openstreetmap.org; atribusi dari field sumber
-- [ ] URL kosong atau ubin gagal = kanvas tema + pemberitahuan; overlay tetap
-- [ ] Overlay status di atas basemap; halo label tetap; tanpa kilatan putih
-- [ ] Uji, tsc, lint, build, check:tiles
-- [ ] Temuan ketentuan Carto tercatat beserta tautan
+- [x] Skrip bangun + README, biner tidak di-commit, URL env, Range
+- [x] Protokol pmtiles://
+- [x] Gaya terang dan gelap, token air, tanpa oranye/lime/biru-hitam
+- [x] Tidak ada sumber tile.openstreetmap.org; atribusi dari field sumber
+- [x] URL kosong atau ubin gagal = kanvas tema + pemberitahuan; overlay tetap
+- [x] Overlay status di atas basemap; halo label tetap; tanpa kilatan putih
+- [x] Uji, tsc, lint, build, check:tiles
+- [x] Temuan ketentuan Carto tercatat beserta tautan
 
 ## Keputusan
 
-lanjut
+selesai

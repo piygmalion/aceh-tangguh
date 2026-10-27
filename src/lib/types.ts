@@ -111,7 +111,7 @@ export interface GeoFeatureSummary {
 export interface MapUrlState {
   view: MapViewState;
   basemap: BasemapId;
-  /** Opt-in OpenFreeMap vector (`?vector=1`). Default is Carto raster. */
+  /** Legacy `?vector=1`. Basemap vektor memakai PMTiles milik sendiri, bukan OpenFreeMap. */
   preferVector: boolean;
   areaLayer: AreaLayerKey | null;
   markerLayers: MarkerLayerKey[];

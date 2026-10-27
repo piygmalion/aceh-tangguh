@@ -37,6 +37,7 @@ import {
   lodFocusFromSelection,
   mergeVillageLodFocus,
   overlayBeforeId,
+  statusOverlayBeforeId,
   rebucketVillageKabFeature,
   readKabLodFocus,
   readVillageSelection,
@@ -157,23 +158,13 @@ describe("villageDistribution LOD tiles", () => {
     assert.equal(opacity[6], 0.45);
   });
 
-  it("dark without the key gives the ink outline, and the key keeps the white outline", () => {
-    const prev = process.env.NEXT_PUBLIC_CARTO_API_KEY;
-    try {
-      delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
-      assert.equal(areaOutlineColor("dark"), AREA_OUTLINE_COLOR);
-      assert.equal(areaOutlineColor("positron"), AREA_OUTLINE_COLOR);
-      assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
-      assert.equal(areaOutlineColor("satellite"), AREA_OUTLINE_COLOR_DARK);
-      assert.equal(areaOutlineColor("brand-dark"), AREA_OUTLINE_COLOR_DARK);
-
-      process.env.NEXT_PUBLIC_CARTO_API_KEY = "present";
-      assert.equal(areaOutlineColor("dark"), AREA_OUTLINE_COLOR_DARK);
-      assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
-    } finally {
-      if (prev === undefined) delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
-      else process.env.NEXT_PUBLIC_CARTO_API_KEY = prev;
-    }
+  it("uses the white outline on dark basemaps and the ink outline on light ones", () => {
+    assert.equal(areaOutlineColor("dark"), AREA_OUTLINE_COLOR_DARK);
+    assert.equal(areaOutlineColor("positron"), AREA_OUTLINE_COLOR);
+    assert.equal(areaOutlineColor("sentinel"), AREA_OUTLINE_COLOR_DARK);
+    assert.equal(areaOutlineColor("satellite"), AREA_OUTLINE_COLOR_DARK);
+    assert.equal(areaOutlineColor("brand-dark"), AREA_OUTLINE_COLOR_DARK);
+    assert.equal(areaOutlineColor("brand-light"), AREA_OUTLINE_COLOR);
   });
 
   it("keeps kecamatan overview below z11 and desa mesh at z≥11 after a kab focus", () => {
@@ -200,6 +191,20 @@ describe("overlay beforeId", () => {
     );
     assert.equal(overlayBeforeId(() => false), undefined);
     assert.equal(overlayBeforeId(null), undefined);
+  });
+
+  it("places status overlays above basemap labels", () => {
+    assert.equal(
+      statusOverlayBeforeId((id) => id === BASEMAP_LABEL_PLACE_LAYER),
+      undefined,
+    );
+    assert.equal(
+      statusOverlayBeforeId(
+        (id) => id === MARKER_CLUSTERS_LAYER || id === BASEMAP_LABEL_PLACE_LAYER,
+      ),
+      MARKER_CLUSTERS_LAYER,
+    );
+    assert.equal(statusOverlayBeforeId(null), undefined);
   });
 
   it("recognizes kab and village fill layer ids", () => {

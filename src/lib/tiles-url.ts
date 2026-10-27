@@ -3,8 +3,9 @@
  *
  * Overlay choropleth archives stay on disk at `/tiles/...` unless
  * `NEXT_PUBLIC_TILES_BASE_URL` points at an S3/R2 public prefix.
- * The optional Aceh OSM basemap extract is a separate archive
- * (`aceh-osm.pmtiles`) — never a self-hosted planet extract.
+ * The Aceh basemap extract is a separate archive (`aceh-osm.pmtiles`)
+ * loaded from `NEXT_PUBLIC_BASEMAP_PMTILES_URL` — never a planet file
+ * and never a public OSM raster.
  */
 
 export const ACEH_OSM_PMTILES_FILENAME = "aceh-osm.pmtiles";
@@ -54,10 +55,21 @@ export function overlayPmtilesUrl(pathOrName: string): string {
   return `/tiles/${name}`;
 }
 
-/** Explicit Aceh extract URL from env, or null to keep OpenFreeMap / Carto. */
+/**
+ * Public basemap archive. `NEXT_PUBLIC_BASEMAP_PMTILES_URL` is the CDN/R2 URL
+ * (HTTP Range). `NEXT_PUBLIC_ACEH_OSM_PMTILES` remains a legacy alias.
+ * Unset means the map paints a theme canvas and does not fetch tiles.
+ */
+export function configuredBasemapPmtilesUrl(): string | null {
+  const primary = process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL?.trim();
+  if (primary) return primary;
+  const legacy = process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES?.trim();
+  return legacy || null;
+}
+
+/** @deprecated Use `configuredBasemapPmtilesUrl`. */
 export function configuredAcehOsmPmtilesUrl(): string | null {
-  const raw = process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES?.trim();
-  return raw || null;
+  return configuredBasemapPmtilesUrl();
 }
 
 /**

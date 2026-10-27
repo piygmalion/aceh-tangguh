@@ -16,6 +16,7 @@
     "test": "TSX_TSCONFIG_PATH=./tsconfig.test.json node --import tsx --test src/lib/*.test.ts src/lib/**/*.test.ts \"scripts/**/*.test.mjs\"",
     "build:tiles": "bash scripts/build-pmtiles.sh",
     "build:aceh-osm": "bash scripts/build-aceh-osm-pmtiles.sh",
+    "build:basemap": "bash scripts/basemap/build-aceh-pmtiles.sh",
     "sync:tiles": "bash scripts/sync-tiles-s3.sh",
     "build:village-geoportal": "python3 scripts/build-village-distribution-geoportal.py",
     "dissolve:kecamatan": "node scripts/dissolve-kecamatan-distribution.mjs",

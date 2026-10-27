@@ -747,3 +747,11 @@ Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi lembar) menj
 | --- | --- | --- | --- | --- |
 | FE-74 | frontend | roda lembar, akordeon Laporkan, kredit peta | jurnal/FE-74.md | diverifikasi |
 
+## BM-fallback — peta dasar PMTiles milik sendiri
+
+Basemap vektor `/peta` hanya arsip OpenMapTiles `aceh-osm.pmtiles` lewat `NEXT_PUBLIC_BASEMAP_PMTILES_URL` (alias lama `NEXT_PUBLIC_ACEH_OSM_PMTILES`). URL kosong atau ubin gagal: kanvas warna tema (`#F4F5F0` terang, `#1A1A17` gelap) dan pemberitahuan singkat; overlay tetap. Tidak ada Carto dan tidak ada ubin OSM publik. Ketentuan CARTO (https://carto.com/legal/basemap-terms/, 29 September 2026, pasal 3.b dan 8) serta FAQ (https://docs.carto.com/faqs/carto-basemaps) tidak mengizinkan pemakaian tanpa kunci dengan jelas. Air gelap tetap `#4D807B`. Glif Noto Sans di-host sendiri. Ukuran arsip belum diukur (`osmium-tool` tidak ada di mesin ini).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| BM-fallback | frontend | peta dasar PMTiles milik sendiri | jurnal/BM-fallback.md | diverifikasi |
+

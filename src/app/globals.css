@@ -615,6 +615,14 @@ a:focus-visible {
   font: inherit;
 }
 
+/* The stage paints the theme canvas. A white or blue-grey GL plate flashes
+   before the style background layer is ready. */
+.map-stage .maplibregl-map,
+.map-stage .maplibregl-canvas-container,
+.map-stage .maplibregl-canvas {
+  background-color: transparent;
+}
+
 .glass {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);

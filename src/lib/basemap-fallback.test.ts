@@ -173,4 +173,21 @@ describe("BM-fallback owned PMTiles basemap", () => {
     assert.match(String(dark.glyphs), /\/fonts\/\{fontstack\}\/\{range\}\.pbf$/);
     assert.doesNotMatch(String(dark.glyphs), /openfreemap|tiles\.openstreetmap\.org/);
   });
+
+  it("reads attribution from the style source and keeps status layers above labels", () => {
+    const viewport = read("src/components/map/MapViewport.tsx");
+    const sheet = read("src/components/map/MapFeatureSheet.tsx");
+    assert.match(viewport, /addProtocol\("pmtiles"/);
+    assert.match(viewport, /statusOverlayBeforeId/);
+    assert.match(viewport, /styleSourceAttributions\(mapStyle\)/);
+    assert.match(viewport, /data-basemap-notice/);
+    assert.match(viewport, /basemapCanvasColor/);
+    assert.match(viewport, /sourceId !== "openmaptiles"/);
+    assert.doesNotMatch(viewport, /#d4dce4/);
+    assert.doesNotMatch(viewport, /background:\s*"#(?:fff|ffffff)"/i);
+    assert.doesNotMatch(viewport, /OpenStreetMap contributors/);
+    assert.doesNotMatch(sheet, /OpenStreetMap contributors/);
+    const css = read("src/app/globals.css");
+    assert.match(css, /\.map-stage \.maplibregl-canvas/);
+  });
 });

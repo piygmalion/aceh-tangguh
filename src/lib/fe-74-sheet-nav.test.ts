@@ -127,25 +127,22 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
       { href: null, label: "© OpenStreetMap contributors" },
       { href: "https://maplibre.org/", label: "MapLibre" },
     ]);
-    const prevKey = process.env.NEXT_PUBLIC_CARTO_API_KEY;
-    process.env.NEXT_PUBLIC_CARTO_API_KEY = "present";
+    const prevPm = process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
+    process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL = "https://cdn.example.com/aceh-osm.pmtiles";
     try {
-      const cartoText = attributionCreditParts(styleSourceAttributions(getBasemapStyle("positron")))
+      const ownedText = attributionCreditParts(styleSourceAttributions(getBasemapStyle("positron")))
         .map((part) => part.label)
         .join("");
-      assert.equal(cartoText, "© OpenStreetMap contributors © CARTO");
-      const cartoLinks = attributionCreditParts(styleSourceAttributions(getBasemapStyle("positron")));
+      assert.equal(ownedText, "© OpenStreetMap contributors");
+      const ownedLinks = attributionCreditParts(styleSourceAttributions(getBasemapStyle("positron")));
       assert.equal(
-        cartoLinks.find((part) => part.label === "OpenStreetMap")?.href,
+        ownedLinks.find((part) => part.label === "OpenStreetMap")?.href,
         "https://www.openstreetmap.org/copyright",
       );
-      assert.equal(
-        cartoLinks.find((part) => part.label === "CARTO")?.href,
-        "https://carto.com/attribution/",
-      );
+      assert.equal(ownedLinks.some((part) => part.label === "CARTO"), false);
     } finally {
-      if (prevKey === undefined) delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
-      else process.env.NEXT_PUBLIC_CARTO_API_KEY = prevKey;
+      if (prevPm === undefined) delete process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
+      else process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL = prevPm;
     }
     const satelliteText = attributionCreditParts(styleSourceAttributions(getBasemapStyle("satellite")))
       .map((part) => part.label)

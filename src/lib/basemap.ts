@@ -1,12 +1,15 @@
 import type { BasemapId, BrandBasemapId, RasterBasemapId } from "./types";
+import { COLOR_TOKENS } from "./layer-colors";
 import {
   BRAND_BASEMAP_IDS,
-  OPENFREEMAP_GLYPHS,
+  basemapGlyphsUrl,
   buildBrandBasemapStyle,
+  buildEmptyBasemapStyle,
   isBrandBasemapId,
+  type BasemapTone,
 } from "./basemap-presets";
 
-export { BRAND_BASEMAP_IDS, isBrandBasemapId, OPENFREEMAP_GLYPHS };
+export { BRAND_BASEMAP_IDS, isBrandBasemapId, basemapGlyphsUrl };
 
 export const RASTER_BASEMAP_IDS: RasterBasemapId[] = [
   "positron",
@@ -22,23 +25,21 @@ export const BASEMAP_IDS: BasemapId[] = [
 ];
 
 export function isBasemapId(value: string | null | undefined): value is BasemapId {
-  if (!value || !(BASEMAP_IDS as string[]).includes(value)) return false;
-  if (value === "dark" && !cartoBasemapKeyPresent()) return false;
-  return true;
+  return !!value && (BASEMAP_IDS as string[]).includes(value);
 }
 
 export function normalizeBasemapId(value: string | null | undefined): BasemapId {
   return isBasemapId(value) ? value : "positron";
 }
 
-/** Picker list. Gelap is omitted while dark Carto tiles cannot load. */
+/** Picker list. Dark is an owned PMTiles style, so it stays visible without a key. */
 export function visibleBasemapOptions(): BasemapOption[] {
   return BASEMAP_OPTIONS.filter((option) => isBasemapId(option.id));
 }
 
 /**
- * Legacy `?basemap=dark` without a Carto key becomes positron.
- * Returns null when the query should stay as written.
+ * Older builds rewrote `?basemap=dark` when Carto tiles could not load.
+ * Dark is now an owned style, so the query is left as written.
  */
 export function rewriteHiddenDarkBasemap(search: string): string | null {
   const raw = search.startsWith("?") ? search.slice(1) : search;
@@ -66,9 +67,9 @@ export type BasemapOption = {
 };
 
 export const BASEMAP_OPTIONS: BasemapOption[] = [
-  { id: "positron", labelKey: "basemapPositron", kind: "raster" },
-  { id: "dark", labelKey: "basemapDark", kind: "raster" },
-  { id: "streets", labelKey: "basemapStreets", kind: "raster" },
+  { id: "positron", labelKey: "basemapPositron", kind: "vector" },
+  { id: "dark", labelKey: "basemapDark", kind: "vector" },
+  { id: "streets", labelKey: "basemapStreets", kind: "vector" },
   { id: "satellite", labelKey: "basemapSatellite", kind: "imagery" },
   { id: "sentinel", labelKey: "basemapSentinel", kind: "imagery" },
   { id: "brand-light", labelKey: "basemapBrandLight", kind: "vector" },
@@ -77,6 +78,15 @@ export const BASEMAP_OPTIONS: BasemapOption[] = [
 ];
 
 export type BasemapStyle = string | Record<string, unknown>;
+
+/**
+ * No remote vector-style URLs. OpenFreeMap and public OSM rasters are not
+ * fallbacks. Owned PMTiles is selected by `NEXT_PUBLIC_BASEMAP_PMTILES_URL`.
+ */
+export const BASEMAP_VECTOR_URLS: Partial<Record<BasemapId, string>> = {};
+
+const ESRI_IMAGERY_ATTRIBUTION =
+  'Tiles © <a href="https://www.esri.com/en-us/legal/terms/data-attributions" target="_blank">Esri</a> — Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community';
 
 function rasterStyle(opts: {
   name: string;
@@ -87,7 +97,7 @@ function rasterStyle(opts: {
   return {
     version: 8,
     name: opts.name,
-    glyphs: OPENFREEMAP_GLYPHS,
+    glyphs: basemapGlyphsUrl(),
     sources: {
       raster: {
         type: "raster",
@@ -109,63 +119,7 @@ function rasterStyle(opts: {
   };
 }
 
-/**
- * Optional OpenFreeMap vector styles. Not the default — the sandbox has already
- * failed to load this CDN (empty map). Enable with `?vector=1`. Raster fallback
- * is keyed Carto, or OSM.org if `NEXT_PUBLIC_CARTO_API_KEY` is unset (unkeyed
- * Carto tiles are watermarked).
- */
-export const BASEMAP_VECTOR_URLS: Partial<Record<BasemapId, string>> = {
-  positron: "https://tiles.openfreemap.org/styles/positron",
-  dark: "https://tiles.openfreemap.org/styles/dark",
-  streets: "https://tiles.openfreemap.org/styles/liberty",
-};
-
-const OSM_RASTER_TILES = ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
-const OSM_RASTER_ATTRIBUTION =
-  '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
-const CARTO_ATTRIBUTION =
-  '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors © <a href="https://carto.com/attribution/" target="_blank">CARTO</a>';
-const ESRI_IMAGERY_ATTRIBUTION =
-  'Tiles © <a href="https://www.esri.com/en-us/legal/terms/data-attributions" target="_blank">Esri</a> — Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community';
-
-/** Browser-visible Carto basemap key. Never log the value. */
-export function cartoBasemapKeyPresent(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim());
-}
-
-function cartoTileUrls(style: "light_all" | "dark_all"): string[] {
-  const key = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim() ?? "";
-  const q = `?key=${encodeURIComponent(key)}`;
-  return ["a", "b", "c"].map(
-    (s) => `https://${s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}.png${q}`
-  );
-}
-
-function cartoOrOsmRaster(opts: {
-  name: string;
-  cartoStyle: "light_all" | "dark_all";
-}): Record<string, unknown> {
-  if (cartoBasemapKeyPresent()) {
-    return rasterStyle({
-      name: opts.name,
-      tiles: cartoTileUrls(opts.cartoStyle),
-      attribution: CARTO_ATTRIBUTION,
-    });
-  }
-  return rasterStyle({
-    name: opts.name,
-    tiles: OSM_RASTER_TILES,
-    attribution: OSM_RASTER_ATTRIBUTION,
-  });
-}
-
-const STATIC_RASTER = {
-  streets: rasterStyle({
-    name: "streets-raster",
-    tiles: OSM_RASTER_TILES,
-    attribution: OSM_RASTER_ATTRIBUTION,
-  }),
+const IMAGERY: Record<"satellite" | "sentinel", BasemapStyle> = {
   satellite: rasterStyle({
     name: "satellite",
     tiles: [
@@ -176,56 +130,30 @@ const STATIC_RASTER = {
   sentinel: rasterStyle({
     name: "sentinel-s2cloudless-2024",
     tiles: [SENTINEL_CLOUDLESS_TILES],
-    attribution:
-      "Sentinel-2 cloudless © EOX (modified Copernicus Sentinel data 2024)",
+    attribution: "Sentinel-2 cloudless © EOX (modified Copernicus Sentinel data 2024)",
     maxzoom: 14,
   }),
-} as const;
-
-let rasterCatalogKey = "\0";
-let rasterCatalog: Record<RasterBasemapId, BasemapStyle> | null = null;
-
-export function getBasemapRasterCatalog(): Record<RasterBasemapId, BasemapStyle> {
-  const key = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim() ?? "";
-  if (!rasterCatalog || rasterCatalogKey !== key) {
-    rasterCatalogKey = key;
-    rasterCatalog = {
-      positron: cartoOrOsmRaster({
-        name: "positron-raster",
-        cartoStyle: "light_all",
-      }),
-      dark: cartoOrOsmRaster({ name: "dark-raster", cartoStyle: "dark_all" }),
-      streets: STATIC_RASTER.streets,
-      satellite: STATIC_RASTER.satellite,
-      sentinel: STATIC_RASTER.sentinel,
-    };
-  }
-  return rasterCatalog;
-}
-
-/** Default operational styles: keyed Carto or OSM raster, Esri, Sentinel-2. */
-export const BASEMAP_RASTER: Record<RasterBasemapId, BasemapStyle> = {
-  get positron() {
-    return getBasemapRasterCatalog().positron;
-  },
-  get dark() {
-    return getBasemapRasterCatalog().dark;
-  },
-  get streets() {
-    return getBasemapRasterCatalog().streets;
-  },
-  get satellite() {
-    return getBasemapRasterCatalog().satellite;
-  },
-  get sentinel() {
-    return getBasemapRasterCatalog().sentinel;
-  },
 };
 
-/** @deprecated Alias — raster is the default, not a fallback. */
+/** Vector operational styles (and imagery). Positron/dark/streets read the PMTiles env at call time. */
+export const BASEMAP_RASTER: Record<RasterBasemapId, BasemapStyle> = {
+  get positron() {
+    return getBasemapStyle("positron");
+  },
+  get dark() {
+    return getBasemapStyle("dark");
+  },
+  get streets() {
+    return getBasemapStyle("streets");
+  },
+  satellite: IMAGERY.satellite,
+  sentinel: IMAGERY.sentinel,
+};
+
+/** @deprecated Alias. Owned PMTiles is the operational basemap. */
 export const BASEMAP_RASTER_FALLBACKS = BASEMAP_RASTER;
 
-/** Keyed Carto (or OSM if no key) if a brand vector style/source fails. */
+/** Tone family if an owned vector style cannot load. Not a tile server. */
 export const BRAND_RASTER_FALLBACK: Record<BrandBasemapId, RasterBasemapId> = {
   "brand-light": "positron",
   "brand-dark": "dark",
@@ -233,10 +161,39 @@ export const BRAND_RASTER_FALLBACK: Record<BrandBasemapId, RasterBasemapId> = {
 };
 
 export const BASEMAP_BRAND: Record<BrandBasemapId, BasemapStyle> = {
-  "brand-light": buildBrandBasemapStyle("brand-light"),
-  "brand-dark": buildBrandBasemapStyle("brand-dark"),
-  "brand-grey": buildBrandBasemapStyle("brand-grey"),
+  get "brand-light"() {
+    return getBasemapStyle("brand-light");
+  },
+  get "brand-dark"() {
+    return getBasemapStyle("brand-dark");
+  },
+  get "brand-grey"() {
+    return getBasemapStyle("brand-grey");
+  },
 };
+
+export function basemapOwnsVectorStyle(id: BasemapId): boolean {
+  return id !== "satellite" && id !== "sentinel";
+}
+
+export function basemapTone(id: BasemapId): BasemapTone {
+  if (id === "dark" || id === "brand-dark" || id === "satellite" || id === "sentinel") {
+    return "dark";
+  }
+  if (id === "brand-grey") return "grey";
+  return "light";
+}
+
+/** Canvas behind the GL surface. Matches the style background so tiles do not flash white. */
+export function basemapCanvasColor(id: BasemapId): string {
+  return basemapTone(id) === "dark" ? COLOR_TOKENS.ink : COLOR_TOKENS.paperWarm;
+}
+
+function brandIdFor(id: BasemapId): BrandBasemapId {
+  if (id === "dark" || id === "brand-dark") return "brand-dark";
+  if (id === "brand-grey") return "brand-grey";
+  return "brand-light";
+}
 
 export function getBasemapStyle(
   id: BasemapId,
@@ -247,25 +204,36 @@ export function getBasemapStyle(
     localAcehOsmPresent?: boolean;
   }
 ): BasemapStyle {
-  if (isBrandBasemapId(id)) {
-    if (opts?.rasterFallback === true) {
-      return BASEMAP_RASTER[BRAND_RASTER_FALLBACK[id]];
-    }
-    return buildBrandBasemapStyle(id, {
-      acehOsmUrl: opts?.acehOsmUrl,
-      localAcehOsmPresent: opts?.localAcehOsmPresent,
-    });
-  }
-  // rasterFallback kept so older call sites that meant “use Carto” still work.
-  const useVector = opts?.preferVector === true && opts?.rasterFallback !== true;
-  if (useVector) {
-    return BASEMAP_VECTOR_URLS[id] ?? BASEMAP_RASTER[id];
-  }
-  return BASEMAP_RASTER[id];
+  if (id === "satellite" || id === "sentinel") return IMAGERY[id];
+  const brand = isBrandBasemapId(id) ? id : brandIdFor(id);
+  if (opts?.rasterFallback === true) return buildEmptyBasemapStyle(basemapTone(brand));
+  return buildBrandBasemapStyle(brand, { acehOsmUrl: opts?.acehOsmUrl });
 }
 
-/** Default export used by the map: keyed Carto or OSM rasters; brand styles are extra. */
+/** Operational styles. Positron, dark, and streets share the owned PMTiles archive. */
 export const BASEMAP_STYLES: Record<BasemapId, BasemapStyle> = {
-  ...BASEMAP_RASTER,
-  ...BASEMAP_BRAND,
+  get positron() {
+    return getBasemapStyle("positron");
+  },
+  get dark() {
+    return getBasemapStyle("dark");
+  },
+  get streets() {
+    return getBasemapStyle("streets");
+  },
+  get satellite() {
+    return getBasemapStyle("satellite");
+  },
+  get sentinel() {
+    return getBasemapStyle("sentinel");
+  },
+  get "brand-light"() {
+    return getBasemapStyle("brand-light");
+  },
+  get "brand-dark"() {
+    return getBasemapStyle("brand-dark");
+  },
+  get "brand-grey"() {
+    return getBasemapStyle("brand-grey");
+  },
 };
