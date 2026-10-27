@@ -6,8 +6,8 @@ Status: **usulan**. Tidak ada perubahan data, id, tile, atau Supabase di PR ini.
 
 Repo memakai lebih dari satu skema kode kabupaten Aceh:
 
-- **BPS** (urutan BPS, Simeulue = 1101): `kode_kab` di `public/fixtures/boundaries-aceh-kab.geojson` (GADM 4.1, `gadm-kab`) dan kunci `village-r3p.pmtiles` (sejak #39).
-- **Kemendagri** (urutan Permendagri, Aceh Selatan = 11.01): `kode_kab`/`kode_kabupaten` di `public/fixtures/areas/r3pDistribution.geojson`, `adm2` di `public/fixtures/aceh-kabupaten-registry.json`, dan `area_feature_meta.id`.
+- **BPS** (urutan BPS, Simeulue = 1101): `kode_kab` di `public/fixtures/boundaries-aceh-kab.geojson` (GADM 4.1, `gadm-kab`).
+- **Kemendagri** (urutan Permendagri, Aceh Selatan = 11.01): `kode_kab`/`kode_kabupaten` di `public/fixtures/areas/r3pDistribution.geojson`, `adm2` di `public/fixtures/aceh-kabupaten-registry.json`, `area_feature_meta.id`, dan prefix 4 digit `kode_desa_kelurahan` di `village-r3p.pmtiles`.
 - **Catatan:** `kode_sik` di registry **bukan** BPS walaupun metadata-nya menulis `kode_bps`. Nilainya mengikuti urutan Kemendagri, kecuali empat pasang yang tertukar (Tamiang, Jaya, Langsa, Lhokseumawe; lihat `metadata.catatan` di registry). Jadi `kode_sik` sebaiknya diperlakukan sebagai skema ketiga (SIK/PRRPKA), bukan alias BPS.
 
 15 dari 23 kab punya kode berbeda antara batas (BPS) dan r3p (Kemendagri). Saat ini tidak ada join lintas file lewat `kode_kab`, jadi belum ada yang rusak. Join baru lewat `kode_kab` akan salah untuk 15 kab tersebut.
