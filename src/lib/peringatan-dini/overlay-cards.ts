@@ -1,8 +1,9 @@
 import type { Feature, Point } from "geojson";
-import type { OverlayLiveResult } from "@/lib/overlay-live";
+import type { OverlayLiveRefreshLedger, OverlayLiveResult } from "@/lib/overlay-live";
 import {
   MAGMA_HOME,
   SIPONGI_PETA,
+  applyMagmaFetchReason,
   unavailableMagmaCard,
   type MagmaCard,
   type PeringatanTone,
@@ -94,6 +95,8 @@ export type MagmaOverlayFetchClock = {
   rowFetchedAt?: string | null;
   /** `overlay_live_refresh.refreshed_at`: last MAGMA fetch attempt. */
   ledgerFetchedAt?: string | null;
+  /** Full `overlay_live_refresh` row for this read, when the SELECT returned one. */
+  ledger?: OverlayLiveRefreshLedger | null;
 };
 
 function validIso(value: string | null | undefined): string | undefined {
@@ -103,12 +106,33 @@ function validIso(value: string | null | undefined): string | undefined {
   return new Date(ms).toISOString();
 }
 
+function ledgerAttemptIso(clock: MagmaOverlayFetchClock): string | undefined {
+  return validIso(clock.ledger?.refreshed_at) ?? validIso(clock.ledgerFetchedAt);
+}
+
+function ledgerHasError(ledger: OverlayLiveRefreshLedger | null | undefined): boolean {
+  return typeof ledger?.error === "string" && ledger.error.trim() !== "";
+}
+
+/**
+ * Rows are still in the body, but `expires_at` has passed, and the last fetch
+ * itself succeeded. A ledger error or an HTTP 503 is a different failure.
+ */
+function magmaCacheExpired(
+  result: OverlayLiveResult,
+  ledger: OverlayLiveRefreshLedger | null | undefined,
+): boolean {
+  if (result.status !== 200 || result.body.stale !== true) return false;
+  if (!ledger || ledger.ok !== true) return false;
+  return !ledgerHasError(ledger);
+}
+
 /**
  * Fresh rows: newest overlay-row `updated_at`, else the ledger attempt, else the request time.
  * Fresh empty: ledger `refreshed_at` (the fetch that cleared the layer), else the request time.
  * Unavailable (`body.stale === true` or HTTP 503): ledger `refreshed_at` when it is a real
- * timestamp, else the request time. The cached row time is an older successful write, so it
- * is not the failed attempt.
+ * timestamp, else the request time. The row on the ledger wins over a separately copied
+ * stamp. The cached row time is an older successful write, so it is not the failed attempt.
  */
 export function magmaOverlayFetchedAt(
   result: OverlayLiveResult,
@@ -116,7 +140,7 @@ export function magmaOverlayFetchedAt(
   clock: MagmaOverlayFetchClock = {},
 ): string {
   const request = validIso(requestAt) ?? requestAt;
-  const ledger = validIso(clock.ledgerFetchedAt);
+  const ledger = ledgerAttemptIso(clock);
   const row = validIso(clock.rowFetchedAt);
   const unavailable = result.status === 503 || result.body.stale === true;
   if (unavailable) return ledger ?? request;
@@ -131,7 +155,9 @@ export function magmaCardFromOverlayRead(
 ): MagmaCard {
   const stamp = magmaOverlayFetchedAt(result, fetchedAt, clock);
   if (result.status === 503 || result.body.stale === true) {
-    return unavailableMagmaCard(stamp);
+    const card = unavailableMagmaCard(stamp);
+    if (magmaCacheExpired(result, clock.ledger)) return applyMagmaFetchReason(card, "expired");
+    return applyMagmaFetchReason(card, clock.ledger?.error);
   }
   const features = pointFeatures(result);
   if (features.length === 0) return emptyLiveMagmaCard(stamp);

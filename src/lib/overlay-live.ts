@@ -866,6 +866,8 @@ export type OverlayLivePdSelect =
       refreshedAt: string | null;
       /** Newest `overlay_live_features.updated_at` on the rows in this read. */
       rowsFetchedAt: string | null;
+      /** Ledger row for this layer. Null when the refresh SELECT returned nothing. */
+      ledger: OverlayLiveRefreshLedger | null;
     };
 
 /**
@@ -887,6 +889,7 @@ export async function readOverlayLiveForPd(
       refreshError: ledger?.error ?? null,
       refreshedAt: isoTimestamp(ledger?.refreshed_at),
       rowsFetchedAt: newestOverlayRowFetchedAt(rows),
+      ledger,
     };
   } catch {
     return { kind: "select-impossible" };

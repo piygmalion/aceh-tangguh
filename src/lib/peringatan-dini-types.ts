@@ -123,7 +123,10 @@ export const MAGMA_HOMES = [MAGMA_HOME, MAGMA_VSI_HOME] as const;
 
 const MAGMA_REASON_PART =
   "(?:maps|vsi|home|vsi-home):(upstream_[1-9]\\d{2}|timeout|json_unreadable|empty|network)";
-const MAGMA_REASON = new RegExp(`^${MAGMA_REASON_PART}(?:;${MAGMA_REASON_PART})*$`);
+/** Per-source BE-75 codes, or the standalone cache-expiry token. */
+const MAGMA_REASON = new RegExp(
+  `^(?:expired|${MAGMA_REASON_PART}(?:;${MAGMA_REASON_PART})*)$`,
+);
 
 /** Accept only the joined short codes. Anything else, including a URL, is dropped. */
 export function magmaUnavailableReason(value: string | null | undefined): string | undefined {
