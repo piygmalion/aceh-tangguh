@@ -8,7 +8,9 @@ import {
   applyMagmaFetchReason,
   unavailableMagmaCard,
 } from "@/lib/peringatan-dini-types";
+import type { Feature, Point } from "geojson";
 import { fetchMagmaLive, getMagmaPeringatanFromLive } from "./magma-live";
+import { magmaCardFromOverlayRead } from "./overlay-cards";
 import {
   cardFromMagmaRaws,
   magmaRawsFromPublicPayload,
@@ -569,10 +571,185 @@ describe("MAGMA unavailable reason codes", () => {
     assert.match(magma, /applyMagmaFetchReason\(/);
     assert.match(magma, /refreshError/);
     assert.doesNotMatch(magma, /fetchMagmaLive|getMagmaPeringatanFromLive/);
-    assert.match(overlay, /select\("ok, feature_count, error"\)/);
+    assert.match(overlay, /select\("ok, feature_count, error, refreshed_at"\)/);
     assert.match(route, /NextResponse\.json\(data/);
     assert.match(aggregate, /NextResponse\.json\(data/);
     assert.doesNotMatch(route, /fetchMagmaLive/);
     assert.doesNotMatch(aggregate, /fetchMagmaLive/);
+  });
+});
+
+const REQUEST_AT = "2026-10-27T12:00:00.000Z";
+const ROW_FETCHED_AT = "2026-10-01T02:30:00.000Z";
+const LEDGER_FETCHED_AT = "2026-10-27T08:15:00.000Z";
+const QUAKE_OCCURRED_AT = "2026-06-18T10:08:13.000Z";
+
+function cachedQuake(): Feature<Point> {
+  return {
+    type: "Feature",
+    id: `magma-${JUNE18_ID}`,
+    geometry: { type: "Point", coordinates: [96.88, 4.77] },
+    properties: {
+      layer: "magmaQuakes",
+      title: "Kabupaten Bener Meriah",
+      magnitude: 2.7,
+      area: "Kabupaten Bener Meriah",
+      occurred_at: QUAKE_OCCURRED_AT,
+    },
+  };
+}
+
+function overlayRead(stale: boolean, features: Feature<Point>[]) {
+  return {
+    status: 200 as const,
+    body: {
+      type: "FeatureCollection" as const,
+      features,
+      ...(stale ? { stale: true as const } : {}),
+    },
+  };
+}
+
+describe("BE-76 MAGMA stale overlay is unavailable", () => {
+  it("turns stale rows into an unavailable card with a null event", () => {
+    const card = magmaCardFromOverlayRead(overlayRead(true, [cachedQuake()]), REQUEST_AT, {
+      rowFetchedAt: ROW_FETCHED_AT,
+      ledgerFetchedAt: LEDGER_FETCHED_AT,
+    });
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.empty, true);
+    assert.equal(card.event, null);
+    assert.equal(card.stale, true);
+    assert.equal(card.tone, "neutral");
+    assert.equal(card.href, MAGMA_HOME);
+    assertNoJune18(card);
+    assert.equal(JSON.stringify(card).includes("Bener Meriah"), false);
+    const withReason = applyMagmaFetchReason(card, "maps:upstream_403;vsi:timeout");
+    assert.equal(withReason.reason, "maps:upstream_403;vsi:timeout");
+    assert.equal(withReason.event, null);
+    assert.equal(withReason.source, "unavailable");
+  });
+
+  it("turns a stale empty read into an unavailable card", () => {
+    const card = magmaCardFromOverlayRead(overlayRead(true, []), REQUEST_AT, {
+      ledgerFetchedAt: LEDGER_FETCHED_AT,
+    });
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.empty, true);
+    assert.equal(card.event, null);
+    assert.equal(card.stale, true);
+    assert.deepEqual(card, unavailableMagmaCard(LEDGER_FETCHED_AT));
+  });
+
+  it("keeps a fresh row as a live card that is not stale", () => {
+    const card = magmaCardFromOverlayRead(overlayRead(false, [cachedQuake()]), REQUEST_AT, {
+      rowFetchedAt: ROW_FETCHED_AT,
+      ledgerFetchedAt: LEDGER_FETCHED_AT,
+    });
+    assert.equal(card.source, "live");
+    assert.equal(card.stale, false);
+    assert.equal(card.empty, false);
+    assert.equal(card.event?.id, JUNE18_ID);
+    assert.equal(card.event?.magnitude, 2.7);
+    assert.equal(Object.hasOwn(card, "reason"), false);
+    const stripped = applyMagmaFetchReason(card, "maps:upstream_403");
+    assert.equal(stripped.source, "live");
+    assert.equal(Object.hasOwn(stripped, "reason"), false);
+  });
+
+  it("keeps a fresh empty read as an empty live card", () => {
+    const card = magmaCardFromOverlayRead(overlayRead(false, []), REQUEST_AT, {
+      ledgerFetchedAt: LEDGER_FETCHED_AT,
+      rowFetchedAt: ROW_FETCHED_AT,
+    });
+    assert.equal(card.source, "live");
+    assert.equal(card.stale, false);
+    assert.equal(card.empty, true);
+    assert.equal(card.event, null);
+    assert.equal(Object.hasOwn(card, "reason"), false);
+  });
+
+  it("stamps a fresh quake with the overlay row fetch time, not the quake or the request", () => {
+    const card = magmaCardFromOverlayRead(overlayRead(false, [cachedQuake()]), REQUEST_AT, {
+      rowFetchedAt: "2026-10-01T09:30:00+07:00",
+      ledgerFetchedAt: LEDGER_FETCHED_AT,
+    });
+    assert.equal(card.fetched_at, ROW_FETCHED_AT);
+    assert.notEqual(card.fetched_at, REQUEST_AT);
+    assert.notEqual(card.fetched_at, QUAKE_OCCURRED_AT);
+  });
+
+  it("stamps a fresh quake with the ledger fetch time when the row timestamp is missing", () => {
+    const card = magmaCardFromOverlayRead(overlayRead(false, [cachedQuake()]), REQUEST_AT, {
+      rowFetchedAt: null,
+      ledgerFetchedAt: LEDGER_FETCHED_AT,
+    });
+    assert.equal(card.fetched_at, LEDGER_FETCHED_AT);
+    assert.notEqual(card.fetched_at, REQUEST_AT);
+  });
+
+  it("stamps a fresh empty read with the ledger fetch time", () => {
+    const card = magmaCardFromOverlayRead(overlayRead(false, []), REQUEST_AT, {
+      ledgerFetchedAt: LEDGER_FETCHED_AT,
+      rowFetchedAt: ROW_FETCHED_AT,
+    });
+    assert.equal(card.fetched_at, LEDGER_FETCHED_AT);
+    assert.notEqual(card.fetched_at, REQUEST_AT);
+    assert.notEqual(card.fetched_at, ROW_FETCHED_AT);
+  });
+
+  it("stamps an unavailable card with the ledger attempt time, not the cached row", () => {
+    const card = magmaCardFromOverlayRead(overlayRead(true, [cachedQuake()]), REQUEST_AT, {
+      rowFetchedAt: ROW_FETCHED_AT,
+      ledgerFetchedAt: LEDGER_FETCHED_AT,
+    });
+    assert.equal(card.fetched_at, LEDGER_FETCHED_AT);
+    assert.notEqual(card.fetched_at, ROW_FETCHED_AT);
+    assert.notEqual(card.fetched_at, REQUEST_AT);
+    assert.notEqual(card.fetched_at, QUAKE_OCCURRED_AT);
+  });
+
+  it("stamps an unavailable card with the request time when the ledger has no attempt time", () => {
+    const missing = magmaCardFromOverlayRead(overlayRead(true, [cachedQuake()]), REQUEST_AT, {
+      rowFetchedAt: ROW_FETCHED_AT,
+      ledgerFetchedAt: null,
+    });
+    assert.equal(missing.source, "unavailable");
+    assert.equal(missing.event, null);
+    assert.equal(missing.fetched_at, REQUEST_AT);
+    assert.notEqual(missing.fetched_at, ROW_FETCHED_AT);
+    const invalid = magmaCardFromOverlayRead(overlayRead(true, []), REQUEST_AT, {
+      ledgerFetchedAt: "not-a-date",
+    });
+    assert.equal(invalid.fetched_at, REQUEST_AT);
+    assert.equal(invalid.source, "unavailable");
+    assert.equal(invalid.event, null);
+  });
+
+  it("reads row and ledger fetch times into the GET card", () => {
+    const magma = readFileSync(join(process.cwd(), "src/lib/peringatan-dini/magma.ts"), "utf8");
+    const overlay = readFileSync(join(process.cwd(), "src/lib/overlay-live.ts"), "utf8");
+    assert.match(magma, /rowFetchedAt: select\.rowsFetchedAt/);
+    assert.match(magma, /ledgerFetchedAt: select\.refreshedAt/);
+    assert.match(overlay, /rowsFetchedAt: newestOverlayRowFetchedAt\(rows\)/);
+    assert.match(overlay, /refreshedAt: isoTimestamp\(ledger\?\.refreshed_at\)/);
+    assert.match(
+      overlay,
+      /select\("id, longitude, latitude, properties, occurred_at, expires_at, updated_at"\)/,
+    );
+    const section = readFileSync(
+      join(process.cwd(), "src/components/PeringatanDiniSection.tsx"),
+      "utf8",
+    );
+    const bento = readFileSync(
+      join(process.cwd(), "src/components/beranda/PeringatanBento.tsx"),
+      "utf8",
+    );
+    const magmaView = section.slice(
+      section.indexOf("function MagmaCardView"),
+      section.indexOf("function SipongiCardView"),
+    );
+    assert.doesNotMatch(magmaView, /reason/);
+    assert.doesNotMatch(bento, /magma\.reason|card\.reason|\.reason/);
   });
 });

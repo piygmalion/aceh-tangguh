@@ -135,7 +135,7 @@ describe("AN-52 MAGMA / Sipongi / Tatonas cards from overlay L1", () => {
     assert.deepEqual(card, unavailableMagmaCard(fetchedAt));
   });
 
-  it("maps L1 rows + ledger fail to MAGMA stale live cache from the row", async () => {
+  it("maps L1 rows + ledger fail to MAGMA unavailable without the cached quake", async () => {
     const { magmaCardFromOverlayRead } = await import("./overlay-cards");
     const overlay = resolveOverlayLiveRead(
       [{ expires_at: overlayLiveExpiresAt("magmaQuakes", nowMs), feature: magmaFeature() }],
@@ -145,13 +145,13 @@ describe("AN-52 MAGMA / Sipongi / Tatonas cards from overlay L1", () => {
     assert.equal(overlay.status, 200);
     assert.equal(overlay.body.stale, true);
     const card = magmaCardFromOverlayRead(overlay, fetchedAt);
-    assert.equal(card.source, "live");
+    assert.equal(card.source, "unavailable");
     assert.equal(card.stale, true);
-    assert.equal(card.empty, false);
-    assert.equal(card.event?.id, JUNE18_ID);
-    assert.equal(card.event?.magnitude, 2.7);
-    assert.equal(card.tone, "neutral");
-    assert.match(card.event?.wilayah ?? "", /Bener Meriah/);
+    assert.equal(card.empty, true);
+    assert.equal(card.event, null);
+    assert.equal(JSON.stringify(card).includes(JUNE18_ID), false);
+    assert.equal(JSON.stringify(card).includes("Bener Meriah"), false);
+    assert.deepEqual(card, unavailableMagmaCard(fetchedAt));
   });
 
   it("maps empty-ok ledger to live empty MAGMA without inventing magnitude", async () => {
