@@ -132,7 +132,12 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
         copy.kind === "stale"
           ? pd.tatonas.highlights.slice(0, 4).map((h) => {
               const row = tatonasStaleRow(h.pos_name, h.time_local, Date.now());
-              return t("peringatan.tatonasRowStale", row);
+              if (row.menit == null || row.min == null) return row.nama;
+              return t("peringatan.tatonasRowStale", {
+                nama: row.nama,
+                menit: row.menit,
+                min: row.min,
+              });
             })
           : pd.tatonas.highlights.slice(0, 4).map((h) => `${h.pos_name}: ${h.level}`),
       stempel: jamPendek(pd.tatonas.fetched_at, locale),

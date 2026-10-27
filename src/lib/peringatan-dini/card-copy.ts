@@ -10,32 +10,38 @@ export function parseWibMillis(value: string | null | undefined): number | null 
   return Number.isFinite(ms) ? ms : null;
 }
 
-/** Age of one post. A missing clock uses the existing 15-minute floor, not a new threshold. */
-export function highlightAgeMinutes(timeLocal: string | null | undefined, nowMs: number): number {
+/** Age of one post. Unknown when the clock is missing or unreadable — never a stand-in of 15. */
+export function highlightAgeMinutes(
+  timeLocal: string | null | undefined,
+  nowMs: number,
+): number | null {
   const ms = parseWibMillis(timeLocal);
-  if (ms == null) return Math.floor(TATONAS_STALE_MS / 60_000);
+  if (ms == null) return null;
   return Math.max(0, Math.floor((nowMs - ms) / 60_000));
 }
 
-/** Age in minutes of the newest highlight. Missing clocks use the existing 15-minute floor. */
+/**
+ * Age in minutes of the newest dated highlight.
+ * The card sentence always includes {menit}. When no highlight has a clock,
+ * that sentence keeps the existing 15-minute floor. A row must not use it.
+ */
 export function newestHighlightAgeMinutes(
   times: Array<string | null | undefined>,
   nowMs: number,
 ): number {
-  const ages = times.map((value) => highlightAgeMinutes(value, nowMs));
   const dated = times
-    .map((value, index) => (parseWibMillis(value) == null ? null : ages[index]))
+    .map((value) => highlightAgeMinutes(value, nowMs))
     .filter((age): age is number => age != null);
   if (dated.length === 0) return Math.floor(TATONAS_STALE_MS / 60_000);
   return Math.min(...dated);
 }
 
-/** Stale row copy. The level word is omitted; the age is this post's own clock. */
+/** Stale row. A known clock carries this post's age. An unknown clock is the name only. */
 export function tatonasStaleRow(
   posName: string,
   timeLocal: string | null | undefined,
   nowMs: number,
-): { nama: string; menit: number; min: number } {
+): { nama: string; menit: number | null; min: number | null } {
   const age = highlightAgeMinutes(timeLocal, nowMs);
   return { nama: posName, menit: age, min: age };
 }
