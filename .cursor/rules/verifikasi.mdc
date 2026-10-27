@@ -1,0 +1,24 @@
+---
+description: Perintah jalan, build, lint, uji, dan cek sebelum membuka PR
+globs: ["src/**/*.ts", "src/**/*.tsx", "scripts/**/*.mjs", "scripts/**/*.js", "scripts/**/*.py", "messages/**/*.json", "package.json"]
+alwaysApply: false
+---
+
+# Verifikasi
+
+Node 22. Pasang dengan `npm ci` (CI dan `vercel.json` memakai npm, bukan Bun).
+
+```bash
+npm run dev          # http://localhost:3000/id
+npm run build        # scripts/run-next-build.mjs
+npm run start
+npm run lint         # next lint, eslint-config-next
+npm run typecheck    # tsc --noEmit
+npm test             # node --test lewat tsx
+```
+
+`npm test` menjalankan `src/lib/*.test.ts`, `src/lib/**/*.test.ts`, dan `scripts/**/*.test.mjs` dengan `tsconfig.test.json`. Playwright tidak ada di `package.json`. Sebutannya di `typescript-testing.mdc` bukan perintah proyek ini.
+
+Sebelum PR untuk perubahan kode: `npm run lint`, `npm run typecheck`, dan `npm test` harus lulus. Itu sama dengan job `quality` di `.github/workflows/ci.yml`. Perubahan UI dicek di rute `/id` dan padanan `/en` yang benar-benar berubah, termasuk keadaan kosong atau gagal. `npm run build` dipakai bila perubahan menyentuh konfigurasi Next, rute, atau impor yang hanya pecah saat build.
+
+Jangan menganggap `npm test` hijau sebagai izin mengubah domain, env, skema, nama rute, atau `vercel.json`.

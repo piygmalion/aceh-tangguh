@@ -1,0 +1,24 @@
+---
+description: Larangan inti SIK Aceh — bahasa pemilik, domain, env, skema, rute, Vercel, secret, data, dan merge
+alwaysApply: true
+---
+
+# Larangan inti
+
+Pemilik repositori ini adalah Pygmalion Indonesia (WIB). Balas pemilik dalam Bahasa Indonesia. Judul dan deskripsi PR dalam Bahasa Indonesia.
+
+Agen membuka pull request saja. Jangan merge dan jangan menyalakan auto-merge.
+
+Jangan ubah hal berikut kecuali tugas dan deskripsi PR menyebut persetujuan itu secara eksplisit:
+
+- Domain, termasuk `https://aceh-tangguh.vercel.app`, `SITE_ORIGIN`, dan `PRODUCTION_SITE_ORIGIN`.
+- Nama variabel lingkungan (`.env.example`, `.env.production`, `docs/vercel.md`). Jangan menambah `STATIC_EXPORT`, `GITHUB_PAGES`, atau `NEXT_PUBLIC_BASE_PATH` pada proyek Vercel.
+- Skema basis data dan berkas di `supabase/migrations/`. Migrasi yang sudah ada tidak disunting. Berkas SQL baru tetap butuh persetujuan yang sama.
+- Nama rute: `pathnames` di `src/i18n/routing.ts` dan path di `src/app/api/`.
+- `vercel.json` dan pengaturan deploy Vercel (perintah instal, perintah build, region).
+
+Jangan commit secret: `.env.local`, `SUPABASE_SERVICE_ROLE_KEY`, kunci PII, token cron, atau kunci API. `.env.production` yang terlacak hanya memuat kunci anon publik. Jangan menaruh nilai rahasia di situ.
+
+Jangan menghapus berkas data: `public/fixtures/`, `public/tiles/` yang di-commit, `data/`, `public/media/`, atau `*.db` / `*.sqlite`. `data/sik/sik_aceh.db` di-gitignore dan tidak di-commit.
+
+Jangan mengarang kode perangkat Tatonas, zona KRB, atau angka korban. Jangan mengubah kredit foto di `public/media/CREDITS.md`.
