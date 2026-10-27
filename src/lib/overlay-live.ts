@@ -4,7 +4,7 @@ import type { Feature, FeatureCollection, Point } from "geojson";
 import { isAcehRelevant, isInsideAcehBbox } from "@/lib/peringatan-dini/aceh";
 import { fetchMagmaQuakeRaws } from "@/lib/peringatan-dini/magma-live";
 import { occurredIso, type MagmaRaw } from "@/lib/peringatan-dini/magma-parse";
-import { SIPONGI_OPSROOM, SIPONGI_PETA } from "@/lib/peringatan-dini-types";
+import { SIPONGI_OPSROOM, SIPONGI_PETA, magmaUnavailableReason } from "@/lib/peringatan-dini-types";
 import { fetchTatonasDtData } from "@/lib/tatonas/client";
 import { parseTatonasStations } from "@/lib/tatonas/parse";
 import { createServerClient, createServiceClient } from "@/lib/supabase/server";
@@ -101,6 +101,7 @@ export type OverlayLiveStoredRow = {
 export type OverlayLiveRefreshLedger = {
   ok: boolean;
   feature_count: number;
+  error?: string | null;
 };
 
 function hasStoredLiveRows(rows: OverlayLiveStoredRow[] | null): rows is OverlayLiveStoredRow[] {
@@ -661,7 +662,7 @@ function overlayLiveRefreshFrom(
 
 function asRefreshLedger(value: unknown): OverlayLiveRefreshLedger | null {
   if (!value || typeof value !== "object") return null;
-  const row = value as { ok?: unknown; feature_count?: unknown };
+  const row = value as { ok?: unknown; feature_count?: unknown; error?: unknown };
   if (typeof row.ok !== "boolean") return null;
   if (
     typeof row.feature_count !== "number" ||
@@ -670,7 +671,8 @@ function asRefreshLedger(value: unknown): OverlayLiveRefreshLedger | null {
   ) {
     return null;
   }
-  return { ok: row.ok, feature_count: row.feature_count };
+  const error = typeof row.error === "string" || row.error === null ? row.error : null;
+  return { ok: row.ok, feature_count: row.feature_count, error };
 }
 
 async function readStoredRefresh(
@@ -679,7 +681,7 @@ async function readStoredRefresh(
   const client = createServerClient();
   if (!client) return null;
   const result = await overlayLiveRefreshFrom(client)
-    .select("ok, feature_count")
+    .select("ok, feature_count, error")
     .eq("layer_key", layer)
     .maybeSingle();
   if (result.error) return null;
@@ -757,8 +759,17 @@ export async function refreshOverlayLive(
       error: ledgerOk ? undefined : "ledger write failed",
     };
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("[overlay-live/refresh]", key, err);
+    const raw = err instanceof Error ? err.message : String(err);
+    const message = key === "magmaQuakes" ? (magmaUnavailableReason(raw) ?? null) : raw;
+    if (key === "magmaQuakes") {
+      console.error(
+        "[overlay-live/refresh]",
+        key,
+        message ?? (err instanceof Error ? err.name : "unavailable"),
+      );
+    } else {
+      console.error("[overlay-live/refresh]", key, err);
+    }
     const remaining = await countStoredLive(key);
     await writeOverlayLiveRefresh({
       layer_key: key,
@@ -767,7 +778,13 @@ export async function refreshOverlayLive(
       feature_count: remaining,
       error: message,
     });
-    return { key, ok: false, count: remaining, expires_at: null, error: message };
+    return {
+      key,
+      ok: false,
+      count: remaining,
+      expires_at: null,
+      error: message ?? undefined,
+    };
   }
 }
 
@@ -803,7 +820,7 @@ export async function refreshAllOverlayLive(
 
 export type OverlayLivePdSelect =
   | { kind: "select-impossible" }
-  | { kind: "ok"; result: OverlayLiveResult };
+  | { kind: "ok"; result: OverlayLiveResult; refreshError: string | null };
 
 /**
  * GET PD read. Distinguishes "no Supabase / SELECT threw" from AN-5 503-equivalent
@@ -818,7 +835,11 @@ export async function readOverlayLiveForPd(
     const rows = await readStoredLive(key);
     if (rows === null) return { kind: "select-impossible" };
     const ledger = await readStoredRefresh(key);
-    return { kind: "ok", result: resolveOverlayLiveRead(rows, Date.now(), ledger) };
+    return {
+      kind: "ok",
+      result: resolveOverlayLiveRead(rows, Date.now(), ledger),
+      refreshError: ledger?.error ?? null,
+    };
   } catch {
     return { kind: "select-impossible" };
   }
