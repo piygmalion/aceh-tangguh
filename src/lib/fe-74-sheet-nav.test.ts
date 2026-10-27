@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { shiftCardIntoFreeArea } from "@/components/map/MapFeatureCard";
 import {
   SHEET_WHEEL_LINE_PX,
   mapCreditFromAnchors,
@@ -147,5 +148,43 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
     assert.match(sheet, /height,/);
     const css = read("src/app/globals.css");
     assert.match(css, /data-sheet-snap="full"\] \.maplibregl-ctrl-bottom-right/);
+  });
+
+  it("keeps a right-side popup clear of the report button and the attribution button", () => {
+    const canvas = { left: 0, top: 96, right: 1112, bottom: 900 };
+    const fab = { left: 1032, top: 820, right: 1088, bottom: 876 };
+    const info = { left: 1072, top: 860, right: 1100, bottom: 888 };
+    const attrib = { left: 833, top: 856, right: 1112, bottom: 900 };
+    const card = { left: 768, top: 486, right: 1104, bottom: 848 };
+    const overlapY = Math.min(card.bottom, fab.bottom) - Math.max(card.top, fab.top);
+    assert.equal(overlapY, 28);
+    const shift = shiftCardIntoFreeArea({ card, canvas, obstacles: [attrib, fab, info] });
+    const placed = {
+      left: card.left + shift.dx,
+      top: card.top + shift.dy,
+      right: card.right + shift.dx,
+      bottom: card.bottom + shift.dy,
+    };
+    const blocks = (box: { left: number; top: number; right: number; bottom: number }) => {
+      const grown = {
+        left: box.left - 8,
+        top: box.top - 8,
+        right: box.right + 8,
+        bottom: box.bottom + 8,
+      };
+      return (
+        placed.left < grown.right &&
+        grown.left < placed.right &&
+        placed.top < grown.bottom &&
+        grown.top < placed.bottom
+      );
+    };
+    assert.equal(blocks(fab), false);
+    assert.equal(blocks(info), false);
+    assert.equal(blocks(attrib), false);
+    assert.ok(placed.bottom <= fab.top - 8);
+    const source = read("src/components/map/MapFeatureCard.tsx");
+    assert.match(source, /\[data-map-chrome='fab'\] button/);
+    assert.match(source, /\.maplibregl-ctrl-attrib-button/);
   });
 });
