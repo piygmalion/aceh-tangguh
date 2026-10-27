@@ -171,4 +171,33 @@ describe("FE-75 layers omit markers and clusters", () => {
     assert.match(viewport, /key=\{sortedKeys\.join\(","\)\}/);
     assert.equal(read("src/app/api/layers/markers/route.ts").includes("geojsonForMarkerLayers"), false);
   });
+
+  it("treats a missing layer property as disasterEvents", () => {
+    const bare = {
+      type: "Feature" as const,
+      id: "bare",
+      geometry: { type: "Point" as const, coordinates: [96.2, 4.5] },
+      properties: { title: "bare" },
+    };
+    const noProps = {
+      type: "Feature" as const,
+      id: "no-props",
+      geometry: { type: "Point" as const, coordinates: [96.3, 4.6] },
+      properties: null,
+    };
+    const fc: FeatureCollection = {
+      type: "FeatureCollection",
+      features: [point("facHealth", "health"), bare, noProps],
+    };
+    const health = geojsonForMarkerLayers(fc, ["facHealth"]);
+    assert.deepEqual(
+      health.features.map((feature) => feature.id),
+      ["health"],
+    );
+    const disasters = geojsonForMarkerLayers(fc, ["disasterEvents"]);
+    assert.deepEqual(
+      disasters.features.map((feature) => feature.id),
+      ["bare", "no-props"],
+    );
+  });
 });
