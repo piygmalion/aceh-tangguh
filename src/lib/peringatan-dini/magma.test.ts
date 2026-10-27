@@ -2,7 +2,12 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { MAGMA_HOME, MAGMA_VSI_HOME } from "@/lib/peringatan-dini-types";
+import {
+  MAGMA_HOME,
+  MAGMA_VSI_HOME,
+  applyMagmaFetchReason,
+  unavailableMagmaCard,
+} from "@/lib/peringatan-dini-types";
 import { fetchMagmaLive, getMagmaPeringatanFromLive } from "./magma-live";
 import {
   cardFromMagmaRaws,
@@ -141,6 +146,7 @@ describe("getMagmaPeringatanFromLive fail-closed", () => {
     assert.equal(card.source, "live");
     assert.equal(card.event?.id, JUNE18_ID);
     assert.equal(card.empty, false);
+    assert.equal(Object.hasOwn(card, "reason"), false);
   });
 });
 
@@ -386,5 +392,187 @@ describe("public MAGMA JSON", () => {
   it("does not treat success:false or an empty list as rows", () => {
     assert.deepEqual(magmaRawsFromPublicPayload({ success: false, data: { earthquake: [] } }), []);
     assert.deepEqual(magmaRawsFromPublicPayload({ success: true, data: { earthquake: [] } }), []);
+  });
+});
+
+const REASON =
+  /^(?:maps|vsi|home|vsi-home):(upstream_[1-9]\d{2}|timeout|json_unreadable|empty|network)(?:;(?:maps|vsi|home|vsi-home):(upstream_[1-9]\d{2}|timeout|json_unreadable|empty|network))*$/;
+
+function assertFailClosed(card: {
+  empty: boolean;
+  stale: boolean;
+  source: string;
+  event: unknown;
+  tone: string;
+  href: string;
+  reason?: string;
+}) {
+  assert.equal(card.empty, true);
+  assert.equal(card.stale, true);
+  assert.equal(card.source, "unavailable");
+  assert.equal(card.event, null);
+  assert.equal(card.tone, "neutral");
+  assert.equal(card.href, MAGMA_HOME);
+  assert.match(card.reason ?? "", REASON);
+  assert.doesNotMatch(card.reason ?? "", /https?:|esdm|user-agent|referer|secret|forbidden/i);
+}
+
+function timeoutError(): Error {
+  return new DOMException("The operation was aborted due to timeout", "TimeoutError");
+}
+
+function abortError(): Error {
+  return new DOMException("This operation was aborted", "AbortError");
+}
+
+describe("MAGMA unavailable reason codes", () => {
+  it("records upstream_403 per tried source and keeps the card fail-closed", async () => {
+    const fetchImpl: typeof fetch = async () =>
+      new Response("SECRET_BODY", { status: 403, statusText: "Forbidden https://evil.example/x" });
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assertFailClosed(card);
+    assert.equal(
+      card.reason,
+      "maps:upstream_403;vsi:upstream_403;home:upstream_403;vsi-home:upstream_403",
+    );
+    assert.equal(JSON.stringify(card).includes("SECRET_BODY"), false);
+    assertNoJune18(card);
+  });
+
+  it("records upstream_<status> for a non-403 failure", async () => {
+    const fetchImpl: typeof fetch = async () => new Response("no", { status: 502 });
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assertFailClosed(card);
+    assert.equal(
+      card.reason,
+      "maps:upstream_502;vsi:upstream_502;home:upstream_502;vsi-home:upstream_502",
+    );
+  });
+
+  it("records timeout for TimeoutError and AbortError", async () => {
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+      if (url.includes("/_api/home/maps")) throw timeoutError();
+      if (url.includes("vsi.esdm.go.id/data/api/public/home/maps")) throw abortError();
+      throw timeoutError();
+    };
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assertFailClosed(card);
+    assert.equal(card.reason, "maps:timeout;vsi:timeout;home:timeout;vsi-home:timeout");
+    assert.doesNotMatch(card.reason ?? "", /aborted|operation/i);
+  });
+
+  it("records json_unreadable when the body is not JSON", async () => {
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+      if (url.endsWith("/home/maps")) {
+        return new Response("{not-json SECRET_BODY", {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      return new Response("<html>SECRET_BODY</html>", { status: 200 });
+    };
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assertFailClosed(card);
+    assert.equal(
+      card.reason,
+      "maps:json_unreadable;vsi:json_unreadable;home:json_unreadable;vsi-home:json_unreadable",
+    );
+    assert.equal(JSON.stringify(card).includes("SECRET_BODY"), false);
+    assert.equal(JSON.stringify(card).includes("not-json"), false);
+  });
+
+  it("records empty when maps JSON has no rows and later sources fail", async () => {
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+      if (url.endsWith("/home/maps")) {
+        return Response.json({ success: true, data: { earthquake: [] } });
+      }
+      return new Response("SECRET_BODY", { status: 403 });
+    };
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assertFailClosed(card);
+    assert.equal(card.reason, "maps:empty;vsi:empty;home:upstream_403;vsi-home:upstream_403");
+    assert.equal(card.event, null);
+    assert.equal(JSON.stringify(card).includes("SECRET_BODY"), false);
+  });
+
+  it("records network for a transport TypeError and drops the message", async () => {
+    const fetchImpl: typeof fetch = async () => {
+      throw new TypeError("fetch failed https://magma.esdm.go.id/_api/home/maps SECRET_BODY");
+    };
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assertFailClosed(card);
+    assert.equal(card.reason, "maps:network;vsi:network;home:network;vsi-home:network");
+    assert.equal(JSON.stringify(card.reason).includes("SECRET_BODY"), false);
+    assert.equal(JSON.stringify(card.reason).includes("magma.esdm"), false);
+  });
+
+  it("omits reason when the thrown error is an unclassified URL", async () => {
+    const card = await getMagmaPeringatanFromLive(async () => {
+      throw new Error("https://magma.esdm.go.id/_api/home/maps SECRET_BODY");
+    });
+    assert.equal(card.empty, true);
+    assert.equal(card.stale, true);
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.event, null);
+    assert.equal(Object.hasOwn(card, "reason"), false);
+    assert.equal(JSON.stringify(card).includes("SECRET_BODY"), false);
+  });
+
+  it("does not attach a reason to a live card", () => {
+    const live = {
+      ...unavailableMagmaCard("2026-10-27T00:00:00.000Z"),
+      empty: false,
+      stale: false,
+      source: "live" as const,
+      reason: "maps:upstream_403",
+    };
+    const card = applyMagmaFetchReason(live, "maps:upstream_403;vsi:timeout");
+    assert.equal(card.source, "live");
+    assert.equal(Object.hasOwn(card, "reason"), false);
+  });
+
+  it("keeps a sanitized ledger reason only on the unavailable card", () => {
+    const fetchedAt = "2026-10-27T00:00:00.000Z";
+    const unavailable = applyMagmaFetchReason(
+      unavailableMagmaCard(fetchedAt),
+      "maps:upstream_403;vsi:timeout",
+    );
+    assert.equal(unavailable.reason, "maps:upstream_403;vsi:timeout");
+    assert.equal(unavailable.empty, true);
+    assert.equal(unavailable.event, null);
+    assert.equal(unavailable.stale, true);
+    assert.equal(unavailable.source, "unavailable");
+
+    const dirty = applyMagmaFetchReason(
+      unavailableMagmaCard(fetchedAt),
+      "https://magma.esdm.go.id/_api/home/maps 403 SECRET_BODY",
+    );
+    assert.equal(Object.hasOwn(dirty, "reason"), false);
+    assert.equal(JSON.stringify(dirty).includes("SECRET_BODY"), false);
+    assert.equal(JSON.stringify(dirty).includes("_api"), false);
+  });
+
+  it("reads the ledger error onto the GET card without scraping", () => {
+    const magma = readFileSync(join(process.cwd(), "src/lib/peringatan-dini/magma.ts"), "utf8");
+    const overlay = readFileSync(join(process.cwd(), "src/lib/overlay-live.ts"), "utf8");
+    const route = readFileSync(
+      join(process.cwd(), "src/app/api/peringatan-dini/magma/route.ts"),
+      "utf8",
+    );
+    const aggregate = readFileSync(
+      join(process.cwd(), "src/app/api/peringatan-dini/route.ts"),
+      "utf8",
+    );
+    assert.match(magma, /applyMagmaFetchReason\(/);
+    assert.match(magma, /refreshError/);
+    assert.doesNotMatch(magma, /fetchMagmaLive|getMagmaPeringatanFromLive/);
+    assert.match(overlay, /select\("ok, feature_count, error"\)/);
+    assert.match(route, /NextResponse\.json\(data/);
+    assert.match(aggregate, /NextResponse\.json\(data/);
+    assert.doesNotMatch(route, /fetchMagmaLive/);
+    assert.doesNotMatch(aggregate, /fetchMagmaLive/);
   });
 });
