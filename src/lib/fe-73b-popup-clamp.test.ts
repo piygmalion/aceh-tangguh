@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { JSDOM } from "jsdom";
-import { phoneBandRightPad } from "@/lib/home-fab-reserve";
+import { phoneBandRightPad, tanggapiYieldsToNumberBand } from "@/lib/home-fab-reserve";
 import { sheetScrollTarget, sheetWheelScrollTop } from "@/lib/map-sheet";
 import {
   freeMapHorizontalBounds,
@@ -114,14 +114,22 @@ describe("FE-73b popup clamp and sheet wheel", () => {
     assert.match(hero, /data-fab-reserve/);
     assert.match(hero, /grid-cols-2/);
     assert.match(hero, /max-sm:\[&>\*:last-child:nth-child\(odd\)\]:col-span-2/);
-    assert.match(hero, /max-sm:\[&>\*:nth-child\(2n\)\]:!pr-\[3\.75rem\]/);
-    assert.match(hero, /sm:max-md:\[&>\*:nth-child\(3n\)\]:!pr-\[3\.75rem\]/);
-    assert.match(hero, /max-md:\[&>\*:last-child\]:!pr-\[3\.75rem\]/);
-    assert.doesNotMatch(hero, /max-md:pr-\[3\.75rem\]/);
+    assert.doesNotMatch(hero, /!pr-\[3\.75rem\]/);
+    assert.doesNotMatch(hero, /nth-child\(2n\)/);
     assert.match(hero, /max-md:pb-\[4\.5rem\]/);
+    assert.equal(tanggapiYieldsToNumberBand(0.3), false);
+    assert.equal(tanggapiYieldsToNumberBand(0.31), true);
+    assert.equal(tanggapiYieldsToNumberBand(1), true);
     const bot = read("src/components/panduan/GuideBot.tsx");
     assert.match(bot, /bottom-\[calc\(1rem\+env\(safe-area-inset-bottom,0px\)\)\]/);
     assert.match(bot, /right-3/);
+    assert.match(bot, /\[data-number-band\]/);
+    assert.match(bot, /IntersectionObserver/);
+    assert.match(bot, /tanggapiYieldsToNumberBand/);
+    assert.match(bot, /data-tanggapi-yield/);
+    assert.match(bot, /opacity-0/);
+    assert.match(bot, /pointer-events-none/);
+    assert.doesNotMatch(bot, /data-year-chart/);
   });
 
   it("scrolls the sheet on wheel and leaves the map zoom alone", () => {
