@@ -112,7 +112,11 @@ describe("FE-73b popup clamp and sheet wheel", () => {
     assert.equal(pad / 16, 3.75);
     const hero = read("src/components/beranda/DataHero.tsx");
     assert.match(hero, /data-fab-reserve/);
-    assert.match(hero, /max-md:pr-\[3\.75rem\]/);
+    assert.match(hero, /grid-cols-2/);
+    assert.match(hero, /max-sm:\[&>\*:last-child:nth-child\(odd\)\]:col-span-2/);
+    assert.match(hero, /max-md:\[&>\*:last-child\]:!pr-\[3\.75rem\]/);
+    assert.doesNotMatch(hero, /max-md:pr-\[3\.75rem\]/);
+    assert.match(hero, /max-md:pb-\[calc\(4\.5rem\+8px\)\]/);
     const bot = read("src/components/panduan/GuideBot.tsx");
     assert.match(bot, /bottom-\[calc\(1rem\+env\(safe-area-inset-bottom,0px\)\)\]/);
     assert.match(bot, /right-3/);

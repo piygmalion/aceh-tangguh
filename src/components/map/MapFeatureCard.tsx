@@ -187,7 +187,7 @@ function rectOf(el: Element | null): PopupRect | null {
   return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
 }
 
-/** Canvas, then the legend, Pengaturan, Layer panel, attribution strip, report +, and ⓘ. */
+/** Canvas, then zoom +/−, legend, Pengaturan, Layer panel, attribution, report +, and ⓘ. */
 export function measurePopupFreeArea(): { canvas: PopupRect; obstacles: PopupRect[] } {
   const canvas =
     rectOf(document.querySelector(".maplibregl-canvas")) ??
@@ -207,9 +207,10 @@ export function measurePopupFreeArea(): { canvas: PopupRect; obstacles: PopupRec
   const attrib =
     rectOf(document.querySelector(".maplibregl-ctrl-bottom-right")) ??
     rectOf(document.querySelector(".maplibregl-ctrl-attrib"));
+  const zoom = rectOf(document.querySelector(".maplibregl-ctrl-top-left .maplibregl-ctrl-group"));
   const fab = rectOf(document.querySelector("[data-map-chrome='fab'] button"));
   const info = rectOf(document.querySelector(".maplibregl-ctrl-attrib-button"));
-  for (const box of [settings, panel, attrib, fab, info]) {
+  for (const box of [zoom, settings, panel, attrib, fab, info]) {
     if (box) obstacles.push(box);
   }
   return { canvas, obstacles };

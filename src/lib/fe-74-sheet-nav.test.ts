@@ -215,5 +215,26 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
     const source = read("src/components/map/MapFeatureCard.tsx");
     assert.match(source, /\[data-map-chrome='fab'\] button/);
     assert.match(source, /\.maplibregl-ctrl-attrib-button/);
+    assert.match(source, /\.maplibregl-ctrl-top-left \.maplibregl-ctrl-group/);
+    const zoom = { left: 8, top: 106, right: 38, bottom: 176 };
+    const overZoom = { left: 0, top: 110, right: 336, bottom: 470 };
+    const zoomShift = shiftCardIntoFreeArea({
+      card: overZoom,
+      canvas,
+      obstacles: [zoom, fab, info],
+    });
+    const cleared = {
+      left: overZoom.left + zoomShift.dx,
+      top: overZoom.top + zoomShift.dy,
+      right: overZoom.right + zoomShift.dx,
+      bottom: overZoom.bottom + zoomShift.dy,
+    };
+    const grownZoom = { left: zoom.left - 8, top: zoom.top - 8, right: zoom.right + 8, bottom: zoom.bottom + 8 };
+    const hitsZoom =
+      cleared.left < grownZoom.right &&
+      grownZoom.left < cleared.right &&
+      cleared.top < grownZoom.bottom &&
+      grownZoom.top < cleared.bottom;
+    assert.equal(hitsZoom, false);
   });
 });

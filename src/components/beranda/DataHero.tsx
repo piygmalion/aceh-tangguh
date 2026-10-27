@@ -182,9 +182,9 @@ function Counters({
       id="dibi"
       data-number-band
       data-fab-reserve=""
-      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)] text-[var(--band-fg)] max-md:scroll-mb-[4.5rem] max-md:pb-[4.5rem] max-md:pr-[3.75rem]"
+      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)] text-[var(--band-fg)] max-md:scroll-mb-[calc(4.5rem+8px)] max-md:pb-[calc(4.5rem+8px)]"
     >
-      <div className="grid h-full grid-cols-2 gap-px bg-white/20 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid h-full grid-cols-2 gap-px bg-white/20 sm:grid-cols-3 lg:grid-cols-6 max-sm:[&>*:last-child:nth-child(odd)]:col-span-2 max-md:[&>*:last-child]:!pr-[3.75rem]">
         <Counter label={t("statistik.kejadian")}>
           <BandValue value={metrics ? metrics.kejadian : null} locale={locale} missing={missing} />
           {spark("kejadian")}
@@ -201,7 +201,7 @@ function Counters({
           <BandValue value={metrics ? metrics.luka_sakit : null} locale={locale} missing={missing} />
           {spark("luka_sakit")}
         </Counter>
-        <Counter className="col-span-2 sm:col-span-1" label={t("statistik.menderita")} note={t("statistik.menderitaNote")}>
+        <Counter label={t("statistik.menderita")} note={t("statistik.menderitaNote")}>
           <BandValue
             value={menderita ? menderita.n : null}
             decimals={menderita?.decimals ?? 0}
@@ -211,7 +211,7 @@ function Counters({
           />
           {spark("menderita_mengungsi")}
         </Counter>
-        <Counter className="col-span-2 sm:col-span-1" label={t("dibi.kerugian")} note={t("dibi.kerugianNote")}>
+        <Counter label={t("dibi.kerugian")} note={t("dibi.kerugianNote")}>
           <BandValue
             value={kerugian ? kerugian.n : null}
             decimals={kerugian?.decimals ?? 0}
