@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 import { MAGMA_HOME, MAGMA_VSI_HOME } from "@/lib/peringatan-dini-types";
 import { fetchMagmaLive, getMagmaPeringatanFromLive } from "./magma-live";
-import { parseMagmaHomepage } from "./magma-parse";
+import { magmaTone, normalizeEvent, parseMagmaHomepage, type MagmaRaw } from "./magma-parse";
 
 const JUNE18_ID = "ROQ20260618170813";
 const SNIPPET = readFileSync(
@@ -54,6 +54,38 @@ describe("parseMagmaHomepage", () => {
 
   it("throws on unparseable HTML", () => {
     assert.throws(() => parseMagmaHomepage("<html>no feed</html>"), /feed not found/);
+  });
+});
+
+function toneOf(partial: MagmaRaw): ReturnType<typeof magmaTone> {
+  const raw = { merusak: 0, mmi: null, magtype: "SR", area: "Aceh", ...partial };
+  return magmaTone(normalizeEvent(raw), raw);
+}
+
+describe("magmaTone", () => {
+  it("keeps an M2.7 with MMI text neutral", () => {
+    assert.equal(toneOf({ magnitude: 2.7, mmi: "II-III Bener Meriah" }), "neutral");
+  });
+
+  it("keeps an M4.9 neutral", () => {
+    assert.equal(toneOf({ magnitude: 4.9, mmi: null }), "neutral");
+  });
+
+  it("keeps M5+ neutral when the feed has no alert level", () => {
+    assert.equal(toneOf({ magnitude: 5 }), "neutral");
+    assert.equal(toneOf({ magnitude: 5.4, mmi: "III Kab. Aceh Selatan" }), "neutral");
+    assert.equal(toneOf({ magnitude: 6.2, merusak: 1 }), "neutral");
+  });
+
+  it("keeps a missing magnitude neutral", () => {
+    assert.equal(toneOf({ mmi: null }), "neutral");
+  });
+
+  it("uses only an explicit upstream level word", () => {
+    assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "WASPADA" }), "warn");
+    assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "AWAS" }), "danger");
+    assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "SIAGA" }), "danger");
+    assert.equal(toneOf({ magnitude: 4.9, mmi: "IV Gayo Lues", level: "Level II (Waspada)" }), "neutral");
   });
 });
 
