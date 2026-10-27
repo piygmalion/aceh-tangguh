@@ -122,7 +122,12 @@ export const BASEMAP_VECTOR_URLS: Partial<Record<BasemapId, string>> = {
 };
 
 const OSM_RASTER_TILES = ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"];
-const OSM_RASTER_ATTRIBUTION = "© OpenStreetMap contributors";
+const OSM_RASTER_ATTRIBUTION =
+  '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
+const CARTO_ATTRIBUTION =
+  '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors © <a href="https://carto.com/attribution/" target="_blank">CARTO</a>';
+const ESRI_IMAGERY_ATTRIBUTION =
+  'Tiles © <a href="https://www.esri.com/en-us/legal/terms/data-attributions" target="_blank">Esri</a> — Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community';
 
 /** Browser-visible Carto basemap key. Never log the value. */
 export function cartoBasemapKeyPresent(): boolean {
@@ -145,7 +150,7 @@ function cartoOrOsmRaster(opts: {
     return rasterStyle({
       name: opts.name,
       tiles: cartoTileUrls(opts.cartoStyle),
-      attribution: "© CARTO © OpenStreetMap",
+      attribution: CARTO_ATTRIBUTION,
     });
   }
   return rasterStyle({
@@ -166,7 +171,7 @@ const STATIC_RASTER = {
     tiles: [
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     ],
-    attribution: "Tiles © Esri",
+    attribution: ESRI_IMAGERY_ATTRIBUTION,
   }),
   sentinel: rasterStyle({
     name: "sentinel-s2cloudless-2024",

@@ -7,8 +7,7 @@ import {
   SHEET_HEADER_PX,
   attributionLift,
   nearestSheetSnap,
-  mapCreditParts,
-  sheetFooterCredit,
+  attributionCreditParts,
   sheetFrame,
   sheetScrollTarget,
   sheetWheelStep,
@@ -46,11 +45,14 @@ export function MapFeatureSheet({
   title,
   onClose,
   onSnap,
+  creditHtml = "",
   children,
 }: {
   title: string;
   onClose: () => void;
   onSnap?: (snap: SheetSnap, height: number) => void;
+  /** Attribution HTML from the active basemap style sources. */
+  creditHtml?: string;
   children: ReactNode;
 }) {
   const t = useTranslations("map");
@@ -58,7 +60,6 @@ export function MapFeatureSheet({
   const [dragHeight, setDragHeight] = useState<number | null>(null);
   const [safeArea, setSafeArea] = useState(0);
   const [contentHeight, setContentHeight] = useState(SHEET_HEADER_PX);
-  const [credit, setCredit] = useState<{ href: string | null; label: string }[]>([]);
   const rootRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const dragOrigin = useRef<{ y: number; height: number } | null>(null);
@@ -138,34 +139,6 @@ export function MapFeatureSheet({
   }, []);
 
   useEffect(() => {
-    if (snap !== "full") {
-      setCredit([]);
-      return;
-    }
-    const read = () => {
-      const root = document.querySelector(".maplibregl-ctrl-attrib");
-      if (!(root instanceof HTMLElement)) return;
-      const inner = root.querySelector(".maplibregl-ctrl-attrib-inner");
-      const nodes: { href: string | null; text: string }[] = [];
-      if (inner instanceof HTMLElement) {
-        for (const child of Array.from(inner.childNodes)) {
-          if (child instanceof HTMLAnchorElement) {
-            nodes.push({ href: child.href, text: child.textContent ?? "" });
-          } else {
-            nodes.push({ href: null, text: child.textContent ?? "" });
-          }
-        }
-      }
-      setCredit(mapCreditParts(nodes));
-    };
-    read();
-    const root = document.querySelector(".maplibregl-ctrl-attrib");
-    const obs = new MutationObserver(read);
-    if (root) obs.observe(root, { childList: true, subtree: true, characterData: true });
-    return () => obs.disconnect();
-  }, [snap]);
-
-  useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
     // Window capture runs before React's root listener and before MapLibre's
@@ -237,7 +210,7 @@ export function MapFeatureSheet({
     };
   }, []);
 
-  const footerCredit = snap === "full" ? sheetFooterCredit(credit) : [];
+  const footerCredit = snap === "full" ? attributionCreditParts(creditHtml) : [];
 
   return (
     <div
@@ -329,16 +302,23 @@ export function MapFeatureSheet({
       {footerCredit.length > 0 ? (
         <p
           data-sheet-credit
-          className="shrink-0 truncate px-3 pb-3 text-[0.8125rem] leading-none text-[var(--text-dim)]"
+          className="shrink-0 px-3 pb-3 pt-1 text-[0.8125rem] leading-snug text-[var(--text-dim)]"
         >
-          {footerCredit.map((item, index) => (
-            <span key={item.label}>
-              {index > 0 ? " · " : ""}
-              <a href={item.href} target="_blank" rel="noreferrer" className="underline">
+          {footerCredit.map((item, index) =>
+            item.href ? (
+              <a
+                key={`${item.href}-${index}`}
+                href={item.href}
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
                 {item.label}
               </a>
-            </span>
-          ))}
+            ) : (
+              <span key={`text-${index}`}>{item.label}</span>
+            ),
+          )}
         </p>
       ) : null}
     </div>

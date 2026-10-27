@@ -125,28 +125,60 @@ export function mapCreditParts(
   return parts;
 }
 
-const OSM_CREDIT_HREF = "https://www.openstreetmap.org/copyright";
-const MAPLIBRE_CREDIT_HREF = "https://maplibre.org/";
+function decodeAttributionText(raw: string): string {
+  return raw
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&mdash;/g, "—")
+    .replace(/&ndash;/g, "–")
+    .replace(/&copy;/g, "©")
+    .replace(/\s+/g, " ");
+}
 
 /**
- * Short footer line for a full-height sheet: "© OpenStreetMap · MapLibre".
- * Hrefs come from the live attribution when it has them. The line is empty
- * when the control does not mention OpenStreetMap or MapLibre.
+ * Attribution HTML from the active basemap style's sources.
+ * Same dedupe as the ⓘ control: drop a string that is contained in a longer one,
+ * then join with " | ". MapLibre's own link is not a style source, so it is absent.
  */
-export function sheetFooterCredit(
-  parts: { href: string | null; label: string }[],
-): { href: string; label: string }[] {
-  const osm = parts.find(
-    (part) => /openstreetmap/i.test(part.label) || /openstreetmap\.org/i.test(part.href ?? ""),
-  );
-  const libre = parts.find(
-    (part) => /maplibre/i.test(part.label) || /maplibre\.org/i.test(part.href ?? ""),
-  );
-  if (!osm && !libre) return [];
-  return [
-    { href: osm?.href || OSM_CREDIT_HREF, label: "© OpenStreetMap" },
-    { href: libre?.href || MAPLIBRE_CREDIT_HREF, label: "MapLibre" },
-  ];
+export function styleSourceAttributions(style: unknown): string {
+  if (!style || typeof style !== "object") return "";
+  const sources = (style as { sources?: Record<string, { attribution?: string } | undefined> }).sources;
+  if (!sources) return "";
+  const attributions: string[] = [];
+  for (const source of Object.values(sources)) {
+    const attribution = source?.attribution?.trim();
+    if (!attribution || attributions.includes(attribution)) continue;
+    attributions.push(attribution);
+  }
+  attributions.sort((a, b) => a.length - b.length);
+  const kept = attributions.filter((attrib, index) => {
+    for (let later = index + 1; later < attributions.length; later += 1) {
+      if (attributions[later].includes(attrib)) return false;
+    }
+    return true;
+  });
+  return kept.join(" | ");
+}
+
+/** Split style attribution HTML into the text and links the control shows. Labels are not rewritten. */
+export function attributionCreditParts(html: string): { href: string | null; label: string }[] {
+  const parts: { href: string | null; label: string }[] = [];
+  const anchors = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let last = 0;
+  let match: RegExpExecArray | null;
+  while ((match = anchors.exec(html))) {
+    const before = decodeAttributionText(html.slice(last, match.index));
+    if (before.trim()) parts.push({ href: null, label: before });
+    const label = decodeAttributionText(match[2]);
+    if (label.trim()) parts.push({ href: match[1], label: label.trim() });
+    last = match.index + match[0].length;
+  }
+  const after = decodeAttributionText(html.slice(last));
+  if (after.trim()) parts.push({ href: null, label: after });
+  return parts;
 }
 
 /** The element that actually overflows. MapLibre's wheel handler is not this check. */

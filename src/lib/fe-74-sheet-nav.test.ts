@@ -3,13 +3,15 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { shiftCardIntoFreeArea } from "@/components/map/MapFeatureCard";
+import { getBasemapStyle } from "@/lib/basemap";
 import {
   SHEET_WHEEL_LINE_PX,
+  attributionCreditParts,
   mapCreditFromAnchors,
   mapCreditParts,
-  sheetFooterCredit,
   sheetWheelDelta,
   sheetWheelStep,
+  styleSourceAttributions,
 } from "@/lib/map-sheet";
 
 function read(rel: string): string {
@@ -125,27 +127,54 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
       { href: null, label: "© OpenStreetMap contributors" },
       { href: "https://maplibre.org/", label: "MapLibre" },
     ]);
-    const line = sheetFooterCredit(mixed);
-    assert.deepEqual(
-      line.map((item) => item.label).join(" · "),
-      "© OpenStreetMap · MapLibre",
+    const prevKey = process.env.NEXT_PUBLIC_CARTO_API_KEY;
+    process.env.NEXT_PUBLIC_CARTO_API_KEY = "present";
+    try {
+      const cartoText = attributionCreditParts(styleSourceAttributions(getBasemapStyle("positron")))
+        .map((part) => part.label)
+        .join("");
+      assert.equal(cartoText, "© OpenStreetMap contributors © CARTO");
+      const cartoLinks = attributionCreditParts(styleSourceAttributions(getBasemapStyle("positron")));
+      assert.equal(
+        cartoLinks.find((part) => part.label === "OpenStreetMap")?.href,
+        "https://www.openstreetmap.org/copyright",
+      );
+      assert.equal(
+        cartoLinks.find((part) => part.label === "CARTO")?.href,
+        "https://carto.com/attribution/",
+      );
+    } finally {
+      if (prevKey === undefined) delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
+      else process.env.NEXT_PUBLIC_CARTO_API_KEY = prevKey;
+    }
+    const satelliteText = attributionCreditParts(styleSourceAttributions(getBasemapStyle("satellite")))
+      .map((part) => part.label)
+      .join("");
+    assert.match(satelliteText, /Esri/);
+    assert.match(satelliteText, /Vantor/);
+    assert.match(satelliteText, /Earthstar Geographics/);
+    assert.match(satelliteText, /GIS User Community/);
+    assert.equal(
+      attributionCreditParts(styleSourceAttributions(getBasemapStyle("satellite"))).find(
+        (part) => part.label === "Esri",
+      )?.href,
+      "https://www.esri.com/en-us/legal/terms/data-attributions",
     );
-    assert.equal(line[0]?.href, "https://www.openstreetmap.org/copyright");
-    assert.equal(line[1]?.href, "https://maplibre.org/");
-    assert.deepEqual(sheetFooterCredit([{ href: null, label: "Tiles © Esri" }]), []);
     const sheet = read("src/components/map/MapFeatureSheet.tsx");
     const header = sheet.slice(sheet.indexOf('role="slider"'), sheet.indexOf("data-sheet-body"));
     assert.doesNotMatch(header, /data-sheet-credit/);
     const footer = sheet.slice(sheet.indexOf("data-sheet-body"));
     assert.match(footer, /data-sheet-credit/);
-    assert.match(sheet, /sheetFooterCredit/);
-    assert.match(sheet, /mapCreditParts/);
-    assert.match(sheet, /\.maplibregl-ctrl-attrib-inner/);
-    assert.match(sheet, /inner\.childNodes/);
+    assert.match(sheet, /attributionCreditParts/);
+    assert.match(sheet, /creditHtml/);
+    assert.doesNotMatch(sheet, /sheetFooterCredit/);
+    assert.doesNotMatch(sheet, /© OpenStreetMap · MapLibre/);
     assert.match(sheet, /snap === "full"/);
-    assert.match(sheet, /\.maplibregl-ctrl-attrib/);
     assert.match(sheet, /text-\[0\.8125rem\]/);
     assert.match(sheet, /height,/);
+    const viewport = read("src/components/map/MapViewport.tsx");
+    assert.match(viewport, /styleSourceAttributions\(mapStyle\)/);
+    assert.match(viewport, /creditHtml=\{basemapCredit\}/);
     const css = read("src/app/globals.css");
     assert.match(css, /data-sheet-snap="full"\] \.maplibregl-ctrl-bottom-right/);
   });
