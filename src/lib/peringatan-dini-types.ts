@@ -49,6 +49,8 @@ export type MagmaCard = {
   stale: boolean;
   source: PeringatanSource;
   example?: boolean;
+  /** Short fail-closed codes only. Absent on live cards. */
+  reason?: string;
 };
 
 export type SipongiPoint = {
@@ -119,18 +121,42 @@ export const MARITIME_WARNING_STATUS_ID = "__status__";
 /** Official MAGMA homepages that expose (or may expose) `var markersGempa`. */
 export const MAGMA_HOMES = [MAGMA_HOME, MAGMA_VSI_HOME] as const;
 
+const MAGMA_REASON_PART =
+  "(?:maps|vsi|home|vsi-home):(upstream_[1-9]\\d{2}|timeout|json_unreadable|empty|network)";
+const MAGMA_REASON = new RegExp(`^${MAGMA_REASON_PART}(?:;${MAGMA_REASON_PART})*$`);
+
+/** Accept only the joined short codes. Anything else, including a URL, is dropped. */
+export function magmaUnavailableReason(value: string | null | undefined): string | undefined {
+  if (typeof value !== "string" || value.length === 0 || value.length > 200) return undefined;
+  return MAGMA_REASON.test(value) ? value : undefined;
+}
+
+/** Live cards never carry `reason`. Unavailable cards carry it only when the text is a short code. */
+export function applyMagmaFetchReason(card: MagmaCard, refreshError?: string | null): MagmaCard {
+  const { reason: existing, ...rest } = card;
+  if (card.source !== "unavailable") return rest;
+  const reason = magmaUnavailableReason(refreshError ?? existing);
+  return reason ? { ...rest, reason } : rest;
+}
+
 /** Fail-closed gempa card when live MAGMA cannot be read. Never copies a last-known event. */
-export function unavailableMagmaCard(fetchedAt = new Date().toISOString()): MagmaCard {
-  return {
-    kind: "magma",
-    tone: "neutral",
-    empty: true,
-    event: null,
-    fetched_at: fetchedAt,
-    href: MAGMA_HOME,
-    stale: true,
-    source: "unavailable",
-  };
+export function unavailableMagmaCard(
+  fetchedAt = new Date().toISOString(),
+  reason?: string,
+): MagmaCard {
+  return applyMagmaFetchReason(
+    {
+      kind: "magma",
+      tone: "neutral",
+      empty: true,
+      event: null,
+      fetched_at: fetchedAt,
+      href: MAGMA_HOME,
+      stale: true,
+      source: "unavailable",
+    },
+    reason,
+  );
 }
 
 function baseMaritimCard(

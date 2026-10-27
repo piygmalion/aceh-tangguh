@@ -637,6 +637,7 @@ Tindak lanjut data: `public.anggaran_analisis`, `public.anggaran_kegiatan`, dan 
 | FE-66 | frontend | Visual-1 fondasi dan pembersihan | jurnal/FE-66.md | selesai |
 | FE-67 | frontend | Visual-2 hero dan pita angka | jurnal/FE-67.md | diverifikasi |
 | BE-74 | backend | MAGMA netral, Tatonas fresh/alert, umpan JSON | jurnal/BE-74.md | selesai |
+| BE-75 | backend | Kode alasan kartu MAGMA tidak tersedia | jurnal/be-75/BE-75.md | selesai |
 
 DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
 
