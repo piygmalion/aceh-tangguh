@@ -26,6 +26,7 @@ import type {
   OverlayLayerKey,
 } from "@/lib/types";
 import { getBasemapStyle, isBrandBasemapId } from "@/lib/basemap";
+import { styleSourceAttributions } from "@/lib/map-sheet";
 import {
   ACEH_OSM_PMTILES_FILENAME,
   configuredAcehOsmPmtilesUrl,
@@ -679,6 +680,7 @@ export function MapViewport({
       localAcehOsmPresent: acehOsmConfigured ? undefined : acehOsmPresent === true,
     });
   }, [basemap, preferVector, vectorFailed, acehOsmConfigured, acehOsmPresent]);
+  const basemapCredit = useMemo(() => styleSourceAttributions(mapStyle), [mapStyle]);
 
   const haloStroke = useMemo(() => markerHaloStroke(basemap), [basemap]);
 
@@ -1398,6 +1400,7 @@ export function MapViewport({
       </Map>
       {popup && narrow ? (
         <MapFeatureSheet
+          creditHtml={basemapCredit}
           title={
             popup.localCard?.title ??
             shownFeatureCard?.title ??

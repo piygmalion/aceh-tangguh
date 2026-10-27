@@ -68,11 +68,117 @@ export function attributionLift(opts: {
   return Math.max(0, Math.round(opts.mapBottom - opts.sheetTop + gap));
 }
 
-/** Pixel delta for a wheel tick. Line mode is 16px; page mode is one viewport. */
-export function sheetWheelDelta(deltaY: number, deltaMode: number, clientHeight: number): number {
-  if (deltaMode === 1) return deltaY * 16;
-  if (deltaMode === 2) return deltaY * clientHeight;
+/** One DOM_DELTA_LINE tick, in CSS pixels. */
+export const SHEET_WHEEL_LINE_PX = 16;
+
+/**
+ * Pixel delta for a wheel tick.
+ * Line mode is ~16px. Page mode is the sheet height.
+ * Pixel mode (trackpad, including momentum) stays in CSS pixels.
+ */
+export function sheetWheelDelta(deltaY: number, deltaMode: number, pageHeight: number): number {
+  if (deltaMode === 1) return deltaY * SHEET_WHEEL_LINE_PX;
+  if (deltaMode === 2) return deltaY * pageHeight;
   return deltaY;
+}
+
+/** Anchors already rendered by the map attribution control. */
+export function mapCreditFromAnchors(
+  anchors: { href: string; text: string }[],
+): { href: string; label: string }[] {
+  const seen = new Set<string>();
+  const links: { href: string; label: string }[] = [];
+  for (const anchor of anchors) {
+    const label = anchor.text.trim();
+    const href = anchor.href.trim();
+    if (!label || !href || seen.has(href)) continue;
+    seen.add(href);
+    links.push({ href, label });
+  }
+  return links;
+}
+
+/**
+ * Credit already shown by MapLibre, in DOM order.
+ * Text nodes stay (raster OSM/Carto). Anchors stay links. A lone MapLibre
+ * link does not replace the OpenStreetMap text beside it.
+ */
+export function mapCreditParts(
+  nodes: { href?: string | null; text: string }[],
+): { href: string | null; label: string }[] {
+  const parts: { href: string | null; label: string }[] = [];
+  const seenHref = new Set<string>();
+  for (const node of nodes) {
+    const label = node.text
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/^[|·]+|[|·]+$/g, "")
+      .trim();
+    if (!label) continue;
+    const href = node.href?.trim() || null;
+    if (href) {
+      if (seenHref.has(href)) continue;
+      seenHref.add(href);
+    }
+    parts.push({ href, label });
+  }
+  return parts;
+}
+
+function decodeAttributionText(raw: string): string {
+  return raw
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&mdash;/g, "—")
+    .replace(/&ndash;/g, "–")
+    .replace(/&copy;/g, "©")
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * Attribution HTML from the active basemap style's sources.
+ * Same dedupe as the ⓘ control: drop a string that is contained in a longer one,
+ * then join with " | ". MapLibre's own link is not a style source, so it is absent.
+ */
+export function styleSourceAttributions(style: unknown): string {
+  if (!style || typeof style !== "object") return "";
+  const sources = (style as { sources?: Record<string, { attribution?: string } | undefined> }).sources;
+  if (!sources) return "";
+  const attributions: string[] = [];
+  for (const source of Object.values(sources)) {
+    const attribution = source?.attribution?.trim();
+    if (!attribution || attributions.includes(attribution)) continue;
+    attributions.push(attribution);
+  }
+  attributions.sort((a, b) => a.length - b.length);
+  const kept = attributions.filter((attrib, index) => {
+    for (let later = index + 1; later < attributions.length; later += 1) {
+      if (attributions[later].includes(attrib)) return false;
+    }
+    return true;
+  });
+  return kept.join(" | ");
+}
+
+/** Split style attribution HTML into the text and links the control shows. Labels are not rewritten. */
+export function attributionCreditParts(html: string): { href: string | null; label: string }[] {
+  const parts: { href: string | null; label: string }[] = [];
+  const anchors = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let last = 0;
+  let match: RegExpExecArray | null;
+  while ((match = anchors.exec(html))) {
+    const before = decodeAttributionText(html.slice(last, match.index));
+    if (before.trim()) parts.push({ href: null, label: before });
+    const label = decodeAttributionText(match[2]);
+    if (label.trim()) parts.push({ href: match[1], label: label.trim() });
+    last = match.index + match[0].length;
+  }
+  const after = decodeAttributionText(html.slice(last));
+  if (after.trim()) parts.push({ href: null, label: after });
+  return parts;
 }
 
 /** The element that actually overflows. MapLibre's wheel handler is not this check. */
@@ -114,10 +220,43 @@ export function sheetWheelScrollTop(opts: {
   clientHeight: number;
   deltaY: number;
   deltaMode?: number;
+  /** Page-mode height. Defaults to the scroller's client height. */
+  pageHeight?: number;
 }): number {
   const max = Math.max(0, opts.scrollHeight - opts.clientHeight);
-  const delta = sheetWheelDelta(opts.deltaY, opts.deltaMode ?? 0, opts.clientHeight);
+  const delta = sheetWheelDelta(
+    opts.deltaY,
+    opts.deltaMode ?? 0,
+    opts.pageHeight ?? opts.clientHeight,
+  );
   return Math.min(max, Math.max(0, opts.scrollTop + delta));
+}
+
+/**
+ * Apply one wheel tick and keep the sub-pixel remainder.
+ * Trackpad momentum is a run of small pixel deltas; truncating each one
+ * drops the flick. The remainder is added to the next tick.
+ */
+export function sheetWheelStep(opts: {
+  scrollTop: number;
+  scrollHeight: number;
+  clientHeight: number;
+  deltaY: number;
+  deltaMode?: number;
+  pageHeight?: number;
+  remainder?: number;
+}): { scrollTop: number; remainder: number } {
+  const max = Math.max(0, opts.scrollHeight - opts.clientHeight);
+  const delta = sheetWheelDelta(
+    opts.deltaY,
+    opts.deltaMode ?? 0,
+    opts.pageHeight ?? opts.clientHeight,
+  );
+  const raw = opts.scrollTop + (opts.remainder ?? 0) + delta;
+  if (raw <= 0) return { scrollTop: 0, remainder: 0 };
+  if (raw >= max) return { scrollTop: max, remainder: 0 };
+  const scrollTop = Math.trunc(raw);
+  return { scrollTop, remainder: raw - scrollTop };
 }
 
 /** A phone tap on empty map closes the sheet. A marker tap does not. */

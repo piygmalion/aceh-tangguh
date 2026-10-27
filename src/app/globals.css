@@ -988,6 +988,15 @@ html[data-theme="dark"] .map-layer-icon-disc {
   user-select: none;
 }
 
+.map-feature-sheet [data-sheet-grip] {
+  user-select: none;
+}
+
+.map-feature-sheet [data-sheet-body],
+.map-feature-sheet [data-sheet-body] * {
+  user-select: text;
+}
+
 .map-feature-sheet .map-feature-card-body {
   overflow: visible;
   overscroll-behavior: auto;

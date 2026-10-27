@@ -27,6 +27,10 @@ import { cn } from "@/lib/utils";
 import { chipsForPathname, type GuideChipKey, welcomeQueryForPath } from "@/lib/panduan/page-context";
 import { HOME_TOUR_STEPS } from "@/lib/panduan/tour-steps";
 import type { GuideAnswer, GuideHref, GuideLocale, GuideSlots } from "@/lib/panduan/types";
+import {
+  numberBandObserverThresholds,
+  tanggapiYieldsToNumberBand,
+} from "@/lib/home-fab-reserve";
 import { shouldShowGuideBot, shouldShowTanggapiInvite } from "@/lib/panduan/match";
 import { logUnknownIntent } from "@/lib/panduan/unknown";
 import { fetchPublicApi } from "@/lib/preview/public-api";
@@ -137,6 +141,7 @@ export function GuideBot() {
   const [session, setSession] = useState<GuideSlots>({});
   const [faq, setFaq] = useState<GuideFaqEntry[]>(STATIC_GUIDE_FAQ);
   const [showBubble, setShowBubble] = useState(false);
+  const [yieldToBand, setYieldToBand] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [threadReady, setThreadReady] = useState(false);
   const sessionRef = useRef(session);
@@ -358,6 +363,39 @@ export function GuideBot() {
   }, [open, pathname, visible]);
 
   useEffect(() => {
+    if (!visible) {
+      setYieldToBand(false);
+      return;
+    }
+    let observer: IntersectionObserver | null = null;
+    const connect = () => {
+      const band = document.querySelector("[data-number-band]");
+      if (!band) {
+        observer?.disconnect();
+        observer = null;
+        setYieldToBand(false);
+        return;
+      }
+      if (observer) return;
+      observer = new IntersectionObserver(
+        (entries) => {
+          const ratio = entries[0]?.intersectionRatio ?? 0;
+          setYieldToBand(tanggapiYieldsToNumberBand(ratio));
+        },
+        { threshold: numberBandObserverThresholds() },
+      );
+      observer.observe(band);
+    };
+    connect();
+    const watch = new MutationObserver(connect);
+    watch.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      observer?.disconnect();
+      watch.disconnect();
+    };
+  }, [pathname, visible]);
+
+  useEffect(() => {
     if (consumeOpenTanggapi()) handleOpen();
     const onOpen = () => handleOpen();
     window.addEventListener(TANGGAPI_OPEN_EVENT, onOpen);
@@ -463,12 +501,16 @@ export function GuideBot() {
 
   if (!visible && !open) return null;
 
+  const coverBand = yieldToBand && !open;
+
   return (
     <div
       data-tanggapi
+      data-tanggapi-yield={coverBand ? "band" : "show"}
       className={cn(
-        "pointer-events-none fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] right-3 z-[48] flex flex-col items-end gap-2 sm:right-6",
+        "pointer-events-none fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] right-3 z-[48] flex flex-col items-end gap-2 transition-opacity duration-200 sm:right-6",
         mobileNavOpen && "hidden",
+        coverBand && "opacity-0 [&_button]:pointer-events-none",
       )}
     >
       <AnimatePresence>
@@ -551,7 +593,12 @@ export function GuideBot() {
           aria-expanded={open}
           aria-controls={open ? dialogId : undefined}
           onClick={() => (open ? setOpen(false) : handleOpen())}
-          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--accent)] text-[var(--accent-fg)] shadow-[var(--shadow-elevated)] transition duration-200 hover:bg-[var(--accent-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]"
+          tabIndex={coverBand ? -1 : undefined}
+          aria-hidden={coverBand || undefined}
+          className={cn(
+            "pointer-events-auto inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--accent)] text-[var(--accent-fg)] shadow-[var(--shadow-elevated)] transition duration-200 hover:bg-[var(--accent-hover)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)] active:scale-[0.98]",
+            coverBand && "pointer-events-none opacity-0",
+          )}
         >
           {open ? <X size={22} /> : <TanggapiAvatar size="fab" />}
         </button>

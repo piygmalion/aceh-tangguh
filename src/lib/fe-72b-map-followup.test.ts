@@ -249,10 +249,10 @@ describe("FE-72b map follow-up", () => {
     assert.equal(tanggapiBubbleOnViewport(true), false);
     assert.equal(tanggapiBubbleOnViewport(false), true);
     const bot = read("src/components/panduan/GuideBot.tsx");
-    assert.doesNotMatch(bot, /IntersectionObserver/);
     assert.doesNotMatch(bot, /data-year-chart/);
     assert.match(bot, /tanggapiBubbleOnViewport/);
     const gate = bot.slice(bot.indexOf("tanggapiBubbleOnViewport"), bot.indexOf("setShowBubble(true)"));
+    assert.doesNotMatch(gate, /IntersectionObserver/);
     assert.match(gate, /setShowBubble\(false\)/);
     assert.match(gate, /return/);
     assert.match(bot, /setTimeout\(dismiss, 6000\)/);

@@ -7,9 +7,10 @@ import {
   SHEET_HEADER_PX,
   attributionLift,
   nearestSheetSnap,
+  attributionCreditParts,
   sheetFrame,
   sheetScrollTarget,
-  sheetWheelScrollTop,
+  sheetWheelStep,
   type SheetSnap,
 } from "@/lib/map-sheet";
 
@@ -44,11 +45,14 @@ export function MapFeatureSheet({
   title,
   onClose,
   onSnap,
+  creditHtml = "",
   children,
 }: {
   title: string;
   onClose: () => void;
   onSnap?: (snap: SheetSnap, height: number) => void;
+  /** Attribution HTML from the active basemap style sources. */
+  creditHtml?: string;
   children: ReactNode;
 }) {
   const t = useTranslations("map");
@@ -141,6 +145,10 @@ export function MapFeatureSheet({
     // canvas listener. MapLibre calls preventDefault on the canvas container
     // only, so a wheel whose target is the sheet never reaches it — unless a
     // descendant stops the event first. Handle it here, on the real scroller.
+    // Line mode is ~16px per line. Page mode is the sheet height.
+    // Sub-pixel trackpad momentum is kept in `remainder`.
+    let remainder = 0;
+    let idle = 0;
     const stop = (event: WheelEvent) => {
       const target = event.target;
       if (!(target instanceof Node) || !el.contains(target)) return;
@@ -151,16 +159,28 @@ export function MapFeatureSheet({
       scroller.setAttribute("data-sheet-scroller", "true");
       event.preventDefault();
       event.stopPropagation();
-      scroller.scrollTop = sheetWheelScrollTop({
+      const pageHeight = el.clientHeight;
+      const step = sheetWheelStep({
         scrollTop: scroller.scrollTop,
         scrollHeight: scroller.scrollHeight,
         clientHeight: scroller.clientHeight,
+        pageHeight,
         deltaY: event.deltaY,
         deltaMode: event.deltaMode,
+        remainder,
       });
+      remainder = step.remainder;
+      scroller.scrollTop = step.scrollTop;
+      window.clearTimeout(idle);
+      idle = window.setTimeout(() => {
+        remainder = 0;
+      }, 120);
     };
     window.addEventListener("wheel", stop, { capture: true, passive: false });
-    return () => window.removeEventListener("wheel", stop, { capture: true });
+    return () => {
+      window.clearTimeout(idle);
+      window.removeEventListener("wheel", stop, { capture: true });
+    };
   }, []);
 
   useEffect(() => {
@@ -168,7 +188,12 @@ export function MapFeatureSheet({
     if (!(header instanceof HTMLElement)) return;
     const blockFocus = (event: Event) => {
       const target = event.target;
-      if (target instanceof Element && target.closest("[data-sheet-close]")) return;
+      if (
+        target instanceof Element &&
+        target.closest("[data-sheet-close]")
+      ) {
+        return;
+      }
       event.preventDefault();
     };
     const release = () => {
@@ -184,6 +209,8 @@ export function MapFeatureSheet({
       header.removeEventListener("pointerup", release);
     };
   }, []);
+
+  const footerCredit = snap === "full" ? attributionCreditParts(creditHtml) : [];
 
   return (
     <div
@@ -206,7 +233,7 @@ export function MapFeatureSheet({
         aria-valuemax={1}
         aria-valuenow={snap === "default" ? 0 : 1}
         aria-label={t("sheetHandle")}
-        className="relative flex shrink-0 cursor-grab touch-none select-none items-center gap-2 px-3"
+        className="relative flex shrink-0 cursor-grab touch-none select-none items-center gap-2 px-3 pt-3"
         style={{ height: SHEET_HEADER_PX }}
         onMouseDown={(event) => {
           if ((event.target as HTMLElement).closest("[data-sheet-close]")) return;
@@ -244,11 +271,14 @@ export function MapFeatureSheet({
       >
         <span
           aria-hidden
-          className="absolute left-1/2 top-2 h-1.5 w-10 -translate-x-1/2 rounded-full bg-[var(--border)]"
+          data-sheet-grip
+          className="absolute left-1/2 top-2 h-1.5 w-10 -translate-x-1/2 select-none rounded-full bg-[var(--border)]"
         />
-        <h2 data-sheet-title className="min-w-0 flex-1 truncate text-[1.05rem] font-semibold leading-snug">
-          {title}
-        </h2>
+        <div className="min-w-0 flex-1">
+          <h2 data-sheet-title className="truncate text-[1.05rem] font-semibold leading-snug">
+            {title}
+          </h2>
+        </div>
         <button
           type="button"
           data-sheet-close
@@ -269,6 +299,28 @@ export function MapFeatureSheet({
       >
         {children}
       </div>
+      {footerCredit.length > 0 ? (
+        <p
+          data-sheet-credit
+          className="shrink-0 px-3 pb-3 pt-1 text-[0.8125rem] leading-snug text-[var(--text-dim)]"
+        >
+          {footerCredit.map((item, index) =>
+            item.href ? (
+              <a
+                key={`${item.href}-${index}`}
+                href={item.href}
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <span key={`text-${index}`}>{item.label}</span>
+            ),
+          )}
+        </p>
+      ) : null}
     </div>
   );
 }

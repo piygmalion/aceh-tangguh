@@ -736,3 +736,11 @@ Popup desktop dijepit ke kanvas dikurangi legenda Status, tombol Pengaturan, pan
 | --- | --- | --- | --- | --- |
 | FE-73b | frontend | jepit popup ke area peta bebas | jurnal/FE-73b.md | diverifikasi |
 
+## FE-74 — roda lembar, akordeon Laporkan, kredit peta
+
+Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi lembar) menjadi piksel. Di Firefox scrollTop naik dan zoom tetap. `user-select: none` hanya pada kepala dan grip; teks badan tetap bisa diseleksi. Di laci 390, Laporkan menjadi akordeon sebaris (teks di x28, baris 44px, `aria-expanded`, chevron berputar, Enter/Space). Kaki lembar pada henti penuh memakai atribusi sumber gaya: Carto "© OpenStreetMap contributors © CARTO", Satelit Esri beserta sumbernya, 13px. Tinggi henti bawaan tetap 464. Di 1440, jepit popup menghindar dari zoom +/−, ⓘ, tombol "+", legenda, Pengaturan, dan panel Layer, margin 8px, setelah geser jauh ke empat arah. Pita angka beranda di 390 dan 360 memakai kisi 2 kolom yang mengisi lebar pita, tanpa cadangan kanan 60px. Gelembung Tanggapi pudar dan tidak menerima klik selama lebih dari 30% pita terlihat, lalu muncul lagi setelah pita tergulir.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-74 | frontend | roda lembar, akordeon Laporkan, kredit peta | jurnal/FE-74.md | diverifikasi |
+

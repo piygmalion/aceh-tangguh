@@ -124,7 +124,7 @@ describe("FE-73 map sheet", () => {
     assert.match(sheet, /event\.preventDefault\(\)/);
     assert.match(sheet, /event\.stopPropagation\(\)/);
     assert.match(sheet, /sheetScrollTarget/);
-    assert.match(sheet, /sheetWheelScrollTop/);
+    assert.match(sheet, /sheetWheelStep/);
   });
 
   it("re-clamps an open popup when the map moves", () => {

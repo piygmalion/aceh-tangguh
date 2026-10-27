@@ -125,7 +125,9 @@ describe("FE-62 beranda mengikuti urutan SIAGA", () => {
     const hero = read("src/components/beranda/DataHero.tsx");
     assert.match(hero, /tanggalCadangan\(data\.metadata\.fetched_at/);
     assert.doesNotMatch(hero, /new Date\(\)/);
-    assert.equal((hero.match(/col-span-2 sm:col-span-1/g) || []).length, 2);
+    assert.match(hero, /grid-cols-2/);
+    assert.match(hero, /last-child:nth-child\(odd\)\]:col-span-2/);
+    assert.equal((hero.match(/col-span-2 sm:col-span-1/g) || []).length, 0);
     assert.match(hero, /id="dibi"[\s\S]*relative z-40/);
     const idMap = JSON.parse(read("messages/id.json")) as { map: Record<string, string> };
     const enMap = JSON.parse(read("messages/en.json")) as { map: Record<string, string> };
