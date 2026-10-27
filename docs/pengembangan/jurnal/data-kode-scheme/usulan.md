@@ -44,9 +44,11 @@ Repo memakai lebih dari satu skema kode kabupaten Aceh:
 
 1. `kode_kab` dan `area_feature_meta.id` **tetap seperti sekarang**. Tidak ada migrasi id.
 2. Tambahkan secara additive `kode_bps` dan `kode_kemendagri` di respons `/api/boundaries` dan `/api/layers/areas/[key]` (dikerjakan Backend nanti, PR terpisah).
-3. **BPS = kunci join peta.** Tile (`village-r3p.pmtiles`, batas kab) sudah berkunci BPS, jadi tidak perlu rebuild. Kemendagri hanya ikut di respons API, tidak masuk properti tile.
+3. **Kemendagri kunci join; BPS field tambahan di batas kab.** Join memakai kode Kemendagri. BPS tetap field tambahan pada batas kabupaten, bukan kunci join.
 4. Join antar-skema hanya lewat registry di server (`aceh-kabupaten-registry.json`, diperluas dengan kolom `kode_bps` eksplisit), bukan aritmetika kode. Klien tidak perlu tahu ada dua skema.
 5. Perbaiki label metadata `kode_sik` di registry (bukan BPS) ketika registry diperluas.
+
+**Catatan:** `kode_sik` jangan dipakai untuk join sampai 4 pasangan tertukar di registry (Tamiang↔Aceh Jaya, Langsa↔Lhokseumawe) dibetulkan.
 
 ## Keputusan yang dibutuhkan
 
