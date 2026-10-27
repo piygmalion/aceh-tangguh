@@ -182,7 +182,7 @@ function Counters({
       id="dibi"
       data-number-band
       data-fab-reserve=""
-      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)] text-[var(--band-fg)] max-md:scroll-mb-[calc(4.5rem+8px)] max-md:pb-[calc(4.5rem+8px)]"
+      className="relative z-40 mt-8 overflow-hidden rounded-2xl border border-[var(--band-rule)] border-t-[3px] bg-[var(--band-bg)] text-[var(--band-fg)] max-md:scroll-mb-[4.5rem] max-md:pb-[4.5rem]"
     >
       <div className="grid h-full grid-cols-2 gap-px bg-white/20 sm:grid-cols-3 lg:grid-cols-6 max-sm:[&>*:last-child:nth-child(odd)]:col-span-2 max-md:[&>*:last-child]:!pr-[3.75rem]">
         <Counter label={t("statistik.kejadian")}>

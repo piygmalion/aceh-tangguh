@@ -116,7 +116,7 @@ describe("FE-73b popup clamp and sheet wheel", () => {
     assert.match(hero, /max-sm:\[&>\*:last-child:nth-child\(odd\)\]:col-span-2/);
     assert.match(hero, /max-md:\[&>\*:last-child\]:!pr-\[3\.75rem\]/);
     assert.doesNotMatch(hero, /max-md:pr-\[3\.75rem\]/);
-    assert.match(hero, /max-md:pb-\[calc\(4\.5rem\+8px\)\]/);
+    assert.match(hero, /max-md:pb-\[4\.5rem\]/);
     const bot = read("src/components/panduan/GuideBot.tsx");
     assert.match(bot, /bottom-\[calc\(1rem\+env\(safe-area-inset-bottom,0px\)\)\]/);
     assert.match(bot, /right-3/);
