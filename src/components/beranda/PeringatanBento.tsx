@@ -5,6 +5,7 @@ import type { LucideIcon } from "lucide-react";
 import { ArrowUpRight, CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { SITE_MEDIA } from "@/lib/media";
+import { magmaSummary, tatonasCopy } from "@/lib/peringatan-dini/card-copy";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,9 @@ type Kartu = {
   href: string;
   external: boolean;
   basi: boolean;
+  /** Local mute. Neutral MAGMA and stale Tatonas stay off the green AMAN chip. */
+  grey: boolean;
+  chip: "tone" | "stale";
 };
 
 type BerandaT = (key: string, values?: Record<string, string | number>) => string;
@@ -55,26 +59,36 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       href: pd.cuaca.href,
       external: false,
       basi: pd.cuaca.stale,
+      grey: false,
+      chip: "tone",
     });
   }
 
   if (pd.magma) {
     const ev = pd.magma.event;
+    const summary = magmaSummary(pd.magma);
+    const unavailable = summary === "unavailable";
     kartu.push({
       key: "magma",
       bahaya: t("feed.magma"),
       lembaga: t("lembaga.magma"),
       Icon: Mountain,
       tone: pd.magma.tone,
-      ringkas: pd.magma.empty || !ev ? t("peringatan.magmaEmpty") : ev.magnitude_text,
+      ringkas: unavailable
+        ? t("peringatan.magmaUnavailable")
+        : summary === "empty" || !ev
+          ? t("peringatan.magmaEmpty")
+          : ev.magnitude_text,
       rincian:
-        pd.magma.empty || !ev
+        summary !== "event" || !ev
           ? []
           : [ev.wilayah, ev.koordinat_kedalaman, ev.waktu_kejadian].filter(Boolean),
       stempel: jamPendek(pd.magma.fetched_at, locale),
       href: pd.magma.href,
       external: true,
       basi: pd.magma.stale,
+      grey: pd.magma.tone === "neutral",
+      chip: unavailable ? "stale" : "tone",
     });
   }
 
@@ -95,19 +109,25 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       href: pd.sipongi.href,
       external: true,
       basi: pd.sipongi.stale,
+      grey: false,
+      chip: "tone",
     });
   }
 
   if (pd.tatonas) {
+    const copy = tatonasCopy(pd.tatonas);
     kartu.push({
       key: "tatonas",
       bahaya: t("feed.tatonas"),
       lembaga: t("lembaga.tatonas"),
       Icon: Droplets,
       tone: pd.tatonas.tone,
-      ringkas: pd.tatonas.empty
-        ? t("peringatan.tatonasEmpty")
-        : t("peringatan.tatonasCount", { count: pd.tatonas.highlights.length }),
+      ringkas:
+        copy.kind === "stale"
+          ? t("peringatan.tatonasStale", { menit: copy.menit })
+          : copy.kind === "normal"
+            ? t("peringatan.tatonasEmpty")
+            : t("peringatan.tatonasCount", { count: copy.count }),
       rincian: pd.tatonas.highlights
         .slice(0, 4)
         .map((h) => `${h.pos_name}: ${h.level}`),
@@ -115,6 +135,8 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       href: pd.tatonas.href,
       external: true,
       basi: pd.tatonas.stale,
+      grey: copy.kind === "stale",
+      chip: copy.kind === "stale" ? "stale" : "tone",
     });
   }
 
@@ -137,6 +159,8 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       href: pd.maritim.href,
       external: true,
       basi: pd.maritim.stale,
+      grey: false,
+      chip: "tone",
     });
   }
 
@@ -153,7 +177,9 @@ function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           className={cn(
             "mt-0.5 grid shrink-0 place-items-center rounded-lg",
             besar ? "h-9 w-9" : "h-8 w-8",
-            TONE_CHIP[kartu.tone],
+            kartu.grey
+              ? "border border-[var(--map-keyline)] bg-[var(--bg-muted)] text-[var(--text-dim)]"
+              : TONE_CHIP[kartu.tone],
           )}
           aria-hidden
         >
@@ -171,10 +197,20 @@ function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           <p className={cn("text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>{kartu.lembaga}</p>
         </div>
       </div>
-      <StatusScaleChip
-        level={toneLevel(kartu.tone)}
-        label={tp(`tone.${kartu.tone}`)}
-      />
+      {kartu.grey ? (
+        <span
+          data-tone-chrome="grey"
+          data-status-level="grey"
+          className={cn(
+            "inline-flex min-h-[44px] min-w-[44px] items-center rounded-full border border-[var(--map-keyline)] bg-[var(--bg-muted)] px-3 py-1 font-semibold uppercase tracking-[0.06em] text-[var(--text-dim)]",
+            TYPE_FLOOR_CLASS,
+          )}
+        >
+          {kartu.chip === "stale" ? tp("stale") : tp(`tone.${kartu.tone}`)}
+        </span>
+      ) : (
+        <StatusScaleChip level={toneLevel(kartu.tone)} label={tp(`tone.${kartu.tone}`)} />
+      )}
     </div>
   );
 }
@@ -231,7 +267,10 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           {kartu.rincian.slice(0, besar ? 4 : 2).map((baris) => (
             <li key={baris} className="flex gap-2">
               <span
-                className={cn("mt-[0.45rem] h-1 w-1 shrink-0 rounded-full", TONE_DOT[kartu.tone])}
+                className={cn(
+                  "mt-[0.45rem] h-1 w-1 shrink-0 rounded-full",
+                  kartu.grey ? "bg-[var(--text-dim)]" : TONE_DOT[kartu.tone],
+                )}
                 aria-hidden
               />
               <span className="min-w-0 break-words">{rapikanTanda(baris)}</span>
@@ -251,16 +290,18 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
     besar
       ? cn(
           "sm:p-5",
-          toneLevel(kartu.tone) === "siaga"
-            ? "bg-[color-mix(in_srgb,var(--status-siaga)_14%,var(--bg-raised))]"
-            : toneLevel(kartu.tone) === "waspada"
-              ? "bg-[color-mix(in_srgb,var(--status-waspada)_28%,var(--bg-raised))]"
-              : "bg-[color-mix(in_srgb,var(--status-aman)_18%,var(--bg-raised))]",
+          kartu.grey
+            ? ""
+            : toneLevel(kartu.tone) === "siaga"
+              ? "bg-[color-mix(in_srgb,var(--status-siaga)_14%,var(--bg-raised))]"
+              : toneLevel(kartu.tone) === "waspada"
+                ? "bg-[color-mix(in_srgb,var(--status-waspada)_28%,var(--bg-raised))]"
+                : "bg-[color-mix(in_srgb,var(--status-aman)_18%,var(--bg-raised))]",
         )
       : "",
     // Tone-tinted left edge: colour here carries status, not decoration.
     "relative overflow-hidden before:absolute before:inset-y-0 before:left-0 before:w-[3px]",
-    TONE_EDGE[kartu.tone],
+    kartu.grey ? "before:bg-[var(--text-dim)]" : TONE_EDGE[kartu.tone],
   );
 
   return (
@@ -273,7 +314,7 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
       aria-label={t("peringatan.ariaKartu", {
         bahaya: kartu.bahaya,
         lembaga: kartu.lembaga,
-        tone: tp(`tone.${kartu.tone}`),
+        tone: kartu.chip === "stale" ? tp("stale") : tp(`tone.${kartu.tone}`),
       })}
     >
       {isi}

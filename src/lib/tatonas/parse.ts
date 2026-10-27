@@ -232,6 +232,8 @@ export function emptyTatonasCard(
     href: TATONAS_HOME,
     stale: true,
     source: "unavailable",
+    fresh_count: 0,
+    alert_count: 0,
     ...partial,
   };
 }
@@ -256,6 +258,7 @@ export function cardFromStations(
   let tone: PeringatanTone = "neutral";
   if (toneFrom.some((s) => s.level === "AWAS")) tone = "danger";
   else if (toneFrom.some((s) => s.level === "WASPADA")) tone = "warn";
+  const alertCount = fresh.filter((s) => s.level === "WASPADA" || s.level === "AWAS").length;
 
   return {
     kind: "tatonas",
@@ -268,5 +271,7 @@ export function cardFromStations(
     href: TATONAS_HOME,
     stale: opts.stale ?? allStale,
     source: opts.source ?? "live",
+    fresh_count: fresh.length,
+    alert_count: alertCount,
   };
 }

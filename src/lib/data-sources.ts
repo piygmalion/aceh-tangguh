@@ -431,7 +431,7 @@ export const DATA_SOURCES: DataSourceEntry[] = [
     titleId: "MAGMA Indonesia — gempa Aceh",
     titleEn: "MAGMA Indonesia — Aceh earthquakes",
     source:
-      "MAGMA Indonesia (PVMBG / Badan Geologi ESDM) — public homepage feed at magma.esdm.go.id (markersGempa), then magma.vsi.esdm.go.id if the primary host fails. Tagline: Bridging The Will of Nature to Society.",
+      "MAGMA Indonesia (PVMBG / Badan Geologi ESDM) — public JSON the magma.esdm.go.id client loads (`/_api/home/maps` and `/_api/earthquake/list`; the same routes on vsi.esdm.go.id/data/api/public), with the legacy homepage markersGempa variable only if a host still embeds it. Tagline: Bridging The Will of Nature to Society.",
     license:
       "Public official geohazard information — attribute MAGMA Indonesia / PVMBG ESDM. Numbers are copied from the live feed; events are never invented.",
     date: "Live official homepage; fail-closed empty card if blocked (revalidate ~10 min)",

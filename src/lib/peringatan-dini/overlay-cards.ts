@@ -11,11 +11,12 @@ import {
 } from "@/lib/peringatan-dini-types";
 import { magmaTone, normalizeEvent, occurredIso, type MagmaRaw } from "./magma-parse";
 import { cardFromStations, emptyTatonasCard } from "@/lib/tatonas/parse";
-import type {
-  TatonasAlertLevel,
-  TatonasCard,
-  TatonasLoggerKind,
-  TatonasStation,
+import {
+  TATONAS_STALE_MS,
+  type TatonasAlertLevel,
+  type TatonasCard,
+  type TatonasLoggerKind,
+  type TatonasStation,
 } from "@/lib/tatonas/types";
 
 function propsOf(feature: Feature<Point>): Record<string, unknown> {
@@ -59,6 +60,7 @@ function magmaRawFromFeature(feature: Feature<Point>): MagmaRaw {
     mmi: props.mmi == null || props.mmi === "" ? null : String(props.mmi),
     nearest_volcano: asString(props.nearest_volcano) ?? null,
     merusak: asNumber(props.merusak),
+    level: asString(props.level) ?? null,
   };
 }
 
@@ -195,7 +197,16 @@ function levelFromProps(props: Record<string, unknown>): TatonasAlertLevel {
   return "AMAN";
 }
 
-function stationFromFeature(feature: Feature<Point>): TatonasStation {
+function readingStale(props: Record<string, unknown>, nowMs: number): boolean {
+  const occurred = asString(props.occurred_at);
+  if (occurred) {
+    const ms = Date.parse(occurred);
+    if (Number.isFinite(ms)) return nowMs - ms > TATONAS_STALE_MS;
+  }
+  return props.stale === true;
+}
+
+function stationFromFeature(feature: Feature<Point>, nowMs: number): TatonasStation {
   const props = propsOf(feature);
   const [lng, lat] = feature.geometry.coordinates;
   const id = String(feature.id ?? "").replace(/^tatonas-/, "");
@@ -211,7 +222,7 @@ function stationFromFeature(feature: Feature<Point>): TatonasStation {
     nm_logger: asString(props.nm_logger) ?? "",
     time_local: asString(props.time_local) ?? null,
     occurred_at: asString(props.occurred_at) ?? null,
-    stale: false,
+    stale: readingStale(props, nowMs),
     condition: asNumber(props.condition) ?? null,
     lat,
     lng,
@@ -230,6 +241,7 @@ function stationFromFeature(feature: Feature<Point>): TatonasStation {
 export function tatonasCardFromOverlayRead(
   result: OverlayLiveResult,
   fetchedAt: string = new Date().toISOString(),
+  nowMs: number = Date.now(),
 ): TatonasCard {
   if (result.status === 503) {
     return emptyTatonasCard({ source: "unavailable", fetched_at: fetchedAt });
@@ -239,7 +251,7 @@ export function tatonasCardFromOverlayRead(
   if (features.length === 0) {
     return emptyTatonasCard({ source: "live", stale: false, fetched_at: fetchedAt });
   }
-  return cardFromStations(features.map(stationFromFeature), {
+  return cardFromStations(features.map((feature) => stationFromFeature(feature, nowMs)), {
     fetchedAt,
     source: "live",
     stale,
