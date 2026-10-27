@@ -9,7 +9,7 @@ import {
   tanggapiYieldRootMargin,
 } from "./home-fab-reserve";
 import { geojsonForMarkerLayers } from "./marker-layer-selection";
-import { hiddenDetailRows, SMALL_CARD_ROWS } from "./peringatan-bento-rows";
+import { hiddenDetailRows, overflowLabelKey, SMALL_CARD_ROWS } from "./peringatan-bento-rows";
 import idJson from "../../messages/id.json";
 import enJson from "../../messages/en.json";
 
@@ -95,7 +95,23 @@ describe("FE-75 peringatan copy and rows", () => {
     assert.equal(idJson.beranda.peringatan.snapshot, "Belum ada data terbaru");
     assert.equal(enJson.beranda.peringatan.snapshot, "No newer data yet");
     assert.equal(idJson.beranda.peringatan.posLainnya, "+{count} pos lainnya");
-    assert.equal(enJson.beranda.peringatan.posLainnya, "+{count} more posts");
+    assert.equal(enJson.beranda.peringatan.posLainnya, "+{count} more stations");
+    assert.equal(idJson.beranda.peringatan.gempaLainnya, "+{count} gempa lainnya");
+    assert.equal(enJson.beranda.peringatan.gempaLainnya, "+{count} more earthquakes");
+    assert.equal(idJson.beranda.peringatan.lainnya, "+{count} lainnya");
+    assert.equal(enJson.beranda.peringatan.lainnya, "+{count} more");
+  });
+
+  it("names the overflow row after the card", () => {
+    assert.equal(overflowLabelKey("magma"), "gempaLainnya");
+    assert.equal(overflowLabelKey("tatonas"), "posLainnya");
+    assert.equal(overflowLabelKey("cuaca"), "wilayahLainnya");
+    assert.equal(overflowLabelKey("sipongi"), "titikLainnya");
+    assert.equal(overflowLabelKey("maritim"), "perairanLainnya");
+    assert.equal(overflowLabelKey("lain"), "lainnya");
+    const src = read("src/components/beranda/PeringatanBento.tsx");
+    assert.match(src, /peringatan\.\$\{overflowLabelKey\(kartu\.key\)\}/);
+    assert.equal(src.includes("peringatan.posLainnya"), false);
   });
 
   it("limits small cards to two rows and counts the rest", () => {
@@ -106,7 +122,7 @@ describe("FE-75 peringatan copy and rows", () => {
     const src = read("src/components/beranda/PeringatanBento.tsx");
     assert.match(src, /hiddenDetailRows\(kartu\.rincian\.length, shown\)/);
     assert.match(src, /data-pos-lainnya/);
-    assert.match(src, /peringatan\.posLainnya/);
+    assert.match(src, /overflowLabelKey\(kartu\.key\)/);
     assert.match(src, /href=\{kartu\.href\}/);
     const sel = src.slice(src.indexOf("function Sel"), src.indexOf("export function PeringatanBento"));
     const isi = sel.slice(sel.indexOf("const isi"), sel.indexOf("const kelas"));

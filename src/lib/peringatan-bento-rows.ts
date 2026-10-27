@@ -8,3 +8,17 @@ export function hiddenDetailRows(total: number, shown: number): number {
   const visible = Math.max(0, Math.floor(shown));
   return Math.max(0, rows - visible);
 }
+
+/** Message suffix under `beranda.peringatan` for the overflow row. */
+const OVERFLOW_LABEL: Record<string, string> = {
+  magma: "gempaLainnya",
+  tatonas: "posLainnya",
+  cuaca: "wilayahLainnya",
+  sipongi: "titikLainnya",
+  maritim: "perairanLainnya",
+};
+
+/** Noun that matches the card. Unknown feeds use the generic row. */
+export function overflowLabelKey(cardKey: string): string {
+  return OVERFLOW_LABEL[cardKey] ?? "lainnya";
+}

@@ -7,7 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { SITE_MEDIA } from "@/lib/media";
 import { magmaSummary, tatonasCopy, tatonasStaleRow } from "@/lib/peringatan-dini/card-copy";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
-import { hiddenDetailRows, SMALL_CARD_ROWS } from "@/lib/peringatan-bento-rows";
+import { hiddenDetailRows, overflowLabelKey, SMALL_CARD_ROWS } from "@/lib/peringatan-bento-rows";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { usePeringatan } from "./data";
@@ -302,7 +302,7 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
       ) : null}
       {hidden > 0 ? (
         <p className={cn("mt-1.5 font-semibold text-[var(--text)] underline underline-offset-2", TYPE_FLOOR_CLASS)} data-pos-lainnya="">
-          {t("peringatan.posLainnya", { count: hidden })}
+          {t(`peringatan.${overflowLabelKey(kartu.key)}`, { count: hidden })}
         </p>
       ) : null}
       <Kaki kartu={kartu} />
