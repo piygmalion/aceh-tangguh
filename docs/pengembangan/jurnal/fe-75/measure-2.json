@@ -1,0 +1,123 @@
+[
+  {
+    "kind": "band-5",
+    "width": 390,
+    "yield": "band",
+    "opacity": "0",
+    "pe": "none",
+    "ratio": 0.05,
+    "hit": true,
+    "bandTop": 821,
+    "bandBottom": 1273,
+    "cards": [],
+    "btn": {
+      "cx": 350,
+      "cy": 800
+    },
+    "pixel": {
+      "r": 10,
+      "g": 10,
+      "b": 10
+    }
+  },
+  {
+    "kind": "band-5",
+    "width": 360,
+    "yield": "band",
+    "opacity": "0",
+    "pe": "none",
+    "ratio": 0.05,
+    "hit": true,
+    "bandTop": 777,
+    "bandBottom": 1229,
+    "cards": [],
+    "btn": {
+      "cx": 320,
+      "cy": 756
+    },
+    "pixel": {
+      "r": 10,
+      "g": 10,
+      "b": 10
+    }
+  },
+  {
+    "kind": "pd",
+    "yield": "band",
+    "opacity": "0",
+    "pe": "none",
+    "ratio": 0,
+    "hit": false,
+    "bandTop": -5695,
+    "bandBottom": -5243,
+    "cards": [
+      {
+        "key": "cuaca",
+        "chip": "Cuaca ekstrem BMKG SIAGA 2 kabupaten/kota berstatus perhatian Subulussalam: ",
+        "top": -119,
+        "bottom": 309,
+        "hit": false
+      },
+      {
+        "key": "magma",
+        "chip": "Gempa bumi MAGMA ESDM INFO 5.4 SR Pusat gempa berada di laut 59 km barat day",
+        "top": 321,
+        "bottom": 581,
+        "hit": false
+      },
+      {
+        "key": "sipongi",
+        "chip": "Kebakaran hutan dan lahan SIPONGI NORMAL Tidak ada titik panas terpantau 28 ",
+        "top": 593,
+        "bottom": 768,
+        "hit": true
+      },
+      {
+        "key": "tatonas",
+        "chip": "Tinggi muka air Tatonas DATA TERTUNDA Data pos belum diperbarui · 187 mnt Kl",
+        "top": 780,
+        "bottom": 1018,
+        "hit": true
+      }
+    ],
+    "btn": {
+      "cx": 350,
+      "cy": 800
+    },
+    "pixel": {
+      "r": 26,
+      "g": 26,
+      "b": 26
+    }
+  },
+  {
+    "kind": "layers",
+    "which": "laporanKejadian",
+    "urls": [
+      "http://localhost:3000/api/layers/markers?keys=laporanKejadian"
+    ],
+    "style": {
+      "found": false
+    }
+  },
+  {
+    "kind": "layers",
+    "which": "facHealth",
+    "urls": [
+      "http://localhost:3000/api/layers/markers?keys=facHealth"
+    ],
+    "style": {
+      "found": false
+    }
+  },
+  {
+    "kind": "layers",
+    "which": "disasterEvents,facHealth,laporanKejadian",
+    "urls": [
+      "http://localhost:3000/api/layers/markers?keys=disasterEvents,facHealth,laporanKejadian"
+    ],
+    "style": {
+      "found": false
+    }
+  }
+]

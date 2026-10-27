@@ -28,8 +28,8 @@ import { chipsForPathname, type GuideChipKey, welcomeQueryForPath } from "@/lib/
 import { HOME_TOUR_STEPS } from "@/lib/panduan/tour-steps";
 import type { GuideAnswer, GuideHref, GuideLocale, GuideSlots } from "@/lib/panduan/types";
 import {
-  numberBandObserverThresholds,
-  tanggapiYieldsToNumberBand,
+  tanggapiHiddenForStrip,
+  tanggapiYieldRootMargin,
 } from "@/lib/home-fab-reserve";
 import { shouldShowGuideBot, shouldShowTanggapiInvite } from "@/lib/panduan/match";
 import { logUnknownIntent } from "@/lib/panduan/unknown";
@@ -368,30 +368,78 @@ export function GuideBot() {
       return;
     }
     let observer: IntersectionObserver | null = null;
-    const connect = () => {
-      const band = document.querySelector("[data-number-band]");
-      if (!band) {
-        observer?.disconnect();
-        observer = null;
-        setYieldToBand(false);
-        return;
-      }
-      if (observer) return;
+    const hitting = new Set<Element>();
+    const seen = new Set<Element>();
+    const targets = () =>
+      document.querySelectorAll("[data-number-band], [data-peringatan]");
+    const attach = () => {
+      observer?.disconnect();
+      seen.clear();
+      hitting.clear();
       observer = new IntersectionObserver(
         (entries) => {
-          const ratio = entries[0]?.intersectionRatio ?? 0;
-          setYieldToBand(tanggapiYieldsToNumberBand(ratio));
+          for (const entry of entries) {
+            if (entry.isIntersecting) hitting.add(entry.target);
+            else hitting.delete(entry.target);
+          }
+          const ratio = entries.reduce(
+            (max, entry) => Math.max(max, entry.intersectionRatio),
+            0,
+          );
+          setYieldToBand(
+            tanggapiHiddenForStrip({
+              bandRatioInViewport: ratio,
+              intersectsBottomStrip: hitting.size > 0,
+            }),
+          );
         },
-        { threshold: numberBandObserverThresholds() },
+        {
+          root: null,
+          rootMargin: tanggapiYieldRootMargin(window.innerHeight),
+          threshold: 0,
+        },
       );
-      observer.observe(band);
+      targets().forEach((node) => {
+        seen.add(node);
+        observer?.observe(node);
+      });
+      if (seen.size === 0) setYieldToBand(false);
     };
-    connect();
-    const watch = new MutationObserver(connect);
+    const watchNew = () => {
+      if (!observer) {
+        attach();
+        return;
+      }
+      targets().forEach((node) => {
+        if (seen.has(node)) return;
+        seen.add(node);
+        observer?.observe(node);
+      });
+      let pruned = false;
+      hitting.forEach((el) => {
+        if (!el.isConnected) {
+          hitting.delete(el);
+          pruned = true;
+        }
+      });
+      if (pruned) {
+        setYieldToBand(
+          tanggapiHiddenForStrip({
+            bandRatioInViewport: 0,
+            intersectsBottomStrip: hitting.size > 0,
+          }),
+        );
+      }
+    };
+    attach();
+    const watch = new MutationObserver(watchNew);
     watch.observe(document.body, { childList: true, subtree: true });
+    const onResize = () => attach();
+    window.addEventListener("resize", onResize);
     return () => {
       observer?.disconnect();
       watch.disconnect();
+      window.removeEventListener("resize", onResize);
     };
   }, [pathname, visible]);
 

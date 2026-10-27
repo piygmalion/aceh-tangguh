@@ -98,7 +98,11 @@ describe("FE-74 sheet wheel, credit, and Laporkan accordion", () => {
     assert.match(lapor, /data-lapor-chevron/);
     assert.match(lapor, /rotate-180/);
     assert.match(lapor, /event\.key !== "Enter" && event\.key !== " "/);
-    assert.match(lapor, /marginLeft: -16, paddingLeft: 28, minHeight: 44/);
+    assert.match(lapor, /marginLeft: 12/);
+    assert.match(lapor, /paddingLeft: 15/);
+    assert.match(lapor, /minHeight: 44/);
+    assert.match(lapor, /borderLeft: "1px solid rgba\(255,255,255,\.24\)"/);
+    assert.equal(16 + 12 + 1 + 15, 44);
     assert.match(lapor, /shape !== "row"/);
     assert.match(lapor, /absolute right-0 top-full/);
     const nav = read("src/components/SiteNav.tsx");
