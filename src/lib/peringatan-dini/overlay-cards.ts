@@ -88,18 +88,53 @@ function emptyLiveMagmaCard(fetchedAt: string): MagmaCard {
   };
 }
 
+/** Fetch clocks for a MAGMA card. Quake `occurred_at` is not a fetch time. */
+export type MagmaOverlayFetchClock = {
+  /** Newest `overlay_live_features.updated_at` in this read. */
+  rowFetchedAt?: string | null;
+  /** `overlay_live_refresh.refreshed_at`: last MAGMA fetch attempt. */
+  ledgerFetchedAt?: string | null;
+};
+
+function validIso(value: string | null | undefined): string | undefined {
+  if (typeof value !== "string" || value.trim() === "") return undefined;
+  const ms = Date.parse(value);
+  if (!Number.isFinite(ms)) return undefined;
+  return new Date(ms).toISOString();
+}
+
+/**
+ * Fresh rows: newest overlay-row `updated_at`, else the ledger attempt, else the request time.
+ * Fresh empty: ledger `refreshed_at` (the fetch that cleared the layer), else the request time.
+ * Unavailable (`body.stale === true` or HTTP 503): ledger `refreshed_at` when it is a real
+ * timestamp, else the request time. The cached row time is an older successful write, so it
+ * is not the failed attempt.
+ */
+export function magmaOverlayFetchedAt(
+  result: OverlayLiveResult,
+  requestAt: string,
+  clock: MagmaOverlayFetchClock = {},
+): string {
+  const request = validIso(requestAt) ?? requestAt;
+  const ledger = validIso(clock.ledgerFetchedAt);
+  const row = validIso(clock.rowFetchedAt);
+  const unavailable = result.status === 503 || result.body.stale === true;
+  if (unavailable) return ledger ?? request;
+  if (pointFeatures(result).length > 0) return row ?? ledger ?? request;
+  return ledger ?? request;
+}
+
 export function magmaCardFromOverlayRead(
   result: OverlayLiveResult,
   fetchedAt: string = new Date().toISOString(),
+  clock: MagmaOverlayFetchClock = {},
 ): MagmaCard {
-  if (result.status === 503) return unavailableMagmaCard(fetchedAt);
-  const stale = result.body.stale === true;
-  const features = pointFeatures(result);
-  if (features.length === 0) {
-    return stale
-      ? unavailableMagmaCard(fetchedAt)
-      : emptyLiveMagmaCard(fetchedAt);
+  const stamp = magmaOverlayFetchedAt(result, fetchedAt, clock);
+  if (result.status === 503 || result.body.stale === true) {
+    return unavailableMagmaCard(stamp);
   }
+  const features = pointFeatures(result);
+  if (features.length === 0) return emptyLiveMagmaCard(stamp);
   const latest = [...features].sort((a, b) => occurredMs(b) - occurredMs(a))[0];
   const raw = magmaRawFromFeature(latest);
   const event = normalizeEvent(raw);
@@ -108,9 +143,9 @@ export function magmaCardFromOverlayRead(
     tone: magmaTone(event, raw),
     empty: false,
     event,
-    fetched_at: fetchedAt,
+    fetched_at: stamp,
     href: event.href,
-    stale,
+    stale: false,
     source: "live",
   };
 }

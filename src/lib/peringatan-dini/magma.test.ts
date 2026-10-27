@@ -9,6 +9,7 @@ import {
   unavailableMagmaCard,
 } from "@/lib/peringatan-dini-types";
 import type { Feature, Point } from "geojson";
+import { isoTimestamp, newestOverlayRowFetchedAt } from "@/lib/overlay-live";
 import { fetchMagmaLive, getMagmaPeringatanFromLive } from "./magma-live";
 import { magmaCardFromOverlayRead } from "./overlay-cards";
 import {
@@ -707,6 +708,23 @@ describe("BE-76 MAGMA stale overlay is unavailable", () => {
     assert.notEqual(card.fetched_at, ROW_FETCHED_AT);
     assert.notEqual(card.fetched_at, REQUEST_AT);
     assert.notEqual(card.fetched_at, QUAKE_OCCURRED_AT);
+    const upstream = magmaCardFromOverlayRead(
+      {
+        status: 503,
+        body: {
+          type: "FeatureCollection",
+          features: [cachedQuake()],
+          stale: true,
+          error: "upstream",
+        },
+      },
+      REQUEST_AT,
+      { rowFetchedAt: ROW_FETCHED_AT, ledgerFetchedAt: LEDGER_FETCHED_AT },
+    );
+    assert.equal(upstream.source, "unavailable");
+    assert.equal(upstream.event, null);
+    assert.equal(upstream.fetched_at, LEDGER_FETCHED_AT);
+    assertNoJune18(upstream);
   });
 
   it("stamps an unavailable card with the request time when the ledger has no attempt time", () => {
@@ -724,6 +742,20 @@ describe("BE-76 MAGMA stale overlay is unavailable", () => {
     assert.equal(invalid.fetched_at, REQUEST_AT);
     assert.equal(invalid.source, "unavailable");
     assert.equal(invalid.event, null);
+  });
+
+  it("uses the newest overlay row write time and ignores a quake timestamp", () => {
+    assert.equal(
+      newestOverlayRowFetchedAt([
+        { updated_at: "2026-10-01T02:30:00.000Z" },
+        { updated_at: "2026-09-01T00:00:00.000Z" },
+      ]),
+      ROW_FETCHED_AT,
+    );
+    assert.equal(newestOverlayRowFetchedAt([{ updated_at: "not-a-date" }, {}]), null);
+    assert.equal(newestOverlayRowFetchedAt(null), null);
+    assert.equal(isoTimestamp("2026-10-27T15:15:00+07:00"), LEDGER_FETCHED_AT);
+    assert.equal(isoTimestamp("not-a-date"), null);
   });
 
   it("reads row and ledger fetch times into the GET card", () => {
