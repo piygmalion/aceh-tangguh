@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { SITE_MEDIA } from "@/lib/media";
 import { magmaSummary, tatonasCopy, tatonasStaleRow } from "@/lib/peringatan-dini/card-copy";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
+import { hiddenDetailRows, SMALL_CARD_ROWS } from "@/lib/peringatan-bento-rows";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { usePeringatan } from "./data";
@@ -52,9 +53,9 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
         : t("peringatan.cuacaCount", {
             count: pd.cuaca.highlights.length + pd.cuaca.extra_count,
           }),
-      rincian: pd.cuaca.highlights
-        .slice(0, 4)
-        .map((h) => `${h.kabupaten}: ${h.kondisi.toLocaleLowerCase(lowerTag)}`),
+      rincian: pd.cuaca.highlights.map(
+        (h) => `${h.kabupaten}: ${h.kondisi.toLocaleLowerCase(lowerTag)}`,
+      ),
       stempel: jamPendek(pd.cuaca.fetched_at, locale),
       href: pd.cuaca.href,
       external: false,
@@ -102,9 +103,9 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       ringkas: pd.sipongi.empty
         ? t("peringatan.sipongiEmpty")
         : t("peringatan.sipongiCount", { count: pd.sipongi.points.length }),
-      rincian: pd.sipongi.points
-        .slice(0, 4)
-        .map((p) => `${p.kabkota}, ${t("peringatan.kecamatan", { name: p.kecamatan })}`),
+      rincian: pd.sipongi.points.map(
+        (p) => `${p.kabkota}, ${t("peringatan.kecamatan", { name: p.kecamatan })}`,
+      ),
       stempel: jamPendek(pd.sipongi.fetched_at, locale),
       href: pd.sipongi.href,
       external: true,
@@ -132,7 +133,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
             : t("peringatan.tatonasCount", { count: copy.count }),
       rincian:
         copy.kind === "stale"
-          ? pd.tatonas.highlights.slice(0, 4).map((h) => {
+          ? pd.tatonas.highlights.map((h) => {
               const row = tatonasStaleRow(h.pos_name, h.time_local, Date.now());
               if (row.menit == null || row.min == null) return row.nama;
               return t("peringatan.tatonasRowStale", {
@@ -141,7 +142,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
                 min: row.min,
               });
             })
-          : pd.tatonas.highlights.slice(0, 4).map((h) => `${h.pos_name}: ${h.level}`),
+          : pd.tatonas.highlights.map((h) => `${h.pos_name}: ${h.level}`),
       stempel: jamPendek(pd.tatonas.fetched_at, locale),
       href: pd.tatonas.href,
       external: true,
@@ -163,9 +164,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
         : t("peringatan.maritimCount", {
             count: pd.maritim.highlights.length + pd.maritim.extra_count,
           }),
-      rincian: pd.maritim.highlights
-        .slice(0, 4)
-        .map((h) => `${h.nama}: ${h.wave_cat}`),
+      rincian: pd.maritim.highlights.map((h) => `${h.nama}: ${h.wave_cat}`),
       stempel: jamPendek(pd.maritim.fetched_at, locale),
       href: pd.maritim.href,
       external: true,
@@ -260,6 +259,8 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
   const t = useTranslations("beranda");
   const tp = useTranslations("peringatanDini");
   const foto = SITE_MEDIA.heroSlides[1];
+  const shown = besar ? 4 : SMALL_CARD_ROWS;
+  const hidden = besar ? 0 : hiddenDetailRows(kartu.rincian.length, shown);
   const isi = (
     <>
       {besar ? (
@@ -285,7 +286,7 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
       </p>
       {kartu.rincian.length > 0 ? (
         <ul className={cn("mt-3 space-y-1.5 text-[var(--text-dim)]", TYPE_FLOOR_CLASS)}>
-          {kartu.rincian.slice(0, besar ? 4 : 2).map((baris) => (
+          {kartu.rincian.slice(0, shown).map((baris) => (
             <li key={baris} className="flex gap-2">
               <span
                 className={cn(
@@ -298,6 +299,11 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
             </li>
           ))}
         </ul>
+      ) : null}
+      {hidden > 0 ? (
+        <p className={cn("mt-1.5 font-semibold text-[var(--text)] underline underline-offset-2", TYPE_FLOOR_CLASS)} data-pos-lainnya="">
+          {t("peringatan.posLainnya", { count: hidden })}
+        </p>
       ) : null}
       <Kaki kartu={kartu} />
     </>

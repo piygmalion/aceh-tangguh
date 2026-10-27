@@ -7,6 +7,14 @@ import { Link } from "@/i18n/routing";
 import { navInteractiveClass } from "@/lib/nav-chrome";
 import { cn } from "@/lib/utils";
 
+/** Drawer pad 16 + this margin puts the rule on the label (x28). Text then sits at x44. */
+const LAPOR_SUBROW_STYLE = {
+  marginLeft: 12,
+  paddingLeft: 15,
+  minHeight: 44,
+  borderLeft: "1px solid rgba(255,255,255,.24)",
+} as const;
+
 export function ReportLaporDropdown({
   className = "",
   active = false,
@@ -71,7 +79,7 @@ export function ReportLaporDropdown({
             data-lapor-subrow
             onClick={() => setOpen(false)}
             className="flex w-full items-center text-sm text-[var(--primary-fg)]"
-            style={{ marginLeft: -16, paddingLeft: 28, minHeight: 44 }}
+            style={LAPOR_SUBROW_STYLE}
           >
             {t("laporKejadian")}
           </Link>
@@ -80,7 +88,7 @@ export function ReportLaporDropdown({
             data-lapor-subrow
             onClick={() => setOpen(false)}
             className="flex w-full items-center text-sm text-[var(--primary-fg)]"
-            style={{ marginLeft: -16, paddingLeft: 28, minHeight: 44 }}
+            style={LAPOR_SUBROW_STYLE}
           >
             {t("laporPenanganan")}
           </Link>

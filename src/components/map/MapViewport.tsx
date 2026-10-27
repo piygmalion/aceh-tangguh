@@ -13,6 +13,7 @@ import Map, {
   type ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { geojsonForMarkerLayers } from "@/lib/marker-layer-selection";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { withBasePath } from "@/lib/preview/env";
 import { qk } from "@/lib/qk";
@@ -851,9 +852,10 @@ export function MapViewport({
   }, [popup, narrow, sheetSnap, sheetHeight]);
 
   const markerGeojson = useMemo((): FeatureCollection => {
-    if (!data?.features?.length) return EMPTY_FC;
+    const selected = geojsonForMarkerLayers(data ?? EMPTY_FC, sortedKeys);
+    if (!selected.features.length) return EMPTY_FC;
     const prepared: Feature<Point>[] = [];
-    for (const f of data.features) {
+    for (const f of selected.features) {
       if (f.geometry.type !== "Point") continue;
       const layer = (f.properties?.layer as MarkerLayerKey) || "disasterEvents";
       const jenis = String(f.properties?.jenis_bencana ?? "");
@@ -906,7 +908,7 @@ export function MapViewport({
         };
       }),
     };
-  }, [data, disasterJenisSet]);
+  }, [data, disasterJenisSet, sortedKeys]);
 
   const { data: areaData } = useQuery({
     queryKey: qk.area(areaLayer ?? "villageDistribution"),
@@ -1341,6 +1343,7 @@ export function MapViewport({
         )}
         {sortedKeys.length > 0 && markerGeojson.features.length > 0 && (
           <MarkerClusterSource
+            key={sortedKeys.join(",")}
             data={markerGeojson}
             haloStroke={haloStroke}
             chromeIconsReady={chromeIconsReady}

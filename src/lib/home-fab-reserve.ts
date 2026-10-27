@@ -1,20 +1,30 @@
 /**
- * Right padding that would keep band content `gap` px left of the fixed
- * Tanggapi button. The number band no longer applies this inset. The button
- * yields while more than 30% of the band is inside the viewport instead.
+ * The number band no longer reserves a right inset for Tanggapi.
+ * The button hides while the band, or any bento early-warning card,
+ * intersects the bottom 96px of the viewport.
  */
-export const NUMBER_BAND_FAB_RATIO = 0.3;
+export const TANGGAPI_YIELD_STRIP_PX = 96;
 
-/** True while the number band occupies more than 30% of its own box on screen. */
-export function tanggapiYieldsToNumberBand(ratio: number): boolean {
-  return ratio > NUMBER_BAND_FAB_RATIO;
+/**
+ * `rootMargin` equivalent to `-(100vh - 96px) 0px 0px 0px`.
+ * Pixel inset is used because IntersectionObserver rootMargin does not
+ * reliably accept `vh`. The root that remains is the bottom 96px strip.
+ */
+export function tanggapiYieldRootMargin(viewportHeight: number): string {
+  const inset = Math.max(0, Math.round(viewportHeight) - TANGGAPI_YIELD_STRIP_PX);
+  return `-${inset}px 0px 0px 0px`;
 }
 
-/** Threshold steps so the observer reports the ratio on both sides of 30%. */
-export function numberBandObserverThresholds(): number[] {
-  const steps: number[] = [];
-  for (let i = 0; i <= 20; i += 1) steps.push(i / 20);
-  return steps;
+/**
+ * Hide only when a watched target intersects the bottom strip.
+ * The fraction of the number band inside the viewport does not decide this.
+ */
+export function tanggapiHiddenForStrip(input: {
+  bandRatioInViewport: number;
+  intersectsBottomStrip: boolean;
+}): boolean {
+  void input.bandRatioInViewport;
+  return input.intersectsBottomStrip;
 }
 
 export function phoneBandRightPad(opts: {

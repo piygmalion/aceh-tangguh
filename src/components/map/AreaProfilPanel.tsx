@@ -606,7 +606,7 @@ export function AreaProfilPanel({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="map-chrome-elevated pointer-events-auto absolute inset-x-2 top-[4.15rem] flex max-h-[min(78vh,40rem)] flex-col overflow-hidden rounded-2xl md:inset-x-auto md:left-14 md:top-[4.5rem] md:w-[24rem]"
+        className="map-chrome-elevated pointer-events-auto absolute inset-x-2 top-[calc(6rem+8px)] flex max-h-[min(78vh,40rem)] flex-col overflow-hidden rounded-2xl md:inset-x-auto md:left-14 md:w-[24rem]"
       >
         <header className="flex items-start gap-3 px-4 py-3">
           <span

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { JSDOM } from "jsdom";
-import { phoneBandRightPad, tanggapiYieldsToNumberBand } from "@/lib/home-fab-reserve";
+import { phoneBandRightPad, tanggapiHiddenForStrip, tanggapiYieldRootMargin } from "@/lib/home-fab-reserve";
 import { sheetScrollTarget, sheetWheelScrollTop } from "@/lib/map-sheet";
 import {
   freeMapHorizontalBounds,
@@ -116,20 +116,31 @@ describe("FE-73b popup clamp and sheet wheel", () => {
     assert.match(hero, /max-sm:\[&>\*:last-child:nth-child\(odd\)\]:col-span-2/);
     assert.doesNotMatch(hero, /!pr-\[3\.75rem\]/);
     assert.doesNotMatch(hero, /nth-child\(2n\)/);
-    assert.match(hero, /max-md:pb-\[4\.5rem\]/);
-    assert.equal(tanggapiYieldsToNumberBand(0.3), false);
-    assert.equal(tanggapiYieldsToNumberBand(0.31), true);
-    assert.equal(tanggapiYieldsToNumberBand(1), true);
+    assert.doesNotMatch(hero, /max-md:pb-\[4\.5rem\]/);
+    assert.equal(tanggapiYieldRootMargin(844), "-748px 0px 0px 0px");
+    for (const ratio of [0.05, 0.1, 0.27, 0.5]) {
+      assert.equal(
+        tanggapiHiddenForStrip({ bandRatioInViewport: ratio, intersectsBottomStrip: true }),
+        true,
+      );
+      assert.equal(
+        tanggapiHiddenForStrip({ bandRatioInViewport: ratio, intersectsBottomStrip: false }),
+        false,
+      );
+    }
     const bot = read("src/components/panduan/GuideBot.tsx");
     assert.match(bot, /bottom-\[calc\(1rem\+env\(safe-area-inset-bottom,0px\)\)\]/);
     assert.match(bot, /right-3/);
     assert.match(bot, /\[data-number-band\]/);
+    assert.match(bot, /\[data-peringatan\]/);
     assert.match(bot, /IntersectionObserver/);
-    assert.match(bot, /tanggapiYieldsToNumberBand/);
+    assert.match(bot, /tanggapiYieldRootMargin/);
+    assert.match(bot, /threshold: 0/);
     assert.match(bot, /data-tanggapi-yield/);
     assert.match(bot, /opacity-0/);
     assert.match(bot, /pointer-events-none/);
     assert.doesNotMatch(bot, /data-year-chart/);
+    assert.doesNotMatch(bot, /tanggapiYieldsToNumberBand/);
   });
 
   it("scrolls the sheet on wheel and leaves the map zoom alone", () => {
