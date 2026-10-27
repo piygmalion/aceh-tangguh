@@ -39,10 +39,28 @@ describe("tatonasCopy", () => {
     assert.deepEqual(copy, { kind: "stale", menit: 20 });
   });
 
-  it("floors a missing clock at 15 minutes", () => {
-    assert.equal(newestHighlightAgeMinutes([null, "bukan-waktu"], NOW), 15);
-    const copy = tatonasCopy({ fresh_count: 0, alert_count: 0, highlights: [] }, NOW);
-    assert.deepEqual(copy, { kind: "stale", menit: 15 });
+  it("uses a sentence without minutes when no highlight has a readable clock", () => {
+    assert.equal(newestHighlightAgeMinutes([null, "", "bukan-waktu"], NOW), null);
+    assert.equal(newestHighlightAgeMinutes([], NOW), null);
+    const copy = tatonasCopy(
+      {
+        fresh_count: 0,
+        alert_count: 0,
+        highlights: [highlight(null), highlight("bukan-waktu")],
+      },
+      NOW,
+    );
+    assert.deepEqual(copy, { kind: "stale", menit: null });
+    const id = JSON.parse(readFileSync(path.join(process.cwd(), "messages/id.json"), "utf8")) as {
+      beranda: { peringatan: Record<string, string> };
+    };
+    const en = JSON.parse(readFileSync(path.join(process.cwd(), "messages/en.json"), "utf8")) as {
+      beranda: { peringatan: Record<string, string> };
+    };
+    assert.equal(id.beranda.peringatan.tatonasStaleNoClock, "Data pos belum diperbarui");
+    assert.equal(en.beranda.peringatan.tatonasStaleNoClock, "Station data not updated");
+    assert.equal(/\{menit\}|\{min\}|\d/.test(id.beranda.peringatan.tatonasStaleNoClock), false);
+    assert.equal(/\{menit\}|\{min\}|\d/.test(en.beranda.peringatan.tatonasStaleNoClock), false);
   });
 
   it("says every station is normal when fresh posts have no alert", () => {
@@ -132,6 +150,7 @@ describe("PeringatanBento copy wiring", () => {
     assert.match(src, /tatonasCopy/);
     assert.match(src, /tatonasStaleRow/);
     assert.match(src, /peringatan\.tatonasStale/);
+    assert.match(src, /copy\.menit == null\s*\?\s*t\("peringatan\.tatonasStaleNoClock"\)/);
     assert.match(src, /peringatan\.tatonasRowStale/);
     assert.match(src, /if \(row\.menit == null \|\| row\.min == null\) return row\.nama/);
     assert.match(src, /peringatan\.magmaUnavailable/);
