@@ -116,7 +116,7 @@ export function magmaCardFromOverlayRead(
 }
 
 function sipongiTone(points: SipongiPoint[]): PeringatanTone {
-  if (points.some((point) => point.confidence_level === "high")) return "danger";
+  if (points.some((point) => point.confidence_level === "high")) return "siaga";
   if (points.length > 0) return "warn";
   return "neutral";
 }

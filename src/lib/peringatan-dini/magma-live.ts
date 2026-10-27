@@ -36,13 +36,15 @@ async function fetchMagmaHtml(
  * `/_api` is that site's proxy; `vsi.esdm.go.id/data/api/public` is the same
  * public base the bundle names `apiBaseUrl`. Not a third-party feed.
  */
-export const MAGMA_JSON_URLS = [
+/** Required feed. A 403 here is a failed read, not an empty catalog. */
+export const MAGMA_MAPS_URLS = [
   "https://magma.esdm.go.id/_api/home/maps",
-  "https://magma.esdm.go.id/_api/earthquake/list",
+  "https://vsi.esdm.go.id/data/api/public/home/maps",
 ] as const;
 
-export const MAGMA_JSON_DIRECT_URLS = [
-  "https://vsi.esdm.go.id/data/api/public/home/maps",
+/** Optional enrichment. A 403 must not fail a maps read and must not replace one. */
+export const MAGMA_LIST_URLS = [
+  "https://magma.esdm.go.id/_api/earthquake/list",
   "https://vsi.esdm.go.id/data/api/public/earthquake/list",
 ] as const;
 
@@ -65,41 +67,41 @@ async function fetchMagmaJson(url: string, fetchImpl: typeof fetch): Promise<unk
   }
 }
 
-async function readJsonGroup(
-  urls: readonly string[],
-  fetchImpl: typeof fetch,
-): Promise<{ raws: MagmaRaw[]; errors: string[] }> {
-  const settled = await Promise.all(
-    urls.map(async (url) => {
-      try {
-        return { url, payload: await fetchMagmaJson(url, fetchImpl) };
-      } catch (err) {
-        return { url, error: err instanceof Error ? err.message : String(err) };
-      }
-    }),
-  );
-  const payloads: unknown[] = [];
-  const errors: string[] = [];
-  for (const item of settled) {
-    if ("payload" in item) payloads.push(item.payload);
-    else errors.push(`${item.url} (${item.error})`);
+/** List rows add a clock and ROQ id. Failure here is ignored. */
+async function readOptionalList(fetchImpl: typeof fetch): Promise<MagmaRaw[]> {
+  for (const url of MAGMA_LIST_URLS) {
+    try {
+      const payload = await fetchMagmaJson(url, fetchImpl);
+      const raws = magmaRawsFromPublicPayload(payload);
+      if (raws.length > 0) return raws;
+    } catch {
+      // Enrichment only. A 403 must not discard the maps rows.
+    }
   }
-  return { raws: mergeMagmaRaws(payloads.map(magmaRawsFromPublicPayload)), errors };
+  return [];
 }
 
 /**
- * Public quake rows. JSON first (the homepage no longer embeds `markersGempa`),
- * then the legacy HTML variable if a host still serves it.
- * Throws when nothing readable comes back — callers must not keep an old quake.
+ * Public quake rows. Maps is required. The earthquake list only enriches a
+ * successful maps read. Then the legacy HTML variable, if a host still serves it.
+ * Throws when maps (and the HTML fallback) are unreadable — never keep an old quake.
  */
 export async function fetchMagmaQuakeRaws(
   fetchImpl: typeof fetch = fetch,
 ): Promise<MagmaRaw[]> {
   const errors: string[] = [];
-  for (const group of [MAGMA_JSON_URLS, MAGMA_JSON_DIRECT_URLS]) {
-    const read = await readJsonGroup(group, fetchImpl);
-    errors.push(...read.errors);
-    if (read.raws.length > 0) return read.raws;
+  for (const url of MAGMA_MAPS_URLS) {
+    try {
+      const payload = await fetchMagmaJson(url, fetchImpl);
+      const raws = magmaRawsFromPublicPayload(payload);
+      if (raws.length === 0) {
+        errors.push(`${url} (empty)`);
+        continue;
+      }
+      return mergeMagmaRaws([raws, await readOptionalList(fetchImpl)]);
+    } catch (err) {
+      errors.push(`${url} (${err instanceof Error ? err.message : String(err)})`);
+    }
   }
   for (const url of MAGMA_HOMES) {
     try {

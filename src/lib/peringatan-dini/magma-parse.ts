@@ -125,11 +125,13 @@ export function explicitMagmaLevel(value: unknown): "AWAS" | "SIAGA" | "WASPADA"
  * Neutral unless the record's own level field is WASPADA, SIAGA, or AWAS.
  * Magnitude, MMI text, and `merusak` are not alert levels. AN-4 records that
  * this site has no magnitude-minimum policy (`docs/pengembangan/jurnal/AN-4.md`).
+ * SIAGA is the orange legend step. Only AWAS is danger (red #B42318).
  */
 export function magmaTone(event: MagmaEvent | null, raw?: MagmaRaw): PeringatanTone {
   if (!event) return "neutral";
   const level = explicitMagmaLevel(raw?.level);
-  if (level === "AWAS" || level === "SIAGA") return "danger";
+  if (level === "AWAS") return "danger";
+  if (level === "SIAGA") return "siaga";
   if (level === "WASPADA") return "warn";
   return "neutral";
 }

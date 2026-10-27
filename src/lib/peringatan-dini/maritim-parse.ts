@@ -123,7 +123,7 @@ export function canonWaveCat(raw: string): string {
 
 export function toneFromWaveCat(cat: string): PeringatanTone {
   const rank = waveCatRank(cat);
-  if (rank >= 3) return "danger";
+  if (rank >= 3) return "siaga";
   if (rank === 2) return "warn";
   return "neutral";
 }

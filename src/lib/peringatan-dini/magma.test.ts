@@ -92,7 +92,7 @@ describe("magmaTone", () => {
   it("uses only an explicit upstream level word", () => {
     assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "WASPADA" }), "warn");
     assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "AWAS" }), "danger");
-    assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "SIAGA" }), "danger");
+    assert.equal(toneOf({ magnitude: 2.1, mmi: null, level: "SIAGA" }), "siaga");
     assert.equal(toneOf({ magnitude: 4.9, mmi: "IV Gayo Lues", level: "Level II (Waspada)" }), "neutral");
   });
 });
@@ -185,6 +185,77 @@ describe("fetchMagmaLive", () => {
     assert.equal(card.source, "unavailable");
     assert.equal(card.event, null);
     assertNoJune18(card);
+  });
+
+  it("keeps a maps-only read when the earthquake list returns 403", async () => {
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+      if (url.endsWith("/home/maps")) {
+        return Response.json({
+          success: true,
+          data: {
+            earthquake: [
+              {
+                id: "uuid-maps",
+                report_id: "ROQ20261027010101",
+                magnitude: "2.7",
+                latitude: 4.77,
+                longitude: 96.88,
+                region: "Kabupaten Bener Meriah",
+                affected_area: "Kabupaten Bener Meriah",
+                datetime_wib: "2026-10-27T01:01:01",
+              },
+            ],
+          },
+        });
+      }
+      if (url.endsWith("/earthquake/list")) {
+        return new Response("blocked", { status: 403, statusText: "Forbidden" });
+      }
+      throw new Error(`unexpected url ${url}`);
+    };
+    const card = await fetchMagmaLive(fetchImpl);
+    assert.equal(card.event?.id, "ROQ20261027010101");
+    assert.equal(card.event?.magnitude, 2.7);
+    assert.equal(card.tone, "neutral");
+    assert.equal(card.empty, false);
+  });
+
+  it("fail-closes when maps fails even if the earthquake list is readable", async () => {
+    const fetchImpl: typeof fetch = async (input) => {
+      const url = String(input);
+      if (url.endsWith("/home/maps")) {
+        return new Response("blocked", { status: 403, statusText: "Forbidden" });
+      }
+      if (url.endsWith("/earthquake/list")) {
+        return Response.json({
+          success: true,
+          data: {
+            data: [
+              {
+                report_id: "ROQ-FROM-LIST-ONLY",
+                datetime_wib: "2026-10-27T02:02:02",
+                magnitude: "6.1",
+                latitude: 5.5,
+                longitude: 95.3,
+                region: "Banda Aceh",
+                affected_area: "Banda Aceh",
+              },
+            ],
+          },
+        });
+      }
+      return new Response("<html>no feed</html>", {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      });
+    };
+    await assert.rejects(fetchMagmaLive(fetchImpl), /403|unavailable|feed not found/i);
+    const card = await getMagmaPeringatanFromLive(() => fetchMagmaLive(fetchImpl));
+    assert.equal(card.source, "unavailable");
+    assert.equal(card.stale, true);
+    assert.equal(card.event, null);
+    assert.equal(JSON.stringify(card).includes("ROQ-FROM-LIST-ONLY"), false);
   });
 
   it("reads the public JSON list ahead of HTML and stays neutral", async () => {

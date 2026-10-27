@@ -5,7 +5,7 @@ import type { LucideIcon } from "lucide-react";
 import { ArrowUpRight, CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { SITE_MEDIA } from "@/lib/media";
-import { magmaSummary, tatonasCopy } from "@/lib/peringatan-dini/card-copy";
+import { magmaSummary, tatonasCopy, tatonasStaleRow } from "@/lib/peringatan-dini/card-copy";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
@@ -29,12 +29,12 @@ type Kartu = {
   basi: boolean;
   /** Local mute. Neutral MAGMA and stale Tatonas stay off the green AMAN chip. */
   grey: boolean;
-  chip: "tone" | "stale";
+  chip: "tone" | "stale" | "info";
 };
 
 type BerandaT = (key: string, values?: Record<string, string | number>) => string;
 
-const URUTAN_TONE: Record<PeringatanTone, number> = { danger: 0, warn: 1, neutral: 2 };
+const URUTAN_TONE: Record<PeringatanTone, number> = { danger: 0, siaga: 1, warn: 2, neutral: 3 };
 
 function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): Kartu[] {
   const kartu: Kartu[] = [];
@@ -88,7 +88,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       external: true,
       basi: pd.magma.stale,
       grey: pd.magma.tone === "neutral",
-      chip: unavailable ? "stale" : "tone",
+      chip: unavailable ? "stale" : pd.magma.tone === "neutral" ? "info" : "tone",
     });
   }
 
@@ -128,9 +128,13 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
           : copy.kind === "normal"
             ? t("peringatan.tatonasEmpty")
             : t("peringatan.tatonasCount", { count: copy.count }),
-      rincian: pd.tatonas.highlights
-        .slice(0, 4)
-        .map((h) => `${h.pos_name}: ${h.level}`),
+      rincian:
+        copy.kind === "stale"
+          ? pd.tatonas.highlights.slice(0, 4).map((h) => {
+              const row = tatonasStaleRow(h.pos_name, h.time_local, Date.now());
+              return t("peringatan.tatonasRowStale", row);
+            })
+          : pd.tatonas.highlights.slice(0, 4).map((h) => `${h.pos_name}: ${h.level}`),
       stempel: jamPendek(pd.tatonas.fetched_at, locale),
       href: pd.tatonas.href,
       external: true,
@@ -206,10 +210,20 @@ function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
             TYPE_FLOOR_CLASS,
           )}
         >
-          {kartu.chip === "stale" ? tp("stale") : tp(`tone.${kartu.tone}`)}
+          {kartu.chip === "stale"
+            ? tp("stale")
+            : kartu.chip === "info"
+              ? tp("tone.info")
+              : tp(`tone.${kartu.tone}`)}
         </span>
       ) : (
-        <StatusScaleChip level={toneLevel(kartu.tone)} label={tp(`tone.${kartu.tone}`)} />
+        <StatusScaleChip
+          level={toneLevel(kartu.tone)}
+          label={tp(`tone.${kartu.tone}`)}
+          className={
+            toneLevel(kartu.tone) === "awas" ? "bg-[#B42318] text-white shadow-none" : undefined
+          }
+        />
       )}
     </div>
   );
@@ -292,11 +306,13 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           "sm:p-5",
           kartu.grey
             ? ""
-            : toneLevel(kartu.tone) === "siaga"
-              ? "bg-[color-mix(in_srgb,var(--status-siaga)_14%,var(--bg-raised))]"
-              : toneLevel(kartu.tone) === "waspada"
-                ? "bg-[color-mix(in_srgb,var(--status-waspada)_28%,var(--bg-raised))]"
-                : "bg-[color-mix(in_srgb,var(--status-aman)_18%,var(--bg-raised))]",
+            : toneLevel(kartu.tone) === "awas"
+              ? "bg-[color-mix(in_srgb,#B42318_14%,var(--bg-raised))]"
+              : toneLevel(kartu.tone) === "siaga"
+                ? "bg-[color-mix(in_srgb,var(--status-siaga)_14%,var(--bg-raised))]"
+                : toneLevel(kartu.tone) === "waspada"
+                  ? "bg-[color-mix(in_srgb,var(--status-waspada)_28%,var(--bg-raised))]"
+                  : "bg-[color-mix(in_srgb,var(--status-aman)_18%,var(--bg-raised))]",
         )
       : "",
     // Tone-tinted left edge: colour here carries status, not decoration.
@@ -314,7 +330,12 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
       aria-label={t("peringatan.ariaKartu", {
         bahaya: kartu.bahaya,
         lembaga: kartu.lembaga,
-        tone: kartu.chip === "stale" ? tp("stale") : tp(`tone.${kartu.tone}`),
+        tone:
+          kartu.chip === "stale"
+            ? tp("stale")
+            : kartu.chip === "info"
+              ? tp("tone.info")
+              : tp(`tone.${kartu.tone}`),
       })}
     >
       {isi}

@@ -146,13 +146,13 @@ export function jamPendek(iso: string | null | undefined, locale = "id"): string
 }
 
 /**
- * Live warning tones use the one hybrid status scale (PVMBG colour approach, not official hex).
- * neutral → Aman, warn → Waspada, danger → Siaga.
- * Labels live in peringatanDini.tone.{neutral,warn,danger}.
- * Official volcano and logger levels are not remapped here.
+ * Four-step legend: Aman green, Waspada yellow, Siaga orange, Awas red #B42318.
+ * Only `danger` is Awas. `siaga` stays on the orange legend step.
+ * Labels live in peringatanDini.tone.{neutral,warn,siaga,danger,info}.
  */
 export function toneLevel(tone: PeringatanTone): StatusLevel {
-  if (tone === "danger") return "siaga";
+  if (tone === "danger") return "awas";
+  if (tone === "siaga") return "siaga";
   if (tone === "warn") return "waspada";
   return "aman";
 }
@@ -160,20 +160,23 @@ export function toneLevel(tone: PeringatanTone): StatusLevel {
 export const TONE_DOT: Record<PeringatanTone, string> = {
   neutral: "bg-[var(--status-aman)]",
   warn: "bg-[var(--status-waspada)]",
-  danger: "bg-[var(--status-siaga)]",
+  siaga: "bg-[var(--status-siaga)]",
+  danger: "bg-[#B42318]",
 };
 
 export const TONE_CHIP: Record<PeringatanTone, string> = {
   neutral: "border border-[var(--map-keyline)] bg-[var(--status-aman)] text-[var(--map-status-aman-fg)]",
   warn: "border border-[var(--map-keyline)] bg-[var(--status-waspada)] text-[var(--map-status-waspada-fg)]",
-  danger:
+  siaga:
     "border border-[var(--map-keyline)] bg-[var(--status-siaga)] text-[var(--map-status-siaga-fg)]",
+  danger: "border border-[var(--map-keyline)] bg-[#B42318] text-white",
 };
 
 export const TONE_EDGE: Record<PeringatanTone, string> = {
   neutral: "before:bg-[var(--status-aman)]",
   warn: "before:bg-[var(--status-waspada)]",
-  danger: "before:bg-[var(--status-siaga)]",
+  siaga: "before:bg-[var(--status-siaga)]",
+  danger: "before:bg-[#B42318]",
 };
 
 /**

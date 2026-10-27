@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, it } from "node:test";
 import { unavailableMagmaCard } from "@/lib/peringatan-dini-types";
 import type { TatonasHighlight } from "@/lib/tatonas/types";
-import { magmaSummary, newestHighlightAgeMinutes, tatonasCopy } from "./card-copy";
+import { magmaSummary, newestHighlightAgeMinutes, tatonasCopy, tatonasStaleRow } from "./card-copy";
 
 const NOW = Date.parse("2026-10-27T03:20:00.000Z");
 
@@ -56,6 +56,24 @@ describe("tatonasCopy", () => {
   });
 });
 
+describe("tatonas stale rows", () => {
+  it("names the post and its age without a level word", () => {
+    const row = tatonasStaleRow("Pos Aman", "2026-10-27 10:00:00", NOW);
+    assert.equal(`${row.nama} · ${row.menit} mnt lalu`, "Pos Aman · 20 mnt lalu");
+    assert.equal(`${row.nama} · ${row.min} min ago`, "Pos Aman · 20 min ago");
+    const rendered = `${row.nama} · ${row.menit} mnt lalu`;
+    assert.equal(/AMAN|WASPADA|AWAS/.test(rendered), false);
+    const id = JSON.parse(readFileSync(path.join(process.cwd(), "messages/id.json"), "utf8")) as {
+      beranda: { peringatan: Record<string, string> };
+    };
+    const en = JSON.parse(readFileSync(path.join(process.cwd(), "messages/en.json"), "utf8")) as {
+      beranda: { peringatan: Record<string, string> };
+    };
+    assert.equal(id.beranda.peringatan.tatonasRowStale, "{nama} · {menit} mnt lalu");
+    assert.equal(en.beranda.peringatan.tatonasRowStale, "{nama} · {min} min ago");
+  });
+});
+
 describe("magmaSummary", () => {
   it("separates unavailable from a live empty feed and from an event", () => {
     assert.equal(magmaSummary(unavailableMagmaCard()), "unavailable");
@@ -93,10 +111,13 @@ describe("PeringatanBento copy wiring", () => {
 
   it("does not count Tatonas highlights as posts above threshold", () => {
     assert.match(src, /tatonasCopy/);
+    assert.match(src, /tatonasStaleRow/);
     assert.match(src, /peringatan\.tatonasStale/);
+    assert.match(src, /peringatan\.tatonasRowStale/);
     assert.match(src, /peringatan\.magmaUnavailable/);
+    assert.match(src, /tone\.info/);
     assert.equal(src.includes("pd.tatonas.highlights.length"), false);
     assert.match(src, /toneLevel/);
-    assert.equal(src.includes('"awas"'), false);
+    assert.match(src, /#B42318/);
   });
 });

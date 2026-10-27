@@ -10,17 +10,34 @@ export function parseWibMillis(value: string | null | undefined): number | null 
   return Number.isFinite(ms) ? ms : null;
 }
 
+/** Age of one post. A missing clock uses the existing 15-minute floor, not a new threshold. */
+export function highlightAgeMinutes(timeLocal: string | null | undefined, nowMs: number): number {
+  const ms = parseWibMillis(timeLocal);
+  if (ms == null) return Math.floor(TATONAS_STALE_MS / 60_000);
+  return Math.max(0, Math.floor((nowMs - ms) / 60_000));
+}
+
 /** Age in minutes of the newest highlight. Missing clocks use the existing 15-minute floor. */
 export function newestHighlightAgeMinutes(
   times: Array<string | null | undefined>,
   nowMs: number,
 ): number {
-  const ages = times
-    .map((value) => parseWibMillis(value))
-    .filter((ms): ms is number => ms != null)
-    .map((ms) => Math.max(0, Math.floor((nowMs - ms) / 60_000)));
-  if (ages.length === 0) return Math.floor(TATONAS_STALE_MS / 60_000);
-  return Math.min(...ages);
+  const ages = times.map((value) => highlightAgeMinutes(value, nowMs));
+  const dated = times
+    .map((value, index) => (parseWibMillis(value) == null ? null : ages[index]))
+    .filter((age): age is number => age != null);
+  if (dated.length === 0) return Math.floor(TATONAS_STALE_MS / 60_000);
+  return Math.min(...dated);
+}
+
+/** Stale row copy. The level word is omitted; the age is this post's own clock. */
+export function tatonasStaleRow(
+  posName: string,
+  timeLocal: string | null | undefined,
+  nowMs: number,
+): { nama: string; menit: number; min: number } {
+  const age = highlightAgeMinutes(timeLocal, nowMs);
+  return { nama: posName, menit: age, min: age };
 }
 
 export type TatonasCopy =

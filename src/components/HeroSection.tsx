@@ -31,8 +31,14 @@ async function fetchPeringatanDini(): Promise<PeringatanDiniResponse> {
 function toneChip(tone: PeringatanTone) {
   if (tone === "danger") {
     return {
-      dot: "bg-[var(--awas)]",
-      chip: "bg-[var(--awas)] text-white",
+      dot: "bg-[#B42318]",
+      chip: "bg-[#B42318] text-white",
+    };
+  }
+  if (tone === "siaga") {
+    return {
+      dot: "bg-[var(--status-siaga)]",
+      chip: "bg-[var(--status-siaga)] text-[var(--map-status-siaga-fg)]",
     };
   }
   if (tone === "warn") {

@@ -63,12 +63,12 @@ function scoreKab(kab: WeatherForecastKab, providers: string[]): ScoredKab | nul
 
   if (codes.some((c) => STORM_CODES.has(c)) || /petir|thunderstorm/i.test(desc)) {
     score += 90;
-    tone = "danger";
+    tone = "siaga";
     kondisi.push("Petir");
   }
   if (codes.some((c) => HEAVY_RAIN_CODES.has(c)) || /hujan lebat|hujan ekstrem|violent rain|heavy rain/i.test(desc)) {
     score += 80;
-    tone = "danger";
+    tone = "siaga";
     kondisi.push("Hujan lebat");
   } else if (codes.some((c) => MODERATE_RAIN_CODES.has(c)) && rainMm >= 10) {
     score += 45;
@@ -78,7 +78,7 @@ function scoreKab(kab: WeatherForecastKab, providers: string[]): ScoredKab | nul
 
   if (rainMm >= 50) {
     score += 70;
-    tone = "danger";
+    tone = "siaga";
     if (!kondisi.includes("Hujan lebat")) kondisi.push("Hujan ekstrem");
   } else if (rainMm >= 20) {
     score += 50;
@@ -88,7 +88,7 @@ function scoreKab(kab: WeatherForecastKab, providers: string[]): ScoredKab | nul
 
   if (wind >= 60) {
     score += 70;
-    tone = "danger";
+    tone = "siaga";
     kondisi.push("Angin kencang");
   } else if (wind >= 40) {
     score += 40;
@@ -117,6 +117,7 @@ function scoreKab(kab: WeatherForecastKab, providers: string[]): ScoredKab | nul
 
 function worstTone(items: ScoredKab[]): PeringatanTone {
   if (items.some((i) => i.tone === "danger")) return "danger";
+  if (items.some((i) => i.tone === "siaga")) return "siaga";
   if (items.some((i) => i.tone === "warn")) return "warn";
   return "neutral";
 }
