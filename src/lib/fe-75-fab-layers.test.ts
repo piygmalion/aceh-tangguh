@@ -9,7 +9,7 @@ import {
   tanggapiYieldRootMargin,
 } from "./home-fab-reserve";
 import { geojsonForMarkerLayers } from "./marker-layer-selection";
-import { hiddenDetailRows, overflowLabelKey, SMALL_CARD_ROWS } from "./peringatan-bento-rows";
+import { hiddenListItems, listItemCount, overflowLabelKey, SMALL_CARD_ROWS } from "./peringatan-bento-rows";
 import idJson from "../../messages/id.json";
 import enJson from "../../messages/en.json";
 
@@ -103,27 +103,35 @@ describe("FE-75 peringatan copy and rows", () => {
   });
 
   it("names the overflow row after the card", () => {
-    assert.equal(overflowLabelKey("magma"), "gempaLainnya");
+    assert.equal(overflowLabelKey("magma"), null);
     assert.equal(overflowLabelKey("tatonas"), "posLainnya");
     assert.equal(overflowLabelKey("cuaca"), "wilayahLainnya");
     assert.equal(overflowLabelKey("sipongi"), "titikLainnya");
     assert.equal(overflowLabelKey("maritim"), "perairanLainnya");
     assert.equal(overflowLabelKey("lain"), "lainnya");
     const src = read("src/components/beranda/PeringatanBento.tsx");
-    assert.match(src, /peringatan\.\$\{overflowLabelKey\(kartu\.key\)\}/);
+    assert.match(src, /overflowLabelKey\(kartu\.key\)/);
     assert.equal(src.includes("peringatan.posLainnya"), false);
+    assert.equal(src.includes("gempaLainnya"), false);
   });
 
-  it("limits small cards to two rows and counts the rest", () => {
+  it("counts hidden list items and skips a single MAGMA event", () => {
     assert.equal(SMALL_CARD_ROWS, 2);
-    assert.equal(hiddenDetailRows(2, 2), 0);
-    assert.equal(hiddenDetailRows(5, 2), 3);
-    assert.equal(hiddenDetailRows(0, 2), 0);
+    assert.equal(listItemCount(["a", "b", "c"], 0), 3);
+    assert.equal(hiddenListItems(listItemCount(["a", "b", "c"], 0), SMALL_CARD_ROWS), 1);
+    assert.equal(hiddenListItems(listItemCount(["a", "b"], 4), SMALL_CARD_ROWS), 4);
+    assert.equal(hiddenListItems(listItemCount([], 0), SMALL_CARD_ROWS), 0);
+    // Three detail lines of one event are not three earthquakes. The live +1 was this mistake.
+    assert.equal(hiddenListItems(null, SMALL_CARD_ROWS), 0);
     const src = read("src/components/beranda/PeringatanBento.tsx");
-    assert.match(src, /hiddenDetailRows\(kartu\.rincian\.length, shown\)/);
+    const magma = src.slice(src.indexOf('key: "magma"'), src.indexOf('key: "sipongi"'));
+    assert.match(magma, /ev\.wilayah, ev\.koordinat_kedalaman, ev\.waktu_kejadian/);
+    assert.match(magma, /itemCount: null/);
+    assert.match(src, /hiddenListItems\(kartu\.itemCount, shown\)/);
+    assert.equal(src.includes("hiddenDetailRows(kartu.rincian.length"), false);
     assert.match(src, /data-pos-lainnya/);
-    assert.match(src, /overflowLabelKey\(kartu\.key\)/);
     assert.match(src, /href=\{kartu\.href\}/);
+    assert.match(src, /listItemCount\(pd\.tatonas\.highlights, pd\.tatonas\.extra_count\)/);
     const sel = src.slice(src.indexOf("function Sel"), src.indexOf("export function PeringatanBento"));
     const isi = sel.slice(sel.indexOf("const isi"), sel.indexOf("const kelas"));
     assert.match(isi, /data-pos-lainnya/);

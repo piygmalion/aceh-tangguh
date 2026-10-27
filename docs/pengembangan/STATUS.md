@@ -747,7 +747,7 @@ Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi lembar) menj
 
 ## FE-75 — zona FAB, laci, R3P, kartu PD, layers
 
-Tanggapi sembunyi saat pita angka atau kartu PD memotong 96px terbawah, bukan pada ambang 30%. Beranda tetap berpadding 72px; ruang kosong di dalam pita dihapus. Sub-item Laporkan di laci 390 duduk di x44. Panel R3P mulai 8px di bawah header 6rem. Kaki basi berbunyi "Belum ada data terbaru". Kartu kecil bento menampilkan dua baris lalu sisa dengan kata benda kartu (gempa, pos, wilayah, titik panas, perairan, atau "+N lainnya"). `layers=` hanya menggambar titik dan klaster kunci yang disebut. Tidak ada perubahan data atau API.
+Tanggapi sembunyi saat pita angka atau kartu PD memotong 96px terbawah, bukan pada ambang 30%. Beranda tetap berpadding 72px; ruang kosong di dalam pita dihapus. Sub-item Laporkan di laci 390 duduk di x44. Panel R3P mulai 8px di bawah header 6rem. Kaki basi berbunyi "Belum ada data terbaru". Kartu kecil bento menampilkan dua item daftar lalu sisa ("+N pos lainnya" pada Tatonas). Satu event MAGMA tidak menulis baris sisa. `layers=` hanya menggambar titik dan klaster kunci yang disebut. Tidak ada perubahan data atau API.
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |

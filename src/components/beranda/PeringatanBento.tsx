@@ -7,7 +7,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { SITE_MEDIA } from "@/lib/media";
 import { magmaSummary, tatonasCopy, tatonasStaleRow } from "@/lib/peringatan-dini/card-copy";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
-import { hiddenDetailRows, overflowLabelKey, SMALL_CARD_ROWS } from "@/lib/peringatan-bento-rows";
+import {
+  hiddenListItems,
+  listItemCount,
+  overflowLabelKey,
+  SMALL_CARD_ROWS,
+} from "@/lib/peringatan-bento-rows";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { usePeringatan } from "./data";
@@ -24,6 +29,8 @@ type Kartu = {
   tone: PeringatanTone;
   ringkas: string;
   rincian: string[];
+  /** API list length. Null when the card is one object, not a list of items. */
+  itemCount: number | null;
   stempel: string | null;
   href: string;
   external: boolean;
@@ -56,6 +63,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       rincian: pd.cuaca.highlights.map(
         (h) => `${h.kabupaten}: ${h.kondisi.toLocaleLowerCase(lowerTag)}`,
       ),
+      itemCount: listItemCount(pd.cuaca.highlights, pd.cuaca.extra_count),
       stempel: jamPendek(pd.cuaca.fetched_at, locale),
       href: pd.cuaca.href,
       external: false,
@@ -84,6 +92,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
         summary !== "event" || !ev
           ? []
           : [ev.wilayah, ev.koordinat_kedalaman, ev.waktu_kejadian].filter(Boolean),
+      itemCount: null,
       stempel: jamPendek(pd.magma.fetched_at, locale),
       href: pd.magma.href,
       external: true,
@@ -106,6 +115,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
       rincian: pd.sipongi.points.map(
         (p) => `${p.kabkota}, ${t("peringatan.kecamatan", { name: p.kecamatan })}`,
       ),
+      itemCount: listItemCount(pd.sipongi.points),
       stempel: jamPendek(pd.sipongi.fetched_at, locale),
       href: pd.sipongi.href,
       external: true,
@@ -143,6 +153,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
               });
             })
           : pd.tatonas.highlights.map((h) => `${h.pos_name}: ${h.level}`),
+      itemCount: listItemCount(pd.tatonas.highlights, pd.tatonas.extra_count),
       stempel: jamPendek(pd.tatonas.fetched_at, locale),
       href: pd.tatonas.href,
       external: true,
@@ -165,6 +176,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
             count: pd.maritim.highlights.length + pd.maritim.extra_count,
           }),
       rincian: pd.maritim.highlights.map((h) => `${h.nama}: ${h.wave_cat}`),
+      itemCount: listItemCount(pd.maritim.highlights, pd.maritim.extra_count),
       stempel: jamPendek(pd.maritim.fetched_at, locale),
       href: pd.maritim.href,
       external: true,
@@ -259,8 +271,9 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
   const t = useTranslations("beranda");
   const tp = useTranslations("peringatanDini");
   const foto = SITE_MEDIA.heroSlides[1];
-  const shown = besar ? 4 : SMALL_CARD_ROWS;
-  const hidden = besar ? 0 : hiddenDetailRows(kartu.rincian.length, shown);
+  const shown = besar ? 4 : kartu.itemCount == null ? kartu.rincian.length : SMALL_CARD_ROWS;
+  const hidden = besar ? 0 : hiddenListItems(kartu.itemCount, shown);
+  const overflowKey = hidden > 0 ? overflowLabelKey(kartu.key) : null;
   const isi = (
     <>
       {besar ? (
@@ -300,9 +313,9 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           ))}
         </ul>
       ) : null}
-      {hidden > 0 ? (
+      {overflowKey ? (
         <p className={cn("mt-1.5 font-semibold text-[var(--text)] underline underline-offset-2", TYPE_FLOOR_CLASS)} data-pos-lainnya="">
-          {t(`peringatan.${overflowLabelKey(kartu.key)}`, { count: hidden })}
+          {t(`peringatan.${overflowKey}`, { count: hidden })}
         </p>
       ) : null}
       <Kaki kartu={kartu} />
