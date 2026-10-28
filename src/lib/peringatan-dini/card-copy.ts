@@ -1,4 +1,4 @@
-import type { MagmaCard } from "@/lib/peringatan-dini-types";
+import type { CuacaWarningCard, MagmaCard, PeringatanTone } from "@/lib/peringatan-dini-types";
 import type { TatonasCard } from "@/lib/tatonas/types";
 
 /** WIB wall clock, same offset as parseTatonasLocalTime. Kept here so the bento does not import node:crypto. */
@@ -72,4 +72,58 @@ export function magmaSummary(
   if (card.source === "unavailable") return "unavailable";
   if (card.empty || !card.event) return "empty";
   return "event";
+}
+
+export type CuacaBentoKind = "unavailable" | "empty" | "warnings";
+
+export type CuacaBentoView = {
+  kind: CuacaBentoKind;
+  summaryKey: "cuacaUnavailable" | "cuacaEmpty" | "cuacaCount";
+  chip: "stale" | "tone";
+  grey: boolean;
+  tone: PeringatanTone;
+  footer: "snapshot" | "time";
+  showDetails: boolean;
+};
+
+function cuacaFeedDelayed(card: { source: string; stale: boolean }): boolean {
+  return card.source === "unavailable" || card.stale === true;
+}
+
+function cuacaStampPresent(fetchedAt: string | null): boolean {
+  return typeof fetchedAt === "string" && fetchedAt.trim().length > 0;
+}
+
+/**
+ * Weather card copy for the bento. Unavailable and stale feeds use the grey
+ * delayed chip. The empty "no active warning" sentence is only for a fresh feed.
+ */
+export function cuacaBentoView(
+  card: Pick<
+    CuacaWarningCard,
+    "source" | "stale" | "empty" | "highlights" | "extra_count" | "tone" | "fetched_at"
+  >,
+): CuacaBentoView {
+  if (cuacaFeedDelayed(card)) {
+    return {
+      kind: "unavailable",
+      summaryKey: "cuacaUnavailable",
+      chip: "stale",
+      grey: true,
+      tone: "neutral",
+      footer: "snapshot",
+      showDetails: false,
+    };
+  }
+  const warningCount = card.highlights.length + card.extra_count;
+  const empty = card.empty || warningCount === 0;
+  return {
+    kind: empty ? "empty" : "warnings",
+    summaryKey: empty ? "cuacaEmpty" : "cuacaCount",
+    chip: "tone",
+    grey: false,
+    tone: card.tone,
+    footer: cuacaStampPresent(card.fetched_at) ? "time" : "snapshot",
+    showDetails: !empty,
+  };
 }

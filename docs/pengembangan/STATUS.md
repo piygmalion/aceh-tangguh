@@ -767,3 +767,11 @@ Keputusan pemilik 2026-10-28: Kemendagri (`adm2`) kunci join; `kode_bps` kolom t
 | --- | --- | --- | --- | --- |
 | DATA-kode | data | Kemendagri join key + kode_bps + 4 kode_sik | jurnal/DATA-kode.md | selesai |
 
+## FE-76 — kartu cuaca tidak tersedia
+
+Kartu cuaca di bento beranda tidak lagi memakai kalimat kosong dan chip Normal ketika `source` adalah `unavailable` atau `stale` benar. Chip memakai varian basi yang sudah ada. Kaki tanpa stempel memakai "Belum ada data terbaru". Kalimat "Tidak ada peringatan cuaca aktif" hanya untuk umpan segar tanpa peringatan. Tidak ada perubahan API.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-76 | frontend | kartu cuaca tidak tersedia | jurnal/FE-76.md | selesai |
+
