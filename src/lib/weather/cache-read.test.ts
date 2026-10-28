@@ -100,15 +100,16 @@ function peringatan(cuaca: CuacaWarningCard): PeringatanDiniResponse {
 }
 
 describe("BE-79 weather cache expiry", () => {
-  it("locks the 2 hour write TTL against the 3 hour GitHub schedule", () => {
+  it("locks the 4 hour write TTL against the 3 hour GitHub schedule", () => {
     const workflow = read(".github/workflows/weather-refresh.yml");
     const route = read("src/app/api/weather/refresh/route.ts");
     const alias = read("src/app/api/cron/weather/route.ts");
     assert.match(workflow, /cron:\s*"0 \*\/3 \* \* \*"/);
-    assert.match(route, /2 \* 60 \* 60 \* 1000/);
+    assert.match(route, /4 \* 60 \* 60 \* 1000/);
+    assert.doesNotMatch(route, /2 \* 60 \* 60 \* 1000/);
     assert.match(alias, /weather\/refresh\/route/);
     assert.doesNotMatch(workflow, /pg_cron/);
-    assert.equal(3 * 60 * 60 * 1000 - 2 * 60 * 60 * 1000, 60 * 60 * 1000);
+    assert.equal(4 * 60 * 60 * 1000 - 3 * 60 * 60 * 1000, 60 * 60 * 1000);
   });
 
   it("selects expires_at and returns expired cache before any live or fixture fallback", () => {
