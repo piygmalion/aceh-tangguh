@@ -642,6 +642,7 @@ Tindak lanjut data: `public.anggaran_analisis`, `public.anggaran_kegiatan`, dan 
 | BE-77 | backend | Alasan `expired` saat cache MAGMA kedaluwarsa | jurnal/be-77/BE-77.md | selesai |
 | BE-78 | backend | pg_cron primer refresh overlay live | jurnal/be-78/BE-78.md | selesai |
 | BE-79 | backend | Cuaca basi tidak ditampilkan sebagai terkini | jurnal/be-79/BE-79.md | selesai |
+| BE-80 | backend | Tabel `weather_forecasts` | jurnal/be-80/BE-80.md | selesai |
 
 DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
 
