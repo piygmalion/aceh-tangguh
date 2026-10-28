@@ -153,7 +153,7 @@ describe("FE-73 map sheet", () => {
     const home = read("src/components/panduan/GuideBot.tsx");
     assert.match(home, /bottom-\[calc\(1rem\+env\(safe-area-inset-bottom,0px\)\)\]/);
     assert.match(read("src/app/[locale]/page.tsx"), /pb-\[4\.5rem\]/);
-    assert.match(read("src/components/beranda/DataHero.tsx"), /max-md:pb-\[4\.5rem\]/);
+    assert.doesNotMatch(read("src/components/beranda/DataHero.tsx"), /max-md:pb-\[4\.5rem\]/);
     const viewportH = 844;
     const strip = 44;
     const fabSize = 56;

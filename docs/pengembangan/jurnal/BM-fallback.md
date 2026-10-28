@@ -75,8 +75,11 @@ Kanvas terang sampel piksel (244, 245, 240) = #F4F5F0.
 Netlog 138 URL: tidak ada openstreetmap.org, cartocdn, atau openfreemap.
 Pemberitahuan "Peta dasar belum tersedia. Lapisan lain tetap bisa dipakai." terlihat; legenda status dan panel lapisan tetap ada.
 
-Ukuran aceh-osm.pmtiles: tidak diukur. osmium-tool tidak terpasang. Java 21 ada
-(OpenJDK 21.0.12.1). Geofabrik Indonesia sekitar 1,6 GB; bangun penuh tidak dijalankan.
+Ukuran aceh-osm.pmtiles, bangun lokal `scripts/basemap/build-aceh-pmtiles.sh`
+pada commit 0d9bebd (Planetiler 0.9.0, bbox 95.0,2.0,98.3,6.15, z0–14):
+43,44 MB (45.552.256 byte), 38.463 ubin, ubin terbesar 150,4 KB, 0 ubin di atas 500 KB.
+vector_layers: park (z4–14), landuse (z6–14), landcover, water, waterway,
+transportation, transportation_name, place, boundary, building, water_name.
 Biner tidak di-commit.
 ```
 

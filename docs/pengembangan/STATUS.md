@@ -747,9 +747,17 @@ Roda lembar telepon mengubah mode garis (~16px) dan halaman (tinggi lembar) menj
 | --- | --- | --- | --- | --- |
 | FE-74 | frontend | roda lembar, akordeon Laporkan, kredit peta | jurnal/FE-74.md | diverifikasi |
 
+## FE-75 — zona FAB, laci, R3P, kartu PD, layers
+
+Tanggapi sembunyi saat pita angka atau kartu PD memotong 96px terbawah, bukan pada ambang 30%. Beranda tetap berpadding 72px; ruang kosong di dalam pita dihapus. Sub-item Laporkan di laci 390 duduk di x44. Panel R3P mulai 8px di bawah header 6rem. Kaki basi berbunyi "Belum ada data terbaru". Kartu kecil bento menampilkan dua item daftar lalu sisa ("+N pos lainnya" pada Tatonas). Satu event MAGMA tidak menulis baris sisa. `layers=` hanya menggambar titik dan klaster kunci yang disebut. Tidak ada perubahan data atau API.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-75 | frontend | zona FAB, laci, R3P, kartu PD, layers | jurnal/FE-75.md | selesai |
+
 ## BM-fallback — peta dasar PMTiles milik sendiri
 
-Basemap vektor `/peta` hanya arsip OpenMapTiles `aceh-osm.pmtiles` lewat `NEXT_PUBLIC_BASEMAP_PMTILES_URL` (alias lama `NEXT_PUBLIC_ACEH_OSM_PMTILES`). URL kosong atau ubin gagal: kanvas warna tema (`#F4F5F0` terang, `#1A1A17` gelap) dan pemberitahuan singkat; overlay tetap. Tidak ada Carto dan tidak ada ubin OSM publik. Ketentuan CARTO (https://carto.com/legal/basemap-terms/, 29 September 2026, pasal 3.b dan 8) serta FAQ (https://docs.carto.com/faqs/carto-basemaps) tidak mengizinkan pemakaian tanpa kunci dengan jelas. Air gelap tetap `#4D807B`. Glif Noto Sans di-host sendiri. Ukuran arsip belum diukur (`osmium-tool` tidak ada di mesin ini).
+Basemap vektor `/peta` hanya arsip OpenMapTiles `aceh-osm.pmtiles` lewat `NEXT_PUBLIC_BASEMAP_PMTILES_URL` (alias lama `NEXT_PUBLIC_ACEH_OSM_PMTILES`). URL kosong atau ubin gagal: kanvas warna tema (`#F4F5F0` terang, `#1A1A17` gelap) dan pemberitahuan singkat; overlay tetap. Tidak ada Carto dan tidak ada ubin OSM publik. Ketentuan CARTO (https://carto.com/legal/basemap-terms/, 29 September 2026, pasal 3.b dan 8) serta FAQ (https://docs.carto.com/faqs/carto-basemaps) tidak mengizinkan pemakaian tanpa kunci dengan jelas. Air gelap tetap `#4D807B`. Glif Noto Sans di-host sendiri. Bangun lokal di `0d9bebd` menghasilkan `aceh-osm.pmtiles` 43,44 MB (45.552.256 byte).
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
