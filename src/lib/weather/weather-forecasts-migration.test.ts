@@ -21,7 +21,7 @@ function refreshUpsertKeys(route: string): string[] {
   const body = route.slice(at + marker.length);
   const end = body.indexOf("});");
   assert.ok(end > 0, "refresh route upsert call not closed");
-  const keys = [...body.slice(0, end).matchAll(/^\s*([a-z_]+)\s*:/gm)].map((match) => match[1]);
+  const keys = [...body.slice(0, end).matchAll(/^\s*([a-z0-9_]+)\s*:/gm)].map((match) => match[1]);
   assert.ok(keys.length > 0, "refresh route upsert has no fields");
   return keys;
 }
@@ -35,9 +35,10 @@ function migrationColumns(sql: string): { name: string; definition: string }[] {
   for (const line of match[1].split("\n")) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("--")) continue;
-    const parsed = trimmed.match(/^([a-z_]+)\s+(.+?)\s*,?$/);
+    const withoutComma = trimmed.replace(/,\s*$/, "");
+    const parsed = withoutComma.match(/^([a-z0-9_]+)\s+(.+)$/);
     assert.ok(parsed, `unparsed column line: ${trimmed}`);
-    columns.push({ name: parsed[1], definition: parsed[2].replace(/,\s*$/, "") });
+    columns.push({ name: parsed[1], definition: parsed[2] });
   }
   return columns;
 }
