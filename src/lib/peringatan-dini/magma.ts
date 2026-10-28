@@ -6,7 +6,8 @@ import { magmaCardFromOverlayRead } from "./overlay-cards";
 
 const getCachedMagmaOverlay = unstable_cache(
   async () => readOverlayLiveForPd("magmaQuakes"),
-  ["peringatan-magma-aceh"],
+  // "ledger" drops a cached select from before the refresh row was part of the payload.
+  ["peringatan-magma-aceh", "ledger"],
   { revalidate: 600, tags: ["peringatan-magma"] },
 );
 
@@ -19,6 +20,7 @@ export async function getMagmaPeringatan(): Promise<MagmaCard> {
       magmaCardFromOverlayRead(select.result, requestAt, {
         rowFetchedAt: select.rowsFetchedAt,
         ledgerFetchedAt: select.refreshedAt,
+        ledger: select.ledger,
       }),
       select.refreshError,
     );
