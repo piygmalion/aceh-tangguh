@@ -5,7 +5,12 @@ import type { LucideIcon } from "lucide-react";
 import { ArrowUpRight, CloudRain, Droplets, Flame, Mountain, Waves } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { SITE_MEDIA } from "@/lib/media";
-import { magmaSummary, tatonasCopy, tatonasStaleRow } from "@/lib/peringatan-dini/card-copy";
+import {
+  cuacaBentoView,
+  magmaSummary,
+  tatonasCopy,
+  tatonasStaleRow,
+} from "@/lib/peringatan-dini/card-copy";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
 import {
   hiddenListItems,
@@ -49,27 +54,33 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
   const lowerTag = locale === "en" ? "en-US" : "id-ID";
 
   if (pd.cuaca) {
+    const view = cuacaBentoView(pd.cuaca);
     kartu.push({
       key: "cuaca",
       bahaya: t("feed.cuaca"),
       lembaga: t("lembaga.cuaca"),
       Icon: CloudRain,
-      tone: pd.cuaca.tone,
-      ringkas: pd.cuaca.empty
-        ? t("peringatan.cuacaEmpty")
-        : t("peringatan.cuacaCount", {
-            count: pd.cuaca.highlights.length + pd.cuaca.extra_count,
-          }),
-      rincian: pd.cuaca.highlights.map(
-        (h) => `${h.kabupaten}: ${h.kondisi.toLocaleLowerCase(lowerTag)}`,
-      ),
-      itemCount: listItemCount(pd.cuaca.highlights, pd.cuaca.extra_count),
+      tone: view.tone,
+      ringkas:
+        view.summaryKey === "cuacaCount"
+          ? t("peringatan.cuacaCount", {
+              count: pd.cuaca.highlights.length + pd.cuaca.extra_count,
+            })
+          : t(`peringatan.${view.summaryKey}`),
+      rincian: view.showDetails
+        ? pd.cuaca.highlights.map(
+            (h) => `${h.kabupaten}: ${h.kondisi.toLocaleLowerCase(lowerTag)}`,
+          )
+        : [],
+      itemCount: view.showDetails
+        ? listItemCount(pd.cuaca.highlights, pd.cuaca.extra_count)
+        : null,
       stempel: jamPendek(pd.cuaca.fetched_at, locale),
       href: pd.cuaca.href,
       external: false,
-      basi: pd.cuaca.stale,
-      grey: false,
-      chip: "tone",
+      basi: view.footer === "snapshot",
+      grey: view.grey,
+      chip: view.chip,
     });
   }
 
@@ -224,7 +235,7 @@ function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           data-tone-chrome="grey"
           data-status-level="grey"
           className={cn(
-            "inline-flex min-h-[44px] min-w-[44px] items-center rounded-full border border-[var(--map-keyline)] bg-[var(--bg-muted)] px-3 py-1 font-semibold uppercase tracking-[0.06em] text-[var(--text-dim)]",
+            "inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center whitespace-nowrap rounded-full border border-[var(--map-keyline)] bg-[var(--bg-muted)] px-3 py-1 font-semibold uppercase tracking-[0.06em] text-[var(--text-dim)]",
             TYPE_FLOOR_CLASS,
           )}
         >

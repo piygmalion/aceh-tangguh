@@ -10,6 +10,34 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { revalidateTag } from "next/cache";
 
+type UpsertError = { message?: string; code?: string } | null;
+
+export type WeatherForecastWriter = {
+  from: (table: string) => {
+    upsert: (row: Record<string, unknown>) => PromiseLike<{ error: UpsertError }>;
+  };
+};
+
+/** Test seam. Production uses the service-role client and the real fetchers. */
+export const weatherRefreshDeps = {
+  loadRegistry,
+  fetchBmkgForecast,
+  fetchOpenMeteoForecast,
+  createWriter(url: string, serviceKey: string): WeatherForecastWriter {
+    const client = createClient(url, serviceKey);
+    return {
+      from(table: string) {
+        return {
+          upsert(row: Record<string, unknown>) {
+            return client.from(table).upsert(row as never);
+          },
+        };
+      },
+    };
+  },
+  revalidateTag,
+};
+
 export const dynamic = "force-dynamic";
 /** Hobby cap is 60s. The GitHub Action still builds the long snapshot. */
 export const maxDuration = 60;
@@ -51,25 +79,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Supabase service key missing" }, { status: 503 });
   }
 
-  const registry = await loadRegistry();
+  const registry = await weatherRefreshDeps.loadRegistry();
   const irbiMap = await loadIrbiMap();
-  const supabase = createClient(url, serviceKey);
-  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+  const supabase = weatherRefreshDeps.createWriter(url, serviceKey);
+  const expiresAt = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
   const providers = new Set<string>();
   let ok = 0;
+  let failed = 0;
 
   for (const entry of registry) {
     let forecast = null;
     if (entry.adm4) {
       try {
-        forecast = await fetchBmkgForecast(entry);
+        forecast = await weatherRefreshDeps.fetchBmkgForecast(entry);
       } catch {
         /* fallback */
       }
     }
     if (!forecast) {
       try {
-        forecast = await fetchOpenMeteoForecast(entry);
+        forecast = await weatherRefreshDeps.fetchOpenMeteoForecast(entry);
       } catch {
         /* skip */
       }
@@ -87,7 +116,7 @@ export async function POST(request: Request) {
     }
     providers.add(forecast.source);
 
-    await supabase.from("weather_forecasts").upsert({
+    const { error } = await supabase.from("weather_forecasts").upsert({
       kabupaten_kota: forecast.kabupaten_kota,
       adm4_code: forecast.adm4 ?? null,
       payload: forecast,
@@ -96,11 +125,27 @@ export async function POST(request: Request) {
       expires_at: expiresAt,
       updated_at: new Date().toISOString(),
     });
-    ok++;
+    if (error) {
+      failed += 1;
+      console.error("weather_forecasts upsert failed", {
+        kabupaten_kota: forecast.kabupaten_kota,
+        code: error.code ?? null,
+        message: error.message ?? null,
+      });
+    } else {
+      ok++;
+    }
     await new Promise((r) => setTimeout(r, 200));
   }
 
-  revalidateTag("weather");
+  if (failed > 0) {
+    return NextResponse.json(
+      { ok: false, error: "upsert_failed", failed },
+      { status: 502 },
+    );
+  }
+
+  weatherRefreshDeps.revalidateTag("weather");
 
   return NextResponse.json({
     refreshed: ok,

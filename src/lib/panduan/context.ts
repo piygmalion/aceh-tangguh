@@ -45,7 +45,7 @@ function pickWeather(
     kabupaten: row.kabupaten_kota,
     desc,
     tempC: Number.isFinite(row.current.temperature_c) ? row.current.temperature_c : null,
-    fetchedAt: row.fetched_at || payload.metadata.fetched_at,
+    fetchedAt: row.fetched_at || payload.metadata.fetched_at || undefined,
   };
 }
 

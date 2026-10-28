@@ -19,7 +19,7 @@ export type CuacaWarningCard = {
   empty: boolean;
   highlights: CuacaHighlight[];
   extra_count: number;
-  fetched_at: string;
+  fetched_at: string | null;
   providers: string[];
   href: string;
   stale: boolean;

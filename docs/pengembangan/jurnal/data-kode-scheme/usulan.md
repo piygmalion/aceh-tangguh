@@ -1,6 +1,8 @@
 # DATA-kode-scheme — usulan (tanpa migrasi)
 
-Status: **usulan**. Tidak ada perubahan data, id, tile, atau Supabase di PR ini. Skema kanonik diputuskan Pygmalion.
+Status usulan ini tetap sebagai catatan temuan. Keputusan pemilik 2026-10-28 ada di [keputusan.md](keputusan.md): Kemendagri adalah kunci join; BPS hanya kolom tambahan; empat `kode_sik` yang tertukar sudah diselaraskan di registri.
+
+Status: **usulan** (ditutup oleh keputusan 2026-10-28). Tidak ada perubahan data, id, tile, atau Supabase di PR usulan ini. Skema kanonik diputuskan Pygmalion.
 
 ## Temuan
 
