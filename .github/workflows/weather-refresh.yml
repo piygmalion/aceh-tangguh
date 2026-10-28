@@ -45,8 +45,8 @@ jobs:
           WEATHER_REFRESH_URL: ${{ vars.WEATHER_REFRESH_URL }}
         run: |
           if [ -z "$WEATHER_CRON_SECRET" ]; then
-            echo "WEATHER_CRON_SECRET not set — skip Supabase cache refresh"
-            exit 0
+            echo "WEATHER_REFRESH_URL is set but WEATHER_CRON_SECRET is empty. Refusing to call the refresh URL."
+            exit 1
           fi
           curl -fsS -X POST "$WEATHER_REFRESH_URL" \
             -H "Authorization: Bearer $WEATHER_CRON_SECRET" \

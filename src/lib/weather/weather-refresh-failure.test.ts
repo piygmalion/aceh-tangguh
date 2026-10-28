@@ -86,7 +86,9 @@ function rememberEnv() {
 }
 
 function restoreEnv() {
-  for (const [key, value] of savedEnv) {
+  for (const key of envKeys) {
+    if (!savedEnv.has(key)) continue;
+    const value = savedEnv.get(key);
     if (value === undefined) delete process.env[key];
     else process.env[key] = value;
   }
@@ -123,7 +125,7 @@ describe("BE-80 weather refresh failures", () => {
     const script = step.slice(scriptStart);
     const run = spawnSync("bash", ["-c", script], {
       env: {
-        PATH: process.env.PATH ?? "",
+        ...process.env,
         WEATHER_CRON_SECRET: "",
         WEATHER_REFRESH_URL: "http://127.0.0.1:9/weather-refresh-test",
       },
