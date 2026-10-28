@@ -1,4 +1,4 @@
-import { getWeatherForecasts } from "@/lib/weather/service";
+import { getOfficialWeatherRead } from "@/lib/weather/service";
 import {
   CUACA_HREF,
   type CuacaWarningCard,
@@ -8,14 +8,14 @@ import {
 } from "@/lib/peringatan-dini-types";
 import { getTatonasPeringatan } from "@/lib/tatonas/service";
 import { emptyTatonasCard } from "@/lib/tatonas/parse";
-import { summarizeWeatherWarning } from "./weather-summary";
+import { cuacaCardFromOfficialRead } from "./weather-summary";
 import { getMagmaPeringatan } from "./magma";
 import { getMaritimPeringatan } from "./maritim";
 import { getSipongiPeringatan } from "./sipongi";
 
 async function getCuacaPeringatan(): Promise<CuacaWarningCard> {
-  const weather = await getWeatherForecasts();
-  return summarizeWeatherWarning(weather, CUACA_HREF);
+  const read = await getOfficialWeatherRead();
+  return cuacaCardFromOfficialRead(read.kind, read.body, CUACA_HREF);
 }
 
 export async function getPeringatanDini(): Promise<PeringatanDiniResponse> {
