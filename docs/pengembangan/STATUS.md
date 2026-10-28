@@ -644,6 +644,7 @@ Tindak lanjut data: `public.anggaran_analisis`, `public.anggaran_kegiatan`, dan 
 | BE-79 | backend | Cuaca basi tidak ditampilkan sebagai terkini | jurnal/be-79/BE-79.md | selesai |
 | BE-80 | backend | Tabel `weather_forecasts` | jurnal/be-80/BE-80.md | selesai |
 | BE-81 | backend | TTL cache cuaca 4 jam | jurnal/be-81/BE-81.md | selesai |
+| BE-82 | backend | Cabut truncate pada weather_forecasts | jurnal/be-82/BE-82.md | selesai |
 
 DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
 
