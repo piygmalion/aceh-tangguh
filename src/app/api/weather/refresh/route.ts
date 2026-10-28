@@ -82,7 +82,7 @@ export async function POST(request: Request) {
   const registry = await weatherRefreshDeps.loadRegistry();
   const irbiMap = await loadIrbiMap();
   const supabase = weatherRefreshDeps.createWriter(url, serviceKey);
-  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
+  const expiresAt = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
   const providers = new Set<string>();
   let ok = 0;
   let failed = 0;

@@ -207,7 +207,10 @@ describe("BE-80 weather refresh failures", () => {
 
     const route = await loadRoute();
     route.weatherRefreshDeps.loadRegistry = async () => [entry];
-    route.weatherRefreshDeps.fetchBmkgForecast = async (kab) => forecastFor(kab);
+    route.weatherRefreshDeps.fetchBmkgForecast = async (kab) => ({
+      ...forecastFor(kab),
+      fetched_at: new Date().toISOString(),
+    });
     route.weatherRefreshDeps.fetchOpenMeteoForecast = async () => {
       throw new Error("open-meteo must not run");
     };
@@ -215,9 +218,15 @@ describe("BE-80 weather refresh failures", () => {
     route.weatherRefreshDeps.revalidateTag = (tag) => {
       revalidated.push(tag);
     };
+    let written: { fetched_at?: string; expires_at?: string } | undefined;
     route.weatherRefreshDeps.createWriter = () => ({
       from() {
-        return { upsert: async () => ({ error: null }) };
+        return {
+          upsert: async (row: Record<string, unknown>) => {
+            written = row;
+            return { error: null };
+          },
+        };
       },
     });
 
@@ -226,7 +235,6 @@ describe("BE-80 weather refresh failures", () => {
     console.error = (...args: unknown[]) => {
       logs.push(args);
     };
-    const started = Date.now();
     try {
       const response = await route.POST(
         new Request("http://127.0.0.1/api/weather/refresh", {
@@ -244,10 +252,12 @@ describe("BE-80 weather refresh failures", () => {
       assert.equal(response.status, 200);
       assert.equal(body.refreshed, 1);
       assert.deepEqual(body.providers, ["bmkg"]);
-      assert.equal(typeof body.expires_at, "string");
-      const expiresMs = Date.parse(body.expires_at ?? "");
-      assert.ok(expiresMs > started + 2 * 60 * 60 * 1000 - 5000);
-      assert.ok(expiresMs < started + 2 * 60 * 60 * 1000 + 5000);
+      assert.equal(body.expires_at, written?.expires_at);
+      const fetchedMs = Date.parse(written?.fetched_at ?? "");
+      const expiresMs = Date.parse(written?.expires_at ?? "");
+      const fourHours = 4 * 60 * 60 * 1000;
+      assert.ok(Number.isFinite(fetchedMs) && Number.isFinite(expiresMs));
+      assert.ok(Math.abs(expiresMs - fetchedMs - fourHours) < 5000);
       assert.equal(body.ok, undefined);
       assert.equal(body.error, undefined);
       assert.deepEqual(logs, []);
