@@ -235,7 +235,7 @@ function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           data-tone-chrome="grey"
           data-status-level="grey"
           className={cn(
-            "inline-flex min-h-[44px] min-w-[44px] items-center rounded-full border border-[var(--map-keyline)] bg-[var(--bg-muted)] px-3 py-1 font-semibold uppercase tracking-[0.06em] text-[var(--text-dim)]",
+            "inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center whitespace-nowrap rounded-full border border-[var(--map-keyline)] bg-[var(--bg-muted)] px-3 py-1 font-semibold uppercase tracking-[0.06em] text-[var(--text-dim)]",
             TYPE_FLOOR_CLASS,
           )}
         >
