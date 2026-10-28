@@ -63,16 +63,19 @@ describe("lookupKrbKabupaten", () => {
     assert.equal(byName?.kode_kabupaten, "11.18");
   });
 
-  it("joins SIK 1114 to Aceh Tamiang not Aceh Jaya", () => {
-    const tamiang = lookupKrbKabupaten(fixture.kabupaten, { kode: "1114" });
-    const jaya = lookupKrbKabupaten(fixture.kabupaten, { kode: "1116" });
-    const langsa = lookupKrbKabupaten(fixture.kabupaten, { kode: "1173" });
-    const lhok = lookupKrbKabupaten(fixture.kabupaten, { kode: "1174" });
+  it("joins corrected kode_sik onto Kemendagri KRB rows", () => {
+    const tamiang = lookupKrbKabupaten(fixture.kabupaten, { kode: "1116" });
+    const jaya = lookupKrbKabupaten(fixture.kabupaten, { kode: "1114" });
+    const langsa = lookupKrbKabupaten(fixture.kabupaten, { kode: "1174" });
+    const lhok = lookupKrbKabupaten(fixture.kabupaten, { kode: "1173" });
     assert.equal(tamiang?.kabupaten, "Aceh Tamiang");
     assert.equal(tamiang?.kode_kabupaten, "11.16");
     assert.equal(jaya?.kabupaten, "Aceh Jaya");
+    assert.equal(jaya?.kode_kabupaten, "11.14");
     assert.equal(langsa?.kabupaten, "Langsa");
+    assert.equal(langsa?.kode_kabupaten, "11.74");
     assert.equal(lhok?.kabupaten, "Lhokseumawe");
+    assert.equal(lhok?.kode_kabupaten, "11.73");
   });
 });
 

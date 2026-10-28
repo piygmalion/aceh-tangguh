@@ -43,7 +43,10 @@ describe("tilikan-kerusakan kabupaten + jenis", () => {
   it("has 23 kabupaten codes matching findKabupaten", () => {
     assert.equal(ACEH_KABUPATEN.length, 23);
     assert.equal(findKabupaten("Kabupaten Gayo Lues")?.kode, "1113");
-    assert.equal(findKabupaten("Langsa")?.kode, "1173");
+    assert.equal(findKabupaten("Aceh Tamiang")?.kode, "1116");
+    assert.equal(findKabupaten("Aceh Jaya")?.kode, "1114");
+    assert.equal(findKabupaten("Langsa")?.kode, "1174");
+    assert.equal(findKabupaten("Lhokseumawe")?.kode, "1173");
     assert.equal(findKabupaten("unknown"), undefined);
   });
 

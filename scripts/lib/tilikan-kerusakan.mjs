@@ -5,35 +5,24 @@
  * Do not read pengungsian / Haifa / Padal / polsek / fasum / PII files.
  * Do not upsert marker_features. Do not join desa by name.
  */
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { parseCsv, csvRecords } from "./profil-sheet.mjs";
 import { tenDigitKode } from "./village-area-meta.mjs";
 
-/** Keep in sync with src/lib/sik/juklak.ts ACEH_KABUPATEN. */
-export const ACEH_KABUPATEN = [
-  { kode: "1101", nama: "Aceh Selatan" },
-  { kode: "1102", nama: "Aceh Tenggara" },
-  { kode: "1103", nama: "Aceh Timur" },
-  { kode: "1104", nama: "Aceh Tengah" },
-  { kode: "1105", nama: "Aceh Barat" },
-  { kode: "1106", nama: "Aceh Besar" },
-  { kode: "1107", nama: "Pidie" },
-  { kode: "1108", nama: "Aceh Utara" },
-  { kode: "1109", nama: "Simeulue" },
-  { kode: "1110", nama: "Aceh Singkil" },
-  { kode: "1111", nama: "Bireuen" },
-  { kode: "1112", nama: "Aceh Barat Daya" },
-  { kode: "1113", nama: "Gayo Lues" },
-  { kode: "1114", nama: "Aceh Tamiang" },
-  { kode: "1115", nama: "Nagan Raya" },
-  { kode: "1116", nama: "Aceh Jaya" },
-  { kode: "1117", nama: "Bener Meriah" },
-  { kode: "1118", nama: "Pidie Jaya" },
-  { kode: "1171", nama: "Banda Aceh" },
-  { kode: "1172", nama: "Sabang" },
-  { kode: "1173", nama: "Langsa" },
-  { kode: "1174", nama: "Lhokseumawe" },
-  { kode: "1175", nama: "Subulussalam" },
-];
+const registryPath = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../public/fixtures/aceh-kabupaten-registry.json",
+);
+
+/** Kemendagri 4 digit from registry adm2. Not the BPS kode_kab on boundaries. */
+export const ACEH_KABUPATEN = JSON.parse(readFileSync(registryPath, "utf8")).kabupaten_kota.map(
+  (row) => ({
+    kode: String(row.adm2).replace(".", ""),
+    nama: row.nama,
+  }),
+);
 
 export const NEAR_METERS = 50;
 export const ALLOWED_JENIS = new Set(["jalan", "jembatan"]);

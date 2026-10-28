@@ -759,3 +759,11 @@ Tanggapi sembunyi saat pita angka atau kartu PD memotong 96px terbawah, bukan pa
 | --- | --- | --- | --- | --- |
 | FE-75 | frontend | zona FAB, laci, R3P, kartu PD, layers | jurnal/FE-75.md | selesai |
 
+## DATA-kode — kunci join Kemendagri
+
+Keputusan pemilik 2026-10-28: Kemendagri (`adm2`) kunci join; `kode_bps` kolom tambahan dari batas kab; empat `kode_sik` tertukar diselaraskan. Migrasi `20261028_overlay_calon_kode_kemendagri.sql` belum diterapkan ke basis data hidup. Tidak ada bangun ulang ubin. Catatan: [jurnal/data-kode-scheme/keputusan.md](jurnal/data-kode-scheme/keputusan.md).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| DATA-kode | data | Kemendagri join key + kode_bps + 4 kode_sik | jurnal/DATA-kode.md | selesai |
+
