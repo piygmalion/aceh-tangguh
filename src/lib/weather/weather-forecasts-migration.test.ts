@@ -21,7 +21,10 @@ function refreshUpsertKeys(route: string): string[] {
   const body = route.slice(at + marker.length);
   const end = body.indexOf("});");
   assert.ok(end > 0, "refresh route upsert call not closed");
-  const keys = [...body.slice(0, end).matchAll(/^\s*([a-z0-9_]+)\s*:/gm)].map((match) => match[1]);
+  const keys = Array.from(
+    body.slice(0, end).matchAll(/^\s*([a-z0-9_]+)\s*:/gm),
+    (match) => match[1],
+  );
   assert.ok(keys.length > 0, "refresh route upsert has no fields");
   return keys;
 }
