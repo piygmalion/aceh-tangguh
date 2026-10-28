@@ -60,7 +60,7 @@ Logika join ubin, basis data, dan API tidak diubah di keputusan ini. Pembacaan b
 
 `matchesKabScope` / `kabScopeEqualsRow` tetap perbandingan tepat. `"1114"` tidak disamakan dengan `"11.16"`. Tidak ada migrasi profil staf yang sudah menyimpan `1114` sebagai Aceh Tamiang.
 
-Salinan kode di `scripts/lib/tilikan-kerusakan.mjs` (`ACEH_KABUPATEN`, komentar "selaras dengan juklak") tidak diubah. Di salinan itu Langsa masih `1173`, Lhokseumawe `1174`, Aceh Tamiang `1114`, Aceh Jaya `1116` — nilai `kode_sik` sebelum perbaikan, yang untuk keempat nama itu juga sama dengan BPS.
+`scripts/lib/tilikan-kerusakan.mjs` tidak lagi menyalin kode. `ACEH_KABUPATEN` dibaca dari `adm2` registri (digit Kemendagri): Tamiang `1116`, Jaya `1114`, Langsa `1174`, Lhokseumawe `1173`. `tilikan_kerusakan_infra` dan `admin_profiles` tidak punya baris dengan keempat kode lama, jadi tidak ada migrasi data untuk keduanya.
 
 ## Perbaikan baris `overlay_calon_kejadian`
 

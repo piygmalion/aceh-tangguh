@@ -10,7 +10,7 @@ Status: selesai
 - Berkas: `public/fixtures/aceh-kabupaten-registry.json`, `src/lib/aceh-kabupaten.ts` (tipe dan konstanta registri), `scripts/check-kab-kode.mjs`, `scripts/check-kab-kode.test.mjs`, uji yang mengunci pasangan lama, `docs/pengembangan/jurnal/data-kode-scheme/keputusan.md`, penunjuk di `usulan.md`.
 - Langkah: Cocokkan nama registri ke `boundaries-aceh-kab.geojson`. Isi `kode_bps` hanya jika padanan unik. Tukar hanya Tamiang 1114→1116, Jaya 1116→1114, Langsa 1173→1174, Lhokseumawe 1174→1173. Biarkan fungsi join apa adanya.
 - Cara membuktikan: `node scripts/check-kab-kode.mjs` keluar 0. Uji registri dan KRB yang menyentuh empat kode itu lulus.
-- Risiko: Profil staf yang menyimpan `1114` = Aceh Tamiang tidak dimigrasi. `resolveAdm2("1114")` sekarang mengenai Aceh Jaya. Salinan tilikan tetap pada kode lama.
+- Risiko: Profil staf yang menyimpan `1114` = Aceh Tamiang tidak dimigrasi. `resolveAdm2("1114")` sekarang mengenai Aceh Jaya. Tilikan sekarang mengikuti `adm2` registri.
 
 ## Bacaan ulang niat
 
