@@ -154,3 +154,29 @@ export function summarizeWeatherWarning(
     source: data.metadata.source === "fixture" ? "fixture" : "live",
   };
 }
+
+/**
+ * Expired cache is unavailable: no highlights from the last payload.
+ * There is no weather refresh ledger, so `fetched_at` stays null.
+ */
+export function cuacaCardFromOfficialRead(
+  kind: "current" | "expired" | "fallback",
+  data: WeatherApiResponse,
+  href = CUACA_HREF,
+): CuacaWarningCard {
+  if (kind === "expired") {
+    return {
+      kind: "cuaca",
+      tone: "neutral",
+      empty: true,
+      highlights: [],
+      extra_count: 0,
+      fetched_at: null,
+      providers: [],
+      href,
+      stale: true,
+      source: "unavailable",
+    };
+  }
+  return summarizeWeatherWarning(data, href);
+}

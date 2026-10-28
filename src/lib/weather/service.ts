@@ -11,6 +11,12 @@ import type {
 import { kabupatenIndexKeys } from "@/lib/irbi-by-kab";
 import { createServerClient } from "@/lib/supabase/server";
 import { fetchBmkgForecast } from "./bmkg";
+import {
+  classifyWeatherCache,
+  expiredWeatherApiResponse,
+  weatherApiFromFreshRows,
+  type WeatherCacheRow,
+} from "./cache-read";
 import { fetchOpenMeteoForecast } from "./open-meteo";
 
 type IrbiKab = {
@@ -139,41 +145,47 @@ const getCachedForecasts = unstable_cache(
   { revalidate: 3600, tags: ["weather"] },
 );
 
-async function loadFromSupabase(): Promise<WeatherApiResponse | null> {
+export type OfficialWeatherRead =
+  | { kind: "current"; body: WeatherApiResponse }
+  | { kind: "expired"; body: WeatherApiResponse }
+  | { kind: "fallback"; body: WeatherApiResponse };
+
+async function loadWeatherCacheRows(): Promise<WeatherCacheRow[] | null> {
   const supabase = createServerClient();
   if (!supabase) return null;
 
   const { data, error } = await supabase
     .from("weather_forecasts")
-    .select("kabupaten_kota, payload, source, fetched_at")
+    .select("payload, source, fetched_at, expires_at")
     .order("kabupaten_kota");
 
-  if (error || !data || data.length === 0) return null;
+  if (error || !data) return null;
+  return data.map((row) => ({
+    payload: row.payload,
+    source: row.source,
+    fetched_at: row.fetched_at,
+    expires_at: row.expires_at,
+  }));
+}
 
-  const kabupaten_kota = data.map(
-    (row) => row.payload as unknown as WeatherForecastKab,
-  );
-  const providers = new Set(
-    data.map((row) => row.source).filter(Boolean),
-  );
-
-  return {
-    metadata: {
-      total_kabupaten_kota: kabupaten_kota.length,
-      fetched_at: data[0]?.fetched_at ?? new Date().toISOString(),
-      source: "cached",
-      providers: Array.from(providers),
-    },
-    kabupaten_kota,
-  };
+export async function getOfficialWeatherRead(nowMs = Date.now()): Promise<OfficialWeatherRead> {
+  const rows = await loadWeatherCacheRows();
+  const decision = classifyWeatherCache(rows, nowMs);
+  if (decision.kind === "fresh") {
+    return { kind: "current", body: weatherApiFromFreshRows(decision.rows) };
+  }
+  if (decision.kind === "expired") {
+    return { kind: "expired", body: expiredWeatherApiResponse() };
+  }
+  return { kind: "fallback", body: await loadWeatherFallback() };
 }
 
 export async function getWeatherForecasts(): Promise<WeatherApiResponse> {
-  const supabaseData = await loadFromSupabase();
-  if (supabaseData && supabaseData.kabupaten_kota.length >= 20) {
-    return supabaseData;
-  }
+  const read = await getOfficialWeatherRead();
+  return read.body;
+}
 
+async function loadWeatherFallback(): Promise<WeatherApiResponse> {
   try {
     const live = await getCachedForecasts();
     if (live.kabupaten_kota.length > 0) return live;

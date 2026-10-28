@@ -53,7 +53,7 @@ export interface WeatherForecastKab {
 export interface WeatherApiResponse {
   metadata: {
     total_kabupaten_kota: number;
-    fetched_at: string;
+    fetched_at: string | null;
     source: WeatherSource;
     providers: string[];
   };
