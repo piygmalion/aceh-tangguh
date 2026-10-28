@@ -29,15 +29,19 @@ describe("aceh kabupaten registry", () => {
     assert.deepEqual(fixture.kabupaten_kota, [...ACEH_KABUPATEN_REGISTRY]);
   });
 
-  it("maps the four SIK↔adm2 swaps instead of toDottedKabKode", () => {
+  it("aligns kode_sik with Kemendagri for the four former swaps", () => {
     assert.equal(toDottedKabKode("1114"), "11.14");
-    assert.equal(sikKodeToAdm2("1114"), "11.16");
-    assert.equal(resolveAdm2("1114"), "11.16");
-    assert.equal(adm2ToSikKode("11.16"), "1114");
-
-    assert.equal(sikKodeToAdm2("1116"), "11.14");
-    assert.equal(sikKodeToAdm2("1173"), "11.74");
-    assert.equal(sikKodeToAdm2("1174"), "11.73");
+    for (const row of ACEH_KABUPATEN_REGISTRY) {
+      assert.equal(toDottedKabKode(row.kode_sik), row.adm2, row.nama);
+      assert.equal(sikKodeToAdm2(row.kode_sik), row.adm2, row.nama);
+      assert.equal(adm2ToSikKode(row.adm2), row.kode_sik, row.nama);
+    }
+    assert.equal(sikKodeToAdm2("1116"), "11.16");
+    assert.equal(resolveAdm2("1116"), "11.16");
+    assert.equal(adm2ToSikKode("11.16"), "1116");
+    assert.equal(sikKodeToAdm2("1114"), "11.14");
+    assert.equal(sikKodeToAdm2("1174"), "11.74");
+    assert.equal(sikKodeToAdm2("1173"), "11.73");
     assert.equal(resolveAdm2("11.14"), "11.14");
     assert.equal(resolveAdm2("unknown"), null);
   });

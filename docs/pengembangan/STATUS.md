@@ -639,8 +639,12 @@ Tindak lanjut data: `public.anggaran_analisis`, `public.anggaran_kegiatan`, dan 
 | BE-74 | backend | MAGMA netral, Tatonas fresh/alert, umpan JSON | jurnal/BE-74.md | selesai |
 | BE-75 | backend | Kode alasan kartu MAGMA tidak tersedia | jurnal/be-75/BE-75.md | selesai |
 | BE-76 | backend | MAGMA basi tidak menampilkan gempa cache | jurnal/be-76/BE-76.md | selesai |
+| BE-77 | backend | Alasan `expired` saat cache MAGMA kedaluwarsa | jurnal/be-77/BE-77.md | selesai |
+| BE-78 | backend | pg_cron primer refresh overlay live | jurnal/be-78/BE-78.md | selesai |
 
 DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
+
+BE-78 menambah migrasi `20261027_overlay_live_pg_cron.sql` dan belum diterapkan. Backend menerapkan setelah GO. Pemilik mengisi Vault `overlay_cron_secret` dengan nilai yang sama dengan `OVERLAY_CRON_SECRET` di Vercel; nilai tidak ditulis di sini. Workflow GitHub tetap cadangan.
 
 ## Tindak lanjut 5 September 2026
 
@@ -754,6 +758,14 @@ Tanggapi sembunyi saat pita angka atau kartu PD memotong 96px terbawah, bukan pa
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |
 | FE-75 | frontend | zona FAB, laci, R3P, kartu PD, layers | jurnal/FE-75.md | selesai |
+
+## DATA-kode — kunci join Kemendagri
+
+Keputusan pemilik 2026-10-28: Kemendagri (`adm2`) kunci join; `kode_bps` kolom tambahan dari batas kab; empat `kode_sik` tertukar diselaraskan. Migrasi `20261028_overlay_calon_kode_kemendagri.sql` belum diterapkan ke basis data hidup. Tidak ada bangun ulang ubin. Catatan: [jurnal/data-kode-scheme/keputusan.md](jurnal/data-kode-scheme/keputusan.md).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| DATA-kode | data | Kemendagri join key + kode_bps + 4 kode_sik | jurnal/DATA-kode.md | selesai |
 
 ## FE-76 — kartu cuaca tidak tersedia
 

@@ -99,16 +99,16 @@ describe("AN-1 authorization matrix", () => {
     assert.equal(matchesKabScope(staff("admin_provinsi"), rowA), true);
   });
 
-  it("kab helper is exact match only — 1114 does not equal 11.16", () => {
+  it("kab helper is exact match only — 1116 does not equal 11.16", () => {
     assert.equal(
-      kabScopeEqualsRow("1114", { kode_kabupaten: "1114", kabupaten: "Aceh Tamiang" }),
+      kabScopeEqualsRow("1116", { kode_kabupaten: "1116", kabupaten: "Aceh Tamiang" }),
       true,
     );
     assert.equal(
-      kabScopeEqualsRow("1114", { kode_kabupaten: "11.16", kabupaten: "Aceh Tamiang" }),
+      kabScopeEqualsRow("1116", { kode_kabupaten: "11.16", kabupaten: "Aceh Tamiang" }),
       false,
     );
-    const actor = staff("admin_kabkota", { kode: "1114", nama: "Aceh Tamiang" });
+    const actor = staff("admin_kabkota", { kode: "1116", nama: "Aceh Tamiang" });
     assert.equal(
       matchesKabScope(actor, { kode_kabupaten: "11.16", kabupaten: "Aceh Tamiang" }),
       false,
