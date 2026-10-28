@@ -210,6 +210,22 @@ describe("cuplikan dan waktu", () => {
       kabupaten: "Pidie Jaya",
       kode_kabupaten: "1118",
     });
+    assert.deepEqual(wilayahDariProperties({ kabupaten: "Kabupaten Aceh Tamiang" }), {
+      kabupaten: "Aceh Tamiang",
+      kode_kabupaten: "1116",
+    });
+    assert.deepEqual(wilayahDariProperties({ kabkota: "Aceh Jaya" }), {
+      kabupaten: "Aceh Jaya",
+      kode_kabupaten: "1114",
+    });
+    assert.deepEqual(wilayahDariProperties({ kabupaten: "Kota Langsa" }), {
+      kabupaten: "Langsa",
+      kode_kabupaten: "1174",
+    });
+    assert.deepEqual(wilayahDariProperties({ kabkota: "Lhokseumawe" }), {
+      kabupaten: "Lhokseumawe",
+      kode_kabupaten: "1173",
+    });
   });
 
   it("urutan waktu: occurred_at lalu waktu, tanggal, time_local WIB", () => {
@@ -395,6 +411,23 @@ describe("sumber BE-6", () => {
     assert.match(sql, /revoke all on table public\.overlay_calon_kejadian from anon/);
     assert.doesNotMatch(sql, /create or replace function public\.is_ops/i);
     assert.doesNotMatch(sql, /for select to anon/);
+  });
+
+  it("migrasi 20261028 hanya menukar empat pasangan lama di overlay_calon_kejadian", () => {
+    const sql = readFileSync(
+      path.join(ROOT, "supabase/migrations/20261028_overlay_calon_kode_kemendagri.sql"),
+      "utf8",
+    );
+    const live = sql.replace(/--[^\n]*/g, "");
+    assert.equal((live.match(/\bupdate\b/gi) ?? []).length, 1);
+    assert.match(live, /update public\.overlay_calon_kejadian/);
+    assert.doesNotMatch(live, /update public\.(?!overlay_calon_kejadian)/);
+    assert.match(live, /\('aceh tamiang', '1114'\)/);
+    assert.match(live, /\('aceh jaya', '1116'\)/);
+    assert.match(live, /\('langsa', '1173'\)/);
+    assert.match(live, /\('lhokseumawe', '1174'\)/);
+    assert.match(live, /then '11\.16'/);
+    assert.match(live, /else '1116'/);
   });
 
   it("rute API memakai requireOpsApi dan rejectCrossOrigin pada tulis", (t) => {

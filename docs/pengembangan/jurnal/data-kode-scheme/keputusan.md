@@ -62,6 +62,14 @@ Logika join ubin, basis data, dan API tidak diubah di keputusan ini. Pembacaan b
 
 Salinan kode di `scripts/lib/tilikan-kerusakan.mjs` (`ACEH_KABUPATEN`, komentar "selaras dengan juklak") tidak diubah. Di salinan itu Langsa masih `1173`, Lhokseumawe `1174`, Aceh Tamiang `1114`, Aceh Jaya `1116` — nilai `kode_sik` sebelum perbaikan, yang untuk keempat nama itu juga sama dengan BPS.
 
+## Perbaikan baris `overlay_calon_kejadian`
+
+Pemeriksaan baca-saja pada proyek Supabase `whojoxrbcdyotrpolgav` (2026-10-28) menemukan 10 dari 190 baris `public.overlay_calon_kejadian` yang masih menyimpan kode SIK lama: 1 baris Aceh Tamiang `1114` dan 9 baris Aceh Jaya `1116`. Langsa dan Lhokseumawe tidak ketemu. Tabel lain yang dicek sudah memakai Kemendagri.
+
+Migrasi baru `supabase/migrations/20261028_overlay_calon_kode_kemendagri.sql` memperbaiki hanya pasangan nama+kode lama itu, dalam satu `UPDATE` berkondisi `CASE`, sehingga menjalankan ulang tidak menukar balik. Format bertitik dipertahankan. Migrasi ini tidak diterapkan ke basis data hidup dari PR ini.
+
+Penulis baru `overlay_calon_kejadian.kode_kabupaten` memakai digit `adm2` (Kemendagri), bukan kolom `kode_sik`: `kemendagriKab` di `src/lib/overlay-calon.ts`, dipanggil dari `wilayahDariProperties` (sisipan/pembaruan sinkron dan POST calon) dan dari `authorizeCalonTerima` (pembaruan saat diterima).
+
 ## Pemeriksaan
 
 `node scripts/check-kab-kode.mjs` dan `scripts/check-kab-kode.test.mjs` menuntut 23 baris, `adm2` unik, `kode_bps` unik bila terisi, `kode_sik` sama dengan Kemendagri tanpa titik, dan `kode_bps` sama dengan `kode_kab` batas yang nama-nya cocok satu-satu.

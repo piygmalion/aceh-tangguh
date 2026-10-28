@@ -757,7 +757,7 @@ Tanggapi sembunyi saat pita angka atau kartu PD memotong 96px terbawah, bukan pa
 
 ## DATA-kode — kunci join Kemendagri
 
-Keputusan pemilik 2026-10-28: Kemendagri (`adm2`) kunci join; `kode_bps` kolom tambahan dari batas kab; empat `kode_sik` tertukar diselaraskan. Tidak ada tulis basis data dan tidak ada bangun ulang ubin. Catatan: [jurnal/data-kode-scheme/keputusan.md](jurnal/data-kode-scheme/keputusan.md).
+Keputusan pemilik 2026-10-28: Kemendagri (`adm2`) kunci join; `kode_bps` kolom tambahan dari batas kab; empat `kode_sik` tertukar diselaraskan. Migrasi `20261028_overlay_calon_kode_kemendagri.sql` belum diterapkan ke basis data hidup. Tidak ada bangun ulang ubin. Catatan: [jurnal/data-kode-scheme/keputusan.md](jurnal/data-kode-scheme/keputusan.md).
 
 | id | agent | judul | jurnal | status |
 | --- | --- | --- | --- | --- |

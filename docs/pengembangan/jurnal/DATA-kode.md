@@ -25,6 +25,8 @@ Niat bisa dijalankan tanpa menebak. BPS diambil dari `kode_kab` berkas batas yan
 | `scripts/check-kab-kode.mjs` | Pemeriksaan baca-saja |
 | `src/lib/aceh-kabupaten.test.ts`, `src/lib/krb-by-kab.test.ts` | Harapan uji mengikuti registri yang sudah selaras |
 | `docs/pengembangan/jurnal/data-kode-scheme/keputusan.md` | Keputusan 2026-10-28 |
+| `supabase/migrations/20261028_overlay_calon_kode_kemendagri.sql` | UPDATE idempoten empat pasangan lama di `overlay_calon_kejadian`. Tidak dijalankan ke basis data hidup |
+| `src/lib/overlay-calon.ts` | Penulis `kode_kabupaten` memakai digit `adm2`, bukan `kode_sik` |
 
 ## Bukti
 
@@ -33,8 +35,8 @@ node scripts/check-kab-kode.mjs
 # check-kab-kode: 23 kab/kota, unique Kemendagri, unique kode_bps, kode_sik aligned
 
 npm test
-# tests 1026
-# pass 1026
+# tests 1027
+# pass 1027
 # fail 0
 ```
 

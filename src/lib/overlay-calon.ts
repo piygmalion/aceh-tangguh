@@ -1,5 +1,9 @@
+import {
+  ACEH_KABUPATEN_REGISTRY,
+  findKabupatenRegistry,
+} from "@/lib/aceh-kabupaten";
+import { normalizeKabupatenKey } from "@/lib/kabupaten-join";
 import { findJenisByKode, JENIS_BENCANA_JUKLAK } from "@/lib/sik/jenis-bencana";
-import { findKabupaten } from "@/lib/sik/juklak";
 import { isKabScoped, matchesKabScope } from "@/lib/sik/roles";
 import { parseTatonasLocalTime } from "@/lib/tatonas/parse";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -143,6 +147,22 @@ export function resolveWaktuSinyal(signal: Pick<OverlayLiveSignal, "occurred_at"
   return null;
 }
 
+/** Kemendagri 4 digit from adm2. Not kode_sik and not kode_bps. */
+function kemendagriKab(
+  raw: string | null | undefined,
+): { nama: string; kode: string } | undefined {
+  if (!raw?.trim()) return undefined;
+  const trimmed = raw.trim();
+  const direct = findKabupatenRegistry(trimmed);
+  const row =
+    direct ??
+    ACEH_KABUPATEN_REGISTRY.find(
+      (item) => normalizeKabupatenKey(item.nama) === normalizeKabupatenKey(trimmed),
+    );
+  if (!row) return undefined;
+  return { nama: row.nama, kode: row.adm2.replace(".", "") };
+}
+
 export function wilayahDariProperties(properties: Record<string, unknown>): {
   kabupaten: string | null;
   kode_kabupaten: string | null;
@@ -151,7 +171,7 @@ export function wilayahDariProperties(properties: Record<string, unknown>): {
     (typeof properties.kabkota === "string" && properties.kabkota) ||
     (typeof properties.kabupaten === "string" && properties.kabupaten) ||
     "";
-  const kab = findKabupaten(raw);
+  const kab = kemendagriKab(raw);
   if (!kab) return { kabupaten: null, kode_kabupaten: null };
   return { kabupaten: kab.nama, kode_kabupaten: kab.kode };
 }
@@ -342,7 +362,7 @@ export function authorizeCalonTerima(
   body: { kode_kabupaten?: string | null; kabupaten?: string | null },
 ): CalonAuthz & { kabupaten?: string | null; kode_kabupaten?: string | null } {
   const bodyRaw = body.kode_kabupaten?.trim() || body.kabupaten?.trim() || "";
-  const bodyKab = bodyRaw ? findKabupaten(body.kode_kabupaten || body.kabupaten) : undefined;
+  const bodyKab = bodyRaw ? kemendagriKab(body.kode_kabupaten || body.kabupaten) : undefined;
   const bound = !calonBelumTerikat(calon);
 
   if (bound) {
