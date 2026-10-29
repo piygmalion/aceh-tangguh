@@ -653,6 +653,8 @@ BE-78 menambah migrasi `20261027_overlay_live_pg_cron.sql` dan belum diterapkan.
 
 BE-83 adalah draf PR, belum diterapkan di live (menunggu apply #140, Vault `weather_cron_secret`, dan GO). Nilai secret tidak ditulis di sini. Workflow GitHub menjadi cadangan tiap 6 jam plus `workflow_dispatch`.
 
+BE-85 adalah draf yang menunggu pemeriksaan Data dan GO pemilik.
+
 ## Tindak lanjut 5 September 2026
 
 DATA-10 diterapkan ke produksi `aceh-tangguh`: `next_kejadian_nomor` anon EXECUTE = false; `authenticated` dan `service_role` tetap; bukan SECURITY DEFINER.
