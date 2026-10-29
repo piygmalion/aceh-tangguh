@@ -645,13 +645,13 @@ Tindak lanjut data: `public.anggaran_analisis`, `public.anggaran_kegiatan`, dan 
 | BE-80 | backend | Tabel `weather_forecasts` | jurnal/be-80/BE-80.md | selesai |
 | BE-81 | backend | TTL cache cuaca 4 jam | jurnal/be-81/BE-81.md | selesai |
 | BE-82 | backend | Cabut truncate pada weather_forecasts | jurnal/be-82/BE-82.md | selesai |
-| BE-83 | backend | pg_cron primer refresh cache cuaca | jurnal/be-83/BE-83.md | selesai |
+| BE-83 | backend | pg_cron primer refresh cache cuaca | jurnal/be-83/BE-83.md | draf PR |
 
 DATA-4 tidak dikode 5 September 2026. Naskah AN-3 tetap siap salin; Status kirim = belum terkirim; jawaban tertulis belum ada. `src/lib/tatonas/parse.ts` tidak disentuh. Jangan menebak kode perangkat. Jangan menandai `siap-kode` sampai jawaban masuk di AN-3.
 
 BE-78 menambah migrasi `20261027_overlay_live_pg_cron.sql` dan belum diterapkan. Backend menerapkan setelah GO. Pemilik mengisi Vault `overlay_cron_secret` dengan nilai yang sama dengan `OVERLAY_CRON_SECRET` di Vercel; nilai tidak ditulis di sini. Workflow GitHub tetap cadangan.
 
-BE-83 menambah migrasi `20261029_weather_refresh_cron.sql` dan belum diterapkan. Backend menerapkan setelah GO, dan hanya setelah migrasi BE-78 sudah diterapkan dan terbukti. Pemilik mengisi Vault `weather_cron_secret` dengan nilai yang sama dengan `WEATHER_CRON_SECRET` di Vercel; nilai tidak ditulis di sini. Workflow GitHub menjadi cadangan tiap 6 jam plus `workflow_dispatch`.
+BE-83 adalah draf PR, belum diterapkan di live (menunggu apply #140, Vault `weather_cron_secret`, dan GO). Nilai secret tidak ditulis di sini. Workflow GitHub menjadi cadangan tiap 6 jam plus `workflow_dispatch`.
 
 ## Tindak lanjut 5 September 2026
 
