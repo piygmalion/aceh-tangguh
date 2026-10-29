@@ -157,6 +157,7 @@ describe("PeringatanBento copy wiring", () => {
     assert.match(src, /tone\.info/);
     assert.equal(src.includes("pd.tatonas.highlights.length"), false);
     assert.match(src, /toneLevel/);
-    assert.match(src, /#B42318/);
+    assert.match(src, /status-awas/);
+    assert.equal(src.includes("#B42318"), false);
   });
 });

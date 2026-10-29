@@ -779,3 +779,11 @@ Kartu cuaca di bento beranda tidak lagi memakai kalimat kosong dan chip Normal k
 | --- | --- | --- | --- | --- |
 | FE-76 | frontend | kartu cuaca tidak tersedia | jurnal/FE-76.md | selesai |
 
+## FE-77 — poles kartu Peringatan Dini beranda
+
+Poles tampilan bento PD: token AWAS Peudeung, urutan basi setelah segar, teks cuaca basi, baris `+N lainnya`, dan label kondisi BMKG di `/en`. Hanya tampilan; MAGMA fail-closed tidak disentuh.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| FE-77 | frontend | poles kartu Peringatan Dini beranda | jurnal/FE-77.md | diverifikasi |
+

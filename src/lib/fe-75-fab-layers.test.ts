@@ -105,7 +105,7 @@ describe("FE-75 peringatan copy and rows", () => {
   it("names the overflow row after the card", () => {
     assert.equal(overflowLabelKey("magma"), null);
     assert.equal(overflowLabelKey("tatonas"), "posLainnya");
-    assert.equal(overflowLabelKey("cuaca"), "wilayahLainnya");
+    assert.equal(overflowLabelKey("cuaca"), "lainnya");
     assert.equal(overflowLabelKey("sipongi"), "titikLainnya");
     assert.equal(overflowLabelKey("maritim"), "perairanLainnya");
     assert.equal(overflowLabelKey("lain"), "lainnya");
@@ -127,7 +127,7 @@ describe("FE-75 peringatan copy and rows", () => {
     const magma = src.slice(src.indexOf('key: "magma"'), src.indexOf('key: "sipongi"'));
     assert.match(magma, /ev\.wilayah, ev\.koordinat_kedalaman, ev\.waktu_kejadian/);
     assert.match(magma, /itemCount: null/);
-    assert.match(src, /hiddenListItems\(kartu\.itemCount, shown\)/);
+    assert.match(src, /hiddenListItems\(kartu\.itemCount, visibleRows\)/);
     assert.equal(src.includes("hiddenDetailRows(kartu.rincian.length"), false);
     assert.match(src, /data-pos-lainnya/);
     assert.match(src, /href=\{kartu\.href\}/);

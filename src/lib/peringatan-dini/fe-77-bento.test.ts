@@ -71,13 +71,17 @@ describe("FE-77 truncated kabupaten overflow row", () => {
     const itemCount = listItemCount(["a", "b"], 3);
     assert.equal(itemCount, 5);
     assert.equal(hiddenListItems(itemCount, SMALL_CARD_ROWS), 3);
-    assert.equal(hiddenListItems(itemCount, 4), 1);
+    // Two highlight rows fill the small card; the three extras remain.
+    assert.equal(hiddenListItems(itemCount, 2), 3);
+    // Large cell can show four rows, but only two highlights exist — extras still count.
+    assert.equal(hiddenListItems(itemCount, Math.min(4, 2)), 3);
   });
 
   it("shows the overflow row on the large photo cell when items remain", () => {
     const src = read("src/components/beranda/PeringatanBento.tsx");
     const sel = src.slice(src.indexOf("function Sel"), src.indexOf("export function PeringatanBento"));
-    assert.match(sel, /hiddenListItems\(kartu\.itemCount,\s*shown\)/);
+    assert.match(sel, /visibleRows\s*=\s*Math\.min\(shown,\s*kartu\.rincian\.length\)/);
+    assert.match(sel, /hiddenListItems\(kartu\.itemCount,\s*visibleRows\)/);
     assert.doesNotMatch(sel, /hidden\s*=\s*besar\s*\?\s*0/);
   });
 });
