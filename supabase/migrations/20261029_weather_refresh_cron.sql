@@ -9,11 +9,9 @@
 -- btrim the Vault value before the Bearer header. A trailing newline fails
 -- the route compare and the refresh returns 401.
 
-create extension if not exists pg_net with schema extensions;
-create extension if not exists pg_cron with schema pg_catalog;
-
-grant usage on schema cron to postgres;
-grant all privileges on all tables in schema cron to postgres;
+-- pg_cron, pg_net, and the cron grants come from
+-- 20261027_overlay_live_pg_cron.sql, which must be applied first.
+-- Re-running the grants fails with 2BP01 under Supabase's pg_cron event trigger.
 
 select cron.unschedule(jobid)
 from cron.job

@@ -27,8 +27,15 @@ describe("BE-83 pg_cron weather cache refresh", () => {
     assert.match(route, /status: 502/);
 
     const sql = read(MIGRATION);
-    assert.match(sql, /create extension if not exists pg_net with schema extensions;/i);
-    assert.match(sql, /create extension if not exists pg_cron with schema pg_catalog;/i);
+    assert.match(
+      sql,
+      /pg_cron, pg_net, and the cron grants come from\s+-- 20261027_overlay_live_pg_cron\.sql, which must be applied first/,
+    );
+    assert.match(sql, /Re-running the grants fails with 2BP01 under Supabase's pg_cron event trigger/);
+    assert.doesNotMatch(sql, /create extension if not exists pg_net/i);
+    assert.doesNotMatch(sql, /create extension if not exists pg_cron/i);
+    assert.doesNotMatch(sql, /grant usage on schema cron to postgres/i);
+    assert.doesNotMatch(sql, /grant all privileges on all tables in schema cron to postgres/i);
 
     const unscheduleAt = sql.indexOf("cron.unschedule(jobid)");
     const scheduleAt = sql.indexOf("cron.schedule(");
