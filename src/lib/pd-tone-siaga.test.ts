@@ -25,9 +25,11 @@ describe("PD legend tones", () => {
     for (const paint of [TONE_DOT.siaga, TONE_CHIP.siaga, TONE_EDGE.siaga]) {
       assert.match(paint, /status-siaga/);
       assert.equal(paint.includes("#B42318"), false);
+      assert.equal(paint.includes("status-awas"), false);
     }
     for (const paint of [TONE_DOT.danger, TONE_CHIP.danger, TONE_EDGE.danger]) {
-      assert.match(paint, /#B42318/);
+      assert.match(paint, /status-awas/);
+      assert.equal(paint.includes("#B42318"), false);
       assert.equal(paint.includes("status-siaga"), false);
     }
     assert.match(TONE_CHIP.siaga, /map-keyline/);

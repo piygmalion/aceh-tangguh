@@ -146,7 +146,7 @@ export function jamPendek(iso: string | null | undefined, locale = "id"): string
 }
 
 /**
- * Four-step legend: Aman green, Waspada yellow, Siaga orange, Awas red #B42318.
+ * Four-step legend: Aman green, Waspada yellow, Siaga orange, Awas red via --status-awas.
  * Only `danger` is Awas. `siaga` stays on the orange legend step.
  * Labels live in peringatanDini.tone.{neutral,warn,siaga,danger,info}.
  */
@@ -161,7 +161,7 @@ export const TONE_DOT: Record<PeringatanTone, string> = {
   neutral: "bg-[var(--status-aman)]",
   warn: "bg-[var(--status-waspada)]",
   siaga: "bg-[var(--status-siaga)]",
-  danger: "bg-[#B42318]",
+  danger: "bg-[var(--status-awas)]",
 };
 
 export const TONE_CHIP: Record<PeringatanTone, string> = {
@@ -169,14 +169,15 @@ export const TONE_CHIP: Record<PeringatanTone, string> = {
   warn: "border border-[var(--map-keyline)] bg-[var(--status-waspada)] text-[var(--map-status-waspada-fg)]",
   siaga:
     "border border-[var(--map-keyline)] bg-[var(--status-siaga)] text-[var(--map-status-siaga-fg)]",
-  danger: "border border-[var(--map-keyline)] bg-[#B42318] text-white",
+  danger:
+    "border border-[var(--map-keyline)] bg-[var(--status-awas)] text-[var(--map-status-awas-fg)]",
 };
 
 export const TONE_EDGE: Record<PeringatanTone, string> = {
   neutral: "before:bg-[var(--status-aman)]",
   warn: "before:bg-[var(--status-waspada)]",
   siaga: "before:bg-[var(--status-siaga)]",
-  danger: "before:bg-[#B42318]",
+  danger: "before:bg-[var(--status-awas)]",
 };
 
 /**

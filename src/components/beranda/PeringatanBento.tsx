@@ -10,6 +10,7 @@ import {
   magmaSummary,
   tatonasCopy,
   tatonasStaleRow,
+  translateCuacaKondisi,
 } from "@/lib/peringatan-dini/card-copy";
 import type { PeringatanDiniResponse, PeringatanTone } from "@/lib/peringatan-dini-types";
 import {
@@ -17,6 +18,7 @@ import {
   listItemCount,
   overflowLabelKey,
   SMALL_CARD_ROWS,
+  sortPeringatanKartu,
 } from "@/lib/peringatan-bento-rows";
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
@@ -47,11 +49,9 @@ type Kartu = {
 
 type BerandaT = (key: string, values?: Record<string, string | number>) => string;
 
-const URUTAN_TONE: Record<PeringatanTone, number> = { danger: 0, siaga: 1, warn: 2, neutral: 3 };
-
 function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): Kartu[] {
   const kartu: Kartu[] = [];
-  const lowerTag = locale === "en" ? "en-US" : "id-ID";
+  const kondisiT = (key: string) => t(`peringatan.${key}`);
 
   if (pd.cuaca) {
     const view = cuacaBentoView(pd.cuaca);
@@ -69,7 +69,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
           : t(`peringatan.${view.summaryKey}`),
       rincian: view.showDetails
         ? pd.cuaca.highlights.map(
-            (h) => `${h.kabupaten}: ${h.kondisi.toLocaleLowerCase(lowerTag)}`,
+            (h) => `${h.kabupaten}: ${translateCuacaKondisi(h.kondisi, locale, kondisiT)}`,
           )
         : [],
       itemCount: view.showDetails
@@ -197,7 +197,7 @@ function bangunKartu(pd: PeringatanDiniResponse, t: BerandaT, locale: string): K
     });
   }
 
-  return kartu.sort((a, b) => URUTAN_TONE[a.tone] - URUTAN_TONE[b.tone]);
+  return sortPeringatanKartu(kartu);
 }
 
 function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
@@ -250,7 +250,9 @@ function Kepala({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           level={toneLevel(kartu.tone)}
           label={tp(`tone.${kartu.tone}`)}
           className={
-            toneLevel(kartu.tone) === "awas" ? "bg-[#B42318] text-white shadow-none" : undefined
+            toneLevel(kartu.tone) === "awas"
+              ? "bg-[var(--status-awas)] text-[var(--map-status-awas-fg)]"
+              : undefined
           }
         />
       )}
@@ -283,7 +285,8 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
   const tp = useTranslations("peringatanDini");
   const foto = SITE_MEDIA.heroSlides[1];
   const shown = besar ? 4 : kartu.itemCount == null ? kartu.rincian.length : SMALL_CARD_ROWS;
-  const hidden = besar ? 0 : hiddenListItems(kartu.itemCount, shown);
+  const visibleRows = Math.min(shown, kartu.rincian.length);
+  const hidden = hiddenListItems(kartu.itemCount, visibleRows);
   const overflowKey = hidden > 0 ? overflowLabelKey(kartu.key) : null;
   const isi = (
     <>
@@ -344,7 +347,7 @@ function Sel({ kartu, besar }: { kartu: Kartu; besar?: boolean }) {
           kartu.grey
             ? ""
             : toneLevel(kartu.tone) === "awas"
-              ? "bg-[color-mix(in_srgb,#B42318_14%,var(--bg-raised))]"
+              ? "bg-[color-mix(in_srgb,var(--status-awas)_14%,var(--bg-raised))]"
               : toneLevel(kartu.tone) === "siaga"
                 ? "bg-[color-mix(in_srgb,var(--status-siaga)_14%,var(--bg-raised))]"
                 : toneLevel(kartu.tone) === "waspada"

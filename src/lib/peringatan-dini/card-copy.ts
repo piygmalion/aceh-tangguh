@@ -127,3 +127,42 @@ export function cuacaBentoView(
     showDetails: !empty,
   };
 }
+
+/** Canonical BMKG condition phrases written by weather-summary → message key under beranda.peringatan.kondisi. */
+const CUACA_KONDISI_KEY: Record<string, string> = {
+  petir: "petir",
+  "hujan lebat": "hujanLebat",
+  "hujan sedang": "hujanSedang",
+  "hujan ekstrem": "hujanEkstrem",
+  "angin kencang": "anginKencang",
+  thunderstorm: "petir",
+  "heavy rain": "hujanLebat",
+  "moderate rain": "hujanSedang",
+  "extreme rain": "hujanEkstrem",
+  "strong wind": "anginKencang",
+  "violent rain": "hujanLebat",
+  "hujan petir": "petir",
+};
+
+type KondisiT = (key: string) => string;
+
+/**
+ * Localise weather-summary condition labels for the bento detail rows.
+ * Unknown phrases pass through unchanged — never invent figures or new hazards.
+ */
+export function translateCuacaKondisi(
+  kondisi: string,
+  locale: string,
+  t: KondisiT,
+): string {
+  const parts = kondisi.split(/\s*·\s*/).map((part) => part.trim()).filter(Boolean);
+  if (parts.length === 0) return kondisi;
+  const lowerLocale = locale.toLowerCase().startsWith("en") ? "en" : "id";
+  return parts
+    .map((part) => {
+      const key = CUACA_KONDISI_KEY[part.toLowerCase()];
+      if (!key) return lowerLocale === "en" ? part : part.toLocaleLowerCase("id-ID");
+      return t(`kondisi.${key}`);
+    })
+    .join(" · ");
+}

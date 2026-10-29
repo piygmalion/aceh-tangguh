@@ -33,13 +33,15 @@ describe("AN-47 urutan keparahan vs katalog", () => {
     assert.doesNotMatch(page, /PeringatanDiniSection/);
   });
 
-  it("bento ranks cards by URUTAN_TONE (danger before warn before neutral)", () => {
+  it("bento ranks cards by freshness then URUTAN_TONE (danger before warn before neutral)", () => {
     const src = read("src/components/beranda/PeringatanBento.tsx");
+    const rows = read("src/lib/peringatan-bento-rows.ts");
     assert.match(
-      src,
+      rows,
       /URUTAN_TONE:\s*Record<PeringatanTone,\s*number>\s*=\s*\{\s*danger:\s*0,\s*siaga:\s*1,\s*warn:\s*2,\s*neutral:\s*3/,
     );
-    assert.match(src, /kartu\.sort\(\(a, b\) => URUTAN_TONE\[a\.tone\] - URUTAN_TONE\[b\.tone\]\)/);
+    assert.match(src, /sortPeringatanKartu\(kartu\)/);
+    assert.match(rows, /a\.basi \!== b\.basi/);
     assert.match(src, /lead cell is the most severe feed/);
     assert.doesNotMatch(src, /irb_2025|skor_irbi/);
   });
