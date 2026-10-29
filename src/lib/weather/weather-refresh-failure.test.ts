@@ -108,7 +108,9 @@ afterEach(() => {
 describe("BE-80 weather refresh failures", () => {
   it("fails the workflow step when the refresh URL is set and the cron secret is empty", () => {
     const wf = workflowText();
-    assert.equal(wf.includes('cron: "0 */3 * * *"'), true);
+    assert.equal(wf.includes('cron: "0 */6 * * *"'), true);
+    assert.equal(wf.includes("pg_cron is primary"), true);
+    assert.equal(wf.includes('cron: "0 */3 * * *"'), false);
     assert.equal(wf.includes("if: ${{ vars.WEATHER_REFRESH_URL != '' }}"), true);
 
     const step = supabaseStep(wf);
