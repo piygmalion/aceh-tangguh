@@ -2,8 +2,10 @@ name: Weather refresh
 
 on:
   schedule:
-    # Every 3 hours (UTC) — aligns with BMKG 2x daily + Open-Meteo updates
-    - cron: "0 */3 * * *"
+    # Fallback. pg_cron is primary (job weather-refresh-hourly, minute 7 of every hour).
+    # GitHub may skip this schedule for hours, past the 4h weather_forecasts TTL.
+    # Every 6 hours so this backup does not double-hammer the hourly pg_cron job.
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 permissions:

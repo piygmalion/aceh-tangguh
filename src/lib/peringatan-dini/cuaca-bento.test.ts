@@ -109,8 +109,8 @@ describe("cuaca bento states", () => {
     assert.equal(view.tone, "neutral");
     assert.equal(view.footer, "snapshot");
     assert.equal(view.showDetails, false);
-    assert.equal(id.beranda.peringatan.cuacaUnavailable, "Data cuaca tidak tersedia");
-    assert.equal(en.beranda.peringatan.cuacaUnavailable, "Weather data unavailable");
+    assert.equal(id.beranda.peringatan.cuacaUnavailable, "Data cuaca belum diperbarui");
+    assert.equal(en.beranda.peringatan.cuacaUnavailable, "Weather data not yet updated");
     assert.notEqual(id.beranda.peringatan.cuacaUnavailable, id.beranda.peringatan.cuacaEmpty);
     assert.equal(id.beranda.peringatan.snapshot, "Belum ada data terbaru");
     assert.equal(en.beranda.peringatan.snapshot, "No newer data yet");

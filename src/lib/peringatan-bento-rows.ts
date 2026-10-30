@@ -1,5 +1,28 @@
+import type { PeringatanTone } from "@/lib/peringatan-dini-types";
+
 /** List items shown on a small PeringatanBento card before the overflow row. */
 export const SMALL_CARD_ROWS = 2;
+
+/** Tone rank for the homepage bento. Lower sorts earlier within the same freshness group. */
+export const URUTAN_TONE: Record<PeringatanTone, number> = {
+  danger: 0,
+  siaga: 1,
+  warn: 2,
+  neutral: 3,
+};
+
+type KartuUrutan = { basi: boolean; tone: PeringatanTone };
+
+/**
+ * Fresh feeds before delayed/stale feeds, then by tone severity.
+ * Keeps a stale card off the large photo cell at 1440px.
+ */
+export function sortPeringatanKartu<T extends KartuUrutan>(kartu: T[]): T[] {
+  return [...kartu].sort((a, b) => {
+    if (a.basi !== b.basi) return a.basi ? 1 : -1;
+    return URUTAN_TONE[a.tone] - URUTAN_TONE[b.tone];
+  });
+}
 
 /** Items in an API list, including ones the payload did not expand. */
 export function listItemCount(items: readonly unknown[], extra = 0): number {
@@ -21,7 +44,7 @@ export function hiddenListItems(itemCount: number | null, shown: number): number
 /** Message suffix under `beranda.peringatan` for a list overflow row. */
 const OVERFLOW_LABEL: Record<string, string> = {
   tatonas: "posLainnya",
-  cuaca: "wilayahLainnya",
+  cuaca: "lainnya",
   sipongi: "titikLainnya",
   maritim: "perairanLainnya",
 };
