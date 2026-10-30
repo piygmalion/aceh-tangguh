@@ -64,8 +64,8 @@ vendor/ecc/
 public/fixtures/overlays/_raw*
 .tmp-inarisk-probe/
 
-# Local Aceh OSM basemap extract (rebuild: npm run build:aceh-osm). Do not commit planet.
-public/tiles/aceh-osm.pmtiles
+# Aceh OSM basemap: public/tiles/aceh-osm.pmtiles is committed (Vercel bundle, <50 MB).
+# Build scratch stays local (rebuild: npm run build:basemap). Do not commit planet.
 public/tiles/_osm-src/
 
 # local SIK master SQLite (do not commit operational dumps)

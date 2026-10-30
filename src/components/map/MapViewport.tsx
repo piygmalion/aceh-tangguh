@@ -28,7 +28,7 @@ import type {
 } from "@/lib/types";
 import { basemapCanvasColor, basemapOwnsVectorStyle, getBasemapStyle } from "@/lib/basemap";
 import { styleSourceAttributions } from "@/lib/map-sheet";
-import { configuredBasemapPmtilesUrl, overlayPmtilesUrl } from "@/lib/tiles-url";
+import { basemapPmtilesUrl, overlayPmtilesUrl } from "@/lib/tiles-url";
 import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import type { VillageClickSelection } from "@/lib/profil-desa";
@@ -659,7 +659,7 @@ export function MapViewport({
     ensurePmtilesProtocol();
   }, []);
 
-  const pmtilesUrl = configuredBasemapPmtilesUrl();
+  const pmtilesUrl = basemapPmtilesUrl();
   useEffect(() => {
     setVectorFailed(false);
   }, [basemap, preferVector, pmtilesUrl]);

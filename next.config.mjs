@@ -47,6 +47,19 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Bundled PMTiles archives. MapLibre reads them with HTTP Range;
+        // Vercel's static CDN answers Range natively (206), so only caching
+        // and type are set here.
+        source: "/tiles/:path*.pmtiles",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=86400, stale-while-revalidate=604800",
+          },
+          { key: "Content-Type", value: "application/octet-stream" },
+        ],
+      },
     ];
   },
   ...(isStaticExport

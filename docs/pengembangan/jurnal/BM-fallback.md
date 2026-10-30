@@ -97,3 +97,15 @@ Biner tidak di-commit.
 ## Keputusan
 
 selesai
+
+## Pembaruan 30 Oktober 2026 — bundel di Vercel
+
+Pemilik memilih "Bundel di Vercel dulu, nanti pindah ke R2". Perubahan:
+
+- `public/tiles/aceh-osm.pmtiles` (45.552.256 byte, z0–14, 38.463 ubin, ubin terbesar 150,4 KB, 0 ubin > 500 KB) di-commit sebagai blob git biasa, tanpa LFS. `public/tiles/_osm-src/` tetap diabaikan.
+- `basemapPmtilesUrl()` di `src/lib/tiles-url.ts`: env `NEXT_PUBLIC_BASEMAP_PMTILES_URL` (atau alias lama) bila terpasang; selain itu `/tiles/aceh-osm.pmtiles` yang di-resolve ke `window.location.origin` di peramban (protokol pmtiles butuh URL absolut). Di server dikembalikan path relatif; ubin hanya diambil di peramban.
+- Ubin gagal dimuat tetap → kanvas tema (#F4F5F0 / #1A1A17) + "Peta dasar belum tersedia". Tidak ada Carto, tidak ada ubin OSM publik.
+- `next.config.mjs`: `/tiles/:path*.pmtiles` → `Cache-Control: public, max-age=86400, stale-while-revalidate=604800`, `Content-Type: application/octet-stream`. Range dilayani oleh host statis.
+- Pindah ke R2 nanti: isi env `NEXT_PUBLIC_BASEMAP_PMTILES_URL`, tanpa ubah kode.
+
+Verifikasi lokal (`next start`, Node 22): `Range: bytes=0-16383` → 206, `Content-Range: bytes 0-16383/45552256`, header cache dan tipe sesuai. Chrome headless `/id/peta` terang dan gelap: 11 permintaan PMTiles, semua 206; 0 permintaan OSM publik atau Carto; atribusi OpenStreetMap tampil; tidak ada pemberitahuan kosong.

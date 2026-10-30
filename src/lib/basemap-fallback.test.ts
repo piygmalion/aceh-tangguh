@@ -66,12 +66,20 @@ describe("BM-fallback owned PMTiles basemap", () => {
     }
   });
 
-  it("uses PMTiles when the URL is set, otherwise an empty theme canvas", () => {
+  it("uses the bundled PMTiles by default, the env URL when set, and an empty canvas on failure", () => {
     setEnv("NEXT_PUBLIC_CARTO_API_KEY", "should-not-be-used");
     setEnv("NEXT_PUBLIC_ACEH_OSM_PMTILES", undefined);
     setEnv("NEXT_PUBLIC_BASEMAP_PMTILES_URL", undefined);
 
-    const empty = getBasemapStyle("positron");
+    const bundled = getBasemapStyle("positron");
+    assert.ok(isRecord(bundled));
+    const bundledSource = (bundled.sources as Record<string, { url?: string }>).openmaptiles;
+    // No window in node: the base-path-relative bundle path. Browsers resolve it
+    // against window.location.origin (see bundledBasemapPmtilesUrl).
+    assert.equal(bundledSource?.url, "pmtiles:///tiles/aceh-osm.pmtiles");
+    assert.doesNotMatch(styleBlob(bundled), /cartocdn|tile\.openstreetmap\.org|openfreemap/);
+
+    const empty = getBasemapStyle("positron", { rasterFallback: true });
     assert.ok(isRecord(empty));
     const emptySources = empty.sources as Record<string, unknown>;
     assert.deepEqual(emptySources, {});

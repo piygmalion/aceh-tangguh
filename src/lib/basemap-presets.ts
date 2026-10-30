@@ -1,7 +1,7 @@
 import type { BrandBasemapId } from "./types";
 import { COLOR_TOKENS } from "./layer-colors";
 import { withBasePath } from "./preview/env";
-import { configuredBasemapPmtilesUrl, toMapLibreVectorSourceUrl } from "./tiles-url";
+import { basemapPmtilesUrl, toMapLibreVectorSourceUrl } from "./tiles-url";
 
 /**
  * Ink scale 50–900 derived from paper #F4F5F0, charcoal #242420, and ink #1A1A17.
@@ -474,14 +474,15 @@ export function buildEmptyBasemapStyle(tone: BasemapTone): MapLibreStyleV8 {
 }
 
 /**
- * Owned Aceh PMTiles when `NEXT_PUBLIC_BASEMAP_PMTILES_URL` (or the legacy
- * `NEXT_PUBLIC_ACEH_OSM_PMTILES`) is set. Otherwise null — callers paint the
- * empty canvas. A local file on disk is not implied.
+ * Owned Aceh PMTiles: `NEXT_PUBLIC_BASEMAP_PMTILES_URL` (or the legacy
+ * `NEXT_PUBLIC_ACEH_OSM_PMTILES`) when set, otherwise the archive bundled at
+ * `/tiles/aceh-osm.pmtiles`. Load failure paints the empty theme canvas
+ * (`buildEmptyBasemapStyle`); there is no public tile fallback.
  */
 export function resolveBrandVectorTilesSource(opts?: {
   acehOsmUrl?: string | null;
 }): BrandVectorTilesSource | null {
-  const aceh = opts?.acehOsmUrl?.trim() || configuredBasemapPmtilesUrl();
+  const aceh = opts?.acehOsmUrl?.trim() || basemapPmtilesUrl();
   if (!aceh) return null;
   return {
     kind: "aceh-pmtiles",

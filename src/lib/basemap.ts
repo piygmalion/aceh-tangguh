@@ -81,7 +81,8 @@ export type BasemapStyle = string | Record<string, unknown>;
 
 /**
  * No remote vector-style URLs. OpenFreeMap and public OSM rasters are not
- * fallbacks. Owned PMTiles is selected by `NEXT_PUBLIC_BASEMAP_PMTILES_URL`.
+ * fallbacks. Owned PMTiles is bundled at `/tiles/aceh-osm.pmtiles`;
+ * `NEXT_PUBLIC_BASEMAP_PMTILES_URL` overrides it (R2 later).
  */
 export const BASEMAP_VECTOR_URLS: Partial<Record<BasemapId, string>> = {};
 

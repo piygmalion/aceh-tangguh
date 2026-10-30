@@ -19,6 +19,7 @@ import {
   DARK_WATER,
   INK_SCALE,
   buildBrandBasemapStyle,
+  buildEmptyBasemapStyle,
   collectStylePaintHex,
   resolveBrandVectorTilesSource,
 } from "./basemap-presets";
@@ -204,12 +205,20 @@ describe("brand MapLibre presets", () => {
     delete process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
     delete process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
     try {
-      const empty = buildBrandBasemapStyle("brand-light");
+      const bundled = buildBrandBasemapStyle("brand-light");
+      assert.match(bundled.glyphs, /\/fonts\/\{fontstack\}\/\{range\}\.pbf$/);
+      assert.doesNotMatch(bundled.glyphs, /openfreemap/);
+      assert.equal("sprite" in bundled, false);
+      assert.equal(resolveBrandVectorTilesSource()?.url, "pmtiles:///tiles/aceh-osm.pmtiles");
+      assert.equal(
+        (bundled.sources.openmaptiles as { url?: string } | undefined)?.url,
+        "pmtiles:///tiles/aceh-osm.pmtiles",
+      );
+
+      const empty = buildEmptyBasemapStyle("light");
       assert.match(empty.glyphs, /\/fonts\/\{fontstack\}\/\{range\}\.pbf$/);
-      assert.doesNotMatch(empty.glyphs, /openfreemap/);
       assert.deepEqual(empty.sources, {});
       assert.equal("sprite" in empty, false);
-      assert.equal(resolveBrandVectorTilesSource(), null);
 
       const remote = buildBrandBasemapStyle("brand-light", {
         acehOsmUrl: "https://cdn.example.com/aceh-osm.pmtiles",
