@@ -183,7 +183,8 @@ function OverlayVector({
               "circle-color": ["coalesce", ["get", "color"], color],
               "circle-radius": overlayKey === "maritimePorts" ? 7 : 6,
               "circle-stroke-width": 1.5,
-              "circle-stroke-color": COLOR_TOKENS.paper,
+              "circle-stroke-color":
+                color === COLOR_TOKENS.awas ? COLOR_TOKENS.awasOutline : COLOR_TOKENS.paper,
               "circle-opacity": 0.92,
             }}
           />

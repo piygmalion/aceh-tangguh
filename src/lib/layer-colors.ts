@@ -1,4 +1,5 @@
 import type { MarkerLayerKey } from "@/lib/types";
+import { STATUS_HEX } from "@/lib/chart-colors";
 
 /**
  * Official Sistem Warna tokens for map chrome.
@@ -12,7 +13,10 @@ export const COLOR_TOKENS = {
   ink: "#1A1A17",
   paper: "#F7F7F4",
   paperWarm: "#F4F5F0",
-  awas: "#B42318",
+  /** Sama dengan kartu Peringatan Dini / --map-status-awas (#C8102E). INS-47. */
+  awas: STATUS_HEX.AWAS,
+  /** Outline AWAS, sama dengan --status-awas-bar di kartu. */
+  awasOutline: "#111111",
   teal: "#2F6B66",
 } as const;
 
