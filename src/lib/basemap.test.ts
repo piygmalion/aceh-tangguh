@@ -6,9 +6,7 @@ import { COLOR_TOKENS } from "./layer-colors";
 import {
   BASEMAP_IDS,
   BASEMAP_OPTIONS,
-  BASEMAP_RASTER,
-  BRAND_RASTER_FALLBACK,
-  cartoBasemapKeyPresent,
+  BASEMAP_VECTOR_URLS,
   getBasemapStyle,
   isBasemapId,
   isBrandBasemapId,
@@ -20,8 +18,8 @@ import {
   BRAND_BASEMAP_IDS,
   DARK_WATER,
   INK_SCALE,
-  OPENFREEMAP_TILEJSON,
   buildBrandBasemapStyle,
+  buildEmptyBasemapStyle,
   collectStylePaintHex,
   resolveBrandVectorTilesSource,
 } from "./basemap-presets";
@@ -40,14 +38,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-function firstRasterTile(style: unknown): string {
-  assert.ok(isRecord(style));
-  const sources = style.sources as Record<string, { tiles?: string[] }>;
-  return sources.raster.tiles?.[0] ?? "";
-}
+const STYLE_TILES = { acehOsmUrl: "https://cdn.example.com/aceh-osm.pmtiles" };
 
-describe("getBasemapStyle default remains Carto", () => {
-  it("treats omitted / unknown ids as not brand, and positron is keyed Carto or OSM", () => {
+describe("getBasemapStyle default is owned PMTiles or an empty canvas", () => {
+  it("treats omitted / unknown ids as not brand, and positron is style JSON", () => {
     assert.equal(isBasemapId("positron"), true);
     assert.equal(isBasemapId("brand-light"), true);
     assert.equal(isBasemapId("not-a-map"), false);
@@ -55,66 +49,24 @@ describe("getBasemapStyle default remains Carto", () => {
     const style = getBasemapStyle("positron");
     assert.ok(isRecord(style));
     assert.equal(style.version, 8);
-    assert.equal(style.name, "positron-raster");
-    const tile = firstRasterTile(style);
-    if (cartoBasemapKeyPresent()) {
-      assert.match(tile, /cartocdn\.com\/light_all/);
-      assert.match(tile, /[?&]key=/);
-    } else {
-      assert.match(tile, /tile\.openstreetmap\.org/);
-      assert.equal(tile.includes("cartocdn.com"), false);
-    }
+    assert.equal(typeof style, "object");
+    assert.equal(Object.keys(BASEMAP_VECTOR_URLS).length, 0);
   });
 
-  it("never emits unkeyed Carto tile URLs for positron or dark", () => {
-    const prev = process.env.NEXT_PUBLIC_CARTO_API_KEY;
-    try {
-      delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
-      for (const id of ["positron", "dark"] as const) {
-        const tile = firstRasterTile(getBasemapStyle(id));
-        assert.equal(tile.includes("cartocdn.com"), false);
-        assert.match(tile, /tile\.openstreetmap\.org/);
-      }
-
-      process.env.NEXT_PUBLIC_CARTO_API_KEY = "test-not-a-real-key";
-      const positron = firstRasterTile(getBasemapStyle("positron"));
-      const dark = firstRasterTile(getBasemapStyle("dark"));
-      assert.match(positron, /cartocdn\.com\/light_all/);
-      assert.match(dark, /cartocdn\.com\/dark_all/);
-      assert.match(positron, /[?&]key=/);
-      assert.match(dark, /[?&]key=/);
-    } finally {
-      if (prev === undefined) delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
-      else process.env.NEXT_PUBLIC_CARTO_API_KEY = prev;
-    }
-  });
-
-  it("does not swap the default to a brand or remote OpenFreeMap style URL", () => {
-    const def = getBasemapStyle("positron");
-    assert.notEqual(typeof def, "string");
-    assert.ok(isRecord(def));
-    assert.notEqual(def.name, "aceh-tangguh-light");
-    assert.equal(getBasemapStyle("positron", { preferVector: false }), BASEMAP_RASTER.positron);
-  });
-
-  it("keeps the original five raster/imagery options", () => {
+  it("keeps the original five options, with imagery separate from the vector basemap", () => {
     const ids = BASEMAP_OPTIONS.map((o) => o.id);
     for (const id of ["positron", "dark", "streets", "satellite", "sentinel"] as const) {
       assert.ok(ids.includes(id));
     }
-    assert.equal(
-      BASEMAP_OPTIONS.filter((o) => o.kind === "raster" || o.kind === "imagery").length,
-      5
-    );
-    assert.equal(BASEMAP_OPTIONS.filter((o) => o.kind === "vector").length, 3);
+    assert.equal(BASEMAP_OPTIONS.filter((o) => o.kind === "imagery").length, 2);
+    assert.equal(BASEMAP_OPTIONS.filter((o) => o.kind === "vector").length, 6);
     assert.deepEqual(
       BASEMAP_IDS.slice(0, 5),
       ["positron", "dark", "streets", "satellite", "sentinel"]
     );
   });
 
-  it("hides Gelap and rewrites ?basemap=dark when the Carto key is absent", () => {
-    const prev = process.env.NEXT_PUBLIC_CARTO_API_KEY;
+  it("keeps Gelap available without a Carto key", () => {
     const settings = readFileSync(
       path.join(process.cwd(), "src/components/map/MapSettings.tsx"),
       "utf8",
@@ -125,32 +77,16 @@ describe("getBasemapStyle default remains Carto", () => {
     assert.equal(id.map.basemapDark, "Gelap");
     assert.match(settings, /visibleBasemapOptions\(\)/);
     assert.equal(settings.includes("BASEMAP_OPTIONS.map"), false);
-    try {
-      delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
-      assert.equal(isBasemapId("dark"), false);
-      assert.equal(normalizeBasemapId("dark"), "positron");
-      assert.equal(isBasemapId("positron"), true);
-      const ids = visibleBasemapOptions().map((option) => option.id);
-      assert.equal(ids.includes("dark"), false);
-      assert.ok(ids.includes("positron"));
-      assert.ok(ids.includes("sentinel"));
-      assert.ok(ids.includes("brand-dark"));
-      const rewritten = rewriteHiddenDarkBasemap("basemap=dark&z=11");
-      assert.ok(rewritten);
-      const params = new URLSearchParams(rewritten ?? "");
-      assert.equal(params.get("basemap"), "positron");
-      assert.equal(params.get("z"), "11");
-
-      process.env.NEXT_PUBLIC_CARTO_API_KEY = "present";
-      assert.equal(isBasemapId("dark"), true);
-      assert.equal(normalizeBasemapId("dark"), "dark");
-      assert.equal(rewriteHiddenDarkBasemap("basemap=dark&z=11"), null);
-      assert.ok(visibleBasemapOptions().some((option) => option.id === "dark"));
-      assert.equal(id.map.basemapBrandDark, "Gelap merek");
-    } finally {
-      if (prev === undefined) delete process.env.NEXT_PUBLIC_CARTO_API_KEY;
-      else process.env.NEXT_PUBLIC_CARTO_API_KEY = prev;
-    }
+    assert.equal(isBasemapId("dark"), true);
+    assert.equal(normalizeBasemapId("dark"), "dark");
+    assert.equal(isBasemapId("positron"), true);
+    const ids = visibleBasemapOptions().map((option) => option.id);
+    assert.ok(ids.includes("dark"));
+    assert.ok(ids.includes("positron"));
+    assert.ok(ids.includes("sentinel"));
+    assert.ok(ids.includes("brand-dark"));
+    assert.equal(rewriteHiddenDarkBasemap("basemap=dark&z=11"), null);
+    assert.equal(id.map.basemapBrandDark, "Gelap merek");
   });
 });
 
@@ -166,23 +102,23 @@ describe("brand MapLibre presets", () => {
     }
   });
 
-  it("falls back to Carto raster when rasterFallback is set", () => {
-    assert.equal(
-      getBasemapStyle("brand-light", { rasterFallback: true }),
-      BASEMAP_RASTER[BRAND_RASTER_FALLBACK["brand-light"]]
+  it("falls back to an empty theme canvas when rasterFallback is set", () => {
+    for (const id of ["brand-light", "brand-dark", "brand-grey"] as const) {
+      const style = getBasemapStyle(id, { rasterFallback: true });
+      assert.ok(isRecord(style));
+      assert.deepEqual(style.sources, {});
+      assert.doesNotMatch(JSON.stringify(style), /cartocdn|tile\.openstreetmap\.org|openfreemap/);
+    }
+    const dark = getBasemapStyle("brand-dark", { rasterFallback: true });
+    assert.ok(isRecord(dark));
+    const bg = (dark.layers as Array<{ id?: string; paint?: Record<string, string> }>).find(
+      (layer) => layer.id === "basemap-background",
     );
-    assert.equal(
-      getBasemapStyle("brand-dark", { rasterFallback: true }),
-      BASEMAP_RASTER.dark
-    );
-    assert.equal(
-      getBasemapStyle("brand-grey", { rasterFallback: true }),
-      BASEMAP_RASTER.positron
-    );
+    assert.equal(bg?.paint?.["background-color"], COLOR_TOKENS.ink);
   });
 
   it("uses paper / ink / forest / teal on Light", () => {
-    const style = buildBrandBasemapStyle("brand-light");
+    const style = buildBrandBasemapStyle("brand-light", STYLE_TILES);
     const hex = collectStylePaintHex(style);
     assert.ok(hex.includes(COLOR_TOKENS.paperWarm.toUpperCase()));
     assert.ok(hex.includes(COLOR_TOKENS.ink.toUpperCase()));
@@ -197,7 +133,7 @@ describe("brand MapLibre presets", () => {
   });
 
   it("uses ink canvas, paper labels, sage landcover, teal water on Dark", () => {
-    const style = buildBrandBasemapStyle("brand-dark");
+    const style = buildBrandBasemapStyle("brand-dark", STYLE_TILES);
     const bg = style.layers.find((l) => l.id === "basemap-background");
     assert.equal(bg?.paint?.["background-color"], COLOR_TOKENS.ink);
     const label = style.layers.find((l) => l.id === "basemap-label-place");
@@ -210,7 +146,7 @@ describe("brand MapLibre presets", () => {
   });
 
   it("keeps Minimalist Grey on the ink scale except forest on admin and paper on water labels", () => {
-    const style = buildBrandBasemapStyle("brand-grey");
+    const style = buildBrandBasemapStyle("brand-grey", STYLE_TILES);
     const ink = new Set(Object.values(INK_SCALE).map((h) => h.toUpperCase()));
     const forest = COLOR_TOKENS.forest.toUpperCase();
     const paper = COLOR_TOKENS.paper.toUpperCase();
@@ -257,35 +193,33 @@ describe("brand MapLibre presets", () => {
 
   it("does not invent lime, map-blue, orange fills, gold land, or awas", () => {
     for (const id of BRAND_BASEMAP_IDS) {
-      const hex = collectStylePaintHex(buildBrandBasemapStyle(id));
+      const hex = collectStylePaintHex(buildBrandBasemapStyle(id, STYLE_TILES));
       for (const bad of FORBIDDEN) {
         assert.equal(hex.includes(bad), false, `${id} contains forbidden ${bad}`);
       }
     }
   });
 
-  it("reuses OpenFreeMap glyphs and planet tiles — no sprite pipeline", () => {
-    const style = buildBrandBasemapStyle("brand-light");
-    assert.equal(
-      style.glyphs,
-      "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf"
-    );
-    const source = style.sources.openmaptiles as { url?: string };
-    assert.equal(source.url, "https://tiles.openfreemap.org/planet");
-    assert.equal("sprite" in style, false);
-  });
-
-  it("prefers the Aceh extract when configured, else OpenFreeMap", () => {
-    const prevAceh = process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+  it("uses self-hosted glyphs and no sprite or public vector CDN", () => {
+    const prev = process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
+    const prevLegacy = process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+    delete process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
     delete process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
     try {
-      const ofm = resolveBrandVectorTilesSource();
-      assert.equal(ofm.kind, "openfreemap");
-      assert.equal(ofm.url, OPENFREEMAP_TILEJSON);
+      const bundled = buildBrandBasemapStyle("brand-light");
+      assert.match(bundled.glyphs, /\/fonts\/\{fontstack\}\/\{range\}\.pbf$/);
+      assert.doesNotMatch(bundled.glyphs, /openfreemap/);
+      assert.equal("sprite" in bundled, false);
+      assert.equal(resolveBrandVectorTilesSource()?.url, "pmtiles:///tiles/aceh-osm.pmtiles");
+      assert.equal(
+        (bundled.sources.openmaptiles as { url?: string } | undefined)?.url,
+        "pmtiles:///tiles/aceh-osm.pmtiles",
+      );
 
-      const local = resolveBrandVectorTilesSource({ localAcehOsmPresent: true });
-      assert.equal(local.kind, "aceh-pmtiles");
-      assert.equal(local.url, "pmtiles:///tiles/aceh-osm.pmtiles");
+      const empty = buildEmptyBasemapStyle("light");
+      assert.match(empty.glyphs, /\/fonts\/\{fontstack\}\/\{range\}\.pbf$/);
+      assert.deepEqual(empty.sources, {});
+      assert.equal("sprite" in empty, false);
 
       const remote = buildBrandBasemapStyle("brand-light", {
         acehOsmUrl: "https://cdn.example.com/aceh-osm.pmtiles",
@@ -295,18 +229,14 @@ describe("brand MapLibre presets", () => {
         attribution?: string;
       };
       assert.equal(source.url, "pmtiles://https://cdn.example.com/aceh-osm.pmtiles");
-      assert.match(source.attribution ?? "", /Aceh extract/);
-
-      process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES = "/tiles/aceh-osm.pmtiles";
-      const fromEnv = resolveBrandVectorTilesSource();
-      assert.equal(fromEnv.kind, "aceh-pmtiles");
-      assert.equal(fromEnv.url, "pmtiles:///tiles/aceh-osm.pmtiles");
-
-      const fallback = getBasemapStyle("brand-light", { rasterFallback: true });
-      assert.equal(fallback, BASEMAP_RASTER.positron);
+      assert.match(source.attribution ?? "", /OpenStreetMap/);
+      assert.match(source.attribution ?? "", /contributors/);
+      assert.equal("sprite" in remote, false);
     } finally {
-      if (prevAceh === undefined) delete process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
-      else process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES = prevAceh;
+      if (prev === undefined) delete process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
+      else process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL = prev;
+      if (prevLegacy === undefined) delete process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+      else process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES = prevLegacy;
     }
   });
 });

@@ -26,13 +26,22 @@ describe("MapLibre load path on /peta", () => {
     assert.match(viewport, /reuseMaps/);
   });
 
-  it("keeps raster Carto as default; vector OpenFreeMap stays opt-in", () => {
-    const raster = getBasemapStyle("positron");
-    assert.equal(typeof raster, "object");
-    const vector = getBasemapStyle("positron", { preferVector: true });
-    assert.equal(vector, BASEMAP_VECTOR_URLS.positron);
-    assert.equal(typeof vector, "string");
-    assert.match(String(vector), /openfreemap/);
+  it("keeps the default on owned style JSON, not an OpenFreeMap URL", () => {
+    const prev = process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
+    const prevLegacy = process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+    delete process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
+    delete process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+    try {
+      const style = getBasemapStyle("positron", { preferVector: true });
+      assert.equal(typeof style, "object");
+      assert.equal(Object.keys(BASEMAP_VECTOR_URLS).length, 0);
+      assert.doesNotMatch(JSON.stringify(style), /openfreemap|tile\.openstreetmap\.org|cartocdn/);
+    } finally {
+      if (prev === undefined) delete process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL;
+      else process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL = prev;
+      if (prevLegacy === undefined) delete process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES;
+      else process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES = prevLegacy;
+    }
   });
 
   it("does not treat MapLibre adoption as a reason to raise cluster zoom", () => {

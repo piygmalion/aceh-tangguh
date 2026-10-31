@@ -6,13 +6,18 @@ import {
   ACEH_OSM_REQUIRED_LAYERS,
   OVERLAY_PMTILES_FILES,
   configuredAcehOsmPmtilesUrl,
+  configuredBasemapPmtilesUrl,
   overlayPmtilesFilename,
   overlayPmtilesUrl,
   publicTilesBaseUrl,
   toMapLibreVectorSourceUrl,
 } from "./tiles-url";
 
-const ENV_KEYS = ["NEXT_PUBLIC_TILES_BASE_URL", "NEXT_PUBLIC_ACEH_OSM_PMTILES"] as const;
+const ENV_KEYS = [
+  "NEXT_PUBLIC_TILES_BASE_URL",
+  "NEXT_PUBLIC_ACEH_OSM_PMTILES",
+  "NEXT_PUBLIC_BASEMAP_PMTILES_URL",
+] as const;
 const saved: Partial<Record<(typeof ENV_KEYS)[number], string | undefined>> = {};
 
 function setEnv(key: (typeof ENV_KEYS)[number], value: string | undefined) {
@@ -73,6 +78,20 @@ describe("Aceh OSM brand tiles URL", () => {
 
     setEnv("NEXT_PUBLIC_ACEH_OSM_PMTILES", "https://cdn.example.com/aceh-osm.pmtiles");
     assert.equal(configuredAcehOsmPmtilesUrl(), "https://cdn.example.com/aceh-osm.pmtiles");
+  });
+
+  it("prefers NEXT_PUBLIC_BASEMAP_PMTILES_URL and still accepts the legacy env", () => {
+    setEnv("NEXT_PUBLIC_BASEMAP_PMTILES_URL", undefined);
+    setEnv("NEXT_PUBLIC_ACEH_OSM_PMTILES", "https://legacy.example/aceh-osm.pmtiles");
+    assert.equal(
+      configuredBasemapPmtilesUrl(),
+      "https://legacy.example/aceh-osm.pmtiles",
+    );
+    setEnv("NEXT_PUBLIC_BASEMAP_PMTILES_URL", "https://cdn.example.com/aceh-osm.pmtiles");
+    assert.equal(
+      configuredBasemapPmtilesUrl(),
+      "https://cdn.example.com/aceh-osm.pmtiles",
+    );
   });
 
   it("wraps PMTiles archives in pmtiles:// and leaves TileJSON URLs alone", () => {

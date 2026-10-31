@@ -243,8 +243,9 @@
     "basemapKindRaster": "Raster",
     "basemapKindVector": "OSM vector",
     "basemapKindImagery": "Imagery",
-    "basemapHint": "OSM raster (Carto when a key is set) · Esri · Sentinel-2 · three brand presets (OSM vector, raster fallback).",
-    "basemapVectorOptional": "Try OpenFreeMap vector (falls back to raster if it fails)",
+    "basemapHint": "Owned PMTiles vector (light and dark) when a URL is set; otherwise the theme canvas. Esri · Sentinel-2.",
+    "basemapUnavailable": "Basemap unavailable. Other layers still work.",
+    "basemapVectorOptional": "The basemap uses our own PMTiles archive.",
     "sentinelFreshness": "Annual mosaic {year}. Latest L2A scene over Aceh: {date} ({cloud}% cloud).",
     "geospasial": "Geospatial",
     "overlayLiveStale": "Delayed data",
@@ -687,7 +688,7 @@
     },
     "s7": {
       "title": "Basemap, performance, and Sentinel",
-      "body": "The map runs on MapLibre (GPU). The default operational basemap is Carto Positron raster (OSM). OpenFreeMap vector is optional (`?vector=1`) and falls back to Carto if the CDN fails — that already happened in our sandbox. HD satellite uses Esri World Imagery. The Sentinel-2 option is EOX’s annual Cloudless mosaic (Copernicus, 10 m) — a background, not “today’s” image, because Aceh is usually cloudy. Latest Sentinel-2 L2A scenes are queried via STAC (Element84) as an archive heartbeat, not as the basemap. Location points render as GPU-clustered GeoJSON, not HTML markers, so thousands of facilities stay light. Area overlays remain PMTiles. Architecture notes: docs/basemap.md."
+      "body": "The map runs on MapLibre (GPU). The operational basemap is our own PMTiles vector (light and dark) when NEXT_PUBLIC_BASEMAP_PMTILES_URL is set. If that URL is empty or the tiles fail, the canvas stays the theme color and a short notice appears; other layers keep working. There are no public OSM tiles and no Carto tiles. HD satellite uses Esri World Imagery. The Sentinel-2 option is EOX’s annual Cloudless mosaic (Copernicus, 10 m) — a background, not “today’s” image, because Aceh is usually cloudy. Latest Sentinel-2 L2A scenes are queried via STAC (Element84) as an archive heartbeat, not as the basemap. Location points render as GPU-clustered GeoJSON, not HTML markers, so thousands of facilities stay light. Area overlays remain PMTiles. Architecture notes: docs/basemap.md."
     },
     "s8": {
       "title": "Homepage early warnings",
