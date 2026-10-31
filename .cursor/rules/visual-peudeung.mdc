@@ -1,0 +1,17 @@
+---
+description: Arah visual yang sudah dikunci — Plus Jakarta Sans dan palet Peudeung v2
+globs: ["src/app/globals.css", "tailwind.config.ts", "src/app/**/*.tsx", "src/components/**/*.tsx", "src/lib/peudeung-v2.test.ts", "src/lib/chart-colors.ts", "src/lib/layer-colors.ts", "src/lib/type-floor.ts"]
+alwaysApply: false
+---
+
+# Arah visual
+
+Yang dikunci repo (`docs/pengembangan/visual/SPEK-TERKUNCI.md`, `src/app/globals.css`, `src/app/[locale]/layout.tsx`):
+
+- Huruf teks adalah Plus Jakarta Sans (`next/font`, bobot 400–800, `--font-sans`). Judul `.type-display` memakai bobot 800. Jangan menambah webfont baru.
+- Chrome Peudeung v2 hidup di `globals.css`: `--merah-peudeung` `#c8102e`, `--merah-tautan` `#8e1224`, kertas `#f7f7f7`, tinta `#111111`, `--accent-on-light` `#c8102e` (tidak dibalik di tema gelap).
+- Lantai ukuran `--type-floor` adalah `0.8125rem` (13px). Di bawah 640px, `--section-y-compact` / `--section-y` / `--section-y-spacious` adalah 2rem / 3.5rem / 4.5rem.
+- Status hibrida peta memakai satu skala di tema terang dan gelap: aman `#10b981`, waspada `#fbbf24`, siaga `#f97316`, awas `#c8102e`. Komentar CSS: pendekatan warna PVMBG, bukan hex resmi.
+- Palet data peta (forest `#1F4C15`, gold `#C4A35A`, orange `#FF7722`) tidak di-alias ke token Peudeung. Uji kuncinya ada di `src/lib/peudeung-v2.test.ts`.
+
+Kredit foto tetap mengikuti `public/media/CREDITS.md`.

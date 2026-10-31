@@ -1,0 +1,13 @@
+---
+description: Merek tampilan SIK Aceh versus id sumber Data Kejadian BPBA
+globs: ["messages/**/*.json", "src/components/**/*.tsx", "src/app/**/*.tsx", "src/lib/data-sources.ts", "src/lib/sumber-label.ts", "src/lib/**/*sumber*.ts", "src/lib/**/*source*.ts"]
+alwaysApply: false
+---
+
+# Merek tampilan
+
+Teks yang pengguna baca memakai **SIK Aceh**. Bentuk panjang "Sistem Informasi Kebencanaan Aceh" muncul sekali di footer locale `id` dan di deskripsi meta. Locale `en` mempertahankan merek "SIK Aceh"; descriptor Inggris "Aceh Disaster Information System" boleh di footer dan meta.
+
+Jangan mengganti nama repositori, domain, env, path, atau kredit foto supaya mengikuti merek tampilan.
+
+Sumber katalog `id: "sik-aceh"` ditampilkan "Data Kejadian BPBA — master SQLite (pengayaan)" (`titleEn`: "BPBA incident data — master SQLite (enrichment)"). Token tersimpan yang persis `sik_aceh.db` ditampilkan "Data Kejadian BPBA" (en: "BPBA incident data") lewat `displaySumberEntry`. Id `sik-aceh`, berkas `sik_aceh.db`, dan prefiks `SIK-` tetap. Token `kejadian_operasi` dan `SIK operasional` punya label sendiri di `src/lib/sumber-label.ts`. URL, PDF, dan kutipan media tidak diubah menjadi BPBA.
