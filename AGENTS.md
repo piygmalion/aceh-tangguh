@@ -82,3 +82,32 @@ Sumber: `docs/pengembangan/visual/SPEK-TERKUNCI.md`, `src/app/globals.css`, `src
 | `.cursor/rules/visual-peudeung.mdc` | CSS, Tailwind, dan komponen. |
 | `.cursor/rules/verifikasi.mdc` | Saat menyunting `src/`, `scripts/`, atau `messages/`. |
 | `.cursor/rules/typescript-*.mdc` | Gaya, pola, keamanan, dan uji TypeScript yang sudah ada. |
+
+## Metodologi
+
+Bagian di atas berkas ini berasal dari PR #137 dan tetap berlaku. Empat skill di `docs/agents/skills/` adalah prosedur yang dibaca saat bagian ini mewajibkannya. Atribusi, commit sumber, dan suntingan lokal ada di `docs/agents/skills/ATRIBUSI.md`. Lisensi MIT asli ada di `docs/agents/skills/LICENSE`.
+
+Skill tidak diletakkan di `.cursor/rules/`. Berkas di sana adalah aturan pendek `.mdc` dengan `alwaysApply` atau `globs`, termasuk empat aturan TypeScript yang tidak ditimpa. Skill tidak diletakkan di `.cursor/skills/` karena deskripsi upstream debugging memicu diri untuk setiap bug, termasuk suntingan yang bagian ini kecualikan. `docs/agents/skills/` memuat salinan beserta berkas pendamping yang saling merujuk di direktori yang sama, terpisah dari skill wilayah `.cursor/skills/aceh-*`.
+
+### Bahasa
+
+Jawaban kepada pemilik, laporan, jurnal, serta judul dan deskripsi pull request ditulis dalam Bahasa Indonesia. Path, nama skill, dan cuplikan kode boleh tetap seperti di sumber.
+
+### Kapan tiap skill wajib
+
+- **`systematic-debugging`** (`docs/agents/skills/systematic-debugging/SKILL.md`) wajib untuk bug, tes gagal, build gagal, atau perilaku tak terduga pada peta (MapLibre, react-map-gl, PMTiles, ubin), cache, Vercel (build, runtime, pratinjau), atau data (fixture, loader, Supabase, SIK, skrip impor). Ikuti empat fase. Cari akar masalah sebelum mengusulkan perbaikan. Skill ini tidak dipakai untuk perubahan salinan atau UI kecil yang tidak mengubah perilaku peta, cache, Vercel, atau data.
+- **`verification-before-completion`** (`docs/agents/skills/verification-before-completion/SKILL.md`) wajib sebelum klaim selesai, diperbaiki, atau lulus, termasuk sebelum commit dan sebelum membuka PR. Untuk perubahan kode, bukti segar pada giliran yang sama adalah keluaran perintah di bagian Verifikasi sebelum PR: `npm run lint`, `npm run typecheck`, dan `npm test`. `npm run build` dipakai bila perubahan menyentuh konfigurasi Next, rute, atau impor yang hanya pecah saat build. Perubahan UI tetap dicek di `/id` dan padanan `/en`.
+- **`writing-plans`** (`docs/agents/skills/writing-plans/SKILL.md`) wajib sebelum menyentuh kode pada tugas multi-langkah (lebih dari satu subsistem, atau beberapa berkas perilaku). Rencana disimpan di `docs/pengembangan/rencana/` kecuali pemilik menentukan lokasi lain. Tunggu tinjauan pemilik sebelum implementasi. Perubahan salinan atau UI kecil satu titik tidak memerlukan rencana ini.
+- **`requesting-code-review`** (`docs/agents/skills/requesting-code-review/SKILL.md`) wajib setelah fitur besar, atau setelah perbaikan bug peta, cache, Vercel, atau data, sebelum PR dianggap siap ditinjau. Reviewer menilai diff. Temuan Critical dan Important diperbaiki di cabang fitur. Perubahan salinan atau UI kecil tidak memerlukan review subagen ini.
+
+Bagian Verifikasi sebelum PR tetap berlaku untuk setiap perubahan kode.
+
+### Integrasi
+
+Agen membuka pull request. Merge, deploy, push ke `main`, dan auto-merge tidak dijalankan. GO langsung Pak Pygmalion pada giliran itu, tertulis di tugas, adalah satu-satunya pembuka larangan tersebut. Tes hijau, penilaian review, atau rencana selesai bukan GO.
+
+`git push` ke cabang fitur untuk membuka PR mengikuti alur yang sudah ada. Itu bukan push ke `main`.
+
+### Jika bentrok
+
+`AGENTS.md` menang atas skill yang disalin. Berikutnya `.cursor/rules/guardrails.mdc`, lalu `docs/pengembangan/00-protokol.md`. Skill tidak memberi izin mengubah domain, nama variabel lingkungan, skema atau migrasi, nama rute, `vercel.json`, secret, atau kredit foto, dan tidak memberi izin mengarang kode Tatonas, zona KRB, atau angka korban.
