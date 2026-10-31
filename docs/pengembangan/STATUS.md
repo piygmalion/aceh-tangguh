@@ -800,3 +800,11 @@ Poles tampilan bento PD: token AWAS Peudeung, urutan basi setelah segar, teks cu
 | --- | --- | --- | --- | --- |
 | FE-77 | frontend | poles kartu Peringatan Dini beranda | jurnal/FE-77.md | diverifikasi |
 
+## INS-49 — visual-1 Kontur Pesisir
+
+Fondasi visual-1. Judul tampilan Plus Jakarta Sans 800 lewat `--font-display`, tanpa webfont baru. H1 hero tertutup di 3,5rem. Token permukaan dari hex Peudeung yang sudah ada, termasuk `--chart-surface`. `SectionShell` punya `tone`. Satu SVG kontur/garis pantai prosedural, `aria-hidden`, di bagian peringatan dini. Bukan visual-2. Bukan motif Pintu Aceh. Data, API, MAGMA, basemap, dan `layer-colors.ts` tidak diubah.
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| INS-49 | frontend | visual-1 Kontur Pesisir | jurnal/INS-49.md | selesai |
+
