@@ -83,6 +83,7 @@ import {
   clusterCountTextColor,
   clusterRingColorExpr,
   markerHaloStroke,
+  mapThemeForBasemap,
   markerRenderMode,
   parseStackItems,
   stackSharedCentroidDisasterEvents,
@@ -1355,12 +1356,14 @@ export function MapViewport({
             popup={overlayPopup}
             onPopupClose={() => setOverlayPopup(null)}
             iconsReady={chromeIconsReady}
+            theme={mapThemeForBasemap(basemap)}
           />
         )}
         {nasaLayers.length > 0 ? (
           <NasaNrtOverlays
             layers={nasaLayers}
             nasaDate={resolvedNasaDate}
+            theme={mapThemeForBasemap(basemap)}
             beforeId={statusSlot}
             popup={nasaFirmsPopup}
             onPopupClose={() => setNasaFirmsPopup(null)}

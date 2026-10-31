@@ -31,6 +31,7 @@ const FORBIDDEN = [
   "#FF7722",
   "#C4A35A",
   "#B42318",
+  "#C8102E",
 ];
 
 function isRecord(value: unknown): value is Record<string, unknown> {
