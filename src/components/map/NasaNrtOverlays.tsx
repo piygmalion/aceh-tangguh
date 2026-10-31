@@ -6,7 +6,7 @@ import { Layer, Popup, Source } from "react-map-gl/maplibre";
 import { useTranslations } from "next-intl";
 import { fetchPublicApi } from "@/lib/preview/public-api";
 import { qk } from "@/lib/qk";
-import { COLOR_TOKENS } from "@/lib/layer-colors";
+import { COLOR_TOKENS, awasOutlineFor, type MapTheme } from "@/lib/layer-colors";
 import { MAP_DOT_RADIUS_PX, MAP_DOT_STROKE_PX } from "@/lib/map-marker-chrome";
 import { TYPE_FLOOR_CLASS, TYPE_KICKER_CLASS } from "@/lib/type-floor";
 import {
@@ -131,7 +131,9 @@ export function NasaNrtOverlays({
   beforeId,
   popup,
   onPopupClose,
+  theme = "light",
 }: {
+  theme?: MapTheme;
   layers: NasaNrtLayerKey[];
   nasaDate: string;
   beforeId?: string;
@@ -207,7 +209,7 @@ export function NasaNrtOverlays({
               "circle-radius": MAP_DOT_RADIUS_PX,
               "circle-color": COLOR_TOKENS.awas,
               "circle-stroke-width": MAP_DOT_STROKE_PX,
-              "circle-stroke-color": COLOR_TOKENS.paper,
+              "circle-stroke-color": awasOutlineFor(theme),
             }}
           />
         </Source>

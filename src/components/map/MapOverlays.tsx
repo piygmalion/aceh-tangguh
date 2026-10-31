@@ -9,7 +9,7 @@ import { toFeatureCard } from "@/lib/feature-card";
 import { fetchOverlayGeojson } from "@/hooks/useOverlayGeojson";
 import { isStaticExport, withBasePath } from "@/lib/preview/env";
 import { qk } from "@/lib/qk";
-import { COLOR_TOKENS } from "@/lib/layer-colors";
+import { AWAS_HALO_WIDTH_PX, COLOR_TOKENS, awasOutlineFor, type MapTheme } from "@/lib/layer-colors";
 import { overlayIconImageId } from "@/lib/layer-icons";
 import {
   overlayCatalogEntry,
@@ -124,10 +124,12 @@ function OverlayVector({
   overlayKey,
   beforeId,
   iconsReady,
+  theme,
 }: {
   overlayKey: OverlayLayerKey;
   beforeId?: string;
   iconsReady: boolean;
+  theme: MapTheme;
 }) {
   const kind = overlayCatalogEntry(overlayKey)?.kind ?? "point";
   const color = overlayColor(overlayKey);
@@ -182,9 +184,10 @@ function OverlayVector({
             paint={{
               "circle-color": ["coalesce", ["get", "color"], color],
               "circle-radius": overlayKey === "maritimePorts" ? 7 : 6,
-              "circle-stroke-width": 1.5,
+              "circle-stroke-width": AWAS_HALO_WIDTH_PX,
+              // INS-47: AWAS → outline #111 (terang) / halo paper (gelap), dari token tema.
               "circle-stroke-color":
-                color === COLOR_TOKENS.awas ? COLOR_TOKENS.awasOutline : COLOR_TOKENS.paper,
+                color === COLOR_TOKENS.awas ? awasOutlineFor(theme) : COLOR_TOKENS.paper,
               "circle-opacity": 0.92,
             }}
           />
@@ -336,7 +339,9 @@ export function MapOverlays({
   popup,
   onPopupClose,
   iconsReady = false,
+  theme = "light",
 }: {
+  theme?: MapTheme;
   keys: OverlayLayerKey[];
   beforeId?: string;
   popup: OverlayHit | null;
@@ -359,6 +364,7 @@ export function MapOverlays({
             overlayKey={key}
             beforeId={beforeId}
             iconsReady={iconsReady}
+            theme={theme}
           />
         );
       })}

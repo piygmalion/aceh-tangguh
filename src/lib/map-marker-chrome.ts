@@ -1,6 +1,6 @@
 import type { Feature, Point } from "geojson";
 import type { BasemapId, MarkerLayerKey } from "@/lib/types";
-import { COLOR_TOKENS } from "@/lib/layer-colors";
+import { COLOR_TOKENS, type MapTheme } from "@/lib/layer-colors";
 import { isTruncatedAcehLongitude, isTruncatedCoordQuality } from "@/lib/coord-quality";
 import { TYPE_FLOOR_PX } from "@/lib/type-floor";
 
@@ -23,6 +23,11 @@ const LIGHT_CANVAS_BASEMAPS = new Set<BasemapId>([
  * and other light grey presets; ink reads on those canvases. Dark canvas and
  * imagery keep paper.
  */
+/** Tema peta dari basemap: kanvas terang → "light", selain itu "dark". */
+export function mapThemeForBasemap(basemap: BasemapId): MapTheme {
+  return LIGHT_CANVAS_BASEMAPS.has(basemap) ? "light" : "dark";
+}
+
 export function markerHaloStroke(basemap: BasemapId): string {
   return LIGHT_CANVAS_BASEMAPS.has(basemap)
     ? MAP_LIGHT_CANVAS_STROKE

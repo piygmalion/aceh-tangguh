@@ -20,6 +20,22 @@ export const COLOR_TOKENS = {
   teal: "#2F6B66",
 } as const;
 
+/**
+ * Outline/halo titik AWAS per tema peta (INS-47, keputusan UI/UX 31 Okt).
+ * Terang: outline #111 (sama dengan kartu). Gelap: halo paper #F7F7F4 1,5px,
+ * karena #C8102E di atas #1A1A17 hanya 2,96:1.
+ */
+export type MapTheme = "light" | "dark";
+export const AWAS_OUTLINE_BY_THEME: Record<MapTheme, string> = {
+  light: COLOR_TOKENS.awasOutline,
+  dark: COLOR_TOKENS.paper,
+};
+export const AWAS_HALO_WIDTH_PX = 1.5;
+
+export function awasOutlineFor(theme: MapTheme): string {
+  return AWAS_OUTLINE_BY_THEME[theme];
+}
+
 export type OfficialColorToken = (typeof COLOR_TOKENS)[keyof typeof COLOR_TOKENS];
 
 export const OFFICIAL_COLOR_HEX = new Set<string>(Object.values(COLOR_TOKENS));
