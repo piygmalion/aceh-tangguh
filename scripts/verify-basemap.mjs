@@ -1,22 +1,17 @@
 #!/usr/bin/env node
 /**
- * Smoke-check the CDNs the map depends on: Carto raster (default), EOX Sentinel tiles, STAC.
- * OpenFreeMap is optional — a failure there must not fail the probe.
- * Does not fail the product build — run manually or in CI as a health probe.
+ * Smoke-check imagery the map still fetches (EOX Sentinel) and STAC.
+ * The operational basemap is owned PMTiles. This probe does not request
+ * public OSM raster tiles or CARTO. A configured PMTiles URL is checked
+ * with HTTP Range; an unset URL is a skip, not a failure.
  */
-const cartoKey = (process.env.NEXT_PUBLIC_CARTO_API_KEY ?? "").trim();
+const pmtiles = (
+  process.env.NEXT_PUBLIC_BASEMAP_PMTILES_URL ??
+  process.env.NEXT_PUBLIC_ACEH_OSM_PMTILES ??
+  ""
+).trim();
+
 const required = [
-  cartoKey
-    ? {
-        name: "Carto positron raster (keyed)",
-        url: `https://a.basemaps.cartocdn.com/light_all/6/50/32.png?key=${encodeURIComponent(cartoKey)}`,
-        ok: (res, _buf, type) => res.ok && type.includes("image"),
-      }
-    : {
-        name: "OSM streets raster (Carto key unset)",
-        url: "https://tile.openstreetmap.org/6/50/32.png",
-        ok: (res, _buf, type) => res.ok && type.includes("image"),
-      },
   {
     name: "EOX Sentinel-2 cloudless tile z6",
     url: "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/6/50/32.jpg",
@@ -34,14 +29,6 @@ const required = [
     }),
     headers: { "Content-Type": "application/json" },
     ok: (res, buf) => res.ok && buf.includes("FeatureCollection"),
-  },
-];
-
-const optional = [
-  {
-    name: "OpenFreeMap positron style (optional)",
-    url: "https://tiles.openfreemap.org/styles/positron",
-    ok: (res, buf) => res.ok && buf.includes('"version"') && buf.includes("8"),
   },
 ];
 
@@ -64,14 +51,20 @@ for (const c of required) {
   }
 }
 
-for (const c of optional) {
+if (!pmtiles.startsWith("http")) {
+  console.log("skip PMTiles basemap (NEXT_PUBLIC_BASEMAP_PMTILES_URL unset)");
+} else {
   try {
-    const res = await fetch(c.url);
-    const buf = await res.clone().text();
-    const pass = c.ok(res, buf);
-    console.log(`${pass ? "ok " : "skip"} ${c.name}  HTTP ${res.status}`);
+    const res = await fetch(pmtiles, {
+      method: "GET",
+      headers: { Range: "bytes=0-16383" },
+    });
+    const pass = res.status === 206 || res.status === 200;
+    console.log(`${pass ? "ok " : "FAIL"} PMTiles basemap range  HTTP ${res.status}`);
+    if (!pass) failed += 1;
   } catch (err) {
-    console.log(`skip ${c.name}  ${err instanceof Error ? err.message : err}`);
+    failed += 1;
+    console.log(`FAIL PMTiles basemap range  ${err instanceof Error ? err.message : err}`);
   }
 }
 
@@ -79,4 +72,4 @@ if (failed) {
   console.error(`\n${failed} required check(s) failed`);
   process.exit(1);
 }
-console.log("\nRequired basemap CDNs reachable.");
+console.log("\nbasemap probe ok");

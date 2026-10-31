@@ -784,6 +784,14 @@ Kartu cuaca di bento beranda tidak lagi memakai kalimat kosong dan chip Normal k
 | --- | --- | --- | --- | --- |
 | FE-76 | frontend | kartu cuaca tidak tersedia | jurnal/FE-76.md | selesai |
 
+## BM-fallback — peta dasar PMTiles milik sendiri
+
+Basemap vektor `/peta` hanya arsip OpenMapTiles `aceh-osm.pmtiles`. Sekarang dibundel di Vercel: `public/tiles/aceh-osm.pmtiles` (45.552.256 byte, z0–14, ubin terbesar 150,4 KB) di-commit sebagai blob git biasa (tanpa LFS) dan dilayani di `/tiles/aceh-osm.pmtiles` dengan HTTP Range (206), `Cache-Control: public, max-age=86400, stale-while-revalidate=604800`. Pindah ke R2 nanti cukup lewat env `NEXT_PUBLIC_BASEMAP_PMTILES_URL` (alias lama `NEXT_PUBLIC_ACEH_OSM_PMTILES`), tanpa ubah kode. Ubin gagal dimuat: kanvas warna tema (`#F4F5F0` terang, `#1A1A17` gelap) dan pemberitahuan singkat; overlay tetap. Tidak ada Carto dan tidak ada ubin OSM publik. Ketentuan CARTO (https://carto.com/legal/basemap-terms/, 29 September 2026, pasal 3.b dan 8) serta FAQ (https://docs.carto.com/faqs/carto-basemaps) tidak mengizinkan pemakaian tanpa kunci dengan jelas. Air gelap tetap `#4D807B`. Glif Noto Sans di-host sendiri. Bangun lokal di `0d9bebd` menghasilkan `aceh-osm.pmtiles` 43,44 MB (45.552.256 byte).
+
+| id | agent | judul | jurnal | status |
+| --- | --- | --- | --- | --- |
+| BM-fallback | frontend | peta dasar PMTiles milik sendiri (bundel Vercel; R2 nanti via env) | jurnal/BM-fallback.md | diverifikasi |
+
 ## FE-77 — poles kartu Peringatan Dini beranda
 
 Poles tampilan bento PD: token AWAS Peudeung, urutan basi setelah segar, teks cuaca basi, baris `+N lainnya`, dan label kondisi BMKG di `/en`. Hanya tampilan; MAGMA fail-closed tidak disentuh.
