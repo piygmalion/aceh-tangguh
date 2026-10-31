@@ -23,6 +23,7 @@ import {
 import { TYPE_FLOOR_CLASS } from "@/lib/type-floor";
 import { cn } from "@/lib/utils";
 import { usePeringatan } from "./data";
+import { MotifKontur } from "@/components/brand/MotifKontur";
 import { StatusScaleChip } from "@/components/ui/StatusScaleChip";
 import { jamPendek, rapikanTanda, toneLevel, TONE_CHIP, TONE_DOT, TONE_EDGE } from "./format";
 import { PanelError, PanelSkeleton, SectionHeading } from "./primitives";
@@ -391,8 +392,9 @@ export function PeringatanBento() {
   const [utama, ...sisanya] = kartu;
 
   return (
-    <SectionShell id="status" density="spacious" className="relative z-40">
-      <div className="mx-auto max-w-6xl">
+    <SectionShell id="status" density="spacious" tone="paper" className="relative z-40 overflow-hidden">
+      <MotifKontur />
+      <div className="relative mx-auto max-w-6xl">
         <SectionHeading
           title={t("peringatan.title")}
           lead={t("peringatan.lead")}

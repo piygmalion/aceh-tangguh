@@ -291,21 +291,6 @@ export function DataHero() {
       data-section-density="spacious"
       className="section-y-spacious relative scroll-mt-24 overflow-hidden px-4 !pt-28 md:!pt-32"
     >
-      {onPhoto ? null : (
-        <div aria-hidden className="pointer-events-none absolute inset-0 text-[var(--ink)] opacity-[0.07]">
-          <svg className="h-full w-full" viewBox="0 0 1200 480" preserveAspectRatio="xMidYMid slice">
-            {[70, 130, 190, 250, 310, 370].map((y, index) => (
-              <path
-                key={y}
-                d={`M-40 ${y} C 160 ${y - 28 - index * 3}, 380 ${y + 22}, 620 ${y - 6} S 960 ${y + 16}, 1260 ${y - 10}`}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.25"
-              />
-            ))}
-          </svg>
-        </div>
-      )}
       <div className="relative mx-auto max-w-6xl">
         <div className={cn("relative", onPhoto && "pb-6 md:pb-8")}>
           <HeroPhotoBackdrop failed={photoFailed} onError={() => setPhotoFailed(true)} />

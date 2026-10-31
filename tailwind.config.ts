@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        display: "var(--font-display), ui-sans-serif, system-ui, sans-serif",
+      },
       fontSize: {
         display: "var(--type-display)",
         "page-h1": "var(--type-h1)",

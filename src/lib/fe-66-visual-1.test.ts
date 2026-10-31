@@ -9,7 +9,8 @@ const read = (rel: string) => readFileSync(path.join(ROOT, rel), "utf8");
 describe("FE-66 visual-1", () => {
   it("publishes the locked type scale and 390 section rhythm", () => {
     const css = read("src/app/globals.css");
-    assert.match(css, /--type-display:\s*clamp\(2\.5rem,\s*2rem \+ 2\.6vw,\s*4rem\)/);
+    assert.match(css, /--type-display:\s*clamp\(2\.5rem,\s*2rem \+ 2\.6vw,\s*3\.5rem\)/);
+    assert.match(css, /--font-display:\s*var\(--font-sans\)/);
     assert.match(css, /--type-h2:\s*2\.25rem/);
     assert.match(css, /--type-h2-sm:\s*1\.75rem/);
     assert.match(css, /--type-figure-xl:\s*2\.5rem/);

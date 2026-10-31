@@ -11,7 +11,7 @@ export function LaporCta() {
     <section
       id="partisipasi"
       data-section-density="compact"
-      className="section-y-compact scroll-mt-24 bg-[var(--primary)] text-[var(--primary-fg)]"
+      className="section-y-compact scroll-mt-24 bg-[var(--surface-brand)] text-[var(--primary-fg)]"
     >
       <div className="mx-auto flex max-w-6xl flex-col items-start gap-4 px-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <h2 className="type-h3 w-full sm:w-auto sm:min-w-0">
