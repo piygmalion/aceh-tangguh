@@ -152,17 +152,17 @@ Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
 
 `MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS. Set `NEXT_PUBLIC_TILES_BASE_URL` to serve the same filenames from S3/R2.
 
-Optional Aceh OSM basemap extract (brand presets only, never the default):
+Aceh vector basemap (owned PMTiles, not committed):
 
 ```
-npm run build:aceh-osm
+npm run build:basemap
 ```
 
-Writes `public/tiles/aceh-osm.pmtiles` (gitignored; Aceh bbox only — no planet). Point brand styles at it with `NEXT_PUBLIC_ACEH_OSM_PMTILES` or drop the file under `/tiles`. Opt-in upload: `bash scripts/sync-tiles-s3.sh --dry-run` (skips if S3 env is missing). See `docs/basemap.md`.
+Writes `public/tiles/aceh-osm.pmtiles` (gitignored; Aceh bbox only — no planet). Host it where HTTP Range works and set `NEXT_PUBLIC_BASEMAP_PMTILES_URL`. If that URL is unset, the map keeps the theme canvas and a short notice. See `scripts/basemap/README.md` and `docs/basemap.md`.
 
-## Basemap (Carto raster + Sentinel)
+## Basemap (owned PMTiles + Sentinel)
 
-The map uses MapLibre. **Simple / Dark** use Carto Positron/Dark raster only when `NEXT_PUBLIC_CARTO_API_KEY` is set (unkeyed Carto tiles are watermarked). Without a key they use OSM.org streets. OpenFreeMap vector is optional (`?vector=1`) and falls back to that same raster. Three brand style presets (Sederhana merek / Gelap merek / Abu-abu minimal) are additional options (`?basemap=brand-light` and siblings) — they are not the default. **Esri World Imagery** is the HD satellite option, and **EOX Sentinel-2 Cloudless 2024** is the Copernicus option (`?basemap=sentinel`). Markers are GPU-clustered GeoJSON (not HTML pins). Architecture and the Sentinel update path: `docs/basemap.md`.
+The map uses MapLibre. **Simple / Dark / Streets** and the three brand presets read one Aceh PMTiles archive (light and dark styles). They do not fetch public OSM raster tiles or CARTO. **Esri World Imagery** is the HD satellite option, and **EOX Sentinel-2 Cloudless 2024** is the Copernicus option (`?basemap=sentinel`). Markers are GPU-clustered GeoJSON (not HTML pins). Architecture and the Sentinel update path: `docs/basemap.md`.
 
 ```
 node scripts/verify-basemap.mjs

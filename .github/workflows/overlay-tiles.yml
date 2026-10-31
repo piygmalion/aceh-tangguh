@@ -70,5 +70,5 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Probe Carto / EOX / STAC (OpenFreeMap optional)
+      - name: Probe EOX / STAC (PMTiles range only if URL is set)
         run: npm run verify:basemap

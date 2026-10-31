@@ -26,13 +26,9 @@ import type {
   MarkerLayerKey,
   OverlayLayerKey,
 } from "@/lib/types";
-import { getBasemapStyle, isBrandBasemapId } from "@/lib/basemap";
+import { basemapCanvasColor, basemapOwnsVectorStyle, getBasemapStyle } from "@/lib/basemap";
 import { styleSourceAttributions } from "@/lib/map-sheet";
-import {
-  ACEH_OSM_PMTILES_FILENAME,
-  configuredAcehOsmPmtilesUrl,
-  overlayPmtilesUrl,
-} from "@/lib/tiles-url";
+import { basemapPmtilesUrl, overlayPmtilesUrl } from "@/lib/tiles-url";
 import type { FeatureCollection, Feature, Point } from "geojson";
 import { DISASTER_JENIS_COLORS } from "@/lib/disaster-jenis";
 import type { VillageClickSelection } from "@/lib/profil-desa";
@@ -65,6 +61,7 @@ import {
   isKecamatanAreaFeature,
   lodFocusFromSelection,
   overlayBeforeId,
+  statusOverlayBeforeId,
   rebucketVillageKabFeature,
   readVillageSelection,
   unionBounds,
@@ -178,6 +175,8 @@ function ensurePmtilesProtocol() {
   maplibregl.addProtocol("pmtiles", protocol.tile);
   pmtilesProtocolReady = true;
 }
+
+ensurePmtilesProtocol();
 
 const EMPTY_FC: FeatureCollection = { type: "FeatureCollection", features: [] };
 
@@ -576,7 +575,7 @@ export function MapViewport({
   view: MapViewState;
   onViewChange: (v: Partial<MapViewState>) => void;
   basemap: BasemapId;
-  /** Opt-in OpenFreeMap vector; Carto raster is the default and the fallback. */
+  /** Kept for older `?vector=1` links. It no longer selects a third-party style. */
   preferVector?: boolean;
   markerLayers: MarkerLayerKey[];
   areaLayer: AreaLayerKey | null;
@@ -646,41 +645,30 @@ export function MapViewport({
   const [vectorFailed, setVectorFailed] = useState(false);
   const [chromeIconsReady, setChromeIconsReady] = useState(false);
   const [overlaySlot, setOverlaySlot] = useState<string | undefined>();
+  const [statusSlot, setStatusSlot] = useState<string | undefined>();
   const villageClickEnabled = isAdminLodArea(areaLayer);
 
   const syncOverlayBeforeId = useCallback(() => {
     const map = mapRef.current?.getMap();
-    setOverlaySlot(
-      overlayBeforeId((id) => Boolean(map?.getLayer(id)))
-    );
+    const has = (id: string) => Boolean(map?.getLayer(id));
+    setOverlaySlot(overlayBeforeId(has));
+    setStatusSlot(statusOverlayBeforeId(has));
   }, []);
 
   useEffect(() => {
     ensurePmtilesProtocol();
   }, []);
 
+  const pmtilesUrl = basemapPmtilesUrl();
   useEffect(() => {
     setVectorFailed(false);
-  }, [basemap, preferVector]);
-
-  const acehOsmConfigured = configuredAcehOsmPmtilesUrl();
-  const acehOsmCandidate =
-    acehOsmConfigured ?? overlayPmtilesUrl(ACEH_OSM_PMTILES_FILENAME);
-  const { data: acehOsmPresent } = useQuery({
-    queryKey: ["pmtiles-exists", acehOsmCandidate],
-    queryFn: () => pmtilesExists(acehOsmCandidate),
-    enabled: isBrandBasemapId(basemap) && !acehOsmConfigured,
-    staleTime: 60_000,
-  });
+  }, [basemap, preferVector, pmtilesUrl]);
 
   const mapStyle = useMemo(() => {
-    return getBasemapStyle(basemap, {
-      preferVector: preferVector && !vectorFailed,
-      rasterFallback: vectorFailed,
-      acehOsmUrl: acehOsmConfigured,
-      localAcehOsmPresent: acehOsmConfigured ? undefined : acehOsmPresent === true,
-    });
-  }, [basemap, preferVector, vectorFailed, acehOsmConfigured, acehOsmPresent]);
+    return getBasemapStyle(basemap, { rasterFallback: vectorFailed });
+  }, [basemap, vectorFailed]);
+  const canvas = basemapCanvasColor(basemap);
+  const basemapUnavailable = basemapOwnsVectorStyle(basemap) && (!pmtilesUrl || vectorFailed);
   const basemapCredit = useMemo(() => styleSourceAttributions(mapStyle), [mapStyle]);
 
   const haloStroke = useMemo(() => markerHaloStroke(basemap), [basemap]);
@@ -1190,12 +1178,24 @@ export function MapViewport({
   }, []);
 
   return (
-    <div className="map-stage absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]">
+    <div
+      className="map-stage absolute inset-0 pt-24 pb-[4.25rem] md:pb-0 md:pr-[20.5rem]"
+      style={{ background: canvas }}
+    >
+      {basemapUnavailable ? (
+        <p
+          role="status"
+          data-basemap-notice=""
+          className="pointer-events-none absolute left-3 top-28 z-20 max-w-[18rem] rounded-md border border-[var(--border)] bg-[var(--bg-raised)] px-2.5 py-1.5 text-[0.8125rem] leading-snug text-[var(--text)]"
+        >
+          {t("basemapUnavailable")}
+        </p>
+      ) : null}
       <Map
         ref={mapRef}
         initialViewState={view}
         mapStyle={mapStyle as never}
-        style={{ width: "100%", height: "100%", background: "#d4dce4" }}
+        style={{ width: "100%", height: "100%", background: canvas }}
         cursor={cursor as never}
         interactiveLayerIds={[
           "marker-clusters",
@@ -1211,12 +1211,11 @@ export function MapViewport({
         onMouseLeave={() => setCursor("auto")}
         onMove={onMapMove}
         onMoveEnd={onMoveEnd}
-        onError={(e) => {
-          const msg = e.error?.message ?? "";
-          const allowFallback = preferVector || isBrandBasemapId(basemap);
-          if (allowFallback && !vectorFailed && /style|fetch|network|failed/i.test(msg)) {
-            setVectorFailed(true);
-          }
+        onError={(event) => {
+          const sourceId =
+            "sourceId" in event && typeof event.sourceId === "string" ? event.sourceId : undefined;
+          if (sourceId !== "openmaptiles") return;
+          setVectorFailed(true);
         }}
         attributionControl
         reuseMaps
@@ -1230,7 +1229,7 @@ export function MapViewport({
             <Layer
               id="krb-kawasan-circles"
               type="circle"
-              {...(overlaySlot ? { beforeId: overlaySlot } : {})}
+              {...(statusSlot ? { beforeId: statusSlot } : {})}
               paint={{
                 "circle-radius": 7,
                 "circle-color": COLOR_TOKENS.orange,
@@ -1352,7 +1351,7 @@ export function MapViewport({
         {overlays.length > 0 && (
           <MapOverlays
             keys={overlays}
-            beforeId={overlaySlot}
+            beforeId={statusSlot}
             popup={overlayPopup}
             onPopupClose={() => setOverlayPopup(null)}
             iconsReady={chromeIconsReady}
@@ -1362,7 +1361,7 @@ export function MapViewport({
           <NasaNrtOverlays
             layers={nasaLayers}
             nasaDate={resolvedNasaDate}
-            beforeId={overlaySlot}
+            beforeId={statusSlot}
             popup={nasaFirmsPopup}
             onPopupClose={() => setNasaFirmsPopup(null)}
           />

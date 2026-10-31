@@ -398,7 +398,7 @@ for (const filePath of files) {
 
 if (!sawAcehOsm && cliPaths.length === 0) {
   console.log(
-    `==> public/tiles/${ACEH_OSM_ARCHIVE}  skip (not built; npm run build:aceh-osm — local/manual, not CI)`,
+    `==> public/tiles/${ACEH_OSM_ARCHIVE}  skip (not built; npm run build:basemap — local/manual, not CI)`,
   );
   console.log("");
 }
