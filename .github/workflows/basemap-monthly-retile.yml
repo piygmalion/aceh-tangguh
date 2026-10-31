@@ -1,0 +1,94 @@
+# Monthly Aceh OSM basemap re-tile (Planetiler 0.9.0, OpenMapTiles schema).
+# Builds public/tiles/aceh-osm.pmtiles from the Geofabrik Indonesia extract
+# clipped to the Aceh bbox, gates it (< 50 MB, z0-14, no tile > 500 KB) and
+# opens/refreshes a DRAFT PR on bm/retile-YYYY-MM. Never auto-merges: a human
+# GO is required. Depends on #141 (file committed + un-ignored for the Vercel bundle).
+name: Basemap monthly re-tile
+
+on:
+  schedule:
+    # 1st of each month 19:00 UTC = 02:00 WIB (2nd)
+    - cron: "0 19 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: basemap-monthly-retile
+  cancel-in-progress: false
+
+jobs:
+  retile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install
+        run: |
+          npm ci
+          sudo apt-get update -y
+          sudo apt-get install -y osmium-tool
+
+      - name: Build Aceh PMTiles (Planetiler 0.9.0)
+        env:
+          PLANETILER_VERSION: "0.9.0"
+          ACEH_OSM_MAXZOOM: "14"
+          PLANETILER_XMX: "5g"
+        run: bash scripts/basemap/build-aceh-pmtiles.sh --force
+
+      - name: Gate (< 50 MB, z0-14, no tile > 500 KB)
+        run: node scripts/basemap/check-aceh-osm-retile.mjs public/tiles/aceh-osm.pmtiles
+
+      - name: Check file is trackable (needs #141)
+        id: trackable
+        run: |
+          if git check-ignore -q public/tiles/aceh-osm.pmtiles; then
+            echo "::warning::public/tiles/aceh-osm.pmtiles is still gitignored (merge #141 first). Skipping PR."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "month=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
+          echo "summary=$(node scripts/basemap/check-aceh-osm-retile.mjs public/tiles/aceh-osm.pmtiles | head -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Open / refresh draft PR
+        if: steps.trackable.outputs.ok == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: bm/retile-${{ steps.trackable.outputs.month }}
+          add-paths: public/tiles/aceh-osm.pmtiles
+          commit-message: "BM: re-tile basemap Aceh OSM ${{ steps.trackable.outputs.month }}"
+          title: "BM: re-tile basemap Aceh ${{ steps.trackable.outputs.month }} (draft)"
+          draft: true
+          labels: basemap, draft
+          body: |
+            Re-tiling bulanan otomatis (Planetiler 0.9.0, Geofabrik Indonesia dipotong ke bbox Aceh).
+
+            Hasil gate: `${{ steps.trackable.outputs.summary }}`
+
+            PR ini draft dan **tidak pernah di-merge otomatis**. Butuh GO dari Pygmalion.
+
+      # Optional R2 upload (DISABLED: R2 belum aktif). Enable once the bucket exists
+      # and repo secrets CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID are set.
+      # - name: Upload to R2
+      #   if: steps.trackable.outputs.ok == 'true'
+      #   env:
+      #     CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      #     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      #   run: |
+      #     npx -y wrangler@latest r2 object put \
+      #       "aceh-tangguh-basemap/aceh-osm-${{ steps.trackable.outputs.month }}.pmtiles" \
+      #       --file public/tiles/aceh-osm.pmtiles --content-type application/vnd.pmtiles --remote
