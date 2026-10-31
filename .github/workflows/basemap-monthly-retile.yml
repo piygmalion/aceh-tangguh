@@ -52,20 +52,13 @@ jobs:
       - name: Gate (< 50 MB, z0-14, no tile > 500 KB)
         run: node scripts/basemap/check-aceh-osm-retile.mjs public/tiles/aceh-osm.pmtiles
 
-      - name: Check file is trackable (needs #141)
+      - name: Summary
         id: trackable
         run: |
-          if git check-ignore -q public/tiles/aceh-osm.pmtiles; then
-            echo "::warning::public/tiles/aceh-osm.pmtiles is still gitignored (merge #141 first). Skipping PR."
-            echo "ok=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "ok=true" >> "$GITHUB_OUTPUT"
-          fi
           echo "month=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
           echo "summary=$(node scripts/basemap/check-aceh-osm-retile.mjs public/tiles/aceh-osm.pmtiles | head -1)" >> "$GITHUB_OUTPUT"
 
       - name: Open / refresh draft PR
-        if: steps.trackable.outputs.ok == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           branch: bm/retile-${{ steps.trackable.outputs.month }}
@@ -84,7 +77,6 @@ jobs:
       # Optional R2 upload (DISABLED: R2 belum aktif). Enable once the bucket exists
       # and repo secrets CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID are set.
       # - name: Upload to R2
-      #   if: steps.trackable.outputs.ok == 'true'
       #   env:
       #     CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       #     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

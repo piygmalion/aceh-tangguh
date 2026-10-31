@@ -12,9 +12,9 @@
 # osmium, then runs Planetiler. The rectangle is the app's operational
 # envelope (src/lib/aceh-scope.ts), not a claim of the legal provincial border.
 #
-# Output is gitignored. Host it yourself (Cloudflare R2 or another CDN that
-# allows HTTP Range) and set NEXT_PUBLIC_BASEMAP_PMTILES_URL. Do not commit
-# the .pmtiles file. Expected size at z14 is on the order of tens of MB;
+# Output is committed and bundled by Vercel (must stay < 50 MB; served with
+# HTTP Range). Optionally host it on R2/CDN and set
+# NEXT_PUBLIC_BASEMAP_PMTILES_URL. Expected size at z14 is on the order of tens of MB;
 # the journal records a measured size when a build is run.
 #
 #   npm run build:basemap
@@ -99,5 +99,4 @@ fi
 
 echo "==> Header + OpenMapTiles source-layers (overlay size gates do not apply)"
 node "$ROOT/scripts/check-tiles.mjs" "$OUT"
-echo "Host the file with HTTP Range and set NEXT_PUBLIC_BASEMAP_PMTILES_URL to its public URL."
-echo "Do not commit $OUT."
+echo "Commit $OUT (Vercel bundle, < 50 MB) or host it with HTTP Range and set NEXT_PUBLIC_BASEMAP_PMTILES_URL."
