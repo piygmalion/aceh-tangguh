@@ -4,13 +4,19 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -30,6 +36,19 @@ jobs:
 
       - name: Unit tests
         run: npm test
+
+      - name: Fondasi lokal tanpa produksi
+        run: |
+          node scripts/ci/check-migration-repeats.mjs
+          node scripts/ci/check-dibi-fixture.mjs
+          node scripts/ci/check-freshness-contract.mjs
+          node scripts/ci/check-aceh-osm-budget.mjs
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke Range ubin loopback
+        run: node scripts/ci/smoke-local-tiles.mjs
 
       - name: Marker kab PIP (report-only)
         continue-on-error: true
