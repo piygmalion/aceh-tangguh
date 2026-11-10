@@ -49,7 +49,9 @@ describe("FE-67 visual-2", () => {
     assert.match(bars, /fontSize="13"/);
     assert.match(bars, /index % 2 === 0/);
     assert.match(bars, /max-sm:pr-16/);
-    assert.match(hero, /opacity-\[0\.07\]/);
+    assert.match(read("src/app/globals.css"), /--motif-opacity:\s*0\.07/);
+    assert.match(read("src/components/beranda/PeringatanBento.tsx"), /<MotifKontur \/>/);
+    assert.doesNotMatch(hero, /opacity-\[0\.07\]/);
     assert.doesNotMatch(hero, /AreaChart/);
     assert.doesNotMatch(bars, /#C8102E|#c8102e/);
   });

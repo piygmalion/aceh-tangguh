@@ -111,6 +111,13 @@ html[data-theme="light"] {
   --chart-5: #e8e8e8;
   --chart-surface: #ffffff;
   --chart-grid: #e8e8e8;
+  /* Surface roles. Same hex as paper / raised / ink / brand. No new colour. */
+  --surface-paper: #f7f7f7;
+  --surface-raised: #ffffff;
+  --surface-ink: #111111;
+  --surface-brand: #c8102e;
+  /* Contour ink at 7% (within 6–8%). Decorative only. */
+  --motif-opacity: 0.07;
   --chart-bar: #c8102e;
   --chart-bar-neutral: #111111;
 
@@ -146,10 +153,12 @@ html[data-theme="light"] {
 
   --type-floor: 0.8125rem;
   --type-kicker-tracking: 0.06em;
-  --type-display: clamp(2.5rem, 2rem + 2.6vw, 4rem);
+  /* Display face is Plus Jakarta Sans already loaded as --font-sans. No new webfont. */
+  --font-display: var(--font-sans);
+  --type-display: clamp(2.5rem, 2rem + 2.6vw, 3.5rem);
   --type-display-tracking: -0.03em;
   --type-display-leading: 1.05;
-  --type-hero-display-max: 4rem;
+  --type-hero-display-max: 3.5rem;
   --type-hero-leading: 1.05;
   --type-h1: 3rem;
   --type-h1-sm: 2rem;
@@ -227,6 +236,10 @@ html[data-theme="dark"],
   --chart-5: #2a2a2a;
   --chart-surface: #0a0a0a;
   --chart-grid: #2a2a2a;
+  --surface-paper: #0a0a0a;
+  --surface-raised: #1a1a1a;
+  --surface-ink: #111111;
+  --surface-brand: #c8102e;
   /* #c8102e is 2.96:1 on --bg-raised (#1a1a1a). #f25563 clears 5.18:1. */
   --chart-bar: #f25563;
   /* #d4d4d4 on #1a1a1a is 11.74:1. */
@@ -271,14 +284,15 @@ body {
 
 @media (max-width: 639px) {
   :root,
-  html[data-theme="light"] {
+  html[data-theme="light"],
+  html[data-theme="dark"] {
     --section-y-compact: 2rem;
     --section-y: 3.5rem;
     --section-y-spacious: 4.5rem;
   }
 }
 
-/* Product chrome type — 13px floor, display clamp to 4rem, PJS 800 */
+/* Product chrome type — 13px floor, display clamp to 3.5rem, PJS 800 */
 .type-floor {
   font-size: var(--type-floor);
 }
@@ -325,11 +339,18 @@ body {
 
 .type-display,
 .type-hero-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   font-size: var(--type-display);
   font-weight: 800;
   line-height: var(--type-display-leading);
   letter-spacing: var(--type-display-tracking);
   text-wrap: balance;
+}
+
+.motif-kontur {
+  color: var(--ink);
+  opacity: var(--motif-opacity);
+  pointer-events: none;
 }
 
 .type-h1,

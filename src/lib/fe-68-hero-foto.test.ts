@@ -133,8 +133,8 @@ describe("FE-68 hero photo", () => {
     const hero = read("src/components/beranda/DataHero.tsx");
     assert.match(hero, /heroBackgroundMode/);
     assert.match(hero, /setPhotoFailed\(true\)/);
-    assert.match(hero, /opacity-\[0\.07\]/);
-    assert.match(hero, /onPhoto \? null :/);
+    assert.doesNotMatch(hero, /MotifKontur/);
+    assert.doesNotMatch(hero, /opacity-\[0\.07\]/);
     const bars = read("src/components/beranda/YearBars.tsx");
     assert.match(bars, /bg-\[var\(--chart-surface\)\]/);
     assert.match(bars, /rounded-2xl bg-\[rgba\(17,17,17,0\.66\)\]/);

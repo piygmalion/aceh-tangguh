@@ -12,8 +12,8 @@ export const TYPE_FLOOR_REM = 0.8125;
 /** Uppercase kicker / toolbar tracking at the type floor. */
 export const TYPE_KICKER_TRACKING_EM = 0.06;
 
-/** Hero display: clamp(2.5rem, 2rem + 2.6vw, 4rem), weight 800, tracking -0.03em. */
-export const TYPE_HERO_DISPLAY_MAX_REM = 4;
+/** Hero display: clamp(2.5rem, 2rem + 2.6vw, 3.5rem), weight 800, tracking -0.03em. */
+export const TYPE_HERO_DISPLAY_MAX_REM = 3.5;
 export const TYPE_HERO_LEADING = 1.05;
 export const TYPE_DISPLAY_MIN_REM = 2.5;
 export const TYPE_DISPLAY_TRACKING_EM = -0.03;
