@@ -22,7 +22,8 @@ Sumber jadwal di `main` (`ac41a04331c72639f015b3380b361985fd4c0938`):
 | --- | --- | --- |
 | `.github/workflows/daily-brief.yml` | `0 0 * * *` | 07.00 WIB, setiap hari |
 | `.github/workflows/dibi-refresh.yml` | `0 2 * * 1-5` | 09.00 WIB, Senin–Jumat |
-| `.github/workflows/laporan-wa.yml` | `0 1 * * 1-5` | 08.00 WIB, Senin–Jumat |
+
+Workflow laporan WhatsApp tidak masuk tabel ini. Lihat bagian 4.
 
 ### Daily Brief
 
@@ -110,24 +111,13 @@ Usul, butuh OK Basemap, tidak diterapkan di sini:
 2. Jangan memasukkan blob PMTiles baru ke riwayat tiap bulan. PR bulanan cukup memuat hash, ukuran, dan baris hasil gate. Byte arsip bisa menjadi artefak Actions, atau objek R2 bila billing mengizinkan. Langkah unggah R2 di #151 masih dikomentari. Mengganti URL layan lewat `NEXT_PUBLIC_BASEMAP_PMTILES_URL` adalah perubahan Basemap terpisah dan butuh GO sendiri.
 3. Biarkan PR hasil re-tile sebagai draf. Tidak ada auto-merge.
 
-## 4. Laporan WA selalu skip
+## 4. Cron laporan WhatsApp — dikeluarkan dari ruang lingkup
 
-Dicatat saja. `LAPORAN_WA_URL` tidak diisi oleh PR ini.
+Keputusan Pak Pygmalion, 11 November 2026 pukul 01.02 WIB: cron laporan WhatsApp diabaikan dan dikeluarkan dari pengembangan sistem.
 
-`.github/workflows/laporan-wa.yml` melewati job `process-pending` bila `vars.LAPORAN_WA_URL` kosong (`if: vars.LAPORAN_WA_URL != ''`). Bila URL terisi tetapi `LAPORAN_CRON_SECRET` kosong, job tetap jalan lalu `exit 0` dengan pesan skip. Run yang dilihat berstatus `skipped` dan job-nya tidak punya langkah. Itu cocok dengan variabel URL yang kosong, bukan dengan secret kosong di dalam job yang sempat jalan.
+Cron dan otomasi laporan WhatsApp, termasuk `.github/workflows/laporan-wa.yml` dan `LAPORAN_WA_URL`, berstatus **dikeluarkan dari ruang lingkup atas keputusan pemilik**. Bukan pekerjaan. Bukan rekomendasi. Tidak ada usul untuk mengisi variabel itu, menyalakan antrian, atau membangun laporan WhatsApp.
 
-| Run | `createdAt` (UTC) | WIB | Kesimpulan |
-| --- | --- | --- | --- |
-| [42780318198](https://github.com/piygmalion/aceh-tangguh/actions/runs/42780318198) | 2026-11-10T08:08:33Z | 15.08 | skipped |
-| 42581573849 | 2026-11-09T07:47:49Z | 14.47 | skipped |
-| 42183392634 | 2026-11-06T07:49:21Z | 14.49 | skipped |
-| 41989874709 | 2026-11-05T07:48:56Z | 14.48 | skipped |
-| 41791935366 | 2026-11-04T07:23:30Z | 14.23 | skipped |
-| 41598382075 | 2026-11-03T07:45:07Z | 14.45 | skipped |
-| 41406710429 | 2026-11-02T07:30:15Z | 14.30 | skipped |
-| 41016917117 | 2026-10-30T06:55:14Z | 13.55 | skipped |
-
-Jadwal yang ditulis 08.00 WIB juga telat, pola yang sama dengan bagian 2. Antrian WhatsApp tidak diproses selama variabel itu kosong. Mengisinya nanti adalah keputusan pemilik dan OK Backend, di luar repo: nama variabel sudah ada di `docs/vercel.md`. Jangan menaruh nilainya di git.
+PR ini tidak mengisi `LAPORAN_WA_URL` dan tidak mengubah workflow, env, atau jadwal yang sudah jalan. Berkas yang sudah ada dibiarkan apa adanya.
 
 ## 5. Timeout refresh Tatonas pukul 00.15
 
@@ -149,7 +139,7 @@ Cara memantau tanpa menulis produksi: jalankan uji modul ini di CI (sudah lewat 
 ## Yang sengaja tidak berubah
 
 - Ekspresi `cron` dan berkas workflow lain.
-- `vercel.json`, nama variabel lingkungan, secret, dan `LAPORAN_WA_URL`.
+- `vercel.json`, nama variabel lingkungan, dan secret. `LAPORAN_WA_URL` tetap kosong; cron laporan WhatsApp di luar ruang lingkup (bagian 4).
 - Migrasi dan basis data hidup.
 - Cabang serta PR #151, #153, #154, dan #155.
 - Isi fixture, ubin, dan angka korban atau kode perangkat Tatonas.

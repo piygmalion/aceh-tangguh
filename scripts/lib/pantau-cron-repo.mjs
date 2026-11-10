@@ -10,11 +10,6 @@ export function scheduledCronLines(yaml) {
   return [...yaml.matchAll(CRON_LINE)].map((match) => match[1]);
 }
 
-export function jobSkipsWhenVarEmpty(yaml, varName) {
-  if (typeof yaml !== "string" || typeof varName !== "string" || varName === "") return false;
-  return yaml.includes(`vars.${varName} != ''`);
-}
-
 /**
  * Jam dan menit WIB sebagai "HH.mm". Stempel masukan tetap UTC (ISO).
  */

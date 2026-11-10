@@ -6,7 +6,6 @@ import {
   delayMinutes,
   formatWibHm,
   isTatonasRefreshTimeout,
-  jobSkipsWhenVarEmpty,
   scheduledCronLines,
 } from "./pantau-cron-repo.mjs";
 
@@ -20,13 +19,6 @@ describe("jadwal cron yang di-commit", () => {
   it("mengunci Daily Brief pada 07.00 WIB dan DIBI pada hari kerja", () => {
     assert.deepEqual(scheduledCronLines(read(".github/workflows/daily-brief.yml")), ["0 0 * * *"]);
     assert.deepEqual(scheduledCronLines(read(".github/workflows/dibi-refresh.yml")), ["0 2 * * 1-5"]);
-    assert.deepEqual(scheduledCronLines(read(".github/workflows/laporan-wa.yml")), ["0 1 * * 1-5"]);
-  });
-
-  it("melewati laporan WA bila variabel URL kosong", () => {
-    const yaml = read(".github/workflows/laporan-wa.yml");
-    assert.equal(jobSkipsWhenVarEmpty(yaml, "LAPORAN_WA_URL"), true);
-    assert.match(yaml, /LAPORAN_CRON_SECRET not set/);
   });
 
   it("mencatat batas waktu Tatonas di sumber, tanpa mengubah rute", () => {
