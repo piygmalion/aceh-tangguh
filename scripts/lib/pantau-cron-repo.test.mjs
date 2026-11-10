@@ -16,9 +16,12 @@ function read(rel) {
 }
 
 describe("jadwal cron yang di-commit", () => {
-  it("mengunci Daily Brief pada 07.00 WIB dan DIBI pada hari kerja", () => {
-    assert.deepEqual(scheduledCronLines(read(".github/workflows/daily-brief.yml")), ["0 0 * * *"]);
+  it("memindahkan Daily Brief ke pg_cron dan membiarkan DIBI pada hari kerja", () => {
+    assert.deepEqual(scheduledCronLines(read(".github/workflows/daily-brief.yml")), []);
+    assert.match(read(".github/workflows/daily-brief.yml"), /workflow_dispatch:/);
+    assert.match(read("supabase/migrations/20261111_daily_brief_pg_cron.sql"), /'0 0 \* \* \*'/);
     assert.deepEqual(scheduledCronLines(read(".github/workflows/dibi-refresh.yml")), ["0 2 * * 1-5"]);
+    assert.deepEqual(scheduledCronLines(read(".github/workflows/laporan-wa.yml")), ["0 1 * * 1-5"]);
   });
 
   it("mencatat batas waktu Tatonas di sumber, tanpa mengubah rute", () => {
