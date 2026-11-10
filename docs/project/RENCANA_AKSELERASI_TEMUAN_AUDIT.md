@@ -33,15 +33,17 @@ Arsip `public/tiles/aceh-osm.pmtiles` di `main` berukuran 45.552.256 byte. Satu 
 
 Jangan mengubah workflow #151 di PR ini.
 
-## (4) Cron laporan WhatsApp
+## (4) Cron laporan WhatsApp — dikeluarkan dari ruang lingkup
 
-`laporan-wa.yml` menjadwalkan `0 1 * * 1-5` (08.00 WIB, hari kerja). Job `process-pending` hanya jalan bila `vars.LAPORAN_WA_URL` tidak kosong. Empat run terakhir berkesimpulan `skipped`, termasuk 10 Nov 2026 `2026-11-10T08:08:33Z`. Nilai variabel tidak dibaca dan tidak diisi. Jangan mengisi env.
+Keputusan Pak Pygmalion, 11 November 2026, 01.02 WIB: cron laporan WhatsApp diabaikan dan dikeluarkan dari pengembangan sistem. Ini mencakup otomasi laporan WhatsApp dan semua yang berkaitan dengan `LAPORAN_WA_URL`, termasuk workflow `laporan-wa.yml`.
+
+Bukan temuan yang ditindaklanjuti, bukan usulan, bukan backlog, dan bukan pekerjaan. Variabel itu tidak diisi. Workflow, env, dan jadwal produksi tidak diubah dari PR ini.
 
 ## (5) Tatonas masuk daftar pemantauan
 
 Temuan audit: refresh Tatonas pukul 00.15 berakhir timeout. Log jam itu tidak dibuka pada giliran ini, jadi timeout tersebut belum dibuktikan ulang dari artefak. Yang ada di repo: Tatonas ikut `POST /api/cron/overlay-live`, dan ambang basi stasiun adalah `TATONAS_STALE_MS` (15 menit), bukan jadwal pukul 00.15. Tidak ada workflow terpisah bernama Tatonas.
 
-Tambahkan ke daftar pantau di rencana (bersama overlay, cuaca, DIBI, SiPongi, dan Daily Brief):
+Tambahkan ke daftar pantau di rencana (bersama overlay, cuaca, DIBI, SiPongi, dan Daily Brief). Cron laporan WhatsApp tidak masuk daftar ini.
 
 - jam refresh Tatonas, hasil HTTP, dan apakah melewati batas waktu rute;
 - bedakan timeout unduhan dari pos yang memang basi setelah 15 menit;
@@ -49,4 +51,6 @@ Tambahkan ke daftar pantau di rencana (bersama overlay, cuaca, DIBI, SiPongi, da
 
 ## Yang tetap ditunda
 
-Proteksi `main`, Bugbot, snapshot environment, hapus cabang basi, ubah SSO Vercel, nyalakan notifikasi PR ke WhatsApp, merge, dan deploy. Sama seperti bagian keputusan di rencana #155.
+Proteksi `main`, Bugbot, snapshot environment, hapus cabang basi, ubah SSO Vercel, merge, dan deploy. Sama seperti bagian keputusan di rencana #155.
+
+Cron laporan WhatsApp tidak ada di daftar tunda. Keputusan 11 November 2026, 01.02 WIB sudah mengeluarkannya dari ruang lingkup. Notifikasi PR ke WhatsApp juga tidak dihidupkan; itu larangan, bukan usulan pekerjaan.
