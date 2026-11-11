@@ -44,11 +44,12 @@ describe("BE-78 pg_cron overlay live refresh", () => {
     assert.doesNotMatch(sql, /Bearer [A-Za-z0-9_-]{8,}/);
   });
 
-  it("keeps the GitHub workflow as a fallback and names pg_cron as primary", () => {
+  it("keeps the GitHub workflow as a manual fallback and names pg_cron as primary", () => {
     const workflow = read(".github/workflows/overlay-live-refresh.yml");
     assert.match(workflow, /pg_cron is primary/);
-    assert.match(workflow, /cron: "\*\/15 \* \* \* \*"/);
     assert.match(workflow, /workflow_dispatch:/);
+    assert.match(workflow, /github\.event_name == 'workflow_dispatch'/);
+    assert.doesNotMatch(workflow, /^\s*-\s+cron:/m);
     assert.match(workflow, /Authorization: Bearer \$OVERLAY_CRON_SECRET/);
     assert.match(workflow, /vars\.OVERLAY_REFRESH_URL/);
   });

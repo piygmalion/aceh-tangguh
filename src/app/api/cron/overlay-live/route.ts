@@ -2,6 +2,7 @@ import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { refreshMaritimeForecasts } from "@/lib/maritime";
 import { refreshMaritimeWarnings } from "@/lib/peringatan-dini/maritim";
+import { overlayCronResponseStatus } from "@/lib/overlay-cron-status";
 import { refreshAllOverlayLive } from "@/lib/overlay-live";
 import { bearerMatches } from "@/lib/security/bearer";
 import { createServiceClient } from "@/lib/supabase/server";
@@ -38,20 +39,29 @@ export async function POST(request: Request) {
   revalidateTag("peringatan-sipongi");
   revalidateTag("peringatan-tatonas");
   const failed = result.layers.filter((layer) => !layer.ok);
-  return NextResponse.json({
-    refreshed: result.layers.filter((layer) => layer.ok).length,
-    failed: failed.length,
-    purged: result.purged,
+  const httpStatus = overlayCronResponseStatus({
     layers: result.layers,
-    maritime: {
-      ok: maritime.ok,
-      failed: maritime.failed,
-      codes: maritime.codes,
-    },
-    warnings: {
-      ok: warnings.ok,
-      source: warnings.source,
-      count: warnings.count,
-    },
+    maritimeOk: maritime.failed === 0,
+    warningsOk: warnings.ok,
   });
+  return NextResponse.json(
+    {
+      ok: httpStatus === 200,
+      refreshed: result.layers.filter((layer) => layer.ok).length,
+      failed: failed.length,
+      purged: result.purged,
+      layers: result.layers,
+      maritime: {
+        ok: maritime.ok,
+        failed: maritime.failed,
+        codes: maritime.codes,
+      },
+      warnings: {
+        ok: warnings.ok,
+        source: warnings.source,
+        count: warnings.count,
+      },
+    },
+    { status: httpStatus },
+  );
 }
