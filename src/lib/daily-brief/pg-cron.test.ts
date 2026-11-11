@@ -51,6 +51,17 @@ describe("migrasi pg_cron Daily Brief", () => {
     assert.doesNotMatch(sql, /OVERLAY_CRON_SECRET|WEATHER_CRON_SECRET/);
   });
 
+  it("instruksi penerapan tidak memuat nilai secret dan tidak mengulang ekstensi", () => {
+    const instruksi = read("docs/pengembangan/instruksi-terapkan-daily-brief-pg-cron.md");
+    assert.match(instruksi, /belum diterapkan/);
+    assert.match(instruksi, /daily_brief_cron_secret/);
+    assert.match(instruksi, /20261111_daily_brief_pg_cron\.sql/);
+    assert.match(instruksi, /Jangan ulangi `create extension`/);
+    assert.doesNotMatch(instruksi, /select\s+decrypted_secret/i);
+    assert.doesNotMatch(instruksi, /vault\.create_secret/);
+    assert.doesNotMatch(instruksi, /Bearer [A-Za-z0-9_-]{8,}/);
+  });
+
   it("service mengunci satu baris per brief_date dan mengklaim stempel kosong", () => {
     const service = read("src/lib/daily-brief/service.ts");
     const schema = read("supabase/migrations/20260926_daily_brief.sql");
