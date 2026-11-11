@@ -1,235 +1,93 @@
-# Aceh Tangguh
+# SIK Aceh
 
-MVP scaffold: mandum rimba-inspired homepage × Tanggapi-inspired map.
+**SIK Aceh** (Sistem Informasi Kebencanaan Aceh) adalah aplikasi web untuk peta, peringatan dini, dan laporan kejadian di Aceh.
 
-Inspired-by only. Does **not** copy AGPL Mandum source — patterns only, own implementation.
+Nama repositori dan paket tetap `aceh-tangguh`. Situs publik: [https://aceh-tangguh.vercel.app](https://aceh-tangguh.vercel.app). Label tampilan untuk token sumber `sik_aceh.db` adalah **Data Kejadian BPBA**. Id katalog `sik-aceh`, berkas `data/sik/sik_aceh.db`, dan prefiks id kejadian `SIK-` tidak diubah.
 
-## Stack
+## Arsitektur singkat
 
-- Next.js 14 + React 18 + TypeScript
-- Tailwind CSS 3
-- next-intl (id, en) with localized pathnames
-- MapLibre + react-map-gl + PMTiles
-- TanStack Query + Zod + lucide-react + Recharts
+Aplikasi berjalan sebagai Next.js di Vercel (region `sin1`). Perintah instal dan build di `vercel.json` adalah `npm ci` dan `npm run build`. Locale selalu berprefiks: `id` (bawaan) dan `en`.
 
-## Preview online (Vercel)
+Halaman ada di `src/app/[locale]`. Rute API ada di `src/app/api` (tanpa prefiks locale). Salinan antarmuka ada di `messages/id.json` dan `messages/en.json`.
 
-Objek preview publik adalah **Vercel** (Next.js Node + API routes), bukan GitHub Pages.
+Data domain (kejadian, lapisan, publikasi, laporan) dibaca dari Supabase proyek `whojoxrbcdyotrpolgav` bila env terpasang. Geometri tidak disimpan di PostGIS: poligon dan titik ada di `public/fixtures`, ubin vektor di `public/tiles`. Jika env kosong, kueri gagal, atau tabel kosong, loader jatuh ke fixture. Fixture staf (anggaran, PRRPKA) ada di `data/staff` dan hanya untuk sesi staf.
 
-Import repo di [vercel.com/new](https://vercel.com/new/import?s=https://github.com/piygmalion/aceh-tangguh) — langkah, env, dan URL cron: `docs/vercel.md`.
+Peta memakai MapLibre, react-map-gl, dan PMTiles. `vercel.json` tidak memasang cron. Penyegaran terjadwal ada di GitHub Actions (`.github/workflows/`). Inventaris rute yang dipelihara: [`security/attack-surface.md`](security/attack-surface.md).
 
-Jangan set `STATIC_EXPORT` / `GITHUB_PAGES` / `NEXT_PUBLIC_BASE_PATH` di Vercel.
+## Peta folder
 
-## Run (preview lokal)
+| Path | Isi |
+| --- | --- |
+| `src/` | Aplikasi: halaman, API, komponen, `src/lib`, `src/i18n/routing.ts` |
+| `messages/` | Salinan Bahasa Indonesia dan Inggris |
+| `public/fixtures/`, `public/tiles/`, `public/media/` | Geometri, ubin, media. `public/docs/` hanya PDF yang disajikan situs, bukan pohon dokumentasi |
+| `data/staff/` | Fixture staf |
+| `data/sik/` | Petunjuk berkas lokal. `sik_aceh.db` tidak di-commit |
+| `data/drive-clean/` | Salinan kerja sheet. Tidak ditulis ke Supabase dari folder ini |
+| `scripts/` | Impor, ubin, cuaca, dan SIK. Path dipanggil `package.json` dan Actions |
+| `supabase/migrations/` | Skema SQL. Berkas yang sudah ada tidak disunting |
+| `.github/workflows/` | Job `quality` dan cron |
+| `docs/` | Dokumentasi per topik. Indeks: [`docs/README.md`](docs/README.md) |
+| `security/` | Inventaris permukaan dan aturan uji Strix. Path ini dibaca uji |
+| `.cursor/` | Aturan dan skill agen Cursor |
 
-```
-npm install
+Path berikut tidak dipindah karena dipakai Vercel, CI, cron, rute, env, atau uji: `vercel.json`, `docs/vercel.md`, `.env.example`, `.env.production`, `src/app/api/`, `src/i18n/routing.ts`, `scripts/*` yang disebut `package.json` atau workflow, dan `security/attack-surface.md`.
+
+Ubin yang terlacak git: `public/tiles/aceh-osm.pmtiles`, `irbi-2025.pmtiles`, `kecamatan-r3p.pmtiles`, `village-r3p.pmtiles`. Scratch bangun ada di `public/tiles/_osm-src/` dan tidak di-commit.
+
+## Menjalankan
+
+Perlu Node 22 (`.nvmrc`). CI dan Vercel memakai npm serta `package-lock.json`. Berkas `bun.lock` ada di repo dan bukan jalur CI.
+
+```bash
+npm ci
 npm run dev
 ```
 
-Buka http://localhost:3000/id — hard refresh jika UI terlihat usang.
+Buka [http://localhost:3000/id](http://localhost:3000/id). Padanan Inggris: [http://localhost:3000/en](http://localhost:3000/en).
 
-Build Node: `npm run build` lalu `npm run start`.
+```bash
+npm run build
+npm run start
+npm run lint
+npm run typecheck
+npm test
+```
 
-## GitHub Pages (dimatikan)
+Salin `.env.example` ke `.env.local` untuk admin dan tulis laporan. Nama secret hanya ada di contoh itu. Jangan commit `.env.local`, kunci service role, atau token cron. Tanpa env, banyak loader memakai fixture.
 
-Deploy otomatis GitHub Pages dinonaktifkan. Situs `https://piygmalion.github.io/aceh-tangguh/` tidak lagi di-update dari CI dan tidak dipakai sebagai preview.
+Pratinjau publik adalah Vercel, bukan GitHub Pages. Jangan set `STATIC_EXPORT`, `GITHUB_PAGES`, atau `NEXT_PUBLIC_BASE_PATH` di proyek Vercel. Langkah env dan URL cron: [`docs/vercel.md`](docs/vercel.md).
 
-Pipeline static export (`STATIC_EXPORT=1 npm run build` → `out/`) tetap ada di repo untuk nanti, jika Pages dihidupkan lagi.
-
-
-## Supabase backend
-
-Project: `whojoxrbcdyotrpolgav` (`https://whojoxrbcdyotrpolgav.supabase.co`).
-
-1. Copy `.env.example` → `.env.local` and set:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (legacy anon JWT for `@supabase/supabase-js`)
-   Vercel production already reads these from `.env.production` (project `whojoxrbcdyotrpolgav`).
-2. Install & build:
-   ```
-   bun install
-   bun run build
-   ```
-3. Schema documentation: `supabase/migrations/20260823_init_aceh_tangguh_backend.sql`
-4. Staff admin (`/id/admin`): apply `supabase/migrations/20260825_admin_auth.sql` then create the first `super_admin` manually — see `docs/admin-setup.md`. Laporan writes (not the admin UI) need `SUPABASE_SERVICE_ROLE_KEY` on the Node server (Vercel env, never `NEXT_PUBLIC_*` and never GitHub Pages).
-5. Seed area feature metadata from fixtures (needs service role or SQL admin; anon is SELECT-only on `area_feature_meta`):
-   ```
-   bun run seed:area-meta
-   ```
-   `villageDistribution` is not included there. Geometry is rebuilt from Geoportal Aceh `Peta_Administrasi_Desa` + `data-bencana-aceh` `profil_desa` (`npm run build:village-geoportal`). Seed `area_feature_meta` only for the intersection of GeoJSON 10-digit `properties.kode_desa_kelurahan` ∩ coded `profil_desa` rows (join on that kode, never `feature.id`). Do **not** run `--apply` against production until the coordinator reviews:
-   ```
-   npm run seed:village-area-meta -- --dry-run
-   npm run seed:village-area-meta -- --apply
-   ```
-   Refresh `profil_desa` counts from the coordinator Google Sheet (join on 10-digit `kode_desa_kelurahan` only; dry-run default; never insert or fill the 4 null-kode rows). Do **not** run `--apply` against production until the coordinator reviews — Backend only:
-   ```
-   npm run update:profil-sheet
-   npm run update:profil-sheet -- --apply
-   ```
-
-Geometry stays in `public/fixtures` + `public/tiles` (PMTiles). Domain JSON (kejadian, markers, publikasi, IRBI analysis) is read from Supabase first; loaders fall back to fixtures if env is missing, a query fails, or the table is empty. Anggaran and PRRPKA fixtures live in `data/staff/` and are served only to a staff session (`GET /api/anggaran`, `/api/prrpka/summary`, `/api/r3p/summary` return 401 without one). There is no public homepage PRRPKA section.
-
-### API endpoints
-
-| Method | Path | Source |
-|--------|------|--------|
-| GET/POST | `/api/reports` | **410 Gone** — use `/api/laporan/*`; staff legacy rows via `/api/admin/reports` |
-| GET/PATCH | `/api/admin/reports` | Staff JWT — legacy `reports` |
-| GET/PATCH | `/api/admin/laporan` | Staff JWT — `laporan_kejadian` / `laporan_penanganan` |
-| POST | `/api/laporan/kejadian` | Service role insert after Zod + rate limit |
-| POST | `/api/laporan/penanganan` | Service role insert after Zod + rate limit |
-| POST | `/api/laporan/upload` | Service role storage; magic-byte MIME; rate limit |
-| GET | `/api/admin/me` | Session + `admin_profiles` |
-| GET/POST/PATCH/DELETE | `/api/admin/cms/*` | Super-admin CMS |
-| GET/PATCH | `/api/admin/database` | Super-admin typed table editor |
-| GET | `/api/stats/live` | `live_stats` (+ 24h report count) |
-| GET | `/api/peringatan-dini` | Homepage early-warning cards (cuaca + MAGMA + Sipongi + Tatonas; fail independently) |
-| GET | `/api/peringatan-dini/magma` | MAGMA Indonesia Aceh gempa (live homepage / VSI homepage; empty+stale if both fail) |
-| GET | `/api/peringatan-dini/sipongi` | Sipongi Aceh medium/high hotspots (live GeoJSON, else `peringatan-sipongi.json`) |
-| GET | `/api/peringatan-dini/tatonas` | Tatonas Aceh hydrology stations (live dt_data XHR, else stale `peringatan-tatonas.json`) |
-| GET | `/api/layers/catalog` | enabled `map_layers` merged with local toolbar catalog (`src/lib/map-layers-catalog.ts`) |
-| GET | `/api/layers/meta/[layerKey]` | `area_feature_meta` |
-| GET | `/api/irbi` | `irbi_documents` / fixture + optional `area_feature_meta` merge |
-| GET | `/api/krb` | Kawasan Rawan Bencana Aceh (`krb_*` tables, else `krb-aceh.json`); filter `?jenis=` `?kabupaten=` `?kelas=` |
-| GET | `/api/layers/areas/[key]` | GeoJSON fixtures (polygons stay on disk) |
-| GET | `/api/layers/markers` | `marker_features` → GeoJSON, else fixture; merges overlay `laporanKejadian` / `laporanPenanganan` |
-| GET | `/api/laporan/peta` | Moderated `laporan_kejadian` + `laporan_penanganan` (`status=approved` AND `tampil_di_peta`; no `jawaban_json`) |
-| GET | `/api/layers/markers/summary` | Same as markers (debug counts) |
-| GET | `/api/boundaries` | GeoJSON fixtures |
-| GET | `/api/kejadian` | `kejadian_bencana` (filter/paginate), else fixture |
-| GET | `/api/kejadian/[id]` | Single event detail |
-| GET | `/api/anggaran` | Staff only — `anggaran_analisis` + `anggaran_kegiatan`, else `data/staff` fixture. Anonymous: 401 |
-| GET | `/api/publikasi` | `publikasi` + `publikasi_meta`, else fixture |
-| GET | `/api/prrpka/summary` | Staff only — PRRPKA fixtures in `data/staff`. Anonymous: 401 |
-| GET | `/api/r3p/summary` | Staff only — same PRRPKA payload (legacy path). Anonymous: 401 |
-| GET | `/api/dibi/aceh` | Live BNPB DIBI Superset (Aceh-only), else `dibi-aceh.json` |
-| GET | `/api/weather` | 23 kab/kota forecasts (BMKG / Open-Meteo + `weather-snapshot.json`) |
-| GET | `/api/weather/inovasi` | Experimental WeatherNext 3 context only — not official BMKG; empty if unconfigured |
-| GET | `/api/profil-desa/kecamatan` | Supabase `profil_desa` kecamatan aggregate (`?kabupaten=&kecamatan=` or `?kode_kecamatan=`) |
-| GET | `/api/profil-desa/desa` | Single desa (`?kode=` or `?id=`) |
-| GET | `/api/profil-desa/kabupaten` | Optional kabupaten rollup (`?kabupaten=` or `?kode_kabupaten=`) |
-
-Homepage **Peringatan Dini** (`#status`) summarises existing weather plus live MAGMA / Sipongi feeds. Refresh snapshots with `npm run refresh:peringatan` — the script writes only what the official feeds return and never invents events.
-
-## Screens
+## Rute yang sering dibuka
 
 | Locale | Path |
-|--------|------|
-| id | `/id/admin` staff dashboard (login at `/id/admin/login`); recovery funding at `/id/admin/anggaran` |
-| id | `/id` homepage |
-| id | `/id/peta` map |
-| id | `/id/lapor` report form |
-| id | `/id/data-bencana` disaster events table |
-| id | `/id/sumber-data` data sources |
-| id | `/id/metodologi` methodology |
-| en | `/en/disaster-data`, `/en/data-sources`, `/en/methodology` (localized pathnames) |
+| --- | --- |
+| id | `/id` beranda, `/id/peta` peta, `/id/lapor` laporan |
+| id | `/id/data-bencana`, `/id/analisis-data`, `/id/sumber-data`, `/id/metodologi` |
+| id | `/id/admin` konsol staf (masuk di `/id/admin/login`) |
+| en | `/en/disaster-data`, `/en/disaster-analysis`, `/en/data-sources`, `/en/methodology` |
 
-## Rebuild PMTiles
+Daftar halaman dan API yang lebih lengkap ada di [`security/attack-surface.md`](security/attack-surface.md). Path terlokalisasi dikunci di `src/i18n/routing.ts`.
 
-Overlay vector tiles only (R3P / IRBI choropleth). **Carto raster stays the default basemap.**
+## Kontribusi
 
-Requires [tippecanoe](https://github.com/felt/tippecanoe) (`sudo apt install tippecanoe`). CI does **not** rebuild — it only checks already-committed archives.
+1. Cabang dari `main` terbaru.
+2. Jalankan `npm run lint`, `npm run typecheck`, dan `npm test` sebelum membuka PR.
+3. Judul dan deskripsi PR dalam Bahasa Indonesia.
+4. Jangan commit secret, fixture yang dihapus, atau `data/sik/sik_aceh.db`.
+5. Jangan mengarang kode perangkat Tatonas, zona KRB, atau angka korban. Aturan data: [`docs/pengembangan/00-protokol.md`](docs/pengembangan/00-protokol.md).
+6. Buka pull request. Jangan merge kecuali pemilik meminta.
 
-```
-bun run build:tiles
-# or: bash scripts/build-pmtiles.sh
-```
+Agen Cursor: [`AGENTS.md`](AGENTS.md).
 
-Per-tile size cap: **500 KB** (not the `.pmtiles` file size). Archive gates: `village-r3p.pmtiles` **under 4 MB**; `kecamatan-r3p.pmtiles` **under 2 MB**.
+## Dokumentasi
 
-```
-npm run check:tiles
-```
+Indeks per topik: [`docs/README.md`](docs/README.md).
 
-Outputs (tippecanoe `--layer` must match `MapViewport` `source-layer`):
-
-- `public/tiles/kecamatan-r3p.pmtiles` — `kecamatan` — from `fixtures/areas/kecamatanDistribution.geojson` (dissolve by `kode_kecamatan`)
-- `public/tiles/village-r3p.pmtiles` — `village` — from `fixtures/areas/villageDistribution.geojson` (simplified)
-- `public/tiles/irbi-2025.pmtiles` — `irbi` — from `fixtures/areas/irbi2025.geojson` (BNPB IRBI 2025 kab choropleth)
-
-`villageDistribution` / `r3pDistribution` LOD: click drill **kabupaten → kecamatan → desa**. Overview uses `r3pDistribution.geojson`. `r3p-kab.pmtiles` is retired. Rebuild the dissolve with `node scripts/dissolve-kecamatan-distribution.mjs` (requires shapely). Offline kab dissolve (`npm run dissolve:r3p-kab`) is deprecated and not part of `build:tiles`.
-
-`MapViewport` prefers these vector tiles when the files exist; otherwise it falls back to `/api/layers/areas/...` GeoJSON. Geometry stays on disk (fixtures + PMTiles), not PostGIS. Set `NEXT_PUBLIC_TILES_BASE_URL` to serve the same filenames from S3/R2.
-
-Aceh vector basemap (owned PMTiles, not committed):
-
-```
-npm run build:basemap
-```
-
-Writes `public/tiles/aceh-osm.pmtiles` (gitignored; Aceh bbox only — no planet). Host it where HTTP Range works and set `NEXT_PUBLIC_BASEMAP_PMTILES_URL`. If that URL is unset, the map keeps the theme canvas and a short notice. See `scripts/basemap/README.md` and `docs/basemap.md`.
-
-## Basemap (owned PMTiles + Sentinel)
-
-The map uses MapLibre. **Simple / Dark / Streets** and the three brand presets read one Aceh PMTiles archive (light and dark styles). They do not fetch public OSM raster tiles or CARTO. **Esri World Imagery** is the HD satellite option, and **EOX Sentinel-2 Cloudless 2024** is the Copernicus option (`?basemap=sentinel`). Markers are GPU-clustered GeoJSON (not HTML pins). Architecture and the Sentinel update path: `docs/basemap.md`.
-
-```
-node scripts/verify-basemap.mjs
-node scripts/refresh-sentinel-status.mjs
-```
-
-Deep-link Sentinel: `/id/peta?basemap=sentinel`.
-
-## IRBI 2025
-
-Rebuild kab GeoJSON + legend + raw fixture (exact name join 23/23 onto `r3pDistribution`):
-
-```
-python3 scripts/build-irbi-fixtures.py [/path/to/risiko_bencana_aceh_irbi_2025.json]
-```
-
-Homepage hero tabs: **Utama** · **Peta** · **Irbi 2025**. Map deep-link: `/id/peta?area=irbi2025&basemap=positron`. Analysis API: `GET /api/irbi`.
-
-
-## Data Utama (marker layers)
-
-Map toolbar **Data utama** (`groupMain`) has two expandable parents:
-
-1. `disasterEvents` — Kejadian bencana (`kejadian_bencana_aceh_lengkap.json`), with a jenis nest
-2. **Fasilitas Umum** (UI nest only, not a layer key) — `facHealth`, `facEducation`, `policeOffices`, `facGov`, `facReligious`
-
-Facility children keep their existing keys and `?layers=` URLs. Parent checkbox is on if any child is on; toggling the parent turns all five on or off.
-
-`missingPersons` / `tendPoints` / `poskos` were removed from the toolbar and from `markers.geojson`, but remain in the `MarkerLayerKey` union so old `?layers=` URLs still parse. They are seeded in `map_layers` with `enabled=false` (see `supabase/migrations/20260827_map_layers_live_registry.sql`).
-
-**Partisipasi** toolbar layers: `laporanKejadian` and `laporanPenanganan` (live query from `laporan_*` where `status = approved` AND `tampil_di_peta = true`). `citizenReports` is removed (helipad pattern): not in the toolbar or type union; `?layers=citizenReports` aliases to `laporanKejadian` and is rewritten away. Default URL layers: `disasterEvents,facHealth,laporanKejadian`. Layers stay empty until a moderator publishes a real laporan — no dummy fixture points. `/admin/moderasi` edits `laporan_kejadian` / `laporan_penanganan` (legacy `reports` remains a third tab).
-
-Live toolbar layers that must exist in `map_layers`: `facHealth`, `facEducation`, `policeOffices`, `facGov`, `facReligious` (Data utama → Fasilitas Umum nest), `infraRoadBridge`, `laporanKejadian`, `laporanPenanganan` (plus `disasterEvents`). There is no separate Fasilitas toolbar cluster. `helipad` and `starlink` were removed from the toolbar, fixtures, and `map_layers`. The catalog API falls back to `src/lib/map-layers-catalog.ts` so admin/catalog stays consistent even before the SQL seed is applied.
-
-Integer lon/lat (truncated GPS) are flagged `properties.coord_quality = "truncated_integer"` and `approx=true`. Do not invent decimals. Re-flag:
-
-```
-bun run flag:coords
-# or: node scripts/flag-truncated-coords.js --dry-run
-```
-
-`ACEH-2023-0005` (offshore Singkil epicentre ~1.91°N) is included on `disasterEvents` with `coord_quality=offshore_or_out_of_bbox` so the map count matches kejadian (427). The map does not clamp an Aceh bbox.
-
-After fixture changes, re-seed Supabase `marker_features` via the existing `upsert_marker_features` RPC (coordinator; requires `service_role`).
-
-### SIK Aceh master (`sik_aceh.db`)
-
-Optional enrichment of `kejadian_bencana` / `disasterEvents` from the local SIK SQLite. Geometry stays on disk; the `.db` is gitignored (`data/sik/sik_aceh.db`). Dry-run default. `--write-fixtures` is refused when GPS points disagree by more than ~100 m unless `--accept-gps-quarantine` is set; that flag keeps the existing GPS and records the quarantine count in `metadata.sik_merge.gpsConflicts`.
-
-```
-python3 scripts/import-sik-aceh.py
-python3 scripts/import-sik-aceh.py --write-fixtures
-python3 scripts/import-sik-aceh.py --write-fixtures --accept-gps-quarantine
-node scripts/seed-sik-supabase.mjs          # dry-run
-node scripts/seed-sik-supabase.mjs --apply  # coordinator only
-```
-
-Mapping and conflict rules: `scripts/sik/SCHEMA.md`. Do not run `--apply` against production until the coordinator reviews.
-
-Rebuild (does not run in CI; inputs under `/workspace/drive-aceh-data/`):
-
-```
-python3 scripts/build-main-markers.py          # dry-run counts
-python3 scripts/build-main-markers.py --write  # overwrite public/fixtures/markers.geojson
-node scripts/flag-truncated-coords.js          # re-flag integer coords
-```
-
-## Planning docs
-
-`/workspace/aceh-kebencanaan-*.md`
+- Deploy dan nama env: [`docs/vercel.md`](docs/vercel.md)
+- Admin staf: [`docs/admin-setup.md`](docs/admin-setup.md)
+- Laporan produksi: [`docs/laporan-production.md`](docs/laporan-production.md)
+- Basemap: [`docs/basemap.md`](docs/basemap.md)
+- Data Kejadian BPBA (berkas lokal): [`data/sik/README.md`](data/sik/README.md)
+- Protokol dan status tiket: [`docs/pengembangan/00-protokol.md`](docs/pengembangan/00-protokol.md), [`docs/pengembangan/STATUS.md`](docs/pengembangan/STATUS.md)
+- Keamanan: [`SECURITY.md`](SECURITY.md), [`docs/security/strix.md`](docs/security/strix.md)
