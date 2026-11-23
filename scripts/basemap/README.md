@@ -17,7 +17,7 @@ Geofabrik tidak menerbitkan ekstrak Sumatra. Indeks [asia.html](https://download
 | | |
 | --- | --- |
 | Path | `public/tiles/aceh-osm.pmtiles` |
-| Git | diabaikan (`.gitignore`). Jangan di-commit. |
+| Git | di-commit dan dibundel Vercel (wajib < 50 MB). Scratch `public/tiles/_osm-src/` diabaikan. |
 | Zoom | 0–14 (`ACEH_OSM_MAXZOOM`) |
 | Ukuran | puluhan MB pada z14 untuk klip Aceh. Angka terukur dicatat di jurnal `BM-fallback` bila bangun dijalankan. |
 
