@@ -20,9 +20,11 @@ describe("BE-29 daily brief cron and API", () => {
     assert.doesNotMatch(cron, /DAILY_BRIEF_CRON_SECRET:\s*[0-9a-fA-F]{16,}/);
   });
 
-  it("workflow is skip-if-unset and does not embed a secret value", () => {
+  it("workflow is manual, skip-if-unset, and does not embed a secret value", () => {
     const workflow = read(".github/workflows/daily-brief.yml");
-    assert.match(workflow, /0 0 \* \* \*/);
+    assert.match(workflow, /workflow_dispatch:/);
+    assert.match(workflow, /github\.event_name == 'workflow_dispatch'/);
+    assert.doesNotMatch(workflow, /^\s*-\s+cron:/m);
     assert.match(workflow, /vars\.DAILY_BRIEF_URL/);
     assert.match(workflow, /secrets\.DAILY_BRIEF_CRON_SECRET/);
     assert.doesNotMatch(workflow, /DAILY_BRIEF_CRON_SECRET:\s*[0-9a-fA-F]{16,}/);

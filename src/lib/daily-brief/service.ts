@@ -462,11 +462,21 @@ export async function enqueueAndSend(briefDate: string): Promise<{
   return { enqueued, sent, failed };
 }
 
+/** True when this Jakarta date was already claimed, unless the caller forces a resend. */
+export function dailyBriefSudahDikirim(
+  enqueuedAt: string | null | undefined,
+  force: boolean,
+): boolean {
+  if (force) return false;
+  return Boolean(enqueuedAt);
+}
+
 export async function runDailyBriefCron(options: { force?: boolean } = {}): Promise<{
   briefDate: string;
   created: boolean;
   sent: number;
   failed: number;
+  skipped: boolean;
 }> {
   const { todayJakartaYmd } = await import("@/lib/sik/kunci-statis");
   const briefDate = todayJakartaYmd();
@@ -479,12 +489,30 @@ export async function runDailyBriefCron(options: { force?: boolean } = {}): Prom
       .select("whatsapp_enqueued_at")
       .eq("brief_date", briefDate)
       .maybeSingle();
-    if (data?.whatsapp_enqueued_at) {
-      return { briefDate, created: false, sent: 0, failed: 0 };
+    if (dailyBriefSudahDikirim(data?.whatsapp_enqueued_at, false)) {
+      return { briefDate, created: false, sent: 0, failed: 0, skipped: true };
     }
   }
 
   const { created } = await upsertDailyBrief(briefDate, options);
+
+  if (!options.force) {
+    const claimed = await client
+      .from("daily_briefs")
+      .update({
+        whatsapp_enqueued_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("brief_date", briefDate)
+      .is("whatsapp_enqueued_at", null)
+      .select("id")
+      .maybeSingle();
+    if (claimed.error) throw new Error(claimed.error.message);
+    if (!claimed.data) {
+      return { briefDate, created: false, sent: 0, failed: 0, skipped: true };
+    }
+  }
+
   const { sent, failed } = await enqueueAndSend(briefDate);
-  return { briefDate, created, sent, failed };
+  return { briefDate, created, sent, failed, skipped: false };
 }

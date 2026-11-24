@@ -1,24 +1,25 @@
 name: Overlay live refresh
 
 on:
-  schedule:
-    # Fallback. pg_cron is primary (job overlay-live-refresh, every 15 minutes).
-    # GitHub may delay this schedule 2-6h, past the 2h ledger TTL (OVERLAY_WEATHER_LIKE_TTL_MS).
-    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# Fallback for POST /api/cron/overlay-live. pg_cron is primary.
-# Skip-if-unset (same pattern as weather-refresh.yml job refresh-supabase):
-# - job is skipped when vars.OVERLAY_REFRESH_URL is empty
-# - if OVERLAY_CRON_SECRET is empty, echo a skip message and exit 0
+# pg_cron is primary (job overlay-live-refresh, every 15 minutes).
+# This workflow is a manual fallback only. The */15 schedule was removed
+# so a filled OVERLAY_REFRESH_URL cannot run beside pg_cron.
+# Guard: the job runs only on workflow_dispatch.
+# Produksi tidak berubah sampai berkas ini ada di default branch.
+
+concurrency:
+  group: overlay-live-refresh
+  cancel-in-progress: false
 
 jobs:
   refresh-supabase:
     runs-on: ubuntu-latest
-    if: ${{ vars.OVERLAY_REFRESH_URL != '' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && vars.OVERLAY_REFRESH_URL != '' }}
     steps:
       - name: Trigger deployed overlay live refresh
         env:

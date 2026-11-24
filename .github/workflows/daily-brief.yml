@@ -1,23 +1,26 @@
 name: Daily Brief cron
 
 on:
-  schedule:
-    # 07:00 WIB (Asia/Jakarta, UTC+7)
-    - cron: "0 0 * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# POSTs POST /api/cron/daily-brief.
-# Skip-if-unset (same pattern as laporan-wa.yml):
-# - job is skipped when vars.DAILY_BRIEF_URL is empty
-# - if DAILY_BRIEF_CRON_SECRET is empty, echo a skip message and exit 0
+# Cadangan manual. Penjadwal otomatis adalah pg_cron job daily-brief-daily
+# (supabase/migrations/20261111_daily_brief_pg_cron.sql), 07.00 WIB.
+# Guard: job hanya jalan pada workflow_dispatch. Jangan menambah schedule
+# selama job pg_cron itu aktif, supaya dua penjadwal tidak memanggil
+# POST /api/cron/daily-brief berdekatan.
+# Produksi tidak berubah sampai berkas ini ada di default branch.
+
+concurrency:
+  group: daily-brief-cron
+  cancel-in-progress: false
 
 jobs:
   generate-and-send:
     runs-on: ubuntu-latest
-    if: ${{ vars.DAILY_BRIEF_URL != '' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && vars.DAILY_BRIEF_URL != '' }}
     steps:
       - name: POST daily brief cron
         env:
