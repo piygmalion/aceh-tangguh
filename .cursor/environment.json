@@ -1,6 +1,6 @@
 {
   "name": "Aceh Tangguh",
-  "install": "npm ci",
+  "install": "node -e \"const major=process.versions.node.split('.')[0]; if (major !== '22') { console.error('SIK Aceh butuh Node 22, dapat ' + process.version); process.exit(1); }\" && npm ci",
   "terminals": [
     {
       "name": "next-dev",
